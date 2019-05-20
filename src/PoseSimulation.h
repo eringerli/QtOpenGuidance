@@ -34,7 +34,7 @@ class PoseSimulation : public QObject {
     }
     ~PoseSimulation() {}
 
-    
+
     bool isSimulation() {
       return m_enabled;
     }
@@ -65,13 +65,13 @@ class PoseSimulation : public QObject {
     void setInterval( int interval ) {
       m_interval = interval;
 
-      setSimulation(m_enabled);
+      setSimulation( m_enabled );
 
       emit intervalChanged( m_interval );
     }
 
-    void setFrequency(int frequency){
-        setInterval(1000/frequency);
+    void setFrequency( int frequency ) {
+      setInterval( 1000 / frequency );
     }
 
     void setSimulation( bool enabled ) {

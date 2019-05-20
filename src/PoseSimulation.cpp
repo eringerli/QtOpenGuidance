@@ -16,7 +16,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 //     qDebug() << "elapsedTime: " << elapsedTime << " m_velocity: " << m_velocity << " m_wheelbase: " << m_wheelbase;
     QQuaternion lastOrientation = m_orientation;
 
-    emit steeringAngleChanged(m_steerAngle);
+    emit steeringAngleChanged( m_steerAngle );
 
     {
       QQuaternion difference = QQuaternion::fromEulerAngles( QVector3D(
@@ -41,7 +41,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 //       qDebug() << "Position: " << m_position << " difference: " << difference;
 
       // emit signal with antenna offset
-      emit positionChanged( m_position - m_orientation*m_antennaPosition );
+      emit positionChanged( m_position - m_orientation * ( -m_antennaPosition ) );
       emit positionChangedRelative( difference );
     }
 

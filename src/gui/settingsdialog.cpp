@@ -35,7 +35,7 @@ void SettingsDialog::on_dsb_antennaZ_valueChanged( double arg1 ) {
 }
 
 void SettingsDialog::on_dsb_hitchLenght_valueChanged( double arg1 ) {
-  emit hitchPositionChanged( QVector3D(-arg1,0,0) );
+  emit hitchPositionChanged( QVector3D( -arg1, 0, 0 ) );
 }
 
 void SettingsDialog::on_dsb_wheelbase_valueChanged( double arg1 ) {

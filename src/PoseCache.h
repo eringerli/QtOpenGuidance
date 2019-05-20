@@ -25,12 +25,16 @@ class PoseCache : public QObject {
       return m_orientation;
     }
 
+    float steeringAngle() {
+      return m_steeringAngle;
+    }
+
   public slots:
     void setPosition( QVector3D position ) {
-      m_position = position;  
+      m_position = position;
 //       qDebug() << "setPosition( QVector3D position ): " << position;
 
-      emit poseChanged( m_position, m_orientation, m_steeringAngle );
+      emit poseChanged( m_position, m_orientation );
     }
 
     void setOrientation( QQuaternion orientation ) {
@@ -39,10 +43,12 @@ class PoseCache : public QObject {
 
     void setSteeringAngle( float steeringAngle ) {
       m_steeringAngle = steeringAngle;
+      emit steeringAngleChanged( steeringAngle );
     }
 
   signals:
-    void poseChanged( QVector3D position, QQuaternion orientation, float steeringAngle );
+    void poseChanged( QVector3D position, QQuaternion orientation );
+    void steeringAngleChanged( float );
 
   private:
     float m_steeringAngle;

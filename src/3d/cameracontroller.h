@@ -11,7 +11,7 @@ class CameraController : public QObject {
 
   public:
     explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ), m_orbitController(nullptr), m_firstPersonController(nullptr) {
+      : m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ), m_orbitController( nullptr ), m_firstPersonController( nullptr ) {
     }
 
     ~CameraController() {}

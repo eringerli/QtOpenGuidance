@@ -6,14 +6,11 @@
 
 
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
-  : m_hitchPosition(),
-    m_wheelbase( 2.4 ),
-    m_antennaPosition( 3, 0, 1.5 ) {
+  : m_wheelbase( 2.4 ) {
 
   m_rootEntityTransform = new Qt3DCore::QTransform();
-  m_rootEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );
-  m_rootEntityTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0.0f, 0.0f, 1.0f ), 0 ) );
 
+  // add an etry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
@@ -31,58 +28,57 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
     m_baseEntity->addComponent( m_baseTransform );
   }
 
+  m_wheelFrontMesh = new Qt3DExtras::QCylinderMesh();
+
   // wheel front left
   {
-    m_wheelFrontLeftMesh = new Qt3DExtras::QCylinderMesh();
     m_wheelFrontLeftTransform = new Qt3DCore::QTransform();
 
     Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelFrontLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_wheelFrontLeftEntity->addComponent( m_wheelFrontLeftMesh );
+    m_wheelFrontLeftEntity->addComponent( m_wheelFrontMesh );
     m_wheelFrontLeftEntity->addComponent( material );
     m_wheelFrontLeftEntity->addComponent( m_wheelFrontLeftTransform );
   }
 
   // wheel front right
   {
-    m_wheelFrontRightMesh = new Qt3DExtras::QCylinderMesh();
     m_wheelFrontRightTransform = new Qt3DCore::QTransform();
 
     Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelFrontRightEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_wheelFrontRightEntity->addComponent( m_wheelFrontRightMesh );
+    m_wheelFrontRightEntity->addComponent( m_wheelFrontMesh );
     m_wheelFrontRightEntity->addComponent( material );
     m_wheelFrontRightEntity->addComponent( m_wheelFrontRightTransform );
   }
 
+  m_wheelBackMesh = new Qt3DExtras::QCylinderMesh();
   // wheel back left
   {
-    m_wheelBackLeftMesh = new Qt3DExtras::QCylinderMesh();
     m_wheelBackLeftTransform = new Qt3DCore::QTransform();
 
     Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelBackLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_wheelBackLeftEntity->addComponent( m_wheelBackLeftMesh );
+    m_wheelBackLeftEntity->addComponent( m_wheelBackMesh );
     m_wheelBackLeftEntity->addComponent( material );
     m_wheelBackLeftEntity->addComponent( m_wheelBackLeftTransform );
   }
 
   // wheel back right
   {
-    m_wheelBackRightMesh = new Qt3DExtras::QCylinderMesh();
     m_wheelBackRightTransform = new Qt3DCore::QTransform();
 
     Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelBackRightEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_wheelBackRightEntity->addComponent( m_wheelBackRightMesh );
+    m_wheelBackRightEntity->addComponent( m_wheelBackMesh );
     m_wheelBackRightEntity->addComponent( material );
     m_wheelBackRightEntity->addComponent( m_wheelBackRightTransform );
   }
@@ -90,60 +86,61 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   // most dimensions are dependent on the wheelbase -> the code for that is in the slot setWheelbase(float)
   setWheelbase( m_wheelbase );
 
-  // antenna marker
+  // everything in world-coordinates... (add to rootEntity, not m_rootEntity)
   {
-    m_antennaMesh = new Qt3DExtras::QSphereMesh();
-    m_antennaMesh->setRadius( .2 );
-    m_antennaMesh->setSlices( 20 );
-    m_antennaMesh->setRings( 20 );
+    // tow hook marker -> red
+    {
+      m_towHookMesh = new Qt3DExtras::QSphereMesh();
+      m_towHookMesh->setRadius( .2 );
+      m_towHookMesh->setSlices( 20 );
+      m_towHookMesh->setRings( 20 );
 
-    m_antennaTransform = new Qt3DCore::QTransform();
-    m_antennaTransform->setTranslation( m_antennaPosition );
+      m_towHookTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
-    material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
+      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
 
-    m_antennaEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_antennaEntity->addComponent( m_antennaMesh );
-    m_antennaEntity->addComponent( material );
-    m_antennaEntity->addComponent( m_antennaTransform );
-  }
+      m_towHookEntity = new Qt3DCore::QEntity( rootEntity );
+      m_towHookEntity->addComponent( m_towHookMesh );
+      m_towHookEntity->addComponent( material );
+      m_towHookEntity->addComponent( m_towHookTransform );
+    }
 
-  // pivot point marker
-  {
-    m_pivotPointMesh = new Qt3DExtras::QSphereMesh();
-    m_pivotPointMesh->setRadius( .2 );
-    m_pivotPointMesh->setSlices( 20 );
-    m_pivotPointMesh->setRings( 20 );
+    // pivot point marker -> green
+    {
+      m_pivotPointMesh = new Qt3DExtras::QSphereMesh();
+      m_pivotPointMesh->setRadius( .2 );
+      m_pivotPointMesh->setSlices( 20 );
+      m_pivotPointMesh->setRings( 20 );
 
-    m_pivotPointTransform = new Qt3DCore::QTransform();
+      m_pivotPointTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
-    material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
+      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
 
-    m_pivotPointEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_pivotPointEntity->addComponent( m_pivotPointMesh );
-    m_pivotPointEntity->addComponent( material );
-    m_pivotPointEntity->addComponent( m_pivotPointTransform );
-  }
+      m_pivotPointEntity = new Qt3DCore::QEntity( rootEntity );
+      m_pivotPointEntity->addComponent( m_pivotPointMesh );
+      m_pivotPointEntity->addComponent( material );
+      m_pivotPointEntity->addComponent( m_pivotPointTransform );
+    }
 
-  // hitch marker
-  {
-    m_hitchMesh = new Qt3DExtras::QSphereMesh();
-    m_hitchMesh->setRadius( .2 );
-    m_hitchMesh->setSlices( 20 );
-    m_hitchMesh->setRings( 20 );
+    // hitch marker -> blue
+    {
+      m_towPointMesh = new Qt3DExtras::QSphereMesh();
+      m_towPointMesh->setRadius( .2 );
+      m_towPointMesh->setSlices( 20 );
+      m_towPointMesh->setRings( 20 );
 
-    m_hitchTransform = new Qt3DCore::QTransform();
-    m_hitchTransform->setTranslation( m_hitchPosition );
+      m_towPointTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
-    material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
+      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
 
-    m_hitchEntity = new Qt3DCore::QEntity( m_rootEntity );
-    m_hitchEntity->addComponent( m_hitchMesh );
-    m_hitchEntity->addComponent( material );
-    m_hitchEntity->addComponent( m_hitchTransform );
+      m_towPointEntity = new Qt3DCore::QEntity( rootEntity );
+      m_towPointEntity->addComponent( m_towPointMesh );
+      m_towPointEntity->addComponent( material );
+      m_towPointEntity->addComponent( m_towPointTransform );
+    }
   }
 
   // Axis
@@ -214,77 +211,54 @@ void TractorModel::setWheelbase( float wheelbase ) {
     m_baseTransform->setTranslation( QVector3D( m_baseMesh->xExtent() / 2, 0, m_baseMesh->zExtent() / 2 + .25 ) );
   }
 
-  // wheel front left
+  // wheels front
   {
-    m_wheelFrontLeftMesh->setRadius( wheelbase / 4 );
-    m_wheelFrontLeftMesh->setLength( wheelbase / 5 );
-
-    m_wheelFrontLeftTransform->setTranslation( QVector3D( wheelbase, offsetForWheels + m_wheelFrontLeftMesh->length() / 2, m_wheelFrontLeftMesh->radius() ) );
+    m_wheelFrontMesh->setRadius( wheelbase / 4 );
+    m_wheelFrontMesh->setLength( wheelbase / 5 );
+    m_wheelFrontLeftTransform->setTranslation( QVector3D( wheelbase, offsetForWheels + m_wheelFrontMesh->length() / 2, m_wheelFrontMesh->radius() ) );
+    m_wheelFrontRightTransform->setTranslation( QVector3D( wheelbase, -( offsetForWheels + m_wheelFrontMesh->length() / 2 ),  m_wheelFrontMesh->radius() ) );
   }
 
-  // wheel front right
+  // wheels back
   {
-    m_wheelFrontRightMesh->setRadius( wheelbase / 4 );
-    m_wheelFrontRightMesh->setLength( wheelbase / 5 );
-
-    m_wheelFrontRightTransform->setTranslation( QVector3D( wheelbase, -( offsetForWheels + m_wheelFrontRightMesh->length() / 2 ),  m_wheelFrontRightMesh->radius() ) );
+    m_wheelBackMesh->setRadius( wheelbase / 2 );
+    m_wheelBackMesh->setLength( wheelbase / 5 );
+    m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2,  m_wheelBackMesh->radius() ) );
+    m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ),  m_wheelBackMesh->radius() ) );
   }
 
-  // wheel back left
-  {
-    m_wheelBackLeftMesh->setRadius( wheelbase / 2 );
-    m_wheelBackLeftMesh->setLength( wheelbase / 5 );
-
-    m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackLeftMesh->length() / 2,  m_wheelBackLeftMesh->radius() ) );
-  }
-
-  // wheel back right
-  {
-    m_wheelBackRightMesh->setRadius( wheelbase / 2 );
-    m_wheelBackRightMesh->setLength( wheelbase / 5 );
-
-    m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackRightMesh->length() / 2 ),  m_wheelBackRightMesh->radius() ) );
-  }
-  setSteerAngle( m_steerangle );
+  setSteeringAngle( m_steeringAngle );
 }
 
-void TractorModel::setHitchPosition( QVector3D position ) {
-  m_hitchPosition = position;
-  m_hitchTransform->setTranslation( position);
+void TractorModel::setPoseTowPoint( QVector3D position, QQuaternion ) {
+  m_towPointTransform->setTranslation( position );
 }
 
-void TractorModel::setAntennaPosition( QVector3D position ) {
-  m_antennaPosition = position;
-  m_antennaTransform->setTranslation( m_antennaPosition );
+void TractorModel::setPoseHookPoint( QVector3D position, QQuaternion ) {
+  m_towHookTransform->setTranslation( position );
 }
 
-void TractorModel::setPosition( QVector3D position ) {
-  m_rootEntityTransform->setTranslation( position );
-  emit positionChanged( position );
-}
 
 QVector3D TractorModel::position() {
   return m_rootEntityTransform->translation();
-}
-
-void TractorModel::setRotation( QQuaternion rotation ) {
-  m_rootEntityTransform->setRotation( rotation );
-  emit rotationChanged( rotation );
 }
 
 QQuaternion TractorModel::rotation() {
   return m_rootEntityTransform->rotation();
 }
 
-void TractorModel::setPose( QVector3D position, QQuaternion rotation, float steerAngle ) {
-    setSteerAngle(steerAngle);
-  setPosition( position );
-  setRotation( rotation );
+void TractorModel::setPosePivotPoint( QVector3D position, QQuaternion rotation ) {
+  m_pivotPointTransform->setTranslation( position );
+
+  m_rootEntityTransform->setTranslation( position );
+  m_rootEntityTransform->setRotation( rotation );
+  emit positionChanged( position );
+  emit rotationChanged( rotation );
 }
 
 // http://correll.cs.colorado.edu/?p=1869
-void TractorModel::setSteerAngle( float steerAngle ) {
-  m_steerangle = steerAngle;
+void TractorModel::setSteeringAngle( float steerAngle ) {
+  m_steeringAngle = steerAngle;
 
   if( steerAngle != 0 ) {
     float distanceBetweenFrontWheels = m_wheelbase / 4 * 3  + .2 + m_wheelbase / 5;

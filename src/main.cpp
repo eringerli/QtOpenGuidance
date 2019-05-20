@@ -1,60 +1,11 @@
-/****************************************************************************
-**
-** Copyright (C) 2014 Klaralvdalens Datakonsult AB (KDAB).
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the Qt3D module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
 
 // tractor-trailer kinematics
 // https://userpages.uni-koblenz.de/~zoebel/pdf/Mamotep2.pdf
+// http://correll.cs.colorado.edu/?p=1869
+// https://github.com/correll/Introduction-to-Autonomous-Robots/releases
 
 // axis/rotation conventions
 // https://ch.mathworks.com/help/driving/ug/coordinate-systems.html
-
-#include "TractorModel.h"
 
 #include <QGuiApplication>
 
@@ -92,15 +43,19 @@
 #include <Qt3DExtras/qfirstpersoncameracontroller.h>
 #include <Qt3DExtras/QOrbitCameraController>
 
-#include "cameracontroller.h"
-
 #include "gui/settingsdialog.h"
 #include "gui/guidancetoolbar.h"
 #include "gui/simulatortoolbar.h"
 
+#include "3d/cameracontroller.h"
+#include "3d/TractorModel.h"
+#include "3d/TrailerModel.h"
+
 #include "PoseSimulation.h"
 #include "PoseCache.h"
-#include "AckermannKinematic.h"
+
+#include "kinematic/FixedKinematic.h"
+#include "kinematic/TrailerKinematic.h"
 
 int main( int argc, char** argv ) {
   QApplication app( argc, argv );
@@ -146,16 +101,19 @@ int main( int argc, char** argv ) {
   lightEntity->addComponent( lightTransform );
 
   // For camera controls
-  CameraController* cameraController = new CameraController(rootEntity, cameraEntity);
-  cameraController->setCameraController(2);
+  CameraController* cameraController = new CameraController( rootEntity, cameraEntity );
+  cameraController->setCameraController( 2 );
 
   //Qt3DExtras::QOrbitCameraController* camController = new Qt3DExtras::QOrbitCameraController( rootEntity );
   //camController->setCamera( cameraEntity );
   //camController->setLinearSpeed( 150 );
 
   // TractorEntity
-  TractorModel* tractorModelSimulation = new TractorModel( rootEntity );
+//  TractorModel* tractorModelSimulation = new TractorModel( rootEntity );
   TractorModel* tractorModel = new TractorModel( rootEntity );
+  TrailerModel* trailerModel = new TrailerModel( rootEntity );
+  TrailerModel* trailerModel2 = new TrailerModel( rootEntity );
+  TrailerModel* trailerModel3 = new TrailerModel( rootEntity );
 
   // draw an axis-cross: X-red, Y-green, Z-blue
   if( 1 ) {
@@ -212,11 +170,16 @@ int main( int argc, char** argv ) {
   // the processer of Pose etc
   PoseSimulation* poseSimulation = new PoseSimulation();
   PoseCache* poseCache = new PoseCache();
-  AckermannKinematic* tractorKinematics = new AckermannKinematic();
+
+  FixedKinematic* tractorKinematics = new FixedKinematic();
+  TrailerKinematic* trailerKinematics = new TrailerKinematic();
+  TrailerKinematic* trailerKinematics2 = new TrailerKinematic();
+  TrailerKinematic* trailerKinematics3 = new TrailerKinematic();
+
 
   // Toolbars
   SimulatorToolbar* simulatorToolbar = new SimulatorToolbar( widget );
-  simulatorToolbar->setVisible(false);
+  simulatorToolbar->setVisible( false );
   hLayout->addWidget( simulatorToolbar );
 
   GuidanceToolbar* guidaceToolbar = new GuidanceToolbar( widget );
@@ -229,10 +192,22 @@ int main( int argc, char** argv ) {
   // GUI -> GUI
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     simulatorToolbar, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( toggleSettings(  ) ),
-                    settingDialog, SLOT( toggleVisibility(  ) ) );
+  QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
+                    settingDialog, SLOT( toggleVisibility() ) );
 
-  // GUI -> Simulator
+
+  //  Settings -> Tractor Model
+  QObject::connect( settingDialog, SIGNAL( wheelbaseChanged( float ) ),
+                    tractorModel, SLOT( setWheelbase( float ) ) );
+
+  // Settings -> Tractor Kinematics
+  QObject::connect( settingDialog, SIGNAL( antennaPositionChanged( QVector3D ) ),
+                    tractorKinematics, SLOT( setOffsetHookPointPosition( QVector3D ) ) );
+  QObject::connect( settingDialog, SIGNAL( hitchPositionChanged( QVector3D ) ),
+                    tractorKinematics, SLOT( setOffsetTowPointPosition( QVector3D ) ) );
+
+
+  // Simulator GUI -> Simulator
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     poseSimulation, SLOT( setSimulation( bool ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
@@ -242,12 +217,12 @@ int main( int argc, char** argv ) {
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     poseSimulation, SLOT( setSteerAngle( float ) ) );
 
-
   // Settings -> Simulator
   QObject::connect( settingDialog, SIGNAL( wheelbaseChanged( float ) ),
                     poseSimulation, SLOT( setWheelbase( float ) ) );
   QObject::connect( settingDialog, SIGNAL( antennaPositionChanged( QVector3D ) ),
                     poseSimulation, SLOT( setAntennaPosition( QVector3D ) ) );
+
 
   // Simulator -> PoseCache
   QObject::connect( poseSimulation, SIGNAL( positionChanged( QVector3D ) ),
@@ -257,38 +232,55 @@ int main( int argc, char** argv ) {
   QObject::connect( poseSimulation, SIGNAL( steeringAngleChanged( float ) ),
                     poseCache, SLOT( setSteeringAngle( float ) ) );
 
-  // PoseCache -> Tractor Model
-  QObject::connect( poseCache, SIGNAL( poseChanged( QVector3D, QQuaternion, float ) ),
-                    tractorModelSimulation, SLOT( setPose( QVector3D, QQuaternion, float ) ) );
 
   // PoseCache -> Tractor Kinematics
-  QObject::connect( poseCache, SIGNAL( poseChanged( QVector3D, QQuaternion, float ) ),
-                    tractorKinematics, SLOT( setPose( QVector3D, QQuaternion, float ) ) );
+  QObject::connect( poseCache, SIGNAL( poseChanged( QVector3D, QQuaternion ) ),
+                    tractorKinematics, SLOT( setPose( QVector3D, QQuaternion ) ) );
+
+  // Tractor Kinematics -> Trailer Kinematics
+  QObject::connect( tractorKinematics, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerKinematics, SLOT( setPose( QVector3D, QQuaternion ) ) );
+
+  // Trailer Kinematics -> Trailer Kinematics
+  QObject::connect( trailerKinematics, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerKinematics2, SLOT( setPose( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics2, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerKinematics3, SLOT( setPose( QVector3D, QQuaternion ) ) );
+
+
+  // PoseCache -> Tractor Model
+  QObject::connect( poseCache, SIGNAL( steeringAngleChanged( float ) ),
+                    tractorModel, SLOT( setSteeringAngle( float ) ) );
 
   // Tractor Kinematics -> Tractor Model
-  QObject::connect( tractorKinematics, SIGNAL( poseChanged( QVector3D, QQuaternion, float ) ),
-                    tractorModel, SLOT( setPose( QVector3D, QQuaternion, float ) ) );
-  QObject::connect( tractorKinematics, SIGNAL( hitchPositionChanged( QVector3D ) ),
-                    tractorModel, SLOT( setHitchPosition( QVector3D ) ) );
-  QObject::connect( tractorKinematics, SIGNAL( towPointPositionChanged( QVector3D ) ),
-                    tractorModel, SLOT( setAntennaPosition( QVector3D ) ) );
+  QObject::connect( tractorKinematics, SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ),
+                    tractorModel, SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( tractorKinematics, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    tractorModel, SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( tractorKinematics, SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ),
+                    tractorModel, SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
 
+  // Trailer Kinematics -> Trailer Model
+  QObject::connect( trailerKinematics, SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel, SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel, SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics, SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel, SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
 
-
-  //  Settings -> Tractor Model
-    QObject::connect( settingDialog, SIGNAL( antennaPositionChanged( QVector3D ) ),
-                      tractorModelSimulation, SLOT( setAntennaPosition( QVector3D ) ) );
-    QObject::connect( settingDialog, SIGNAL( wheelbaseChanged( float ) ),
-                      tractorModelSimulation, SLOT( setWheelbase( float ) ) );
-    QObject::connect( settingDialog, SIGNAL( hitchPositionChanged( QVector3D ) ),
-                      tractorModelSimulation, SLOT( setHitchPosition( QVector3D ) ) );
-
-  QObject::connect( settingDialog, SIGNAL( antennaPositionChanged( QVector3D ) ),
-                    tractorKinematics, SLOT( setTowPointPosition( QVector3D ) ) );
-  QObject::connect( settingDialog, SIGNAL( wheelbaseChanged( float ) ),
-                    tractorKinematics, SLOT( setWheelbase( float ) ) );
-  QObject::connect( settingDialog, SIGNAL( hitchPositionChanged( QVector3D ) ),
-                    tractorKinematics, SLOT( setOwnHitch( QVector3D ) ) );
+  // Trailer Kinematics -> Trailer Model
+  QObject::connect( trailerKinematics2, SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel2, SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics2, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel2, SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics2, SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel2, SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics3, SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel3, SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics3, SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel3, SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+  QObject::connect( trailerKinematics3, SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ),
+                    trailerModel3, SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
 
 
   // Camerastuff
@@ -305,6 +297,36 @@ int main( int argc, char** argv ) {
 
   QObject::connect( poseSimulation, SIGNAL( orientationChangedRelative( QQuaternion ) ),
                     cameraEntity, SLOT( rotateAboutViewCenter( QQuaternion ) ) );
+
+//  // Simulation tractor
+//  {
+//    // PoseCache -> Tractor Model
+//    QObject::connect( poseCache, SIGNAL( poseChanged( QVector3D, QQuaternion ) ),
+//                      tractorModelSimulation, SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+//    QObject::connect( poseCache, SIGNAL( steeringAngleChanged( float ) ),
+//                      tractorModelSimulation, SLOT( setSteeringAngle( float ) ) );
+//    QObject::connect( settingDialog, SIGNAL( wheelbaseChanged( float ) ),
+//                      tractorModelSimulation, SLOT( setWheelbase( float ) ) );
+//  }
+
+  // setup simulator and tractor kinematics
+  {
+    poseSimulation->setAntennaPosition( QVector3D( 3, 0, 1.5 ) );
+    tractorKinematics->setOffsetHookPointPosition( QVector3D( 3, 0, 1.5 ) );
+    tractorKinematics->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
+
+    trailerKinematics->setOffsetHookPointPosition( QVector3D( 3, 0, 0 ) );
+    trailerKinematics->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
+    trailerModel->setOffsetHookPointPosition( QVector3D( 3, 0, 0 ) );
+
+    trailerKinematics2->setOffsetHookPointPosition( QVector3D( 6, 0, 0 ) );
+    trailerKinematics2->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
+    trailerModel2->setOffsetHookPointPosition( QVector3D( 6, 0, 0 ) );
+    trailerKinematics3->setOffsetHookPointPosition( QVector3D( 8, 0, 0 ) );
+    trailerKinematics3->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
+    trailerModel3->setOffsetHookPointPosition( QVector3D( 8, 0, 0 ) );
+
+  }
 
   // Show window
   widget->show();

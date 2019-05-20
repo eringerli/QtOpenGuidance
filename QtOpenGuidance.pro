@@ -6,22 +6,24 @@ QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
 
 SOURCES += src/main.cpp \
-    src/AckermannKinematic.cpp \
-    src/TractorModel.cpp \
+    src/3d/TractorModel.cpp \
+    src/3d/TrailerModel.cpp \
     src/PoseSimulation.cpp \
     src/gui/guidancetoolbar.cpp \
     src/gui/settingsdialog.cpp \
     src/gui/simulatortoolbar.cpp
     
 HEADERS += \
-    src/AckermannKinematic.h \
-    src/TractorModel.h \
+    src/3d/TractorModel.h \
+    src/3d/TrailerModel.h \
+    src/3d/cameracontroller.h \
     src/PoseCache.h \
     src/PoseSimulation.h \
-    src/cameracontroller.h \
     src/gui/guidancetoolbar.h \
     src/gui/settingsdialog.h \
-    src/gui/simulatortoolbar.h
+    src/gui/simulatortoolbar.h \
+    src/kinematic/FixedKinematic.h \
+    src/kinematic/TrailerKinematic.h
 
 QMAKE_CXXFLAGS += -pg -g
 
