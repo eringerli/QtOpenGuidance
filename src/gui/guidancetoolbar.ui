@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GuidanceToolbar</class>
+ <widget class="QGroupBox" name="GuidanceToolbar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>113</width>
+    <height>681</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>GroupBox</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QComboBox" name="cb_mode">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::NoContextMenu</enum>
+     </property>
+     <property name="toolTip">
+      <string>Guidance Mode</string>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToContents</enum>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>55</width>
+       <height>55</height>
+      </size>
+     </property>
+     <item>
+      <property name="text">
+       <string>None</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string comment="AB-line"/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../res/ressources.qrc">
+        <normaloff>:/icons/ABLineOn.png</normaloff>:/icons/ABLineOn.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string comment="Countour"/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../res/ressources.qrc">
+        <normaloff>:/icons/ContourOn.png</normaloff>:/icons/ContourOn.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string comment="AB-Curve"/>
+      </property>
+      <property name="icon">
+       <iconset resource="../../res/ressources.qrc">
+        <normaloff>:/icons/CurveOn.png</normaloff>:/icons/CurveOn.png</iconset>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_AB">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/ressources.qrc">
+       <normaloff>:/icons/LetterABlue.png</normaloff>
+       <normalon>:/icons/LetterBBlue.png</normalon>:/icons/LetterABlue.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_snap">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/ressources.qrc">
+       <normaloff>:/icons/Snap2.png</normaloff>:/icons/Snap2.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>38</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_autosteer">
+     <property name="toolTip">
+      <string>Autosteer</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/ressources.qrc">
+       <normaloff>:/icons/AutoSteerConf.png</normaloff>
+       <activeon>:/icons/AutoSteerConf.png</activeon>:/icons/AutoSteerConf.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_selfTurn">
+     <property name="toolTip">
+      <string>Auto Turn</string>
+     </property>
+     <property name="text">
+      <string comment="Auto Turn"/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/ressources.qrc">
+       <normaloff>:/icons/YouTurnNo.png</normaloff>
+       <activeon>:/icons/Youturn80.png</activeon>:/icons/YouTurnNo.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>38</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="text">
+      <string>Simulator</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox_2">
+     <property name="text">
+      <string>Field Mgmt</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_settings">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../../res/ressources.qrc">
+       <normaloff>:/icons/Settings48.png</normaloff>:/icons/Settings48.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>65</width>
+       <height>65</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../res/ressources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
