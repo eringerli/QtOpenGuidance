@@ -41,10 +41,15 @@ class TrailerKinematic : public QObject {
     }
 
     void setPose( QVector3D position, QQuaternion orientation ) {
-      orientation = QQuaternion::fromAxisAndAngle(
-                      QVector3D( 0.0f, 0.0f, 1.0f ),
-                      qRadiansToDegrees( qAtan2( position.y() - m_positionPivotPoint.y(), position.x() - m_positionPivotPoint.x() ) )
-                    );
+      QQuaternion orientationTrailer = QQuaternion::fromAxisAndAngle(
+                                         QVector3D( 0.0f, 0.0f, 1.0f ),
+                                         qRadiansToDegrees( qAtan2( position.y() - m_positionPivotPoint.y(), position.x() - m_positionPivotPoint.x() ) )
+                                       );
+
+      // the angle between tractor and trailer >120° -> reset orientation to the one from the tractor
+      if( qAbs( ( orientation.inverted()*orientationTrailer ).toEulerAngles().z() ) < 120 ) {
+        orientation = orientationTrailer;
+      }
 
       m_positionPivotPoint = position + orientation * -m_offsetHookPoint;
       QVector3D positionTowPoint = m_positionPivotPoint + orientation * m_offsetTowPoint;
