@@ -1,7 +1,3 @@
-android|ios|tvos|winrt {
-    warning( "This example is not supported for android, ios, tvos, or winrt." )
-}
-
 QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
 
@@ -25,7 +21,7 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/TrailerKinematic.h
 
-QMAKE_CXXFLAGS += -pg -g
+#QMAKE_CXXFLAGS += -pg -g
 
 FORMS += \
     src/gui/guidancetoolbar.ui \
@@ -34,3 +30,6 @@ FORMS += \
 
 RESOURCES += \
     res/ressources.qrc
+
+#in your project main .pro qmake configuration file
+include($$PWD/lib/QuickQanava/src/quickqanava.pri)
