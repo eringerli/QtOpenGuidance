@@ -23,56 +23,54 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef QNEPORT_H
-#define QNEPORT_H
+#ifndef QNEBLOCK_H
+#define QNEBLOCK_H
 
 #include <QGraphicsPathItem>
 
-class QNEBlock;
-class QNEConnection;
+class QNEPort;
 
-class QNEPort : public QGraphicsPathItem
-{
-public:
-	enum { Type = QGraphicsItem::UserType + 1 };
-	enum { NamePort = 1, TypePort = 2 };
+class QNEBlock : public QGraphicsPathItem {
+  public:
+    enum { Type = QGraphicsItem::UserType + 3 };
 
-    QNEPort(QGraphicsItem *parent = 0);
-	~QNEPort();
+    // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
+    QNEBlock( QObject* object, QGraphicsItem* parent = nullptr );
 
-	void setNEBlock(QNEBlock*);
-	void setName(const QString &n);
-	void setIsOutput(bool o);
-	int radius();
-	bool isOutput();
-	QVector<QNEConnection*>& connections();
-	void setPortFlags(int);
+    ~QNEBlock();
 
-	const QString& portName() const { return name; }
-	int portFlags() const { return m_portFlags; }
+    QNEPort* addPort( const QString& name, const QString& signalSlotSignature, bool isOutput, int flags = 0 );
+    void addInputPort( const QString& name, const QString& signalSlotSignature );
+    void addOutputPort( const QString& name, const QString& signalSlotSignature );
 
-	int type() const { return Type; }
+    void setDeletable( bool );
 
-	QNEBlock* block() const;
+    void save( QDataStream& );
+    void load( QDataStream&, QMap<quint64, QNEPort*>& portMap );
+    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
+    QNEBlock* clone( QObject* object );
+    QVector<QNEPort*> ports();
 
-	quint64 ptr();
-	void setPtr(quint64);
+    int type() const {
+      return Type;
+    }
 
-	bool isConnected(QNEPort*);
+    QObject* getObject() {
+      return object;
+    }
 
-protected:
-	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    bool deleteable;
 
-private:
-	QNEBlock *m_block;
-	QString name;
-	bool isOutput_;
-	QGraphicsTextItem *label;
-	int radius_;
-	int margin;
-	QVector<QNEConnection*> m_connections;
-	int m_portFlags;
-	quint64 m_ptr;
+  protected:
+    QVariant itemChange( GraphicsItemChange change, const QVariant& value );
+
+  private:
+    int horzMargin;
+    int vertMargin;
+    int width;
+    int height;
+
+    QObject* object;
 };
 
-#endif // QNEPORT_H
+#endif // QNEBLOCK_H

@@ -193,7 +193,39 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
 
 }
 
+// order is important! Crashes if a parent entity is removed first!
 TractorModel::~TractorModel() {
+  delete  m_baseMesh;
+  delete m_wheelFrontMesh;
+  delete m_wheelBackMesh;
+
+  delete  m_towHookMesh;
+  delete m_pivotPointMesh;
+  delete m_towPointMesh;
+
+  delete m_rootEntityTransform;
+  delete m_baseTransform;
+  delete m_wheelFrontLeftTransform;
+  delete m_wheelFrontRightTransform;
+  delete m_wheelBackLeftTransform;
+  delete m_wheelBackRightTransform;
+
+  delete m_towHookTransform;
+  delete m_pivotPointTransform;
+  delete m_towPointTransform;
+
+
+  delete m_towHookEntity;
+  delete m_pivotPointEntity;
+  delete m_towPointEntity;
+
+  delete m_wheelFrontLeftEntity;
+  delete m_wheelFrontRightEntity;
+  delete m_wheelBackLeftEntity;
+  delete m_wheelBackRightEntity;
+  delete m_baseEntity;
+
+  delete m_rootEntity;
 }
 
 void TractorModel::setWheelbase( float wheelbase ) {

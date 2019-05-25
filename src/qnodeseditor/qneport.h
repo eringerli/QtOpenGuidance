@@ -23,40 +23,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef QNECONNECTION_H
-#define QNECONNECTION_H
+#ifndef QNEPORT_H
+#define QNEPORT_H
 
 #include <QGraphicsPathItem>
 
-class QNEPort;
+class QNEBlock;
+class QNEConnection;
 
-class QNEConnection : public QGraphicsPathItem
-{
-public:
-	enum { Type = QGraphicsItem::UserType + 2 };
+class QNEPort : public QGraphicsPathItem {
+  public:
+    enum { Type = QGraphicsItem::UserType + 1 };
+    enum { NamePort = 1, TypePort = 2 };
 
-    QNEConnection(QGraphicsItem *parent = 0);
-	~QNEConnection();
+    QNEPort( QString slotSignalSignature, QGraphicsItem* parent = nullptr );
+    ~QNEPort();
 
-	void setPos1(const QPointF &p);
-	void setPos2(const QPointF &p);
-	void setPort1(QNEPort *p);
-	void setPort2(QNEPort *p);
-	void updatePosFromPorts();
-	void updatePath();
-	QNEPort* port1() const;
-	QNEPort* port2() const;
+    void setNEBlock( QNEBlock* );
+    void setName( const QString& n );
+    void setIsOutput( bool o );
+    int radius();
+    bool isOutput();
+    QVector<QNEConnection*>& connections();
+    void setPortFlags( int );
 
-	void save(QDataStream&);
-	void load(QDataStream&, const QMap<quint64, QNEPort*> &portMap);
+    const QString& portName() const {
+      return name;
+    }
+    int portFlags() const {
+      return m_portFlags;
+    }
 
-	int type() const { return Type; }
+    int type() const {
+      return Type;
+    }
 
-private:
-	QPointF pos1;
-	QPointF pos2;
-	QNEPort *m_port1;
-	QNEPort *m_port2;
+    QNEBlock* block() const;
+
+    bool isConnected( QNEPort* );
+
+    QString slotSignalSignature;
+
+  protected:
+    QVariant itemChange( GraphicsItemChange change, const QVariant& value );
+
+  private:
+    QNEBlock* m_block;
+    QString name;
+    bool isOutput_;
+    QGraphicsTextItem* label;
+    int radius_;
+    int margin;
+    QVector<QNEConnection*> m_connections;
+    int m_portFlags;
+
 };
 
-#endif // QNECONNECTION_H
+#endif // QNEPORT_H

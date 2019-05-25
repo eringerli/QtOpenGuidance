@@ -32,4 +32,6 @@ RESOURCES += \
     res/ressources.qrc
 
 #in your project main .pro qmake configuration file
-include($$PWD/lib/QuickQanava/src/quickqanava.pri)
+#include($$PWD/lib/QuickQanava/src/quickqanava.pri)
+
+include($$PWD/src/qnodeseditor/qnodeeditor.pri)

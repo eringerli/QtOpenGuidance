@@ -32,25 +32,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 class QNodesEditor;
 
-class QNEMainWindow : public QMainWindow
-{
-	Q_OBJECT
+class QNEMainWindow : public QMainWindow {
+    Q_OBJECT
 
-public:
-	explicit QNEMainWindow(QWidget *parent = 0);
-	~QNEMainWindow();
+  public:
+    explicit QNEMainWindow( QWidget* parent = 0 );
+    ~QNEMainWindow();
 
-private slots:
-	void saveFile();
-	void loadFile();
-	void addBlock();
+  private slots:
+    void saveFile();
+    void loadFile();
+    void addBlock();
 
-private:
+  private:
 
-	QNodesEditor *nodesEditor;
-    QMenu *fileMenu;
-    QGraphicsView *view;
-    QGraphicsScene *scene;
+    QNodesEditor* nodesEditor;
+    QMenu* fileMenu;
+    QGraphicsView* view;
+    QGraphicsScene* scene;
 };
 
 #endif // QNEMAINWINDOW_H

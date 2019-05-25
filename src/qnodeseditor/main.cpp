@@ -1,4 +1,5 @@
 /* Copyright (c) 2012, STANISLAW ADASZEWSKI
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -23,37 +24,14 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef QNODESEDITOR_H
-#define QNODESEDITOR_H
+#include <QtWidgets>
+#include <QApplication>
+#include "qnemainwindow.h"
 
-#include <QObject>
+int main( int argc, char* argv[] ) {
+  QApplication a( argc, argv );
+  QNEMainWindow w;
+  w.show();
 
-class QGraphicsScene;
-class QNEConnection;
-class QGraphicsItem;
-class QPointF;
-class QNEBlock;
-
-class QNodesEditor : public QObject
-{
-	Q_OBJECT
-public:
-	explicit QNodesEditor(QObject *parent = 0);
-
-	void install(QGraphicsScene *scene);
-
-	bool eventFilter(QObject *, QEvent *);
-
-	void save(QDataStream &ds);
-	void load(QDataStream &ds);
-
-private:
-	QGraphicsItem *itemAt(const QPointF&);
-
-private:
-	QGraphicsScene *scene;
-	QNEConnection *conn;
-	// QNEBlock *selBlock;
-};
-
-#endif // QNODESEDITOR_H
+  return a.exec();
+}

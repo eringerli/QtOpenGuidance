@@ -23,41 +23,45 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#ifndef QNEBLOCK_H
-#define QNEBLOCK_H
+#ifndef QNECONNECTION_H
+#define QNECONNECTION_H
 
+#include <QObject>
 #include <QGraphicsPathItem>
 
 class QNEPort;
 
-class QNEBlock : public QGraphicsPathItem
-{
-public:
-	enum { Type = QGraphicsItem::UserType + 3 };
+class QNEConnection : public QGraphicsPathItem {
+  public:
+    enum { Type = QGraphicsItem::UserType + 2 };
 
-    QNEBlock(QGraphicsItem *parent = 0);
+    QNEConnection( QGraphicsItem* parent = 0 );
+    ~QNEConnection();
 
-	QNEPort* addPort(const QString &name, bool isOutput, int flags = 0, int ptr = 0);
-	void addInputPort(const QString &name);
-	void addOutputPort(const QString &name);
-	void addInputPorts(const QStringList &names);
-	void addOutputPorts(const QStringList &names);
-	void save(QDataStream&);
-	void load(QDataStream&, QMap<quint64, QNEPort*> &portMap);
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-	QNEBlock* clone();
-	QVector<QNEPort*> ports();
+    void setPos1( const QPointF& p );
+    void setPos2( const QPointF& p );
 
-	int type() const { return Type; }
+    void setPort1( QNEPort* p );
+    bool setPort2( QNEPort* p );
+    void updatePosFromPorts();
+    void updatePath();
+    QNEPort* port1() const;
+    QNEPort* port2() const;
 
-protected:
-	QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    void save( QDataStream& );
+    void load( QDataStream&, const QMap<quint64, QNEPort*>& portMap );
 
-private:
-	int horzMargin;
-	int vertMargin;
-	int width;
-	int height;
+    int type() const {
+      return Type;
+    }
+
+  private:
+    QPointF pos1;
+    QPointF pos2;
+    QNEPort* m_port1;
+    QNEPort* m_port2;
+
+    QMetaObject::Connection connection;
 };
 
-#endif // QNEBLOCK_H
+#endif // QNECONNECTION_H
