@@ -65,8 +65,8 @@ void QNEPort::setName( const QString& n ) {
 void QNEPort::setIsOutput( bool o ) {
   isOutput_ = o;
 
-  QFontMetrics fm( scene()->font() );
-  QRect r = fm.boundingRect( name );
+//  QFontMetrics fm( scene()->font() );
+//  QRect r = fm.boundingRect( name );
 
   if( isOutput_ ) {
     label->setPos( -radius_ - margin - label->boundingRect().width(), -label->boundingRect().height() / 2 );

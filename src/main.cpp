@@ -193,19 +193,9 @@ int main( int argc, char** argv ) {
 
 
   // the processer of Pose etc
-  PoseSimulation* poseSimulation = new PoseSimulation();
-
-  QNEBlock* b = new QNEBlock( poseSimulation );
-  settingDialog->getSceneOfConfigGraphicsView()->addItem( b );
-  b->deleteable = false;
-  b->addPort( "Simulation", "", 0, QNEPort::NamePort );
-  b->addPort( "PoseSimulation", "", 0, QNEPort::TypePort );
-  b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
-  b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
-  b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
-
-
-
+  GuidanceFactory* poseSimulationFactory = new PoseSimulationFactory();
+  GuidanceBase* poseSimulation = poseSimulationFactory->createNewObject();
+  poseSimulationFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), poseSimulation );
 
   //  PoseCache* poseCache = new PoseCache();
 
@@ -329,7 +319,7 @@ int main( int argc, char** argv ) {
 
   // setup simulator and tractor kinematics
   {
-    poseSimulation->setAntennaPosition( QVector3D( 3, 0, 1.5 ) );
+//    poseSimulation->setAntennaPosition( QVector3D( 3, 0, 1.5 ) );
 //    tractorKinematics->setOffsetHookPointPosition( QVector3D( 3, 0, 1.5 ) );
 //    tractorKinematics->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
 

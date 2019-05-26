@@ -7,6 +7,8 @@
 
 #include <QGraphicsScene>
 
+#include "../PoseCache.h"
+
 namespace Ui {
   class SettingsDialog;
 }
@@ -56,6 +58,12 @@ class SettingsDialog : public QDialog {
     Ui::SettingsDialog* ui;
 
     Qt3DCore::QEntity* rootEntity;
+
+    GuidanceFactory* poseCacheFactory;
+    GuidanceFactory* tractorModelFactory;
+    GuidanceFactory* trailerModelFactory;
+    GuidanceFactory* fixedKinematicFactory;
+    GuidanceFactory* trailerKinematicFactory;
 };
 
 #endif // SETTINGSDIALOG_H

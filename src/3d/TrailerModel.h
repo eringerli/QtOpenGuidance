@@ -18,7 +18,9 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 
-class TrailerModel : public QObject {
+#include "../GuidanceBase.h"
+
+class TrailerModel : public GuidanceBase {
     Q_OBJECT
 
   public:
@@ -74,6 +76,39 @@ class TrailerModel : public QObject {
     float m_wheelbase;
 
     void setProportions();
+};
+
+class TrailerModelFactory : public GuidanceFactory {
+    Q_OBJECT
+
+  public:
+    TrailerModelFactory( Qt3DCore::QEntity* rootEntity )
+      : GuidanceFactory(),
+        rootEntity( rootEntity ) {}
+    ~TrailerModelFactory() {}
+
+    virtual void addToCombobox( QComboBox* combobox ) override {
+      combobox->addItem( QStringLiteral( "Trailer Model" ), QVariant::fromValue( this ) );
+    }
+
+    virtual GuidanceBase* createNewObject() override {
+      return new TrailerModel( rootEntity );
+    }
+
+    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
+      scene->addItem( b );
+
+      b->addPort( "Trailer", "", 0, QNEPort::NamePort );
+      b->addPort( "Trailer Model", "", 0, QNEPort::TypePort );
+
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+    }
+
+  private:
+    Qt3DCore::QEntity* rootEntity;
 };
 
 #endif // TRAILERENTITY_H

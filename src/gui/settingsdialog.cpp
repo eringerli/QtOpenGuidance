@@ -1,5 +1,6 @@
 
 #include <QtWidgets>
+#include <QObject>
 
 #include "qneblock.h"
 #include "qneconnection.h"
@@ -34,10 +35,29 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
   QNodesEditor* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
+
+  // Factories
+  poseCacheFactory = new PoseCacheFactory();
+  tractorModelFactory = new TractorModelFactory( rootEntity );
+  trailerModelFactory = new TrailerModelFactory( rootEntity );
+  fixedKinematicFactory = new FixedKinematicFactory;
+  trailerKinematicFactory = new TrailerKinematicFactory;
+
+  poseCacheFactory->addToCombobox( ui->cbNodeType );
+  tractorModelFactory->addToCombobox( ui->cbNodeType );
+  trailerModelFactory->addToCombobox( ui->cbNodeType );
+  fixedKinematicFactory->addToCombobox( ui->cbNodeType );
+  trailerKinematicFactory->addToCombobox( ui->cbNodeType );
 }
 
 SettingsDialog::~SettingsDialog() {
   delete ui;
+
+  delete poseCacheFactory;
+  delete tractorModelFactory;
+  delete trailerModelFactory;
+  delete fixedKinematicFactory;
+  delete trailerKinematicFactory;
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
@@ -49,30 +69,30 @@ void SettingsDialog::toggleVisibility() {
 }
 
 void SettingsDialog::emitAntennaPosition() {
-  emit antennaPositionChanged( QVector3D( ui->dsb_antennaX->value(),
-                                          ui->dsb_antennaY->value(),
-                                          ui->dsb_antennaZ->value() ) );
+  emit antennaPositionChanged( QVector3D( ( float )ui->dsb_antennaX->value(),
+                                          ( float )ui->dsb_antennaY->value(),
+                                          ( float )ui->dsb_antennaZ->value() ) );
 }
 
 
-void SettingsDialog::on_dsb_antennaX_valueChanged( double arg1 ) {
+void SettingsDialog::on_dsb_antennaX_valueChanged( double /*arg1*/ ) {
   emitAntennaPosition();
 }
 
-void SettingsDialog::on_dsb_antennaY_valueChanged( double arg1 ) {
+void SettingsDialog::on_dsb_antennaY_valueChanged( double /*arg1*/ ) {
   emitAntennaPosition();
 }
 
-void SettingsDialog::on_dsb_antennaZ_valueChanged( double arg1 ) {
+void SettingsDialog::on_dsb_antennaZ_valueChanged( double /*arg1*/ ) {
   emitAntennaPosition();
 }
 
 void SettingsDialog::on_dsb_hitchLenght_valueChanged( double arg1 ) {
-  emit hitchPositionChanged( QVector3D( -arg1, 0, 0 ) );
+  emit hitchPositionChanged( QVector3D( -( float )arg1, 0, 0 ) );
 }
 
 void SettingsDialog::on_dsb_wheelbase_valueChanged( double arg1 ) {
-  emit wheelbaseChanged( arg1 );
+  emit wheelbaseChanged( ( float )arg1 );
 }
 
 void SettingsDialog::on_rb_fixedCamera_clicked() {
@@ -96,81 +116,21 @@ void SettingsDialog::on_pushButton_2_clicked() {
 }
 
 void SettingsDialog::on_pushButton_4_clicked() {
-  while( !ui->gvNodeEditor->scene()->selectedItems().isEmpty() ) {
-    delete ui->gvNodeEditor->scene()->selectedItems().front();
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+    if( block && block->deleteable ) {
+      delete block;
+    }
   }
 }
 
 void SettingsDialog::on_pushButton_clicked() {
   QString currentText = ui->cbNodeType->currentText();
+  GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->currentData() ) );
 
-  if( currentText == "Pose Cache" ) {
-    PoseCache* obj = new PoseCache;
-    QNEBlock* b = new QNEBlock( obj );
-    ui->gvNodeEditor->scene()->addItem( b );
-    b->addPort( "Cache", "", 0, QNEPort::NamePort );
-    b->addPort( "PoseCache", "", 0, QNEPort::TypePort );
-    b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
-    b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
-    b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-    b->addOutputPort( "Pose", SIGNAL( poseChanged( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+  if( factory ) {
+    GuidanceBase* obj = factory->createNewObject();
+    factory->createBlock( ui->gvNodeEditor->scene(), obj );
   }
-
-  if( currentText == "Fixed Kinematics" ) {
-    FixedKinematic* obj = new FixedKinematic;
-    obj->setOffsetHookPointPosition( QVector3D( 3, 0, 1.5 ) );
-    obj->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
-
-    QNEBlock* b = new QNEBlock( obj );
-    ui->gvNodeEditor->scene()->addItem( b );
-    b->addPort( "Fixed", "", 0, QNEPort::NamePort );
-    b->addPort( "Fixed Kinematics", "", 0, QNEPort::TypePort );
-    b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ) );
-  }
-
-  if( currentText == "Trailer Kinematics" ) {
-    TrailerKinematic* obj = new TrailerKinematic;
-    obj->setOffsetHookPointPosition( QVector3D( 6, 0, 0 ) );
-    obj->setOffsetTowPointPosition( QVector3D( -1, 0, 0 ) );
-
-    QNEBlock* b = new QNEBlock( obj );
-    ui->gvNodeEditor->scene()->addItem( b );
-    b->addPort( "Trailer", "", 0, QNEPort::NamePort );
-    b->addPort( "Trailer Kinematics", "", 0, QNEPort::TypePort );
-    b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ) );
-    b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ) );
-  }
-
-  if( currentText == "Tractor Model" ) {
-    TractorModel* obj = new TractorModel( rootEntity );
-
-    QNEBlock* b = new QNEBlock( obj );
-    ui->gvNodeEditor->scene()->addItem( b );
-    b->addPort( "Tractor", "", 0, QNEPort::NamePort );
-    b->addPort( "Tractor Model", "", 0, QNEPort::TypePort );
-    b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
-    b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
-    b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
-    b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-  }
-
-  if( currentText == "Trailer Model" ) {
-    TrailerModel* obj = new TrailerModel( rootEntity );
-    obj->setOffsetHookPointPosition( QVector3D( 6, 0, 0 ) );
-
-    QNEBlock* b = new QNEBlock( obj );
-    ui->gvNodeEditor->scene()->addItem( b );
-    b->addPort( "Trailer", "", 0, QNEPort::NamePort );
-    b->addPort( "Trailer Model", "", 0, QNEPort::TypePort );
-    b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
-    b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
-    b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
-  }
-
 }

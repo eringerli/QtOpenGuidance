@@ -7,42 +7,32 @@
 #include <QtGui/qquaternion.h>
 #include <QtGui/qvector3d.h>
 
-class PoseCache : public QObject {
+#include "GuidanceBase.h"
+
+#include "qneblock.h"
+#include "qneport.h"
+
+class PoseCache : public GuidanceBase {
     Q_OBJECT
-    Q_PROPERTY( QVector3D position READ position WRITE setPosition NOTIFY poseChanged )
-    Q_PROPERTY( QQuaternion orientation READ orientation WRITE setOrientation )
 
   public:
     explicit PoseCache()
-      : m_position(), m_orientation() {}
+      : GuidanceBase(),
+        steeringAngle(), position(), orientation() {}
     ~PoseCache() {}
 
-    QVector3D position() {
-      return m_position;
-    }
-
-    QQuaternion orientation() {
-      return m_orientation;
-    }
-
-    float steeringAngle() {
-      return m_steeringAngle;
-    }
-
   public slots:
-    void setPosition( QVector3D position ) {
-      m_position = position;
-//       qDebug() << "setPosition( QVector3D position ): " << position;
-
-      emit poseChanged( m_position, m_orientation );
+    void setPosition( QVector3D value ) {
+      position = value;
+      emit poseChanged( position, orientation );
     }
 
-    void setOrientation( QQuaternion orientation ) {
-      m_orientation = orientation;
+    void setOrientation( QQuaternion value ) {
+      orientation = value;
     }
 
-    void setSteeringAngle( float steeringAngle ) {
-      m_steeringAngle = steeringAngle;
+    void setSteeringAngle( float value ) {
+      steeringAngle = value;
       emit steeringAngleChanged( steeringAngle );
     }
 
@@ -50,10 +40,42 @@ class PoseCache : public QObject {
     void poseChanged( QVector3D position, QQuaternion orientation );
     void steeringAngleChanged( float );
 
-  private:
-    float m_steeringAngle;
-    QVector3D m_position;
-    QQuaternion m_orientation;
+  public:
+    float steeringAngle;
+    QVector3D position;
+    QQuaternion orientation;
+};
+
+class PoseCacheFactory : public GuidanceFactory {
+    Q_OBJECT
+
+  public:
+    PoseCacheFactory()
+      : GuidanceFactory() {}
+    ~PoseCacheFactory() {}
+
+    virtual void addToCombobox( QComboBox* combobox ) override {
+      combobox->addItem( QStringLiteral( "Pose Cache" ), QVariant::fromValue( this ) );
+    }
+
+    virtual GuidanceBase* createNewObject() override {
+      return new PoseCache;
+    }
+
+    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
+      scene->addItem( b );
+
+      b->addPort( "Cache", "", 0, QNEPort::NamePort );
+      b->addPort( "Pose Cache", "", 0, QNEPort::TypePort );
+
+      b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
+      b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
+      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+
+      b->addOutputPort( "Pose", SIGNAL( poseChanged( QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+    }
 };
 
 #endif // POSECACHE_H

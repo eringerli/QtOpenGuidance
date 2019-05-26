@@ -6,7 +6,8 @@
 
 
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
-  : m_wheelbase( 2.4 ) {
+  : GuidanceBase(),
+    m_wheelbase( 2.4 ) {
 
   m_rootEntityTransform = new Qt3DCore::QTransform();
 
@@ -19,7 +20,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
     m_baseMesh = new Qt3DExtras::QCuboidMesh();
     m_baseTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    auto* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x665423 ) ) );
 
     m_baseEntity = new Qt3DCore::QEntity( m_rootEntity );
@@ -34,7 +35,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   {
     m_wheelFrontLeftTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    auto* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelFrontLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
@@ -47,7 +48,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   {
     m_wheelFrontRightTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    auto* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelFrontRightEntity = new Qt3DCore::QEntity( m_rootEntity );
@@ -61,7 +62,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   {
     m_wheelBackLeftTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    auto* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelBackLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
@@ -74,7 +75,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   {
     m_wheelBackRightTransform = new Qt3DCore::QTransform();
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    auto* material = new Qt3DExtras::QPhongMaterial();
     material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
 
     m_wheelBackRightEntity = new Qt3DCore::QEntity( m_rootEntity );
@@ -144,38 +145,38 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   // Axis
-  if( 0 ) {
-    Qt3DCore::QEntity* xaxis = new Qt3DCore::QEntity( m_rootEntity );
-    Qt3DCore::QEntity* yaxis = new Qt3DCore::QEntity( m_rootEntity );
-    Qt3DCore::QEntity* zaxis = new Qt3DCore::QEntity( m_rootEntity );
+  if( false ) {
+    auto* xaxis = new Qt3DCore::QEntity( m_rootEntity );
+    auto* yaxis = new Qt3DCore::QEntity( m_rootEntity );
+    auto* zaxis = new Qt3DCore::QEntity( m_rootEntity );
 
-    Qt3DExtras::QCylinderMesh* cylinderMesh = new Qt3DExtras::QCylinderMesh();
+    auto* cylinderMesh = new Qt3DExtras::QCylinderMesh();
     cylinderMesh->setRadius( 0.2 );
     cylinderMesh->setLength( 20 );
     cylinderMesh->setRings( 100 );
     cylinderMesh->setSlices( 20 );
 
-    Qt3DExtras::QPhongMaterial* blueMaterial = new Qt3DExtras::QPhongMaterial();
+    auto* blueMaterial = new Qt3DExtras::QPhongMaterial();
     blueMaterial->setSpecular( Qt::white );
     blueMaterial->setShininess( 10 );
     blueMaterial->setAmbient( Qt::blue );
 
-    Qt3DExtras::QPhongMaterial* redMaterial = new Qt3DExtras::QPhongMaterial();
+    auto* redMaterial = new Qt3DExtras::QPhongMaterial();
     redMaterial->setSpecular( Qt::white );
     redMaterial->setShininess( 10 );
     redMaterial->setAmbient( Qt::red );
 
-    Qt3DExtras::QPhongMaterial* greenMaterial = new Qt3DExtras::QPhongMaterial();
+    auto* greenMaterial = new Qt3DExtras::QPhongMaterial();
     greenMaterial->setSpecular( Qt::white );
     greenMaterial->setShininess( 10 );
     greenMaterial->setAmbient( Qt::green );
 
-    Qt3DCore::QTransform* xTransform = new Qt3DCore::QTransform();
+    auto* xTransform = new Qt3DCore::QTransform();
     xTransform->setTranslation( QVector3D( 10, 0, 0 ) );
     xTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), 90 ) );
-    Qt3DCore::QTransform* yTransform = new Qt3DCore::QTransform();
+    auto* yTransform = new Qt3DCore::QTransform();
     yTransform->setTranslation( QVector3D( 0, 10, 0 ) );
-    Qt3DCore::QTransform* zTransform = new Qt3DCore::QTransform();
+    auto* zTransform = new Qt3DCore::QTransform();
     zTransform->setTranslation( QVector3D( 0, 0, 10 ) );
     zTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 1, 0, 0 ), 90 ) );
 
@@ -307,10 +308,10 @@ void TractorModel::setSteeringAngle( float steerAngle ) {
     steeringAngleLeft -= M_PI;
     steeringAngleRight -= M_PI;
 
-    QQuaternion rotationLeft =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0f, 0.0f, 1.0f ), qRadiansToDegrees( steeringAngleLeft ) );
+    QQuaternion rotationLeft =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), qRadiansToDegrees( steeringAngleLeft ) );
     m_wheelFrontLeftTransform->setRotation( rotationLeft );
 
-    QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0f, 0.0f, 1.0f ), qRadiansToDegrees( steeringAngleRight ) );
+    QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), qRadiansToDegrees( steeringAngleRight ) );
     m_wheelFrontRightTransform->setRotation( rotationRight );
   } else {
     m_wheelFrontLeftTransform->setRotation( QQuaternion() );

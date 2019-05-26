@@ -18,7 +18,9 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 
-class TractorModel : public QObject {
+#include "../GuidanceBase.h"
+
+class TractorModel : public GuidanceBase {
     Q_OBJECT
 
   public:
@@ -73,7 +75,41 @@ class TractorModel : public QObject {
     Qt3DCore::QTransform* m_towPointTransform;
 
     float m_wheelbase;
-    float m_steeringAngle;
+    float m_steeringAngle{};
+};
+
+class TractorModelFactory : public GuidanceFactory {
+    Q_OBJECT
+
+  public:
+    TractorModelFactory( Qt3DCore::QEntity* rootEntity )
+      : GuidanceFactory(),
+        rootEntity( rootEntity ) {}
+    ~TractorModelFactory() {}
+
+    virtual void addToCombobox( QComboBox* combobox ) override {
+      combobox->addItem( QStringLiteral( "Tractor Model" ), QVariant::fromValue( this ) );
+    }
+
+    virtual GuidanceBase* createNewObject() override {
+      return new TractorModel( rootEntity );
+    }
+
+    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
+      scene->addItem( b );
+
+      b->addPort( "Tractor", "", 0, QNEPort::NamePort );
+      b->addPort( "Tractor Model", "", 0, QNEPort::TypePort );
+
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+    }
+
+  private:
+    Qt3DCore::QEntity* rootEntity;
 };
 
 #endif // TRACTORENTITY_H

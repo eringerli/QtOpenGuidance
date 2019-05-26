@@ -13,7 +13,9 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-class PoseSimulation : public QObject {
+#include "GuidanceBase.h"
+
+class PoseSimulation : public GuidanceBase {
     Q_OBJECT
 
     Q_PROPERTY( bool enabled READ isSimulation WRITE setSimulation NOTIFY simulationChanged )
@@ -29,7 +31,8 @@ class PoseSimulation : public QObject {
 
   public:
     explicit PoseSimulation()
-      : m_enabled( false ), m_interval( 50 ), m_timerId( 0 ), m_steerAngle( 0 ), m_velocity( 0 ), m_wheelbase( 2.4 ), m_position(), m_orientation() {
+      : GuidanceBase(),
+        m_enabled( false ), m_interval( 50 ), m_timerId( 0 ), m_steerAngle( 0 ), m_velocity( 0 ), m_wheelbase( 2.4F ), m_position(), m_orientation() {
       setSimulation( false );
     }
     ~PoseSimulation() {}
@@ -153,6 +156,36 @@ class PoseSimulation : public QObject {
     QVector3D m_antennaPosition;
     QVector3D m_position;
     QQuaternion m_orientation;
+};
+
+class PoseSimulationFactory : public GuidanceFactory {
+    Q_OBJECT
+
+  public:
+    PoseSimulationFactory()
+      : GuidanceFactory() {}
+    ~PoseSimulationFactory() {}
+
+    virtual void addToCombobox( QComboBox* ) override {
+    }
+
+    virtual GuidanceBase* createNewObject() override {
+      return new PoseSimulation;
+    }
+
+    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
+      scene->addItem( b );
+
+      b->deleteable = false;
+
+      b->addPort( "Simulation", "", 0, QNEPort::NamePort );
+      b->addPort( "PoseSimulation", "", 0, QNEPort::TypePort );
+
+      b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
+      b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
+      b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+    }
 };
 
 #endif // POSESIMULATION_H

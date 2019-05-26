@@ -39,7 +39,11 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="6" column="0" colspan="4">
-          <widget class="QNEGraphicsView" name="gvNodeEditor"/>
+          <widget class="QNEGraphicsView" name="gvNodeEditor">
+           <property name="renderHints">
+            <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QGroupBox" name="groupBox_5">
@@ -58,31 +62,6 @@
               <property name="insertPolicy">
                <enum>QComboBox::InsertAlphabetically</enum>
               </property>
-              <item>
-               <property name="text">
-                <string>Pose Cache</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Fixed Kinematics</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Trailer Kinematics</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Tractor Model</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Trailer Model</string>
-               </property>
-              </item>
              </widget>
             </item>
             <item>

@@ -13,25 +13,18 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-class FixedKinematic : public QObject {
+#include "../GuidanceBase.h"
+
+class FixedKinematic : public GuidanceBase {
     Q_OBJECT
 
   public:
     explicit FixedKinematic()
-      : m_enabled( true ) {
+      : GuidanceBase() {
     }
     ~FixedKinematic() {}
 
-    bool enabled() {
-      return m_enabled;
-    }
-
   public slots:
-    void setEnabled( bool enabled ) {
-      m_enabled = enabled;
-      emit enableChanged( m_enabled );
-    }
-
     void setOffsetTowPointPosition( QVector3D position ) {
       m_offsetTowPoint = position;
     }
@@ -49,17 +42,45 @@ class FixedKinematic : public QObject {
     }
 
   signals:
-    void enableChanged( bool );
-
     void poseHookPointChanged( QVector3D, QQuaternion );
     void posePivotPointChanged( QVector3D, QQuaternion );
     void poseTowPointChanged( QVector3D, QQuaternion );
-  private:
-    bool m_enabled;
 
+  private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
     QVector3D m_offsetHookPoint;
     QVector3D m_offsetTowPoint;
+};
+
+class FixedKinematicFactory : public GuidanceFactory {
+    Q_OBJECT
+
+  public:
+    FixedKinematicFactory()
+      : GuidanceFactory() {}
+    ~FixedKinematicFactory() {}
+
+    virtual void addToCombobox( QComboBox* combobox ) override {
+      combobox->addItem( QStringLiteral( "Fixed Kinematics" ), QVariant::fromValue( this ) );
+    }
+
+    virtual GuidanceBase* createNewObject() override {
+      return new FixedKinematic;
+    }
+
+    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
+      scene->addItem( b );
+
+      b->addPort( "Fixed", "", 0, QNEPort::NamePort );
+      b->addPort( "Fixed Kinematics", "", 0, QNEPort::TypePort );
+
+      b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
+
+      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ) );
+    }
 };
 
 #endif // TRACTORKINEMATIC_H

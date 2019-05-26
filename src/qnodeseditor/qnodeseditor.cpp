@@ -82,10 +82,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                 conn->updatePath();
 
                 return true;
-              } else if( item && item->type() == QNEBlock::Type ) {
-                /* if (selBlock)
-                	selBlock->setSelected(); */
-                // selBlock = (QNEBlock*) item;
               }
 
               break;
@@ -119,7 +115,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
               if( block && block->deleteable ) {
-                delete scene->selectedItems().front();
+                delete block;
               }
             }
           }
@@ -149,7 +145,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           QNEPort* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
           if( port ) {
-//            if( port1->block() != port2->block() && port1->isOutput() != port2->isOutput() && !port1->isConnected( port2 ) ) {
             if( conn->setPort2( port ) ) {
               conn->setPos2( port->scenePos() );
               conn->updatePath();
