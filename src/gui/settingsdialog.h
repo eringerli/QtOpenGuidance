@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QVector3D>
-#include <Qt3DCore/qentity.h>
+#include <Qt3DCore/QEntity>
 
 #include <QGraphicsScene>
 

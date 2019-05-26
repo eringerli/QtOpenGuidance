@@ -8,7 +8,7 @@
 
 #include <QJsonObject>
 
-#include <Qt3DCore/qentity.h>
+#include <Qt3DCore/QEntity>
 
 #include "qneblock.h"
 #include "qneport.h"

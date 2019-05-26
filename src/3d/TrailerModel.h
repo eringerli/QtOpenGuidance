@@ -4,8 +4,8 @@
 
 #include <QtCore/QObject>
 
-#include <Qt3DCore/qentity.h>
-#include <Qt3DCore/qtransform.h>
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
 
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>

@@ -9,9 +9,9 @@
 
 #include <QGuiApplication>
 
-#include <Qt3DRender/qcamera.h>
-#include <Qt3DCore/qentity.h>
-#include <Qt3DRender/qcameralens.h>
+#include <Qt3DRender/QCamera>
+#include <Qt3DCore/QEntity>
+#include <Qt3DRender/QCameraLens>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
@@ -23,24 +23,24 @@
 
 #include <Qt3DInput/QInputAspect>
 
-#include <Qt3DExtras/qtorusmesh.h>
-#include <Qt3DRender/qmesh.h>
-#include <Qt3DRender/qtechnique.h>
-#include <Qt3DRender/qmaterial.h>
-#include <Qt3DRender/qeffect.h>
-#include <Qt3DRender/qtexture.h>
-#include <Qt3DRender/qrenderpass.h>
-#include <Qt3DRender/qsceneloader.h>
-#include <Qt3DRender/qpointlight.h>
+#include <Qt3DExtras/QTorusMesh>
+#include <Qt3DRender/QMesh>
+#include <Qt3DRender/QTechnique>
+#include <Qt3DRender/QMaterial>
+#include <Qt3DRender/QEffect>
+#include <Qt3DRender/QTexture>
+#include <Qt3DRender/QRenderPass>
+#include <Qt3DRender/QSceneLoader>
+#include <Qt3DRender/QPointLight>
 
-#include <Qt3DCore/qtransform.h>
-#include <Qt3DCore/qaspectengine.h>
+#include <Qt3DCore/QTransform>
+#include <Qt3DCore/QAspectEngine>
 
-#include <Qt3DRender/qrenderaspect.h>
-#include <Qt3DExtras/qforwardrenderer.h>
+#include <Qt3DRender/QRenderAspect>
+#include <Qt3DExtras/QForwardRenderer>
 
-#include <Qt3DExtras/qt3dwindow.h>
-#include <Qt3DExtras/qfirstpersoncameracontroller.h>
+#include <Qt3DExtras/Qt3DWindow>
+#include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DExtras/QOrbitCameraController>
 
 #include "gui/settingsdialog.h"

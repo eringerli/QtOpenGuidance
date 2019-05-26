@@ -7,8 +7,8 @@
 #include <QTime>
 #include <QEvent>
 #include <QBasicTimer>
-#include <QtGui/qquaternion.h>
-#include <QtGui/qvector3d.h>
+#include <QQuaternion>
+#include <QVector3D>
 
 #include <QtGlobal>
 #include <QtMath>

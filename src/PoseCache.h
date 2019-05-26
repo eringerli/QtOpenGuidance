@@ -4,8 +4,8 @@
 
 #include <QtCore/QObject>
 
-#include <QtGui/qquaternion.h>
-#include <QtGui/qvector3d.h>
+#include <QQuaternion>
+#include <QVector3D>
 
 #include "GuidanceBase.h"
 
