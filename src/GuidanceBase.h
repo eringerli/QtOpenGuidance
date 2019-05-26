@@ -20,6 +20,8 @@ class GuidanceBase : public QObject {
     GuidanceBase() {}
     ~GuidanceBase() {}
 
+    virtual void emitConfigSignals() {}
+
 //    virtual QJsonObject toJSON() = 0;
 //    virtual void fromJSON(QJsonObject& json) = 0;
 
@@ -37,7 +39,7 @@ class GuidanceFactory : public QObject {
 
     virtual GuidanceBase* createNewObject() = 0;
 
-    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) = 0;
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
 
   public:
 };

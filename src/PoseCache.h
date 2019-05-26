@@ -41,6 +41,12 @@ class PoseCache : public GuidanceBase {
     void steeringAngleChanged( float );
 
   public:
+    virtual void emitConfigSignals() override {
+      emit poseChanged( position, orientation );
+      emit steeringAngleChanged( steeringAngle );
+    }
+
+  public:
     float steeringAngle;
     QVector3D position;
     QQuaternion orientation;
@@ -62,7 +68,7 @@ class PoseCacheFactory : public GuidanceFactory {
       return new PoseCache;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 

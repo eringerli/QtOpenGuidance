@@ -43,6 +43,8 @@ class QNEBlock : public QGraphicsPathItem {
     void addInputPort( const QString& name, const QString& signalSlotSignature );
     void addOutputPort( const QString& name, const QString& signalSlotSignature );
 
+    void addWidget( QWidget* widget );
+
     void setDeletable( bool );
 
     void save( QDataStream& );

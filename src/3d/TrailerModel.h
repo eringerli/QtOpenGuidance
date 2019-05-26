@@ -36,6 +36,7 @@ class TrailerModel : public GuidanceBase {
     void setPosePivotPoint( QVector3D, QQuaternion );
 
     void setOffsetHookPointPosition( QVector3D position );
+    void setWheelbase( float wheelbase );
 
   signals:
     void positionChanged( QVector3D position );
@@ -95,13 +96,15 @@ class TrailerModelFactory : public GuidanceFactory {
       return new TrailerModel( rootEntity );
     }
 
-    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
       b->addPort( "Trailer", "", 0, QNEPort::NamePort );
       b->addPort( "Trailer Model", "", 0, QNEPort::TypePort );
 
+      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
+      b->addInputPort( "Offset Hook Point", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );

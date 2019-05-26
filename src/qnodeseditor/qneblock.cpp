@@ -30,6 +30,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QFontMetrics>
 #include <QPainter>
 
+#include <QGraphicsProxyWidget>
+#include <QRectF>
+#include <QtMath>
+
 #include "qneport.h"
 
 QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
@@ -98,6 +102,17 @@ void QNEBlock::addInputPort( const QString& name, const QString& signalSlotSigna
 
 void QNEBlock::addOutputPort( const QString& name, const QString& signalSlotSignature ) {
   addPort( name, signalSlotSignature, true );
+}
+
+void QNEBlock::addWidget( QWidget* widget ) {
+  QGraphicsProxyWidget* const proxy = this->scene()->addWidget( widget );
+  proxy->setParentItem( this );
+  int heightBuffer = height;
+  height += proxy->geometry().height() + 5;
+  width = qMax( proxy->geometry().width() + 10, ( double )width );
+  proxy->setX( -width / 2 + ( width - proxy->geometry().width() ) / 2 );
+
+  proxy->setY( -height / 2 + heightBuffer + 10 );
 }
 
 void QNEBlock::save( QDataStream& ds ) {

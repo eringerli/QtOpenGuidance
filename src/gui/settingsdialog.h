@@ -64,6 +64,8 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* trailerModelFactory;
     GuidanceFactory* fixedKinematicFactory;
     GuidanceFactory* trailerKinematicFactory;
+    GuidanceFactory* vectorFactory;
+    GuidanceFactory* lengthFactory;
 };
 
 #endif // SETTINGSDIALOG_H

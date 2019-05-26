@@ -200,6 +200,10 @@ void TrailerModel::setPoseHookPoint( QVector3D position, QQuaternion ) {
   m_towHookTransform->setTranslation( position );
 }
 
+void TrailerModel::setWheelbase( float wheelbase ) {
+  m_wheelbase = wheelbase;
+  setProportions();
+}
 
 QVector3D TrailerModel::position() {
   return m_rootEntityTransform->translation();

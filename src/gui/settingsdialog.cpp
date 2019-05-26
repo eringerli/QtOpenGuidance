@@ -10,6 +10,9 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include "../gui/vectorwidget.h"
+#include "../gui/lengthwidget.h"
+
 #include "../3d/cameracontroller.h"
 #include "../3d/TractorModel.h"
 #include "../3d/TrailerModel.h"
@@ -42,12 +45,16 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory;
+  vectorFactory = new VectorFactory();
+  lengthFactory = new LengthFactory();
 
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   fixedKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
+  vectorFactory->addToCombobox( ui->cbNodeType );
+  lengthFactory->addToCombobox( ui->cbNodeType );
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -58,6 +65,8 @@ SettingsDialog::~SettingsDialog() {
   delete trailerModelFactory;
   delete fixedKinematicFactory;
   delete trailerKinematicFactory;
+  delete vectorFactory;
+  delete lengthFactory;
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {

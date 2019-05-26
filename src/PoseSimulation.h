@@ -141,6 +141,13 @@ class PoseSimulation : public GuidanceBase {
     void orientationChanged( QQuaternion orientation );
     void orientationChangedRelative( QQuaternion orientation );
 
+  public:
+    virtual void emitConfigSignals() override {
+      emit steerAngleChanged( m_steerAngle );
+      emit positionChanged( m_position );
+      emit orientationChanged( m_orientation );
+    }
+
   private:
     bool m_enabled;
     int m_interval;
@@ -173,7 +180,7 @@ class PoseSimulationFactory : public GuidanceFactory {
       return new PoseSimulation;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -181,6 +188,7 @@ class PoseSimulationFactory : public GuidanceFactory {
 
       b->addPort( "Simulation", "", 0, QNEPort::NamePort );
       b->addPort( "PoseSimulation", "", 0, QNEPort::TypePort );
+      b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
 
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );

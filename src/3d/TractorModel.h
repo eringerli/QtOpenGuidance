@@ -95,13 +95,14 @@ class TractorModelFactory : public GuidanceFactory {
       return new TractorModel( rootEntity );
     }
 
-    virtual void createBlock( QGraphicsScene* scene, GuidanceBase* obj ) override {
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
       b->addPort( "Tractor", "", 0, QNEPort::NamePort );
       b->addPort( "Tractor Model", "", 0, QNEPort::TypePort );
 
+      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
