@@ -20,8 +20,8 @@ class FixedKinematic : public GuidanceBase {
 
   public:
     explicit FixedKinematic()
-      : GuidanceBase() {
-    }
+      : GuidanceBase(),
+        m_offsetHookPoint( QVector3D( 0, 0, 0 ) ), m_offsetTowPoint( QVector3D( -1, 0, 0 ) ) {}
     ~FixedKinematic() {}
 
   public slots:
