@@ -32,6 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
+#include <QScrollBar>
+
+#include <QDebug>
 
 #include "qneport.h"
 #include "qneconnection.h"
@@ -90,6 +93,14 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           case Qt::RightButton: {
               QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
 
+              if( !item ) {
+                foreach( QGraphicsView* it, scene->views() ) {
+                  it->setDragMode( QGraphicsView::ScrollHandDrag );
+                }
+
+                break;
+              }
+
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
               if( block && block->deleteable ) {
@@ -126,10 +137,25 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
       break;
 
     case QEvent::GraphicsSceneMouseMove: {
+        QGraphicsSceneMouseEvent* m = static_cast<QGraphicsSceneMouseEvent*>( e );
+
         if( conn ) {
           conn->setPos2( mouseEvent->scenePos() );
           conn->updatePath();
           return true;
+        } else {
+          if( m->buttons() & Qt::RightButton ) {
+            QPointF delta = m->lastScreenPos() - m->screenPos();
+
+            foreach( QGraphicsView* view, scene->views() ) {
+              double newX = view->horizontalScrollBar()->value() + delta.x();
+              double newY = view->verticalScrollBar()->value() + delta.y();
+              view->horizontalScrollBar()->setValue( int(newX) );
+              view->verticalScrollBar()->setValue( int(newY) );
+            }
+
+            return true;
+          }
         }
 
         break;
@@ -137,11 +163,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
     case QEvent::GraphicsSceneMouseRelease: {
         if( conn && mouseEvent->button() == Qt::LeftButton ) {
-
-          foreach( QGraphicsView* it, scene->views() ) {
-            it->setDragMode( QGraphicsView::RubberBandDrag );
-          }
-
           QNEPort* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
           if( port ) {
@@ -156,6 +177,10 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           delete conn;
           conn = nullptr;
           return true;
+        }
+
+        foreach( QGraphicsView* it, scene->views() ) {
+          it->setDragMode( QGraphicsView::RubberBandDrag );
         }
 
         break;
