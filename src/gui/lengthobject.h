@@ -5,25 +5,18 @@
 
 #include "../GuidanceBase.h"
 
-namespace Ui {
-  class LengthWidget;
-}
-
-class LengthWidget : public QWidget {
+class LengthObject : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit LengthWidget( QWidget* parent = nullptr );
-    ~LengthWidget();
+    explicit LengthObject() {}
+    ~LengthObject() {}
 
   signals:
     void lengthChanged( float );
 
-  private slots:
-    void on_doubleSpinBox_valueChanged( double arg1 );
-
-  private:
-    Ui::LengthWidget* ui;
+  public:
+    float lenght;
 };
 
 class LengthFactory : public GuidanceFactory {
@@ -39,19 +32,15 @@ class LengthFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return nullptr;
+      return new LengthObject();
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* ) override {
-      QWidget* widget = new LengthWidget();
-
-      QNEBlock* b = new QNEBlock( widget );
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
       b->addPort( "Length", "", 0, QNEPort::NamePort );
       b->addPort( "Length Widget", "", 0, QNEPort::TypePort );
-
-      b->addWidget( widget );
 
       b->addOutputPort( "Length", SIGNAL( lengthChanged( float ) ) );
     }

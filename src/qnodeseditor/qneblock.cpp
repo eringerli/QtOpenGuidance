@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include "qneport.h"
 
+#include <QDebug>
+
 QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
     deleteable( true ), horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
@@ -137,7 +139,7 @@ void QNEBlock::save( QDataStream& ds ) {
 
     QNEPort* port = ( QNEPort* ) port_;
     ds << ( quint64 ) port;
-    ds << port->portName();
+    ds << port->getName();
     ds << port->isOutput();
     ds << port->portFlags();
   }
@@ -187,7 +189,7 @@ QNEBlock* QNEBlock::clone( QObject* object ) {
   foreach( QGraphicsItem* port_, childItems() ) {
     if( port_->type() == QNEPort::Type ) {
       QNEPort* port = ( QNEPort* ) port_;
-      b->addPort( port->portName(), port->slotSignalSignature, port->isOutput(), port->portFlags() );
+      b->addPort( port->getName(), port->slotSignalSignature, port->isOutput(), port->portFlags() );
     }
   }
 
@@ -204,6 +206,34 @@ QVector<QNEPort*> QNEBlock::ports() {
   }
 
   return res;
+}
+
+QString QNEBlock::getName() {
+  foreach( QGraphicsItem* port_, childItems() ) {
+    if( port_->type() == QNEPort::Type ) {
+      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+      if( port && port->portFlags()&QNEPort::NamePort ) {
+        qDebug() << port->getName();
+        return port->getName();
+      }
+    }
+  }
+
+  return QStringLiteral( "" );
+}
+
+void QNEBlock::setName( QString name ) {
+  foreach( QGraphicsItem* port_, childItems() ) {
+    if( port_->type() == QNEPort::Type ) {
+      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+      if( port && port->portFlags()&QNEPort::NamePort ) {
+        qDebug() << port->getName();
+        port->setName( name );
+      }
+    }
+  }
 }
 
 QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {

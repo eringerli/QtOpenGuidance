@@ -1,35 +1,26 @@
-#ifndef VECTORWIDGET_H
-#define VECTORWIDGET_H
+#ifndef VECTOROBJECT_H
+#define VECTOROBJECT_H
 
-#include <QWidget>
+#include <QObject>
 #include <QQuaternion>
 #include <QVector3D>
 
 #include "../GuidanceBase.h"
 
-namespace Ui {
-  class VectorWidget;
-}
-
-class VectorWidget : public QWidget {
+class VectorObject : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit VectorWidget( QWidget* parent = nullptr );
-    ~VectorWidget();
+    explicit VectorObject()
+      : vector( QVector3D( 1, 2, 3 ) ) {}
+    ~VectorObject() {}
 
-  private slots:
-    void on_sbX_valueChanged( double arg1 );
-
-    void on_sbY_valueChanged( double arg1 );
-
-    void on_sbZ_valueChanged( double arg1 );
+    void emitConfigSignals() override {
+      emit vectorChanged( vector );
+    }
 
   signals:
     void vectorChanged( QVector3D );
-
-  private:
-    Ui::VectorWidget* ui;
 
   public:
     QVector3D vector;
@@ -50,22 +41,18 @@ class VectorFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return nullptr;
+      return new VectorObject();
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* ) override {
-      QWidget* widget = new VectorWidget();
-
-      QNEBlock* b = new QNEBlock( widget );
+    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+      QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
       b->addPort( "Vector3D", "", 0, QNEPort::NamePort );
       b->addPort( "Vector3D Widget", "", 0, QNEPort::TypePort );
 
-      b->addWidget( widget );
-
       b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
     }
 };
 
-#endif // VECTORWIDGET_H
+#endif // VECTOROBJECT_H

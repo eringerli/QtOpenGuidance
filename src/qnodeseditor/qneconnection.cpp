@@ -68,8 +68,8 @@ void QNEConnection::setPort1( QNEPort* p ) {
 
 bool QNEConnection::setPort2( QNEPort* p ) {
 
-  connection = QObject::connect( m_port1->block()->getObject(), ( const char* )( m_port1->slotSignalSignature.toUtf8().constData() ),
-                                 p->block()->getObject(), ( const char* )( p->slotSignalSignature.toUtf8().constData() ) );
+  connection = QObject::connect( m_port1->block()->object, ( const char* )( m_port1->slotSignalSignature.toUtf8().constData() ),
+                                 p->block()->object, ( const char* )( p->slotSignalSignature.toUtf8().constData() ) );
 
   if( ( bool )connection ) {
     m_port2 = p;

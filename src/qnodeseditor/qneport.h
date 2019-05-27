@@ -41,15 +41,13 @@ class QNEPort : public QGraphicsPathItem {
 
     void setNEBlock( QNEBlock* );
     void setName( const QString& n );
+    QString getName();
     void setIsOutput( bool o );
     int radius();
     bool isOutput();
     QVector<QNEConnection*>& connections();
     void setPortFlags( int );
 
-    const QString& portName() const {
-      return name;
-    }
     int portFlags() const {
       return m_portFlags;
     }
@@ -69,7 +67,6 @@ class QNEPort : public QGraphicsPathItem {
 
   private:
     QNEBlock* m_block;
-    QString name;
     bool isOutput_;
     QGraphicsTextItem* label;
     int radius_;

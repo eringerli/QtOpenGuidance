@@ -50,6 +50,7 @@ class QNEBlock : public QGraphicsPathItem {
     void save( QDataStream& );
     void load( QDataStream&, QMap<quint64, QNEPort*>& portMap );
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
+
     QNEBlock* clone( QObject* object );
     QVector<QNEPort*> ports();
 
@@ -57,9 +58,8 @@ class QNEBlock : public QGraphicsPathItem {
       return Type;
     }
 
-    QObject* getObject() {
-      return object;
-    }
+    QString getName();
+    void setName( QString name );
 
     bool deleteable;
 
@@ -72,6 +72,7 @@ class QNEBlock : public QGraphicsPathItem {
     int width;
     int height;
 
+  public:
     QObject* object;
 };
 

@@ -9,6 +9,8 @@
 
 #include "../PoseCache.h"
 
+#include "VectorBlockModel.h"
+
 namespace Ui {
   class SettingsDialog;
 }
@@ -33,14 +35,6 @@ class SettingsDialog : public QDialog {
 
 
   private slots:
-    void on_dsb_antennaX_valueChanged( double arg1 );
-    void on_dsb_antennaY_valueChanged( double arg1 );
-    void on_dsb_antennaZ_valueChanged( double arg1 );
-
-    void on_dsb_hitchLenght_valueChanged( double arg1 );
-
-    void on_dsb_wheelbase_valueChanged( double arg1 );
-
     void on_rb_fixedCamera_clicked();
     void on_rb_firstPersonCamera_clicked();
     void on_rb_orbitCamera_clicked();
@@ -53,8 +47,9 @@ class SettingsDialog : public QDialog {
 
     void on_pushButton_clicked();
 
+    void on_cbValues_currentIndexChanged( int index );
+
   private:
-    void emitAntennaPosition();
     Ui::SettingsDialog* ui;
 
     Qt3DCore::QEntity* rootEntity;
@@ -66,6 +61,8 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* trailerKinematicFactory;
     GuidanceFactory* vectorFactory;
     GuidanceFactory* lengthFactory;
+
+    VectorBlockModel* vectorBlockModel;
 };
 
 #endif // SETTINGSDIALOG_H

@@ -10,8 +10,8 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
-#include "../gui/vectorwidget.h"
-#include "../gui/lengthwidget.h"
+#include "../gui/vectorobject.h"
+#include "../gui/lengthobject.h"
 
 #include "../3d/cameracontroller.h"
 #include "../3d/TractorModel.h"
@@ -48,6 +48,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory = new VectorFactory();
   lengthFactory = new LengthFactory();
 
+  vectorBlockModel = new VectorBlockModel( scene );
+  vectorBlockModel->addToCombobox( ui->cbValues );
+
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
@@ -67,6 +70,8 @@ SettingsDialog::~SettingsDialog() {
   delete trailerKinematicFactory;
   delete vectorFactory;
   delete lengthFactory;
+
+  delete vectorBlockModel;
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
@@ -75,33 +80,6 @@ QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
 
 void SettingsDialog::toggleVisibility() {
   setVisible( ! isVisible() );
-}
-
-void SettingsDialog::emitAntennaPosition() {
-  emit antennaPositionChanged( QVector3D( ( float )ui->dsb_antennaX->value(),
-                                          ( float )ui->dsb_antennaY->value(),
-                                          ( float )ui->dsb_antennaZ->value() ) );
-}
-
-
-void SettingsDialog::on_dsb_antennaX_valueChanged( double /*arg1*/ ) {
-  emitAntennaPosition();
-}
-
-void SettingsDialog::on_dsb_antennaY_valueChanged( double /*arg1*/ ) {
-  emitAntennaPosition();
-}
-
-void SettingsDialog::on_dsb_antennaZ_valueChanged( double /*arg1*/ ) {
-  emitAntennaPosition();
-}
-
-void SettingsDialog::on_dsb_hitchLenght_valueChanged( double arg1 ) {
-  emit hitchPositionChanged( QVector3D( -( float )arg1, 0, 0 ) );
-}
-
-void SettingsDialog::on_dsb_wheelbase_valueChanged( double arg1 ) {
-  emit wheelbaseChanged( ( float )arg1 );
 }
 
 void SettingsDialog::on_rb_fixedCamera_clicked() {
@@ -141,5 +119,20 @@ void SettingsDialog::on_pushButton_clicked() {
   if( factory ) {
     GuidanceBase* obj = factory->createNewObject();
     factory->createBlock( ui->gvNodeEditor->scene(), obj );
+
+    // reset the models
+    if( qobject_cast<VectorObject*>( obj ) ) {
+      vectorBlockModel->resetModel();
+    }
+  }
+}
+
+void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
+  QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
+
+  if( model ) {
+    QItemSelectionModel* m = ui->twValues->selectionModel();
+    ui->twValues->setModel( model );
+    delete m;
   }
 }

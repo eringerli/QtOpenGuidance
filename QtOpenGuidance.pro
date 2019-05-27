@@ -5,11 +5,10 @@ SOURCES += src/main.cpp \
     src/3d/TractorModel.cpp \
     src/3d/TrailerModel.cpp \
     src/PoseSimulation.cpp \
+    src/gui/VectorBlockModel.cpp \
     src/gui/guidancetoolbar.cpp \
-    src/gui/lengthwidget.cpp \
     src/gui/settingsdialog.cpp \
-    src/gui/simulatortoolbar.cpp \
-    src/gui/vectorwidget.cpp
+    src/gui/simulatortoolbar.cpp
     
 HEADERS += \
     src/3d/TractorModel.h \
@@ -18,11 +17,12 @@ HEADERS += \
     src/GuidanceBase.h \
     src/PoseCache.h \
     src/PoseSimulation.h \
+    src/gui/VectorBlockModel.h \
     src/gui/guidancetoolbar.h \
-    src/gui/lengthwidget.h \
+    src/gui/lengthobject.h \
     src/gui/settingsdialog.h \
     src/gui/simulatortoolbar.h \
-    src/gui/vectorwidget.h \
+    src/gui/vectorobject.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/TrailerKinematic.h
 

@@ -150,8 +150,8 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             foreach( QGraphicsView* view, scene->views() ) {
               double newX = view->horizontalScrollBar()->value() + delta.x();
               double newY = view->verticalScrollBar()->value() + delta.y();
-              view->horizontalScrollBar()->setValue( int(newX) );
-              view->verticalScrollBar()->setValue( int(newY) );
+              view->horizontalScrollBar()->setValue( int( newX ) );
+              view->verticalScrollBar()->setValue( int( newY ) );
             }
 
             return true;
