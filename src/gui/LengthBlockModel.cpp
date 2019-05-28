@@ -123,7 +123,7 @@ bool LengthBlockModel::setData( const QModelIndex& index, const QVariant& value,
               return true;
 
             case 1:
-              object->length= value.toString().toFloat();
+              object->length = value.toString().toFloat();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;

@@ -30,7 +30,7 @@ class VectorObject : public GuidanceBase {
 
   public:
     explicit VectorObject()
-      : vector( QVector3D( 1, 2, 3 ) ) {}
+      : vector( QVector3D( 0, 0, 0 ) ) {}
     ~VectorObject() {}
 
     void emitConfigSignals() override {
@@ -55,7 +55,7 @@ class VectorFactory : public GuidanceFactory {
     ~VectorFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Vector3D Widget" ), QVariant::fromValue( this ) );
+      combobox->addItem( QStringLiteral( "Vector3D" ), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -67,7 +67,7 @@ class VectorFactory : public GuidanceFactory {
       scene->addItem( b );
 
       b->addPort( "Vector3D", "", 0, QNEPort::NamePort );
-      b->addPort( "Vector3D Widget", "", 0, QNEPort::TypePort );
+      b->addPort( "Vector3D", "", 0, QNEPort::TypePort );
 
       b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
     }

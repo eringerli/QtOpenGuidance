@@ -38,8 +38,6 @@
 
 #include "qneport.h"
 
-#include <QDebug>
-
 QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
     deleteable( true ), horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
@@ -216,7 +214,6 @@ QString QNEBlock::getName() {
       QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
       if( port && port->portFlags()&QNEPort::NamePort ) {
-        qDebug() << port->getName();
         return port->getName();
       }
     }
@@ -231,7 +228,6 @@ void QNEBlock::setName( QString name ) {
       QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
       if( port && port->portFlags()&QNEPort::NamePort ) {
-        qDebug() << port->getName();
         port->setName( name );
       }
     }

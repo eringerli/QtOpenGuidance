@@ -28,7 +28,7 @@ class LengthObject : public GuidanceBase {
 
   public:
     explicit LengthObject()
-      : length(0) {}
+      : length( 0 ) {}
     ~LengthObject() {}
 
   signals:

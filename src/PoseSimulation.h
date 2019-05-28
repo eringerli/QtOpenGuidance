@@ -109,7 +109,6 @@ class PoseSimulation : public GuidanceBase {
 
     void setSteerAngle( float steerAngle ) {
       m_steerAngle = steerAngle;
-//       qDebug() << "setSteerAngle(float): " << steerAngle;
       emit steerAngleChanged( m_steerAngle );
     }
 
