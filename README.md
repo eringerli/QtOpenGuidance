@@ -20,5 +20,5 @@ If you find an issue or a bug, report them on github.
 
 ## Forking
 It is possible to run this software without forking. So if you're not interested in making changes yourself, don't. A normal clone (not
-with the function "download ZIP") can be easyly kept up-to-date with periodical ```git pull```. To keep a fork synchronised with the 
-forked from repository, more work is needed. A downloaded ZIP is a snapshot and cannot be actualised with ```git```.
+with the function "download ZIP") can be easily kept up-to-date with a periodical ```git pull```. To keep a fork synchronised with the
+forked from repository, more work is needed. A downloaded ZIP lacks the nessesary data for git and cannot be actualised with ```git pull```.
