@@ -79,6 +79,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* trailerKinematicFactory;
     GuidanceFactory* vectorFactory;
     GuidanceFactory* lengthFactory;
+    GuidanceFactory* debugSinkFactory;
 
     VectorBlockModel* vectorBlockModel;
 };

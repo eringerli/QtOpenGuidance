@@ -36,6 +36,7 @@
 
 #include "../PoseSimulation.h"
 #include "../PoseCache.h"
+#include "../DebugSink.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -64,6 +65,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerKinematicFactory = new TrailerKinematicFactory;
   vectorFactory = new VectorFactory();
   lengthFactory = new LengthFactory();
+  debugSinkFactory = new DebugSinkFactory();
 
   vectorBlockModel = new VectorBlockModel( scene );
   vectorBlockModel->addToCombobox( ui->cbValues );
@@ -75,6 +77,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   vectorFactory->addToCombobox( ui->cbNodeType );
   lengthFactory->addToCombobox( ui->cbNodeType );
+  debugSinkFactory->addToCombobox( ui->cbNodeType );
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -87,6 +90,7 @@ SettingsDialog::~SettingsDialog() {
   delete trailerKinematicFactory;
   delete vectorFactory;
   delete lengthFactory;
+  delete debugSinkFactory;
 
   delete vectorBlockModel;
 }

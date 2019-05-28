@@ -14,6 +14,7 @@ HEADERS += \
     src/3d/TractorModel.h \
     src/3d/TrailerModel.h \
     src/3d/cameracontroller.h \
+    src/DebugSink.h \
     src/GuidanceBase.h \
     src/PoseCache.h \
     src/PoseSimulation.h \
