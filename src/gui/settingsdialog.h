@@ -28,6 +28,7 @@
 #include "../PoseCache.h"
 
 #include "VectorBlockModel.h"
+#include "LengthBlockModel.h"
 
 namespace Ui {
   class SettingsDialog;
@@ -82,6 +83,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* debugSinkFactory;
 
     VectorBlockModel* vectorBlockModel;
+    LengthBlockModel* lengthBlockModel;
 };
 
 #endif // SETTINGSDIALOG_H

@@ -16,42 +16,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "VectorBlockModel.h"
+#include "LengthBlockModel.h"
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
 #include "../qnodeseditor/qneblock.h"
 
-VectorBlockModel::VectorBlockModel( QGraphicsScene* scene )
+LengthBlockModel::LengthBlockModel( QGraphicsScene* scene )
   : QAbstractTableModel(),
     scene( scene ) {
 }
 
-QVariant VectorBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant LengthBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
         return QStringLiteral( "Name" );
+        break;
 
       case 1:
-        return QStringLiteral( "X" );
-
-      case 2:
-        return QStringLiteral( "Y" );
-
-      case 3:
-        return QStringLiteral( "Z" );
+        return QStringLiteral( "Length" );
+        break;
 
       default:
         return QStringLiteral( "" );
+        break;
     }
   }
 
   return QVariant();
 }
 
-bool VectorBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool LengthBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     // FIXME: Implement me!
     emit headerDataChanged( orientation, section, section );
@@ -62,14 +59,14 @@ bool VectorBlockModel::setHeaderData( int section, Qt::Orientation orientation, 
 }
 
 
-int VectorBlockModel::rowCount( const QModelIndex& parent ) const {
+int LengthBlockModel::rowCount( const QModelIndex& parent ) const {
   int count = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( qobject_cast<VectorObject*>( block->object ) ) {
+      if( qobject_cast<LengthObject*>( block->object ) ) {
         count++;
       }
     }
@@ -78,11 +75,11 @@ int VectorBlockModel::rowCount( const QModelIndex& parent ) const {
   return count;
 }
 
-int VectorBlockModel::columnCount( const QModelIndex& parent ) const {
-  return 4;
+int LengthBlockModel::columnCount( const QModelIndex& parent ) const {
+  return 2;
 }
 
-QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
+QVariant LengthBlockModel::data( const QModelIndex& index, int role ) const {
   if( !index.isValid() || ( role != Qt::DisplayRole &&  role != Qt::EditRole ) ) {
     return QVariant();
   }
@@ -93,20 +90,14 @@ QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( VectorObject* object = qobject_cast<VectorObject*>( block->object ) ) {
+      if( LengthObject* object = qobject_cast<LengthObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
               return block->getName();
 
             case 1:
-              return object->vector.x();
-
-            case 2:
-              return object->vector.y();
-
-            case 3:
-              return object->vector.z();
+              return object->length;
           }
         }
       }
@@ -116,14 +107,14 @@ QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
   return QVariant();
 }
 
-bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool LengthBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( VectorObject* object = qobject_cast<VectorObject*>( block->object ) ) {
+      if( LengthObject* object = qobject_cast<LengthObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -132,19 +123,7 @@ bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value,
               return true;
 
             case 1:
-              object->vector.setX( value.toString().toFloat() );
-              object->emitConfigSignals();
-              emit dataChanged( index, index, QVector<int>() << role );
-              return true;
-
-            case 2:
-              object->vector.setY( value.toString().toFloat() );
-              object->emitConfigSignals();
-              emit dataChanged( index, index, QVector<int>() << role );
-              return true;
-
-            case 3:
-              object->vector.setZ( value.toString().toFloat() );
+              object->length= value.toString().toFloat();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
@@ -157,7 +136,7 @@ bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value,
   return false;
 }
 
-Qt::ItemFlags VectorBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags LengthBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -165,11 +144,11 @@ Qt::ItemFlags VectorBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-void VectorBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Vectors" ), QVariant::fromValue( this ) );
+void LengthBlockModel::addToCombobox( QComboBox* combobox ) {
+  combobox->addItem( QStringLiteral( "Lengths" ), QVariant::fromValue( this ) );
 }
 
-void VectorBlockModel::resetModel() {
+void LengthBlockModel::resetModel() {
   beginResetModel();
   endResetModel();
 }

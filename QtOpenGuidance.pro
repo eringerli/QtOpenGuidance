@@ -5,6 +5,7 @@ SOURCES += src/main.cpp \
     src/3d/TractorModel.cpp \
     src/3d/TrailerModel.cpp \
     src/PoseSimulation.cpp \
+    src/gui/LengthBlockModel.cpp \
     src/gui/VectorBlockModel.cpp \
     src/gui/guidancetoolbar.cpp \
     src/gui/settingsdialog.cpp \
@@ -18,6 +19,7 @@ HEADERS += \
     src/GuidanceBase.h \
     src/PoseCache.h \
     src/PoseSimulation.h \
+    src/gui/LengthBlockModel.h \
     src/gui/VectorBlockModel.h \
     src/gui/guidancetoolbar.h \
     src/gui/lengthobject.h \

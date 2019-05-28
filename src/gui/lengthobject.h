@@ -27,14 +27,15 @@ class LengthObject : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit LengthObject() {}
+    explicit LengthObject()
+      : length(0) {}
     ~LengthObject() {}
 
   signals:
     void lengthChanged( float );
 
   public:
-    float lenght;
+    float length;
 };
 
 class LengthFactory : public GuidanceFactory {
@@ -46,7 +47,7 @@ class LengthFactory : public GuidanceFactory {
     ~LengthFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Length Widget" ), QVariant::fromValue( this ) );
+      combobox->addItem( QStringLiteral( "Length" ), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -58,7 +59,7 @@ class LengthFactory : public GuidanceFactory {
       scene->addItem( b );
 
       b->addPort( "Length", "", 0, QNEPort::NamePort );
-      b->addPort( "Length Widget", "", 0, QNEPort::TypePort );
+      b->addPort( "Length", "", 0, QNEPort::TypePort );
 
       b->addOutputPort( "Length", SIGNAL( lengthChanged( float ) ) );
     }

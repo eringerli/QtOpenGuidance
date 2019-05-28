@@ -57,7 +57,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   QNodesEditor* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
 
-  // Factories
+  // Models for the tableview
+  vectorBlockModel = new VectorBlockModel( scene );
+  lengthBlockModel = new LengthBlockModel( scene );
+  vectorBlockModel->addToCombobox( ui->cbValues );
+  lengthBlockModel->addToCombobox( ui->cbValues );
+
+  // Factories for the blocks
   poseCacheFactory = new PoseCacheFactory();
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
@@ -66,9 +72,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory = new VectorFactory();
   lengthFactory = new LengthFactory();
   debugSinkFactory = new DebugSinkFactory();
-
-  vectorBlockModel = new VectorBlockModel( scene );
-  vectorBlockModel->addToCombobox( ui->cbValues );
 
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
@@ -93,6 +96,7 @@ SettingsDialog::~SettingsDialog() {
   delete debugSinkFactory;
 
   delete vectorBlockModel;
+  delete lengthBlockModel;
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {

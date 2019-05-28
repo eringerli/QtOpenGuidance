@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VECTRORBLOCKMODEL_H
-#define VECTRORBLOCKMODEL_H
+#ifndef LENGTHBLOCKMODEL_H
+#define LENGTHBLOCKMODEL_H
 
 #include <QComboBox>
 
@@ -25,13 +25,13 @@
 
 #include <QList>
 
-#include "vectorobject.h"
+#include "lengthobject.h"
 
-class VectorBlockModel : public QAbstractTableModel {
+class LengthBlockModel : public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    explicit VectorBlockModel( QGraphicsScene* scene );
+    explicit LengthBlockModel( QGraphicsScene* scene );
 
     // Header:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;
@@ -61,4 +61,4 @@ class VectorBlockModel : public QAbstractTableModel {
     QGraphicsScene* scene;
 };
 
-#endif // VECTRORBLOCKMODEL_H
+#endif // LENGTHBLOCKMODEL_H
