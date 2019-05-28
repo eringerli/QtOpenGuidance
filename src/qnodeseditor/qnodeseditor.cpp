@@ -167,7 +167,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         if( conn && mouseEvent->button() == Qt::LeftButton ) {
           QNEPort* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
-          if( port ) {
+          if( port && port != conn->port1() ) {
             if( conn->setPort2( port ) ) {
               conn->setPos2( port->scenePos() );
               conn->updatePath();

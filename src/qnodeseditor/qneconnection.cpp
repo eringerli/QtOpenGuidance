@@ -71,7 +71,8 @@ void QNEConnection::setPort1( QNEPort* p ) {
 bool QNEConnection::setPort2( QNEPort* p ) {
 
   connection = QObject::connect( m_port1->block()->object, ( const char* )( m_port1->slotSignalSignature.toUtf8().constData() ),
-                                 p->block()->object, ( const char* )( p->slotSignalSignature.toUtf8().constData() ) );
+                                 p->block()->object, ( const char* )( p->slotSignalSignature.toUtf8().constData() ),
+                                  Qt::ConnectionType(Qt::AutoConnection | Qt::UniqueConnection));
 
   if( ( bool )connection ) {
     m_port2 = p;
