@@ -34,6 +34,7 @@
 #include <QBrush>
 #include <QPen>
 #include <QGraphicsScene>
+#include <QPainter>
 
 QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( parent ) {
   setPen( QPen( Qt::black, 2 ) );
@@ -41,6 +42,7 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
   setZValue( -1 );
   m_port1 = nullptr;
   m_port2 = nullptr;
+  setFlag( QGraphicsItem::ItemIsSelectable );
 }
 
 QNEConnection::~QNEConnection() {
@@ -51,6 +53,22 @@ QNEConnection::~QNEConnection() {
     m_port2->connections().remove( m_port2->connections().indexOf( this ) );
 
   QObject::disconnect( connection );
+}
+
+
+void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
+  Q_UNUSED( option )
+  Q_UNUSED( widget )
+
+  if( isSelected() ) {
+    painter->setPen( QPen( Qt::darkYellow, 3 ) );
+    painter->setBrush( Qt::NoBrush );
+  } else {
+    painter->setPen( QPen( Qt::darkGreen, 3 ) );
+    painter->setBrush( Qt::NoBrush );
+  }
+
+  painter->drawPath( path() );
 }
 
 void QNEConnection::setPos1( const QPointF& p ) {

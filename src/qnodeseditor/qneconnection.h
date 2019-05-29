@@ -40,6 +40,8 @@ class QNEConnection : public QGraphicsPathItem {
     QNEConnection( QGraphicsItem* parent = 0 );
     ~QNEConnection();
 
+    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
+
     void setPos1( const QPointF& p );
     void setPos2( const QPointF& p );
 

@@ -117,10 +117,22 @@ void SettingsDialog::on_pushButton_2_clicked() {
 
 void SettingsDialog::on_pushButton_4_clicked() {
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    {
+      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block && block->deleteable ) {
-      delete block;
+      if( block && block->deleteable ) {
+        delete block;
+        return;
+      }
+    }
+
+    {
+      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+      if( connection ) {
+        delete connection;
+        return;
+      }
     }
   }
 }

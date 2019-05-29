@@ -33,6 +33,8 @@
 #include <QPainter>
 
 #include <QGraphicsProxyWidget>
+#include <QStyleOptionGraphicsItem>
+
 #include <QRectF>
 #include <QtMath>
 
@@ -164,8 +166,6 @@ void QNEBlock::load( QDataStream& ds, QMap<quint64, QNEPort*>& portMap ) {
     portMap[ptr] = addPort( name, "", output, flags );
   }
 }
-
-#include <QStyleOptionGraphicsItem>
 
 void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
   Q_UNUSED( option )
