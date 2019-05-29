@@ -25,7 +25,7 @@
 
 #include <QList>
 
-#include "lengthobject.h"
+#include "../block/LengthObject.h"
 
 class LengthBlockModel : public QAbstractTableModel {
     Q_OBJECT

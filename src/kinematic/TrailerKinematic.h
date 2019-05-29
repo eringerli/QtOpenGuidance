@@ -31,7 +31,7 @@
 #include <QtMath>
 #include <QtDebug>
 
-#include "../GuidanceBase.h"
+#include "../block/GuidanceBase.h"
 
 class TrailerKinematic : public GuidanceBase {
     Q_OBJECT

@@ -37,9 +37,12 @@ class GuidanceToolbar : public QGroupBox {
 
     void on_btn_settings_clicked();
 
+    void on_cbCamera_stateChanged( int arg1 );
+
   signals:
     void simulatorChanged( bool );
     void toggleSettings();
+    void cameraChanged( bool );
 
   private:
     Ui::GuidanceToolbar* ui;

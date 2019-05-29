@@ -25,7 +25,7 @@
 
 #include <QGraphicsScene>
 
-#include "../PoseCache.h"
+#include "../block/PoseCache.h"
 
 #include "VectorBlockModel.h"
 #include "LengthBlockModel.h"
@@ -44,20 +44,12 @@ class SettingsDialog : public QDialog {
     QGraphicsScene* getSceneOfConfigGraphicsView();
 
   signals:
-    void antennaPositionChanged( QVector3D );
-    void wheelbaseChanged( float );
-    void hitchPositionChanged( QVector3D );
-    void cameraChanged( int );
 
   public slots:
     void toggleVisibility();
 
 
   private slots:
-    void on_rb_fixedCamera_clicked();
-    void on_rb_firstPersonCamera_clicked();
-    void on_rb_orbitCamera_clicked();
-
     void on_pushButton_3_clicked();
 
     void on_pushButton_2_clicked();

@@ -2,40 +2,43 @@ QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
 
 SOURCES += src/main.cpp \
-    src/3d/TractorModel.cpp \
-    src/3d/TrailerModel.cpp \
-    src/PoseSimulation.cpp \
+    src/block/PoseSimulation.cpp \
+    src/block/TractorModel.cpp \
+    src/block/TrailerModel.cpp \
+    src/gui/CameraToolbar.cpp \
+    src/gui/GuidanceToolbar.cpp \
     src/gui/LengthBlockModel.cpp \
-    src/gui/VectorBlockModel.cpp \
-    src/gui/guidancetoolbar.cpp \
-    src/gui/settingsdialog.cpp \
-    src/gui/simulatortoolbar.cpp
+    src/gui/SettingsDialog.cpp \
+    src/gui/SimulatorToolbar.cpp \
+    src/gui/VectorBlockModel.cpp
     
 HEADERS += \
-    src/3d/TractorModel.h \
-    src/3d/TrailerModel.h \
-    src/3d/cameracontroller.h \
-    src/DebugSink.h \
-    src/GuidanceBase.h \
-    src/PoseCache.h \
-    src/PoseSimulation.h \
+    src/block/CameraController.h \
+    src/block/DebugSink.h \
+    src/block/GuidanceBase.h \
+    src/block/LengthObject.h \
+    src/block/PoseCache.h \
+    src/block/PoseSimulation.h \
+    src/block/TractorModel.h \
+    src/block/TrailerModel.h \
+    src/block/VectorObject.h \
+    src/gui/CameraToolbar.h \
+    src/gui/GuidanceToolbar.h \
     src/gui/LengthBlockModel.h \
+    src/gui/SettingsDialog.h \
+    src/gui/SimulatorToolbar.h \
     src/gui/VectorBlockModel.h \
-    src/gui/guidancetoolbar.h \
-    src/gui/lengthobject.h \
-    src/gui/settingsdialog.h \
-    src/gui/simulatortoolbar.h \
-    src/gui/vectorobject.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/TrailerKinematic.h
 
 #QMAKE_CXXFLAGS += -pg -g
 
 FORMS += \
-    src/gui/guidancetoolbar.ui \
+    src/gui/CameraToolbar.ui \
+    src/gui/GuidanceToolbar.ui \
+    src/gui/SettingsDialog.ui \
+    src/gui/SimulatorToolbar.ui \
     src/gui/lengthwidget.ui \
-    src/gui/settingsdialog.ui \
-    src/gui/simulatortoolbar.ui \
     src/gui/vectorwidget.ui
 
 RESOURCES += \

@@ -25,7 +25,7 @@
 
 #include <QList>
 
-#include "vectorobject.h"
+#include "../block/VectorObject.h"
 
 class VectorBlockModel : public QAbstractTableModel {
     Q_OBJECT

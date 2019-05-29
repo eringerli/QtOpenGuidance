@@ -21,7 +21,7 @@
 
 #include <QWidget>
 
-#include "../GuidanceBase.h"
+#include "GuidanceBase.h"
 
 class LengthObject : public GuidanceBase {
     Q_OBJECT

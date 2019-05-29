@@ -30,7 +30,7 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "../GuidanceBase.h"
+#include "../block/GuidanceBase.h"
 
 class FixedKinematic : public GuidanceBase {
     Q_OBJECT

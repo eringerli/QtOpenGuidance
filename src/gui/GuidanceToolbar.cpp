@@ -16,27 +16,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "simulatortoolbar.h"
-#include "ui_simulatortoolbar.h"
+#include "GuidanceToolbar.h"
+#include "ui_GuidanceToolbar.h"
 
-SimulatorToolbar::SimulatorToolbar( QWidget* parent ) :
+GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::SimulatorToolbar ) {
+  ui( new Ui::GuidanceToolbar ) {
   ui->setupUi( this );
 }
 
-SimulatorToolbar::~SimulatorToolbar() {
+GuidanceToolbar::~GuidanceToolbar() {
   delete ui;
 }
 
-void SimulatorToolbar::on_sl_velocity_valueChanged( int value ) {
-  emit velocityChanged( ( float )value / 10 );
+void GuidanceToolbar::on_checkBox_stateChanged( int arg1 ) {
+  bool enabled = false;
+
+  if( arg1 == Qt::Checked ) {
+    enabled = true;
+  }
+
+  emit simulatorChanged( enabled );
 }
 
-void SimulatorToolbar::on_sl_steerangle_valueChanged( int value ) {
-  emit steerangleChanged( ( float )value / 10 );
+void GuidanceToolbar::on_btn_settings_clicked() {
+  emit toggleSettings();
 }
 
-void SimulatorToolbar::on_sl_steerangle_2_valueChanged( int value ) {
-  emit frequencyChanged( value );
+void GuidanceToolbar::on_cbCamera_stateChanged( int arg1 ) {
+  bool enabled = false;
+
+  if( arg1 == Qt::Checked ) {
+    enabled = true;
+  }
+
+  emit cameraChanged( enabled );
 }

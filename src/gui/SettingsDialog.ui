@@ -31,7 +31,7 @@
      <item>
       <widget class="QTabWidget" name="verticalTabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -147,12 +147,24 @@
               <property name="text">
                <string>Zoom Out</string>
               </property>
+              <property name="autoRepeat">
+               <bool>true</bool>
+              </property>
+              <property name="autoRepeatDelay">
+               <number>500</number>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_3">
               <property name="text">
                <string>Zoom In</string>
+              </property>
+              <property name="autoRepeat">
+               <bool>true</bool>
+              </property>
+              <property name="autoRepeatDelay">
+               <number>500</number>
               </property>
              </widget>
             </item>
@@ -348,60 +360,7 @@
         <attribute name="title">
          <string>Experimental Stuff</string>
         </attribute>
-        <layout class="QFormLayout" name="formLayout_5">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Camera Mode</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QGroupBox" name="groupBox_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="title">
-            <string/>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QRadioButton" name="rb_fixedCamera">
-              <property name="text">
-               <string>Fixed</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_firstPersonCamera">
-              <property name="text">
-               <string>First Person</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_orbitCamera">
-              <property name="text">
-               <string>Orbit</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QFormLayout" name="formLayout_5"/>
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">

@@ -208,6 +208,13 @@
     </spacer>
    </item>
    <item>
+    <widget class="QCheckBox" name="cbCamera">
+     <property name="text">
+      <string>Camera Ctlr</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="checkBox">
      <property name="text">
       <string>Simulator</string>

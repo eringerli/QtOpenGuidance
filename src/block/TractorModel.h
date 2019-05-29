@@ -35,7 +35,7 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 
-#include "../GuidanceBase.h"
+#include "GuidanceBase.h"
 
 class TractorModel : public GuidanceBase {
     Q_OBJECT

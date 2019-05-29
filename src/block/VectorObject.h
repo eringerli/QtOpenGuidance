@@ -23,7 +23,7 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "../GuidanceBase.h"
+#include "GuidanceBase.h"
 
 class VectorObject : public GuidanceBase {
     Q_OBJECT

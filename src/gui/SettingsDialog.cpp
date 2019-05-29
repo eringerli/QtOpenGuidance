@@ -24,19 +24,19 @@
 #include "qneport.h"
 #include "qnodeseditor.h"
 
-#include "settingsdialog.h"
-#include "ui_settingsdialog.h"
+#include "SettingsDialog.h"
+#include "ui_SettingsDialog.h"
 
-#include "../gui/vectorobject.h"
-#include "../gui/lengthobject.h"
+#include "../block/VectorObject.h"
+#include "../block/LengthObject.h"
 
-#include "../3d/cameracontroller.h"
-#include "../3d/TractorModel.h"
-#include "../3d/TrailerModel.h"
+#include "../block/CameraController.h"
+#include "../block/TractorModel.h"
+#include "../block/TrailerModel.h"
 
-#include "../PoseSimulation.h"
-#include "../PoseCache.h"
-#include "../DebugSink.h"
+#include "../block/PoseSimulation.h"
+#include "../block/PoseCache.h"
+#include "../block/DebugSink.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -105,18 +105,6 @@ QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
 
 void SettingsDialog::toggleVisibility() {
   setVisible( ! isVisible() );
-}
-
-void SettingsDialog::on_rb_fixedCamera_clicked() {
-  emit cameraChanged( 0 );
-}
-
-void SettingsDialog::on_rb_firstPersonCamera_clicked() {
-  emit cameraChanged( 1 );
-}
-
-void SettingsDialog::on_rb_orbitCamera_clicked() {
-  emit cameraChanged( 2 );
 }
 
 void SettingsDialog::on_pushButton_3_clicked() {

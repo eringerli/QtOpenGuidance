@@ -16,35 +16,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SIMULATORTOOLBAR_H
-#define SIMULATORTOOLBAR_H
+#include "SimulatorToolbar.h"
+#include "ui_SimulatorToolbar.h"
 
-#include <QGroupBox>
-
-namespace Ui {
-  class SimulatorToolbar;
+SimulatorToolbar::SimulatorToolbar( QWidget* parent ) :
+  QGroupBox( parent ),
+  ui( new Ui::SimulatorToolbar ) {
+  ui->setupUi( this );
 }
 
-class SimulatorToolbar : public QGroupBox {
-    Q_OBJECT
+SimulatorToolbar::~SimulatorToolbar() {
+  delete ui;
+}
 
-  public:
-    explicit SimulatorToolbar( QWidget* parent = nullptr );
-    ~SimulatorToolbar();
+void SimulatorToolbar::on_sl_velocity_valueChanged( int value ) {
+  emit velocityChanged( ( float )value / 10 );
+}
 
-  private slots:
-    void on_sl_velocity_valueChanged( int value );
-    void on_sl_steerangle_valueChanged( int value );
+void SimulatorToolbar::on_sl_steerangle_valueChanged( int value ) {
+  emit steerangleChanged( ( float )value / 10 );
+}
 
-    void on_sl_steerangle_2_valueChanged( int value );
-
-  signals:
-    void velocityChanged( float );
-    void steerangleChanged( float );
-    void frequencyChanged( int );
-
-  private:
-    Ui::SimulatorToolbar* ui;
-};
-
-#endif // SIMULATORTOOLBAR_H
+void SimulatorToolbar::on_sl_frequency_valueChanged( int value ) {
+  emit frequencyChanged( value );
+}

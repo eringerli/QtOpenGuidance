@@ -16,29 +16,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "guidancetoolbar.h"
-#include "ui_guidancetoolbar.h"
+#ifndef SIMULATORTOOLBAR_H
+#define SIMULATORTOOLBAR_H
 
-GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::GuidanceToolbar ) {
-  ui->setupUi( this );
+#include <QGroupBox>
+
+namespace Ui {
+  class SimulatorToolbar;
 }
 
-GuidanceToolbar::~GuidanceToolbar() {
-  delete ui;
-}
+class SimulatorToolbar : public QGroupBox {
+    Q_OBJECT
 
-void GuidanceToolbar::on_checkBox_stateChanged( int arg1 ) {
-  bool enabled = false;
+  public:
+    explicit SimulatorToolbar( QWidget* parent = nullptr );
+    ~SimulatorToolbar();
 
-  if( arg1 == Qt::Checked ) {
-    enabled = true;
-  }
+  private slots:
+    void on_sl_velocity_valueChanged( int value );
+    void on_sl_steerangle_valueChanged( int value );
+    void on_sl_frequency_valueChanged( int value );
 
-  emit simulatorChanged( enabled );
-}
+  signals:
+    void velocityChanged( float );
+    void steerangleChanged( float );
+    void frequencyChanged( int );
 
-void GuidanceToolbar::on_btn_settings_clicked() {
-  emit toggleSettings();
-}
+  private:
+    Ui::SimulatorToolbar* ui;
+};
+
+#endif // SIMULATORTOOLBAR_H
