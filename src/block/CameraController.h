@@ -75,11 +75,11 @@ class CameraController : public GuidanceBase {
     }
 
     void zoomIn() {
-      m_offset /= 1.2;
+      m_offset /= 1.2F;
     }
     void zoomOut() {
 
-      m_offset *= 1.2;
+      m_offset *= 1.2F;
     }
 
     void panLeft() {
@@ -112,7 +112,6 @@ class CameraControllerFactory : public GuidanceFactory {
     CameraControllerFactory( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
       : GuidanceFactory(),
         m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
-    ~CameraControllerFactory() {}
 
     virtual void addToCombobox( QComboBox* ) override {
     }

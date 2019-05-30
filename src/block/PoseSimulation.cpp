@@ -29,7 +29,7 @@
 
 void PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
-    float elapsedTime = ( float )m_time.restart() / 1000;
+    float elapsedTime = float ( m_time.restart()) / 1000;
     QQuaternion lastOrientation = m_orientation;
 
     emit steeringAngleChanged( m_steerAngle );

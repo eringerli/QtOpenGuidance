@@ -102,7 +102,6 @@ class TractorModelFactory : public GuidanceFactory {
     TractorModelFactory( Qt3DCore::QEntity* rootEntity )
       : GuidanceFactory(),
         rootEntity( rootEntity ) {}
-    ~TractorModelFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Tractor Model" ), QVariant::fromValue( this ) );

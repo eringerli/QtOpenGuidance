@@ -36,7 +36,6 @@ class GuidanceBase : public QObject {
 
   public:
     GuidanceBase() {}
-    ~GuidanceBase() {}
 
     virtual void emitConfigSignals() {}
 

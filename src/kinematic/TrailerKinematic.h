@@ -41,7 +41,6 @@ class TrailerKinematic : public GuidanceBase {
       : GuidanceBase(),
         m_offsetHookPoint( QVector3D( 6, 0, 0 ) ), m_offsetTowPoint( QVector3D( -1, 0, 0 ) ), m_positionPivotPoint( QVector3D( 0, 0, 0 ) ) {
     }
-    ~TrailerKinematic() {}
 
   public slots:
     void setOffsetTowPointPosition( QVector3D position ) {

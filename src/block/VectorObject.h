@@ -31,7 +31,6 @@ class VectorObject : public GuidanceBase {
   public:
     explicit VectorObject()
       : vector( QVector3D( 0, 0, 0 ) ) {}
-    ~VectorObject() {}
 
     void emitConfigSignals() override {
       emit vectorChanged( vector );
@@ -52,7 +51,6 @@ class VectorFactory : public GuidanceFactory {
   public:
     VectorFactory()
       : GuidanceFactory() {}
-    ~VectorFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Vector3D" ), QVariant::fromValue( this ) );

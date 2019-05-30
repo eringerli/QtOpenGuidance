@@ -29,7 +29,6 @@ class LengthObject : public GuidanceBase {
   public:
     explicit LengthObject()
       : length( 0 ) {}
-    ~LengthObject() {}
 
   signals:
     void lengthChanged( float );

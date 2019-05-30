@@ -36,7 +36,6 @@ class PoseCache : public GuidanceBase {
     explicit PoseCache()
       : GuidanceBase(),
         steeringAngle(), position(), orientation() {}
-    ~PoseCache() {}
 
   public slots:
     void setPosition( QVector3D value ) {

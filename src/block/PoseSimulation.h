@@ -35,51 +35,12 @@
 class PoseSimulation : public GuidanceBase {
     Q_OBJECT
 
-    Q_PROPERTY( bool enabled READ isSimulation WRITE setSimulation NOTIFY simulationChanged )
-    Q_PROPERTY( int interval READ interval WRITE setInterval NOTIFY intervalChanged )
-
-    Q_PROPERTY( float steerAngle READ steerAngle WRITE setSteerAngle NOTIFY steerAngleChanged )
-    Q_PROPERTY( float velocity READ velocity WRITE setVelocity NOTIFY velocityChanged )
-    Q_PROPERTY( float wheelbase READ wheelbase WRITE setWheelbase NOTIFY wheelbaseChanged )
-
-    Q_PROPERTY( QVector3D position READ position WRITE setPosition NOTIFY positionChanged )
-    Q_PROPERTY( QQuaternion orientation READ orientation WRITE setOrientation NOTIFY orientationChanged )
-    Q_PROPERTY( QVector3D antennaPosition READ antennaPosition WRITE setAntennaPosition NOTIFY antennaPositionChanged )
-
   public:
     explicit PoseSimulation()
       : GuidanceBase(),
         m_enabled( false ), m_interval( 50 ), m_timerId( 0 ), m_steerAngle( 0 ), m_velocity( 0 ), m_wheelbase( 2.4F ), m_position(), m_orientation() {
       setSimulation( false );
     }
-    ~PoseSimulation() {}
-
-
-    bool isSimulation() {
-      return m_enabled;
-    }
-    int interval() {
-      return m_interval;
-    }
-    float steerAngle() {
-      return m_steerAngle;
-    }
-    float velocity() {
-      return m_velocity;
-    }
-    float wheelbase() {
-      return m_wheelbase;
-    }
-    QQuaternion orientation() {
-      return m_orientation;
-    }
-    QVector3D position() {
-      return m_position;
-    }
-    QVector3D antennaPosition() {
-      return m_antennaPosition;
-    }
-
 
   public slots:
     void setInterval( int interval ) {
@@ -187,7 +148,6 @@ class PoseSimulationFactory : public GuidanceFactory {
   public:
     PoseSimulationFactory()
       : GuidanceFactory() {}
-    ~PoseSimulationFactory() {}
 
     virtual void addToCombobox( QComboBox* ) override {
     }

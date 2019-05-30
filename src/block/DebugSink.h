@@ -89,7 +89,6 @@ class DebugSinkFactory : public GuidanceFactory {
   public:
     DebugSinkFactory()
       : GuidanceFactory() {}
-    ~DebugSinkFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Console Output" ), QVariant::fromValue( this ) );

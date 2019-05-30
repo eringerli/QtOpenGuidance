@@ -103,7 +103,6 @@ class TrailerModelFactory : public GuidanceFactory {
     TrailerModelFactory( Qt3DCore::QEntity* rootEntity )
       : GuidanceFactory(),
         rootEntity( rootEntity ) {}
-    ~TrailerModelFactory() {}
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Trailer Model" ), QVariant::fromValue( this ) );
