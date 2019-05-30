@@ -103,8 +103,12 @@ class TractorModelFactory : public GuidanceFactory {
       : GuidanceFactory(),
         rootEntity( rootEntity ) {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Tractor Model" );
+    }
+
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Tractor Model" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -115,8 +119,8 @@ class TractorModelFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Tractor", "", 0, QNEPort::NamePort );
-      b->addPort( "Tractor Model", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );

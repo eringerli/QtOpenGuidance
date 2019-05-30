@@ -151,6 +151,10 @@ class PoseSimulationFactory : public GuidanceFactory {
     PoseSimulationFactory()
       : GuidanceFactory() {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Pose Simulation" );
+    }
+
     virtual void addToCombobox( QComboBox* ) override {
     }
 
@@ -162,10 +166,11 @@ class PoseSimulationFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->systemBlock = false;
+      b->systemBlock = true;
 
-      b->addPort( "Simulation", "", 0, QNEPort::NamePort );
-      b->addPort( "PoseSimulation", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+
       b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
 
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );

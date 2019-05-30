@@ -47,8 +47,12 @@ class LengthFactory : public GuidanceFactory {
       : GuidanceFactory() {}
     ~LengthFactory() {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Length" );
+    }
+
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Length" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -59,8 +63,8 @@ class LengthFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Length", "", 0, QNEPort::NamePort );
-      b->addPort( "Length", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addOutputPort( "Length", SIGNAL( lengthChanged( float ) ) );
     }

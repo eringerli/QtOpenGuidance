@@ -54,8 +54,12 @@ class VectorFactory : public GuidanceFactory {
     VectorFactory()
       : GuidanceFactory() {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Vetor3D" );
+    }
+
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Vector3D" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -66,8 +70,8 @@ class VectorFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Vector3D", "", 0, QNEPort::NamePort );
-      b->addPort( "Vector3D", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
     }

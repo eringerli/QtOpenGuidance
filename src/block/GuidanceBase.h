@@ -70,6 +70,7 @@ class GuidanceFactory : public QObject {
     GuidanceFactory() {}
     ~GuidanceFactory() {}
 
+    virtual QString getNameOfFactory() = 0;
 
     virtual void addToCombobox( QComboBox* combobox ) = 0;
 

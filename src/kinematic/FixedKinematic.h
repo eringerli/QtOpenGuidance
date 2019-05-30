@@ -74,7 +74,10 @@ class FixedKinematicFactory : public GuidanceFactory {
   public:
     FixedKinematicFactory()
       : GuidanceFactory() {}
-    ~FixedKinematicFactory() {}
+
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Fixed Kinematic" );
+    }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Fixed Kinematics" ), QVariant::fromValue( this ) );
@@ -88,8 +91,8 @@ class FixedKinematicFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Fixed", "", 0, QNEPort::NamePort );
-      b->addPort( "Fixed Kinematics", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );

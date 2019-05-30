@@ -88,7 +88,10 @@ class TrailerKinematicFactory : public GuidanceFactory {
   public:
     TrailerKinematicFactory()
       : GuidanceFactory() {}
-    ~TrailerKinematicFactory() {}
+
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Trailer Kinematic" );
+    }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
       combobox->addItem( QStringLiteral( "Trailer Kinematics" ), QVariant::fromValue( this ) );
@@ -102,8 +105,8 @@ class TrailerKinematicFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Trailer", "", 0, QNEPort::NamePort );
-      b->addPort( "Trailer Kinematics", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );

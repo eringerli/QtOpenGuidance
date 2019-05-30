@@ -76,10 +76,13 @@ class PoseCacheFactory : public GuidanceFactory {
   public:
     PoseCacheFactory()
       : GuidanceFactory() {}
-    ~PoseCacheFactory() {}
+
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Pose Cache" );
+    }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Pose Cache" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -90,8 +93,8 @@ class PoseCacheFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->addPort( "Cache", "", 0, QNEPort::NamePort );
-      b->addPort( "Pose Cache", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );

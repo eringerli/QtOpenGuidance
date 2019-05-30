@@ -92,8 +92,12 @@ class DebugSinkFactory : public GuidanceFactory {
     DebugSinkFactory()
       : GuidanceFactory() {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Console Output" );
+    }
+
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Console Output" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {
@@ -110,8 +114,8 @@ class DebugSinkFactory : public GuidanceFactory {
 
       scene->addItem( b );
 
-      b->addPort( "Console Output", "", 0, QNEPort::NamePort );
-      b->addPort( "Console Output", "", 0, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );

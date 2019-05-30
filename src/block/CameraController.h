@@ -116,6 +116,10 @@ class CameraControllerFactory : public GuidanceFactory {
       : GuidanceFactory(),
         m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
+    QString getNameOfFactory() override {
+      return QStringLiteral( "Camera Controller" );
+    }
+
     virtual void addToCombobox( QComboBox* ) override {
     }
 
@@ -129,8 +133,8 @@ class CameraControllerFactory : public GuidanceFactory {
 
       b->systemBlock = true;
 
-      b->addPort( "Camera", "", 0, QNEPort::NamePort );
-      b->addPort( "CameraController", "", 0, QNEPort::TypePort );
+      b->addPort( QStringLiteral( "Camera" ), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
       b->addInputPort( "View Center Position", SLOT( setPose( QVector3D, QQuaternion ) ) );
     }
 
