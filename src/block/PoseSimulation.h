@@ -37,11 +37,8 @@ class PoseSimulation : public GuidanceBase {
 
   public:
     explicit PoseSimulation()
-      : GuidanceBase(),
-        m_enabled( false ), m_interval( 50 ), m_timerId( 0 ), m_steerAngle( 0 ), m_velocity( 0 ), m_wheelbase( 2.4F ), m_position(), m_orientation() {
+      : GuidanceBase() {
       setSimulation( false );
-      m_system = true;
-      m_id = getNextSystemId();
     }
 
   public slots:
@@ -128,20 +125,20 @@ class PoseSimulation : public GuidanceBase {
     }
 
   private:
-    bool m_enabled;
-    int m_interval;
+    bool m_enabled = false;
+    int m_interval = 50;
 
     QBasicTimer m_timer;
     int m_timerId;
     QTime m_time;
 
-    float m_steerAngle;
-    float m_velocity;
-    float m_wheelbase;
+    float m_steerAngle = 0;
+    float m_velocity = 0;
+    float m_wheelbase = 2.4f;
 
-    QVector3D m_antennaPosition;
-    QVector3D m_position;
-    QQuaternion m_orientation;
+    QVector3D m_antennaPosition = QVector3D();
+    QVector3D m_position = QVector3D();
+    QQuaternion m_orientation = QQuaternion();
 };
 
 class PoseSimulationFactory : public GuidanceFactory {
@@ -163,10 +160,8 @@ class PoseSimulationFactory : public GuidanceFactory {
     }
 
     virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
+      QNEBlock* b = new QNEBlock( obj, true );
       scene->addItem( b );
-
-      b->systemBlock = true;
 
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );

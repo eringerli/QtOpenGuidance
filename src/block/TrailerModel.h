@@ -90,8 +90,8 @@ class TrailerModel : public GuidanceBase {
     Qt3DCore::QTransform* m_pivotPointTransform;
     Qt3DCore::QTransform* m_towPointTransform;
 
-    QVector3D m_offsetHookPoint;
-    float m_wheelbase;
+    QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
+    float m_wheelbase = 2.4f;
 
     void setProportions();
 };

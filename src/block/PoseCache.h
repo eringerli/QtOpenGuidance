@@ -34,10 +34,7 @@ class PoseCache : public GuidanceBase {
 
   public:
     explicit PoseCache()
-      : GuidanceBase(),
-        steeringAngle(), position(), orientation() {
-      m_id = getNextUserId();
-    }
+      : GuidanceBase() { }
 
   public slots:
     void setPosition( QVector3D value ) {
@@ -65,9 +62,9 @@ class PoseCache : public GuidanceBase {
     }
 
   public:
-    float steeringAngle;
-    QVector3D position;
-    QQuaternion orientation;
+    float steeringAngle = 0;
+    QVector3D position = QVector3D();
+    QQuaternion orientation = QQuaternion();
 };
 
 class PoseCacheFactory : public GuidanceFactory {

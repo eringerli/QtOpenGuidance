@@ -38,29 +38,6 @@ class GuidanceBase : public QObject {
     GuidanceBase() {}
 
     virtual void emitConfigSignals() {}
-
-    enum class IdRange {
-      SystemIdStart = 1,
-      UserIdStart = 1000
-    };
-
-  public:
-    int getNextSystemId() {
-      return m_nextSystemId++;
-    }
-    int getNextUserId() {
-      return m_nextUserId++;
-    }
-//    virtual QJsonObject toJSON() = 0;
-//    virtual void fromJSON(QJsonObject& json) = 0;
-
-  public:
-    bool m_system = false;
-    int m_id;
-
-  private:
-    static int m_nextSystemId;
-    static int m_nextUserId;
 };
 
 class GuidanceFactory : public QObject {

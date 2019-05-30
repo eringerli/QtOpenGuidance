@@ -23,9 +23,7 @@
 
 
 TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
-  : m_wheelbase( 2.4 ), m_offsetHookPoint( QVector3D( 6, 0, 0 ) ) {
-  m_id = getNextUserId();
-
+  : GuidanceBase() {
   m_rootEntityTransform = new Qt3DCore::QTransform();
 
   // add an etry, so all coordinates are local

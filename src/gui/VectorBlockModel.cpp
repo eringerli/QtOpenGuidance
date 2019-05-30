@@ -62,7 +62,7 @@ bool VectorBlockModel::setHeaderData( int section, Qt::Orientation orientation, 
 }
 
 
-int VectorBlockModel::rowCount( const QModelIndex& parent ) const {
+int VectorBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   int count = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
@@ -78,7 +78,7 @@ int VectorBlockModel::rowCount( const QModelIndex& parent ) const {
   return count;
 }
 
-int VectorBlockModel::columnCount( const QModelIndex& parent ) const {
+int VectorBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 4;
 }
 

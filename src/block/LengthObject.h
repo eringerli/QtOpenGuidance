@@ -28,15 +28,13 @@ class LengthObject : public GuidanceBase {
 
   public:
     explicit LengthObject()
-      : length( 0 ) {
-      m_id = getNextUserId();
-    }
+      : GuidanceBase() {}
 
   signals:
     void lengthChanged( float );
 
   public:
-    float length;
+    float length = 0;
 };
 
 class LengthFactory : public GuidanceFactory {

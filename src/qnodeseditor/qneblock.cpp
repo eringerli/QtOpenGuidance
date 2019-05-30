@@ -38,9 +38,16 @@
 #include <QRectF>
 #include <QtMath>
 
-#include "qneport.h"
+#include <QJsonObject>
+#include <QJsonArray>
 
-QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
+#include "qneport.h"
+#include "qneconnection.h"
+
+int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
+int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
+
+QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
     horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
   QPainterPath p;
@@ -50,6 +57,12 @@ QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
   setBrush( Qt::green );
   setFlag( QGraphicsItem::ItemIsMovable );
   setFlag( QGraphicsItem::ItemIsSelectable );
+
+  if( systemBlock ) {
+    m_id = getNextSystemId();
+  } else {
+    m_id = getNextUserId();
+  }
 }
 
 QNEBlock::~QNEBlock() {
@@ -177,6 +190,20 @@ void QNEBlock::setName( QString name ) {
   }
 }
 
+QString QNEBlock::getType() {
+  foreach( QGraphicsItem* port_, childItems() ) {
+    if( port_->type() == QNEPort::Type ) {
+      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+      if( port && port->portFlags()&QNEPort::TypePort ) {
+        return port->getName();
+      }
+    }
+  }
+
+  return QStringLiteral( "" );
+}
+
 QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {
 
   Q_UNUSED( change )
@@ -184,3 +211,29 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
   return value;
 }
 
+void QNEBlock::toJSON( QJsonObject& json ) {
+  QJsonArray blocksArray = json["blocks"].toArray();
+  QJsonObject blockObject;
+  blockObject["id"] = m_id;
+  blockObject["name"] = getName();
+  blockObject["type"] = getType();
+  blockObject["positionX"] = x();
+  blockObject["positionY"] = y();
+  blocksArray.append( blockObject );
+
+  QJsonArray connectionsArray = json["connections"].toArray();
+
+  foreach( QGraphicsItem* port_, childItems() ) {
+    if( port_->type() == QNEConnection::Type ) {
+      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( port_ );
+
+      if( connection ) {
+        QJsonObject connectionObject;
+        connectionObject["idFrom"] = m_id;
+        connectionObject["idTo"] = connection->port2()->block()->m_id;
+        connectionsArray.append( connectionObject );
+      }
+    }
+  }
+
+}

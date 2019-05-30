@@ -36,8 +36,13 @@ class QNEBlock : public QGraphicsPathItem {
   public:
     enum { Type = QGraphicsItem::UserType + 3 };
 
+    enum class IdRange {
+      SystemIdStart = 1,
+      UserIdStart = 1000
+    };
+
     // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
-    QNEBlock( QObject* object, QGraphicsItem* parent = nullptr );
+    QNEBlock( QObject* object, bool systemBlock = false, QGraphicsItem* parent = nullptr );
 
     ~QNEBlock();
 
@@ -49,6 +54,9 @@ class QNEBlock : public QGraphicsPathItem {
 
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
 
+    void toJSON( QJsonObject& json );
+    //    virtual void fromJSON(QJsonObject& json) = 0;
+
     QVector<QNEPort*> ports();
 
     int type() const {
@@ -57,8 +65,24 @@ class QNEBlock : public QGraphicsPathItem {
 
     QString getName();
     void setName( QString name );
+    QString getType();
 
     bool systemBlock = false;
+
+  public:
+    int getNextSystemId() {
+      return m_nextSystemId++;
+    }
+    int getNextUserId() {
+      return m_nextUserId++;
+    }
+
+  public:
+    int m_id = 0;
+
+  private:
+    static int m_nextSystemId;
+    static int m_nextUserId;
 
   protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );

@@ -60,8 +60,7 @@ class QNEPort : public QGraphicsPathItem {
 
     QNEBlock* block() const;
 
-    bool isConnected( QNEPort* );
-
+  public:
     QString slotSignalSignature;
 
   protected:

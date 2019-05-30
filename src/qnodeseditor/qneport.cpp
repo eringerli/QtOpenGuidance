@@ -117,16 +117,6 @@ QNEBlock* QNEPort::block() const {
   return m_block;
 }
 
-bool QNEPort::isConnected( QNEPort* other ) {
-  foreach( QNEConnection* conn, m_connections ) {
-    if( conn->port1() == other || conn->port2() == other ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
     foreach( QNEConnection* conn, m_connections ) {

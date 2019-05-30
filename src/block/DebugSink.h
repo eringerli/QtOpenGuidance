@@ -39,10 +39,7 @@ class DebugSink : public GuidanceBase {
   public:
     explicit DebugSink()
       : GuidanceBase(),
-        block( nullptr ) {
-      m_id = getNextUserId();
-    }
-    ~DebugSink() {}
+        block( nullptr ) {}
 
   public slots:
     void setPosition( QVector3D value ) {

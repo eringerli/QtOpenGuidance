@@ -34,9 +34,6 @@ class CameraController : public GuidanceBase {
     explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
       : m_mode( 0 ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ), m_orbitController( nullptr ),
         m_offset( -20, 0, 10 ) {
-      m_system = true;
-      m_id = getNextSystemId();
-
       m_cameraEntity->setPosition( m_offset );
       m_cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
       m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
@@ -128,10 +125,8 @@ class CameraControllerFactory : public GuidanceFactory {
     }
 
     virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
+      QNEBlock* b = new QNEBlock( obj, true );
       scene->addItem( b );
-
-      b->systemBlock = true;
 
       b->addPort( QStringLiteral( "Camera" ), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );

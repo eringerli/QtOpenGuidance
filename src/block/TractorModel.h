@@ -91,8 +91,8 @@ class TractorModel : public GuidanceBase {
     Qt3DCore::QTransform* m_pivotPointTransform;
     Qt3DCore::QTransform* m_towPointTransform;
 
-    float m_wheelbase;
-    float m_steeringAngle{};
+    float m_wheelbase = 2.4;
+    float m_steeringAngle = 0;
 };
 
 class TractorModelFactory : public GuidanceFactory {

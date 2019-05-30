@@ -23,10 +23,7 @@
 
 
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
-  : GuidanceBase(),
-    m_wheelbase( 2.4 ) {
-  m_id = getNextUserId();
-
+  : GuidanceBase() {
   m_rootEntityTransform = new Qt3DCore::QTransform();
 
   // add an etry, so all coordinates are local
