@@ -47,13 +47,8 @@ class QNEBlock : public QGraphicsPathItem {
 
     void addWidget( QWidget* widget );
 
-    void setDeletable( bool );
-
-    void save( QDataStream& );
-    void load( QDataStream&, QMap<quint64, QNEPort*>& portMap );
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
 
-    QNEBlock* clone( QObject* object );
     QVector<QNEPort*> ports();
 
     int type() const {

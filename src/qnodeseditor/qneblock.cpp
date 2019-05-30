@@ -124,54 +124,6 @@ void QNEBlock::addWidget( QWidget* widget ) {
   proxy->setY( -height / 2 + heightBuffer + 10 );
 }
 
-void QNEBlock::save( QDataStream& ds ) {
-  ds << pos();
-
-  int count( 0 );
-
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() != QNEPort::Type ) {
-      continue;
-    }
-
-    count++;
-  }
-
-  ds << count;
-
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() != QNEPort::Type ) {
-      continue;
-    }
-
-    QNEPort* port = ( QNEPort* ) port_;
-    ds << ( quint64 ) port;
-    ds << port->getName();
-    ds << port->isOutput();
-    ds << port->portFlags();
-  }
-}
-
-void QNEBlock::load( QDataStream& ds, QMap<quint64, QNEPort*>& portMap ) {
-  QPointF p;
-  ds >> p;
-  setPos( p );
-  int count;
-  ds >> count;
-
-  for( int i = 0; i < count; i++ ) {
-    QString name;
-    bool output;
-    int flags;
-    quint64 ptr;
-
-    ds >> name;
-    ds >> output;
-    ds >> flags;
-    portMap[ptr] = addPort( name, "", output, flags );
-  }
-}
-
 void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
   Q_UNUSED( option )
   Q_UNUSED( widget )
@@ -185,20 +137,6 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
   }
 
   painter->drawPath( path() );
-}
-
-QNEBlock* QNEBlock::clone( QObject* object ) {
-  QNEBlock* b = new QNEBlock( object, nullptr );
-  this->scene()->addItem( b );
-
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      QNEPort* port = ( QNEPort* ) port_;
-      b->addPort( port->getName(), port->slotSignalSignature, port->isOutput(), port->portFlags() );
-    }
-  }
-
-  return b;
 }
 
 QVector<QNEPort*> QNEBlock::ports() {

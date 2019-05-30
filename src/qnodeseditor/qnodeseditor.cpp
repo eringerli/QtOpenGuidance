@@ -191,38 +191,3 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
   return QObject::eventFilter( o, e );
 }
-
-void QNodesEditor::save( QDataStream& ds ) {
-  foreach( QGraphicsItem* item, scene->items() )
-    if( item->type() == QNEBlock::Type ) {
-      ds << item->type();
-      ( ( QNEBlock* ) item )->save( ds );
-    }
-
-  foreach( QGraphicsItem* item, scene->items() )
-    if( item->type() == QNEConnection::Type ) {
-      ds << item->type();
-      ( ( QNEConnection* ) item )->save( ds );
-    }
-}
-
-void QNodesEditor::load( QDataStream& ds ) {
-  scene->clear();
-
-  QMap<quint64, QNEPort*> portMap;
-
-  while( !ds.atEnd() ) {
-    int type;
-    ds >> type;
-
-    if( type == QNEBlock::Type ) {
-      QNEBlock* block = new QNEBlock( nullptr );
-      scene->addItem( block );
-      block->load( ds, portMap );
-    } else if( type == QNEConnection::Type ) {
-      QNEConnection* conn = new QNEConnection( nullptr );
-      scene->addItem( conn );
-      conn->load( ds, portMap );
-    }
-  }
-}
