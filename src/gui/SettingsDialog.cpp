@@ -120,7 +120,7 @@ void SettingsDialog::on_pushButton_4_clicked() {
     {
       QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-      if( block && block->deleteable ) {
+      if( block && !block->systemBlock ) {
         delete block;
         return;
       }

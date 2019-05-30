@@ -25,6 +25,7 @@
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   : GuidanceBase(),
     m_wheelbase( 2.4 ) {
+  m_id = getNextUserId();
 
   m_rootEntityTransform = new Qt3DCore::QTransform();
 

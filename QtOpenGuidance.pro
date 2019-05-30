@@ -5,6 +5,7 @@ SOURCES += src/main.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
+    src/block/guidancebase.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/LengthBlockModel.cpp \

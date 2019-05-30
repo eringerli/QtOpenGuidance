@@ -105,7 +105,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-              if( block && block->deleteable ) {
+              if( block && !block->systemBlock ) {
                 delete block;
                 break;
               }
@@ -127,7 +127,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             foreach( QGraphicsItem* item, scene->selectedItems() ) {
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-              if( block && block->deleteable ) {
+              if( block && !block->systemBlock ) {
                 delete block;
               }
             }

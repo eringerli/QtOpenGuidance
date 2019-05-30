@@ -106,7 +106,10 @@ void QNEPort::setPortFlags( int f ) {
     font.setBold( true );
     label->setFont( font );
     setPath( QPainterPath() );
-    label->setTextInteractionFlags( Qt::TextEditorInteraction );
+
+    if( !( m_portFlags & QNEPort::SystemBlock ) ) {
+      label->setTextInteractionFlags( Qt::TextEditorInteraction );
+    }
   }
 }
 

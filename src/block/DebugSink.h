@@ -39,7 +39,9 @@ class DebugSink : public GuidanceBase {
   public:
     explicit DebugSink()
       : GuidanceBase(),
-        block( nullptr ) {}
+        block( nullptr ) {
+      m_id = getNextUserId();
+    }
     ~DebugSink() {}
 
   public slots:

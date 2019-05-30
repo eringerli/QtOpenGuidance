@@ -42,7 +42,7 @@
 
 QNEBlock::QNEBlock( QObject* object, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    deleteable( true ), horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
+    horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, 5, 5 );
   setPath( p );
@@ -61,6 +61,11 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
   port->setName( name );
   port->setIsOutput( isOutput );
   port->setNEBlock( this );
+
+  if( systemBlock == true ) {
+    flags |= QNEPort::SystemBlock;
+  }
+
   port->setPortFlags( flags );
 
   QFontMetrics fm( scene()->font() );

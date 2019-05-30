@@ -63,7 +63,7 @@ class QNEBlock : public QGraphicsPathItem {
     QString getName();
     void setName( QString name );
 
-    bool deleteable;
+    bool systemBlock = false;
 
   protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );

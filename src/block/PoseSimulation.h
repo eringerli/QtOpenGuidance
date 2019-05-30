@@ -40,6 +40,8 @@ class PoseSimulation : public GuidanceBase {
       : GuidanceBase(),
         m_enabled( false ), m_interval( 50 ), m_timerId( 0 ), m_steerAngle( 0 ), m_velocity( 0 ), m_wheelbase( 2.4F ), m_position(), m_orientation() {
       setSimulation( false );
+      m_system = true;
+      m_id = getNextSystemId();
     }
 
   public slots:
@@ -160,7 +162,7 @@ class PoseSimulationFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
-      b->deleteable = false;
+      b->systemBlock = false;
 
       b->addPort( "Simulation", "", 0, QNEPort::NamePort );
       b->addPort( "PoseSimulation", "", 0, QNEPort::TypePort );

@@ -30,7 +30,9 @@ class VectorObject : public GuidanceBase {
 
   public:
     explicit VectorObject()
-      : vector( QVector3D( 0, 0, 0 ) ) {}
+      : vector( QVector3D( 0, 0, 0 ) ) {
+      m_id = getNextUserId();
+    }
 
     void emitConfigSignals() override {
       emit vectorChanged( vector );
