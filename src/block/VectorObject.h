@@ -64,7 +64,7 @@ class VectorFactory : public GuidanceFactory {
       return new VectorObject();
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -72,6 +72,8 @@ class VectorFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
+
+      return b;
     }
 };
 

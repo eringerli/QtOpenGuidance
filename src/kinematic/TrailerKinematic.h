@@ -101,7 +101,7 @@ class TrailerKinematicFactory : public GuidanceFactory {
       return new TrailerKinematic;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -115,6 +115,8 @@ class TrailerKinematicFactory : public GuidanceFactory {
       b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ) );
       b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ) );
       b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ) );
+
+      return b;
     }
 };
 

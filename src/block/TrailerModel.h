@@ -116,7 +116,7 @@ class TrailerModelFactory : public GuidanceFactory {
       return new TrailerModel( rootEntity );
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -128,6 +128,8 @@ class TrailerModelFactory : public GuidanceFactory {
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+
+      return b;
     }
 
   private:

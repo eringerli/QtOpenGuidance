@@ -159,7 +159,7 @@ class PoseSimulationFactory : public GuidanceFactory {
       return new PoseSimulation;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj, true );
       scene->addItem( b );
 
@@ -171,6 +171,8 @@ class PoseSimulationFactory : public GuidanceFactory {
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+
+      return b;
     }
 };
 

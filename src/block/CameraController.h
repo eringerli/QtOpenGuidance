@@ -124,13 +124,15 @@ class CameraControllerFactory : public GuidanceFactory {
       return new CameraController( m_rootEntity, m_cameraEntity );
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj, true );
       scene->addItem( b );
 
       b->addPort( QStringLiteral( "Camera" ), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
       b->addInputPort( "View Center Position", SLOT( setPose( QVector3D, QQuaternion ) ) );
+
+      return b;
     }
 
   private:

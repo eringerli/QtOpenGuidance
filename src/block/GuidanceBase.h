@@ -53,7 +53,7 @@ class GuidanceFactory : public QObject {
 
     virtual GuidanceBase* createNewObject() = 0;
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
 
 };
 

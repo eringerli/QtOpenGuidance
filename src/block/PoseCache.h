@@ -86,7 +86,7 @@ class PoseCacheFactory : public GuidanceFactory {
       return new PoseCache;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -99,6 +99,8 @@ class PoseCacheFactory : public GuidanceFactory {
 
       b->addOutputPort( "Pose", SIGNAL( poseChanged( QVector3D, QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+
+      return b;
     }
 };
 

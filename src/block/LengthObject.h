@@ -43,7 +43,6 @@ class LengthFactory : public GuidanceFactory {
   public:
     LengthFactory()
       : GuidanceFactory() {}
-    ~LengthFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Length" );
@@ -57,7 +56,7 @@ class LengthFactory : public GuidanceFactory {
       return new LengthObject();
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
@@ -65,6 +64,8 @@ class LengthFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addOutputPort( "Length", SIGNAL( lengthChanged( float ) ) );
+
+      return b;
     }
 };
 

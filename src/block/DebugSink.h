@@ -101,7 +101,7 @@ class DebugSinkFactory : public GuidanceFactory {
       return new DebugSink;
     }
 
-    virtual void createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       QNEBlock* b = new QNEBlock( obj );
       auto debugSink = qobject_cast<DebugSink*>( obj );
 
@@ -118,6 +118,8 @@ class DebugSinkFactory : public GuidanceFactory {
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+
+      return b;
     }
 };
 
