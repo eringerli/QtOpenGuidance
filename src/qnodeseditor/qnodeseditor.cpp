@@ -169,7 +169,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
           if( port && port != conn->port1() ) {
             if( conn->setPort2( port ) ) {
-              conn->setPos2( port->scenePos() );
+              conn->updatePosFromPorts();
               conn->updatePath();
               conn = nullptr;
               return true;

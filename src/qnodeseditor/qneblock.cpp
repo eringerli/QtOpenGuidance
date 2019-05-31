@@ -216,9 +216,23 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
   return value;
 }
 
+QNEPort* QNEBlock::getPortWithName( QString name ) {
+  foreach( QGraphicsItem* port_, childItems() ) {
+    if( port_->type() == QNEPort::Type ) {
+      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+      if( port && port->getName() == name ) {
+        return port;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 void QNEBlock::toJSON( QJsonObject& json ) {
-//QJsonValueRef ref = json["blocks"];
   QJsonArray blocksArray = json["blocks"].toArray();
+
   QJsonObject blockObject;
   blockObject["id"] = m_id;
   blockObject["name"] = getName();
@@ -226,5 +240,6 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   blockObject["positionX"] = x();
   blockObject["positionY"] = y();
   blocksArray.append( blockObject );
+
   json["blocks"] = blocksArray;
 }

@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include <QMap>
+
 #include <QtWidgets>
 #include <QObject>
 
@@ -120,7 +122,7 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
 }
 
 void SettingsDialog::on_pbSaveSelected_clicked() {
-  QString selectedFilter = QStringLiteral( "JSON Files" );
+  QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
   QString fileName = QFileDialog::getSaveFileName( this,
                      tr( "Open Saved Config" ),
@@ -145,34 +147,156 @@ void SettingsDialog::on_pbSaveSelected_clicked() {
 
     foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
       {
-        {
-          QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+        QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-          if( block ) {
-            block->toJSON( jsonObject );
-          }
+        if( block ) {
+          block->toJSON( jsonObject );
         }
+      }
 
-        {
-          QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+      {
+        QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-          if( connection ) {
-            connection->toJSON( jsonObject );
-          }
+        if( connection ) {
+          connection->toJSON( jsonObject );
         }
       }
     }
 
     QJsonDocument jsonDocument( jsonObject );
-    QByteArray bytes = jsonDocument.toJson();
-    qDebug() << bytes;
-
     saveFile.write( jsonDocument.toJson() );
   }
 }
 
+QNEBlock* SettingsDialog::getBlockWithId( int id ) {
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+    if( block ) {
+      if( block->m_id == id ) {
+        return block;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 void SettingsDialog::on_pbLoad_clicked() {
 
+  QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
+  QString dir;
+  QString fileName = QFileDialog::getOpenFileName( this,
+                     tr( "Open Saved Config" ),
+                     dir,
+                     tr( "All Files (*);;JSON Files (*.json)" ),
+                     &selectedFilter );
+
+  if( !fileName.isEmpty() ) {
+    QFile loadFile( fileName );
+
+    if( !loadFile.open( QIODevice::ReadOnly ) ) {
+      qWarning( "Couldn't open save file." );
+      return;
+    }
+
+    QByteArray saveData = loadFile.readAll();
+
+    QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
+    QJsonObject json = loadDoc.object();
+
+    // as the new object get new id, here is a QMap to hold the conversions
+    // first int: id in file, second int: id in the graphicsview
+    QMap<int, int> idMap;
+
+    if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
+      QJsonArray blocksArray = json["blocks"].toArray();
+
+      for( int blockIndex = 0; blockIndex < blocksArray.size(); ++blockIndex ) {
+        QJsonObject blockObject = blocksArray[blockIndex].toObject();
+        int id = blockObject["id"].toInt( 0 );
+
+        // if id is a system-id -> search the block and set the values
+        if( id != 0 ) {
+          // system id -> don't create new blocks
+          if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
+            QNEBlock* block = getBlockWithId( id );
+
+            if( block ) {
+              idMap.insert( id, block->m_id );
+              block->setX( blockObject["positionX"].toInt( 0 ) );
+              block->setY( blockObject["positionY"].toInt( 0 ) );
+            }
+
+            // id is not a system-id -> create new blocks
+          } else {
+            int index = ui->cbNodeType->findText( blockObject["type"].toString( QStringLiteral( "" ) ), Qt::MatchExactly );
+            GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->itemData( index ) ) );
+
+            if( factory ) {
+              GuidanceBase* obj = factory->createNewObject();
+              QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
+
+              idMap.insert( id, block->m_id );
+
+              block->setX( blockObject["positionX"].toInt( 0 ) );
+              block->setY( blockObject["positionY"].toInt( 0 ) );
+              block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
+
+              // reset the models
+              if( qobject_cast<VectorObject*>( obj ) ) {
+                vectorBlockModel->resetModel();
+              }
+            }
+          }
+
+        }
+      }
+    }
+
+    if( json.contains( "connections" ) && json["connections"].isArray() ) {
+      QJsonArray connectionsArray = json["connections"].toArray();
+
+      for( int connectionsIndex = 0; connectionsIndex < connectionsArray.size(); ++connectionsIndex ) {
+        QJsonObject connectionsObject = connectionsArray[connectionsIndex].toObject();
+
+        if( !connectionsObject["idFrom"].isUndefined() &&
+            !connectionsObject["idTo"].isUndefined() &&
+            !connectionsObject["portFrom"].isUndefined() &&
+            !connectionsObject["portTo"].isUndefined() ) {
+
+          int idFrom = idMap[connectionsObject["idFrom"].toInt()];
+          int idTo = idMap[connectionsObject["idTo"].toInt()];
+
+          if( idFrom != 0 && idTo != 0 ) {
+            QString portFromName = connectionsObject["portFrom"].toString();
+            QString portToName = connectionsObject["portTo"].toString();
+
+            QNEBlock* blockFrom = getBlockWithId( idFrom );
+            QNEBlock* blockTo = getBlockWithId( idTo );
+
+            if( blockFrom && blockTo ) {
+              QNEPort* portFrom = blockFrom->getPortWithName( portFromName );
+              QNEPort* portTo = blockTo->getPortWithName( portToName );
+
+              if( portFrom && portTo ) {
+                QNEConnection* conn = new QNEConnection();
+                blockFrom->scene()->addItem( conn );
+                conn->setPort1( portFrom );
+
+                if( conn->setPort2( portTo ) ) {
+                  conn->updatePosFromPorts();
+                  conn->updatePath();
+                } else {
+                  delete conn;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {

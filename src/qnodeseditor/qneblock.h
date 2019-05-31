@@ -67,6 +67,8 @@ class QNEBlock : public QGraphicsPathItem {
     void setName( QString name );
     QString getType();
 
+    QNEPort* getPortWithName( QString name );
+
     bool systemBlock = false;
 
   public:

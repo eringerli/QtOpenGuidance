@@ -36,7 +36,7 @@
 
 QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
   QGraphicsPathItem( parent ),
-  radius_( 5 ), margin( 2 ), m_portFlags( 0 ), slotSignalSignature( slotSignalSignature ) {
+  slotSignalSignature( slotSignalSignature ), radius_( 5 ), margin( 2 ), m_portFlags( 0 ) {
   label = new QGraphicsTextItem( this );
 
   QPainterPath p;

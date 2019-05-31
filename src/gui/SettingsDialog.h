@@ -80,6 +80,8 @@ class SettingsDialog : public QDialog {
 
     VectorBlockModel* vectorBlockModel;
     LengthBlockModel* lengthBlockModel;
+
+    QNEBlock* getBlockWithId( int id );
 };
 
 #endif // SETTINGSDIALOG_H
