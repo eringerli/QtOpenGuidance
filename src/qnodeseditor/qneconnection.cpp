@@ -36,6 +36,12 @@
 #include <QGraphicsScene>
 #include <QPainter>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+
 QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( parent ) {
   setPen( QPen( Qt::black, 2 ) );
   setBrush( Qt::NoBrush );
@@ -149,4 +155,17 @@ void QNEConnection::load( QDataStream& ds, const QMap<quint64, QNEPort*>& portMa
   setPort2( portMap[ptr2] );
   updatePosFromPorts();
   updatePath();
+}
+
+void QNEConnection::toJSON( QJsonObject& json ) {
+  QJsonArray connectionsArray = json["connections"].toArray();
+
+  QJsonObject connectionObject;
+  connectionObject["idFrom"] = port1()->block()->m_id;
+  connectionObject["portFrom"] = port1()->getName();
+  connectionObject["idTo"] =  port2()->block()->m_id;
+  connectionObject["portTo"] = port2()->getName();
+  connectionsArray.append( connectionObject );
+
+  json["connections"] = connectionsArray;
 }

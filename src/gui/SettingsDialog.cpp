@@ -19,6 +19,8 @@
 #include <QtWidgets>
 #include <QObject>
 
+#include <QFileDialog>
+
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"
@@ -107,15 +109,96 @@ void SettingsDialog::toggleVisibility() {
   setVisible( ! isVisible() );
 }
 
-void SettingsDialog::on_pushButton_3_clicked() {
-  ui->gvNodeEditor->zoomIn();
+void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
+  QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
+
+  if( model ) {
+    QItemSelectionModel* m = ui->twValues->selectionModel();
+    ui->twValues->setModel( model );
+    delete m;
+  }
 }
 
-void SettingsDialog::on_pushButton_2_clicked() {
+void SettingsDialog::on_pbSaveSelected_clicked() {
+  QString selectedFilter = QStringLiteral( "JSON Files" );
+  QString dir;
+  QString fileName = QFileDialog::getSaveFileName( this,
+                     tr( "Open Saved Config" ),
+                     dir,
+                     tr( "All Files (*);;JSON Files (*.json)" ),
+                     &selectedFilter );
+
+  if( !fileName.isEmpty() ) {
+
+    QFile saveFile( fileName );
+
+    if( !saveFile.open( QIODevice::WriteOnly ) ) {
+      qWarning( "Couldn't open save file." );
+      return;
+    }
+
+    QJsonObject jsonObject;
+    QJsonArray blocks;
+    QJsonArray connections;
+    jsonObject["blocks"] = blocks;
+    jsonObject["connections"] = connections;
+
+    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+      {
+        {
+          QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+          if( block ) {
+            block->toJSON( jsonObject );
+          }
+        }
+
+        {
+          QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+          if( connection ) {
+            connection->toJSON( jsonObject );
+          }
+        }
+      }
+    }
+
+    QJsonDocument jsonDocument( jsonObject );
+    QByteArray bytes = jsonDocument.toJson();
+    qDebug() << bytes;
+
+    saveFile.write( jsonDocument.toJson() );
+  }
+}
+
+void SettingsDialog::on_pbLoad_clicked() {
+
+}
+
+void SettingsDialog::on_pbAddBlock_clicked() {
+  QString currentText = ui->cbNodeType->currentText();
+  GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->currentData() ) );
+
+  if( factory ) {
+    GuidanceBase* obj = factory->createNewObject();
+    factory->createBlock( ui->gvNodeEditor->scene(), obj );
+
+    // reset the models
+    if( qobject_cast<VectorObject*>( obj ) ) {
+      vectorBlockModel->resetModel();
+    }
+  }
+}
+
+void SettingsDialog::on_pbZoomOut_clicked() {
   ui->gvNodeEditor->zoomOut();
 }
 
-void SettingsDialog::on_pushButton_4_clicked() {
+void SettingsDialog::on_pbZoomIn_clicked() {
+  ui->gvNodeEditor->zoomIn();
+}
+
+void SettingsDialog::on_pbDeleteSelected_clicked() {
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
     {
       QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
@@ -134,30 +217,5 @@ void SettingsDialog::on_pushButton_4_clicked() {
         return;
       }
     }
-  }
-}
-
-void SettingsDialog::on_pushButton_clicked() {
-  QString currentText = ui->cbNodeType->currentText();
-  GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->currentData() ) );
-
-  if( factory ) {
-    GuidanceBase* obj = factory->createNewObject();
-    factory->createBlock( ui->gvNodeEditor->scene(), obj );
-
-    // reset the models
-    if( qobject_cast<VectorObject*>( obj ) ) {
-      vectorBlockModel->resetModel();
-    }
-  }
-}
-
-void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
-  QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
-
-  if( model ) {
-    QItemSelectionModel* m = ui->twValues->selectionModel();
-    ui->twValues->setModel( model );
-    delete m;
   }
 }

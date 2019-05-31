@@ -59,6 +59,8 @@ class QNEConnection : public QGraphicsPathItem {
       return Type;
     }
 
+    void toJSON( QJsonObject& json );
+
   private:
     QPointF pos1;
     QPointF pos2;

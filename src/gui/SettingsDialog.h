@@ -50,15 +50,19 @@ class SettingsDialog : public QDialog {
 
 
   private slots:
-    void on_pushButton_3_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_pushButton_4_clicked();
-
-    void on_pushButton_clicked();
-
     void on_cbValues_currentIndexChanged( int index );
+
+    void on_pbLoad_clicked();
+
+    void on_pbSaveSelected_clicked();
+
+    void on_pbAddBlock_clicked();
+
+    void on_pbZoomOut_clicked();
+
+    void on_pbZoomIn_clicked();
+
+    void on_pbDeleteSelected_clicked();
 
   private:
     Ui::SettingsDialog* ui;

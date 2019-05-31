@@ -38,8 +38,13 @@
 #include <QRectF>
 #include <QtMath>
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+
+#include <QDebug>
 
 #include "qneport.h"
 #include "qneconnection.h"
@@ -212,6 +217,7 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
 }
 
 void QNEBlock::toJSON( QJsonObject& json ) {
+//QJsonValueRef ref = json["blocks"];
   QJsonArray blocksArray = json["blocks"].toArray();
   QJsonObject blockObject;
   blockObject["id"] = m_id;
@@ -220,20 +226,5 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   blockObject["positionX"] = x();
   blockObject["positionY"] = y();
   blocksArray.append( blockObject );
-
-  QJsonArray connectionsArray = json["connections"].toArray();
-
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEConnection::Type ) {
-      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( port_ );
-
-      if( connection ) {
-        QJsonObject connectionObject;
-        connectionObject["idFrom"] = m_id;
-        connectionObject["idTo"] = connection->port2()->block()->m_id;
-        connectionsArray.append( connectionObject );
-      }
-    }
-  }
-
+  json["blocks"] = blocksArray;
 }
