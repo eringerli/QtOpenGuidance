@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>79</width>
+    <width>80</width>
     <height>813</height>
    </rect>
   </property>
@@ -55,6 +55,12 @@
        <height>48</height>
       </size>
      </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
     </widget>
    </item>
    <item>
@@ -88,6 +94,9 @@
      <property name="autoRepeat">
       <bool>true</bool>
      </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
     </widget>
    </item>
    <item>
@@ -107,6 +116,9 @@
      </property>
      <property name="autoRepeat">
       <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
      </property>
     </widget>
    </item>
@@ -138,6 +150,12 @@
        <height>48</height>
       </size>
      </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
     </widget>
    </item>
    <item>
@@ -157,6 +175,12 @@
      </property>
      <property name="checkable">
       <bool>false</bool>
+     </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
      </property>
     </widget>
    </item>
@@ -191,6 +215,9 @@
      <property name="autoRepeat">
       <bool>true</bool>
      </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
     </widget>
    </item>
    <item>
@@ -210,6 +237,9 @@
      </property>
      <property name="autoRepeat">
       <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
      </property>
     </widget>
    </item>

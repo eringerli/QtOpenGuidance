@@ -34,11 +34,12 @@ class CameraController : public GuidanceBase {
 
   public:
     explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : m_mode( 0 ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ), m_orbitController( nullptr ),
-        m_offset( -20, 0, 10 ) {
+      : m_mode( 0 ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ), m_orbitController( nullptr ) {
       m_cameraEntity->setPosition( m_offset );
       m_cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
       m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
+
+      calculateOffset();
     }
 
     ~CameraController() {}
@@ -70,29 +71,74 @@ class CameraController : public GuidanceBase {
     }
 
     void tiltUp() {
-      m_offset = QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), 10 ) *  m_offset;
+      tiltAngle += 10;
+
+      if( tiltAngle >= 90 ) {
+        tiltAngle -= 10;
+      }
+
+      calculateOffset();
     }
     void tiltDown() {
-      m_offset = QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), -10 ) *  m_offset;
+      tiltAngle -= 10;
+
+      if( tiltAngle <= 0 ) {
+        tiltAngle += 10;
+      }
+
+      calculateOffset();
     }
 
     void zoomIn() {
-      m_offset /= 1.2F;
+      lenghtToViewCenter /= 1.2F;
+
+      if( lenghtToViewCenter < 10 ) {
+        lenghtToViewCenter *= 1.2F;
+      }
+
+      calculateOffset();
     }
     void zoomOut() {
+      lenghtToViewCenter *= 1.2F;
 
-      m_offset *= 1.2F;
+      if( lenghtToViewCenter > 200 ) {
+        lenghtToViewCenter /= 1.2F;
+      }
+
+      calculateOffset();
     }
 
     void panLeft() {
-      m_offset = QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -10 ) *  m_offset;
+      panAngle -= 10;
+
+      if( panAngle <= 0 ) {
+        panAngle += 360;
+      }
+
+      calculateOffset();
     }
     void panRight() {
-      m_offset = QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), 10 ) *  m_offset;
+      panAngle += 10;
+
+      if( panAngle >= 360 ) {
+        panAngle -= 360;
+      }
+
+      calculateOffset();
     }
 
     void resetCamera() {
-      m_offset = QVector3D( -20, 0, 10 );
+      lenghtToViewCenter = 20;
+      panAngle = 0;
+      tiltAngle = 39;
+      calculateOffset();
+    }
+
+    void calculateOffset() {
+      m_offset =
+        QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
+        QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) *
+        QVector3D( -lenghtToViewCenter, 0, 0 );
     }
 
   private:
@@ -104,6 +150,9 @@ class CameraController : public GuidanceBase {
     Qt3DExtras::QOrbitCameraController* m_orbitController;
 
     QVector3D m_offset;
+    float lenghtToViewCenter = 20;
+    float panAngle = 0;
+    float tiltAngle = 39;
 
 };
 
