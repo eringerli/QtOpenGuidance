@@ -34,6 +34,22 @@ class LengthObject : public GuidanceBase {
       emit lengthChanged( length );
     }
 
+    void toJSON( QJsonObject& json ) override {
+      QJsonObject valuesObject;
+      valuesObject["length"] = double( length );
+      json["values"] = valuesObject;
+    }
+
+    void fromJSON( QJsonObject& json ) override {
+      if( json["values"].isObject() ) {
+        QJsonObject valuesObject = json["values"].toObject();
+
+        if( valuesObject["length"].isDouble() ) {
+          length = float( valuesObject["length"].toDouble() );
+        }
+      }
+    }
+
   signals:
     void lengthChanged( float );
 

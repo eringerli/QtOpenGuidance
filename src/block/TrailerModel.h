@@ -19,7 +19,7 @@
 #ifndef TRAILERENTITY_H
 #define TRAILERENTITY_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>

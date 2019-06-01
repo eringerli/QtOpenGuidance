@@ -46,6 +46,8 @@
 
 #include <QDebug>
 
+#include "../block/GuidanceBase.h"
+
 #include "qneport.h"
 #include "qneconnection.h"
 
@@ -216,12 +218,15 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
   return value;
 }
 
-QNEPort* QNEBlock::getPortWithName( QString name ) {
+QNEPort* QNEBlock::getPortWithName( QString name, bool output ) {
   foreach( QGraphicsItem* port_, childItems() ) {
     if( port_->type() == QNEPort::Type ) {
       QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
-      if( port && !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) && port->getName() == name ) {
+      if( port &&
+          !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) &&
+          port->isOutput() == output &&
+          port->getName() == name ) {
         return port;
       }
     }
@@ -239,7 +244,20 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   blockObject["type"] = getType();
   blockObject["positionX"] = x();
   blockObject["positionY"] = y();
+
+  qobject_cast<GuidanceBase*>( object )->toJSON( blockObject );
+
   blocksArray.append( blockObject );
 
   json["blocks"] = blocksArray;
+}
+
+void QNEBlock::fromJSON( QJsonObject& json ) {
+  if( json["values"].isObject() ) {
+    qobject_cast<GuidanceBase*>( object )->fromJSON( json );
+  }
+}
+
+void QNEBlock::emitConfigSignals() {
+  qobject_cast<GuidanceBase*>( object )->emitConfigSignals();
 }

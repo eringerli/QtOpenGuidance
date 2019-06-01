@@ -20,6 +20,7 @@
 #define VECTOROBJECT_H
 
 #include <QObject>
+
 #include <QQuaternion>
 #include <QVector3D>
 
@@ -34,6 +35,33 @@ class VectorObject : public GuidanceBase {
 
     void emitConfigSignals() override {
       emit vectorChanged( vector );
+    }
+
+    void toJSON( QJsonObject& json ) override {
+      QJsonObject valuesObject;
+      valuesObject["X"] = double( vector.x() );
+      valuesObject["Y"] = double( vector.y() );
+      valuesObject["Z"] = double( vector.z() );
+      json["values"] = valuesObject;
+    }
+
+    void fromJSON( QJsonObject& json ) override {
+      if( json["values"].isObject() ) {
+        QJsonObject valuesObject = json["values"].toObject();
+
+        if( valuesObject["X"].isDouble() ) {
+          vector.setX( float( valuesObject["X"].toDouble() ) );
+        }
+
+        if( valuesObject["Y"].isDouble() ) {
+          vector.setY( float( valuesObject["Y"].toDouble() ) );
+        }
+
+        if( valuesObject["Z"].isDouble() ) {
+          vector.setZ( float( valuesObject["Z"].toDouble() ) );
+
+        }
+      }
     }
 
   signals:

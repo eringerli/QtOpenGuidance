@@ -19,7 +19,7 @@
 #ifndef TRACTORKINEMATIC_H
 #define TRACTORKINEMATIC_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <QTime>
 #include <QEvent>

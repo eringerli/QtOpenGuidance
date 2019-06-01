@@ -19,6 +19,8 @@
 #ifndef LENGTHBLOCKMODEL_H
 #define LENGTHBLOCKMODEL_H
 
+#include <QObject>
+
 #include <QComboBox>
 
 #include <QtCore/QAbstractTableModel>

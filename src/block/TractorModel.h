@@ -19,7 +19,7 @@
 #ifndef TRACTORENTITY_H
 #define TRACTORENTITY_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>

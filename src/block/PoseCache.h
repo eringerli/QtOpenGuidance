@@ -19,7 +19,7 @@
 #ifndef POSECACHE_H
 #define POSECACHE_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <QQuaternion>
 #include <QVector3D>

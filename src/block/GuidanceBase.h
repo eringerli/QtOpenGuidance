@@ -19,7 +19,7 @@
 #ifndef GUIDANCEBASE_H
 #define GUIDANCEBASE_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <QtWidgets>
 #include <QComboBox>
@@ -38,6 +38,9 @@ class GuidanceBase : public QObject {
     GuidanceBase() {}
 
     virtual void emitConfigSignals() {}
+
+    virtual void toJSON( QJsonObject& /*json*/ ) {}
+    virtual void fromJSON( QJsonObject& /*json*/ ) {}
 };
 
 class GuidanceFactory : public QObject {

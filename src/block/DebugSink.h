@@ -19,7 +19,7 @@
 #ifndef DEBUGSINK_H
 #define DEBUGSINK_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <QQuaternion>
 #include <QVector3D>

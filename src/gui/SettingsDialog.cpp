@@ -242,6 +242,7 @@ void SettingsDialog::on_pbLoad_clicked() {
               block->setX( blockObject["positionX"].toDouble( 0 ) );
               block->setY( blockObject["positionY"].toDouble( 0 ) );
               block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
+              block->fromJSON( blockObject );
               block->setSelected( true );
 
               // reset the models
@@ -277,8 +278,8 @@ void SettingsDialog::on_pbLoad_clicked() {
               QString portFromName = connectionsObject["portFrom"].toString();
               QString portToName = connectionsObject["portTo"].toString();
 
-              QNEPort* portFrom = blockFrom->getPortWithName( portFromName );
-              QNEPort* portTo = blockTo->getPortWithName( portToName );
+              QNEPort* portFrom = blockFrom->getPortWithName( portFromName, true );
+              QNEPort* portTo = blockTo->getPortWithName( portToName, false );
 
               if( portFrom && portTo ) {
                 QNEConnection* conn = new QNEConnection();
@@ -298,6 +299,16 @@ void SettingsDialog::on_pbLoad_clicked() {
         }
       }
     }
+
+    // as new values for the blocks are added above, emit all signals now, when the connections are made
+    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+      if( block ) {
+        block->emitConfigSignals();
+      }
+    }
+
   }
 }
 

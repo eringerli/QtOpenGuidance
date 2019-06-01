@@ -19,6 +19,8 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include <QObject>
+
 #include <QDialog>
 #include <QVector3D>
 #include <Qt3DCore/QEntity>

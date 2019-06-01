@@ -55,7 +55,8 @@ class QNEBlock : public QGraphicsPathItem {
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
 
     void toJSON( QJsonObject& json );
-    //    virtual void fromJSON(QJsonObject& json) = 0;
+    void fromJSON( QJsonObject& json );
+    void emitConfigSignals();
 
     QVector<QNEPort*> ports();
 
@@ -67,7 +68,7 @@ class QNEBlock : public QGraphicsPathItem {
     void setName( QString name );
     QString getType();
 
-    QNEPort* getPortWithName( QString name );
+    QNEPort* getPortWithName( QString name, bool output );
 
     bool systemBlock = false;
 

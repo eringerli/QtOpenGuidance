@@ -19,7 +19,7 @@
 #ifndef POSESIMULATION_H
 #define POSESIMULATION_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include <QTime>
 #include <QEvent>

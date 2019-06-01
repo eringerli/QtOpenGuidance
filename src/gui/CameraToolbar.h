@@ -1,6 +1,8 @@
 #ifndef CAMERACONTROL_H
 #define CAMERACONTROL_H
 
+#include <QObject>
+
 #include <QGroupBox>
 
 namespace Ui {

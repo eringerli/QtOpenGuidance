@@ -19,6 +19,8 @@
 #ifndef SIMULATORTOOLBAR_H
 #define SIMULATORTOOLBAR_H
 
+#include <QObject>
+
 #include <QGroupBox>
 
 namespace Ui {

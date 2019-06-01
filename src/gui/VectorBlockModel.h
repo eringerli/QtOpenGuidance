@@ -19,6 +19,8 @@
 #ifndef VECTRORBLOCKMODEL_H
 #define VECTRORBLOCKMODEL_H
 
+#include <QObject>
+
 #include <QComboBox>
 
 #include <QtCore/QAbstractTableModel>

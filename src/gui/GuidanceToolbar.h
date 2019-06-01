@@ -19,6 +19,8 @@
 #ifndef GUIDANCETOOLBAR_H
 #define GUIDANCETOOLBAR_H
 
+#include <QObject>
+
 #include <QGroupBox>
 
 namespace Ui {
