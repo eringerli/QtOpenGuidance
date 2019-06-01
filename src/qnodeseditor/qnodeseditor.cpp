@@ -125,18 +125,28 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
       case QEvent::KeyRelease: {
           if( keyEvent->matches( QKeySequence::Delete ) ) {
             foreach( QGraphicsItem* item, scene->selectedItems() ) {
+              QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+              if( connection != nullptr ) {
+                delete connection;
+              }
+            }
+
+            foreach( QGraphicsItem* item, scene->selectedItems() ) {
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-              if( block && !block->systemBlock ) {
-                delete block;
+              if( block != nullptr ) {
+                if( !block->systemBlock ) {
+                  delete block;
+                }
               }
             }
           }
         }
         break;
       }
-
       break;
+
 
     case QEvent::GraphicsSceneMouseMove: {
         QGraphicsSceneMouseEvent* m = static_cast<QGraphicsSceneMouseEvent*>( e );

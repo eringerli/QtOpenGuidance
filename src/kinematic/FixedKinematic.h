@@ -80,7 +80,7 @@ class FixedKinematicFactory : public GuidanceFactory {
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( QStringLiteral( "Fixed Kinematics" ), QVariant::fromValue( this ) );
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
     virtual GuidanceBase* createNewObject() override {

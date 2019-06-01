@@ -224,14 +224,14 @@ void SettingsDialog::on_pbLoad_clicked() {
 
             if( block ) {
               idMap.insert( id, block->m_id );
-              block->setX( blockObject["positionX"].toInt( 0 ) );
-              block->setY( blockObject["positionY"].toInt( 0 ) );
+              block->setX( blockObject["positionX"].toDouble( 0 ) );
+              block->setY( blockObject["positionY"].toDouble( 0 ) );
             }
 
             // id is not a system-id -> create new blocks
           } else {
-            int index = ui->cbNodeType->findText( blockObject["type"].toString( QStringLiteral( "" ) ), Qt::MatchExactly );
-            GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->itemData( index ) ) );
+            int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
+            GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
             if( factory ) {
               GuidanceBase* obj = factory->createNewObject();
@@ -239,9 +239,10 @@ void SettingsDialog::on_pbLoad_clicked() {
 
               idMap.insert( id, block->m_id );
 
-              block->setX( blockObject["positionX"].toInt( 0 ) );
-              block->setY( blockObject["positionY"].toInt( 0 ) );
+              block->setX( blockObject["positionX"].toDouble( 0 ) );
+              block->setY( blockObject["positionY"].toDouble( 0 ) );
               block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
+              block->setSelected( true );
 
               // reset the models
               if( qobject_cast<VectorObject*>( obj ) ) {
@@ -269,13 +270,13 @@ void SettingsDialog::on_pbLoad_clicked() {
           int idTo = idMap[connectionsObject["idTo"].toInt()];
 
           if( idFrom != 0 && idTo != 0 ) {
-            QString portFromName = connectionsObject["portFrom"].toString();
-            QString portToName = connectionsObject["portTo"].toString();
-
             QNEBlock* blockFrom = getBlockWithId( idFrom );
             QNEBlock* blockTo = getBlockWithId( idTo );
 
             if( blockFrom && blockTo ) {
+              QString portFromName = connectionsObject["portFrom"].toString();
+              QString portToName = connectionsObject["portTo"].toString();
+
               QNEPort* portFrom = blockFrom->getPortWithName( portFromName );
               QNEPort* portTo = blockTo->getPortWithName( portToName );
 
@@ -287,6 +288,7 @@ void SettingsDialog::on_pbLoad_clicked() {
                 if( conn->setPort2( portTo ) ) {
                   conn->updatePosFromPorts();
                   conn->updatePath();
+                  conn->setSelected( true );
                 } else {
                   delete conn;
                 }
@@ -323,22 +325,20 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 }
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
-    {
-      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+  foreach( QGraphicsItem* item, scene->selectedItems() ) {
+    QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-      if( block && !block->systemBlock ) {
-        delete block;
-        return;
-      }
+    if( connection != nullptr ) {
+      delete connection;
     }
+  }
 
-    {
-      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+  foreach( QGraphicsItem* item, scene->selectedItems() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-      if( connection ) {
-        delete connection;
-        return;
+    if( block != nullptr ) {
+      if( !block->systemBlock ) {
+        delete block;
       }
     }
   }

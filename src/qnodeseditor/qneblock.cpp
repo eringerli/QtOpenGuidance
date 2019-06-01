@@ -54,7 +54,7 @@ int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
 
 QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
+    horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ), systemBlock( systemBlock ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, 5, 5 );
   setPath( p );
