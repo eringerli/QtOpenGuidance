@@ -54,7 +54,7 @@ int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
 
 QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ), systemBlock( systemBlock ) {
+    systemBlock( systemBlock ), horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, 5, 5 );
   setPath( p );
@@ -101,7 +101,7 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
   p.addRoundedRect( -width / 2, -height / 2, width, height, 5, 5 );
   setPath( p );
 
-  int y = -height / 2 + vertMargin + port->radius();
+  double y = -height / 2 + vertMargin + port->radius();
 
   foreach( QGraphicsItem* port_, childItems() ) {
     if( port_->type() != QNEPort::Type ) {
@@ -134,7 +134,7 @@ void QNEBlock::addOutputPort( const QString& name, const QString& signalSlotSign
 void QNEBlock::addWidget( QWidget* widget ) {
   QGraphicsProxyWidget* const proxy = this->scene()->addWidget( widget );
   proxy->setParentItem( this );
-  int heightBuffer = height;
+  double heightBuffer = height;
   height += proxy->geometry().height() + 5;
   width = qMax( proxy->geometry().width() + 10, ( double )width );
   proxy->setX( -width / 2 + ( width - proxy->geometry().width() ) / 2 );
@@ -221,7 +221,7 @@ QNEPort* QNEBlock::getPortWithName( QString name ) {
     if( port_->type() == QNEPort::Type ) {
       QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
-      if( port && port->getName() == name ) {
+      if( port && !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) && port->getName() == name ) {
         return port;
       }
     }

@@ -92,8 +92,8 @@ class QNEBlock : public QGraphicsPathItem {
   private:
     int horzMargin;
     int vertMargin;
-    int width;
-    int height;
+    double width;
+    double height;
 
   public:
     QObject* object;

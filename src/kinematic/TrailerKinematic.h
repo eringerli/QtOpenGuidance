@@ -61,8 +61,8 @@ class TrailerKinematic : public GuidanceBase {
         orientation = orientationTrailer;
       }
 
-      m_positionPivotPoint = position + orientation * -m_offsetHookPoint;
-      QVector3D positionTowPoint = m_positionPivotPoint + orientation * m_offsetTowPoint;
+      m_positionPivotPoint = position + ( orientation * -m_offsetHookPoint );
+      QVector3D positionTowPoint = m_positionPivotPoint + ( orientation * m_offsetTowPoint );
 
       emit poseHookPointChanged( position, orientation );
       emit posePivotPointChanged( m_positionPivotPoint, orientation );

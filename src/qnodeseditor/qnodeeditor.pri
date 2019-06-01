@@ -3,7 +3,6 @@ QT          += core widgets gui
 DEPENDPATH      += $$PWD
 INCLUDEPATH     += $$PWD
 
-
 SOURCES +=     $$PWD/qneblock.cpp \
     $$PWD/qneport.cpp \
     $$PWD/qneconnection.cpp \

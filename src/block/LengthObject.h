@@ -19,7 +19,7 @@
 #ifndef LENGTHWIDGET_H
 #define LENGTHWIDGET_H
 
-#include <QWidget>
+#include <QObject>
 
 #include "GuidanceBase.h"
 
@@ -29,6 +29,10 @@ class LengthObject : public GuidanceBase {
   public:
     explicit LengthObject()
       : GuidanceBase() {}
+
+    void emitConfigSignals() override {
+      emit lengthChanged( length );
+    }
 
   signals:
     void lengthChanged( float );

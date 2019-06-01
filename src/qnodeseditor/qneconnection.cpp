@@ -52,11 +52,13 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
 }
 
 QNEConnection::~QNEConnection() {
-  if( m_port1 )
+  if( m_port1 ) {
     m_port1->connections().remove( m_port1->connections().indexOf( this ) );
+  }
 
-  if( m_port2 )
+  if( m_port2 ) {
     m_port2->connections().remove( m_port2->connections().indexOf( this ) );
+  }
 
   QObject::disconnect( connection );
 }
@@ -100,8 +102,8 @@ bool QNEConnection::setPort2( QNEPort* p ) {
 
   if( ( bool )connection ) {
     m_port2 = p;
-
     m_port2->connections().append( this );
+
     return true;
   } else {
     return false;
@@ -138,23 +140,6 @@ QNEPort* QNEConnection::port1() const {
 
 QNEPort* QNEConnection::port2() const {
   return m_port2;
-}
-
-void QNEConnection::save( QDataStream& ds ) {
-  ds << ( quint64 ) m_port1;
-  ds << ( quint64 ) m_port2;
-}
-
-void QNEConnection::load( QDataStream& ds, const QMap<quint64, QNEPort*>& portMap ) {
-  quint64 ptr1;
-  quint64 ptr2;
-  ds >> ptr1;
-  ds >> ptr2;
-
-  setPort1( portMap[ptr1] );
-  setPort2( portMap[ptr2] );
-  updatePosFromPorts();
-  updatePath();
 }
 
 void QNEConnection::toJSON( QJsonObject& json ) {

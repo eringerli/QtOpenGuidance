@@ -52,9 +52,6 @@ class QNEConnection : public QGraphicsPathItem {
     QNEPort* port1() const;
     QNEPort* port2() const;
 
-    void save( QDataStream& );
-    void load( QDataStream&, const QMap<quint64, QNEPort*>& portMap );
-
     int type() const {
       return Type;
     }

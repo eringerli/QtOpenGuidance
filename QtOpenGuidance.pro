@@ -31,8 +31,6 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/TrailerKinematic.h
 
-#QMAKE_CXXFLAGS += -pg -g
-
 FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/GuidanceToolbar.ui \
