@@ -325,7 +325,7 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 }
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
-  foreach( QGraphicsItem* item, scene->selectedItems() ) {
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
     QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
     if( connection != nullptr ) {
@@ -333,7 +333,7 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
     }
   }
 
-  foreach( QGraphicsItem* item, scene->selectedItems() ) {
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
