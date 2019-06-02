@@ -62,10 +62,14 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   nodesEditor->install( scene );
 
   // Models for the tableview
+  filterModel = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
   lengthBlockModel = new LengthBlockModel( scene );
   vectorBlockModel->addToCombobox( ui->cbValues );
   lengthBlockModel->addToCombobox( ui->cbValues );
+  filterModel->setSourceModel( vectorBlockModel );
+  filterModel->sort( 0, Qt::AscendingOrder );
+  ui->twValues->setModel( filterModel );
 
   // Factories for the blocks
   poseCacheFactory = new PoseCacheFactory();
@@ -115,9 +119,8 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
   QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
 
   if( model ) {
-    QItemSelectionModel* m = ui->twValues->selectionModel();
-    ui->twValues->setModel( model );
-    delete m;
+    filterModel->setSourceModel( model );
+    ui->twValues->resizeColumnsToContents();
   }
 }
 
@@ -309,6 +312,8 @@ void SettingsDialog::on_pbLoad_clicked() {
       }
     }
 
+    // rescale the tableview
+    ui->twValues->resizeColumnsToContents();
   }
 }
 

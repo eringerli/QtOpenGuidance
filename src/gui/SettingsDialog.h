@@ -26,6 +26,7 @@
 #include <Qt3DCore/QEntity>
 
 #include <QGraphicsScene>
+#include <QSortFilterProxyModel>
 
 #include "../block/PoseCache.h"
 
@@ -80,6 +81,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* lengthFactory;
     GuidanceFactory* debugSinkFactory;
 
+    QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;
     LengthBlockModel* lengthBlockModel;
 
