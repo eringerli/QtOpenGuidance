@@ -2,6 +2,7 @@ QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
 
 SOURCES += src/main.cpp \
+    src/3d/drawline.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
@@ -13,8 +14,10 @@ SOURCES += src/main.cpp \
     src/gui/VectorBlockModel.cpp
     
 HEADERS += \
+    src/3d/drawline.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
+    src/block/GridModel.h \
     src/block/GuidanceBase.h \
     src/block/LengthObject.h \
     src/block/PoseCache.h \

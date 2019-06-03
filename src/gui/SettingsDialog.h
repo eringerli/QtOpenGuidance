@@ -46,7 +46,12 @@ class SettingsDialog : public QDialog {
 
     QGraphicsScene* getSceneOfConfigGraphicsView();
 
+    void emitAllConfigSignals();
+
   signals:
+    void setGrid( bool );
+    void setGridValues( float, float, float, QColor );
+
 
   public slots:
     void toggleVisibility();
@@ -67,6 +72,13 @@ class SettingsDialog : public QDialog {
 
     void on_pbDeleteSelected_clicked();
 
+    void on_gbGrid_toggled( bool arg1 );
+    void on_dsbGridXStep_valueChanged( double arg1 );
+    void on_dsbGridYStep_valueChanged( double arg1 );
+    void on_dsbGridSize_valueChanged( double arg1 );
+
+    void on_pbColor_clicked();
+
   private:
     Ui::SettingsDialog* ui;
 
@@ -86,6 +98,8 @@ class SettingsDialog : public QDialog {
     LengthBlockModel* lengthBlockModel;
 
     QNEBlock* getBlockWithId( int id );
+
+    QColor gridColor = QColor( 0xa2, 0xe3, 0xff );
 };
 
 #endif // SETTINGSDIALOG_H

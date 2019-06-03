@@ -89,6 +89,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory->addToCombobox( ui->cbNodeType );
   lengthFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
+
+  // grid color picker
+  ui->lbColor->setText( gridColor.name() );
+  ui->lbColor->setPalette( QPalette( gridColor ) );
+  ui->lbColor->setAutoFillBackground( true );
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -358,4 +363,37 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
       }
     }
   }
+}
+
+void SettingsDialog::on_gbGrid_toggled( bool arg1 ) {
+  emit setGrid( arg1 );
+}
+
+void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
+  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
+}
+
+void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
+  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
+}
+
+void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
+  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
+}
+
+void SettingsDialog::on_pbColor_clicked() {
+  const QColor color = QColorDialog::getColor( gridColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    gridColor = color;
+    ui->lbColor->setText( gridColor.name() );
+    ui->lbColor->setPalette( QPalette( gridColor ) );
+    ui->lbColor->setAutoFillBackground( true );
+
+    emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
+  }
+}
+
+void SettingsDialog::emitAllConfigSignals() {
+  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
 }

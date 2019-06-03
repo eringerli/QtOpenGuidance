@@ -68,9 +68,11 @@
 #include "block/CameraController.h"
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
+#include "block/GridModel.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseCache.h"
+
 
 #include "kinematic/FixedKinematic.h"
 #include "kinematic/TrailerKinematic.h"
@@ -113,7 +115,8 @@ int main( int argc, char** argv ) {
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();
 
-  cameraEntity->lens()->setPerspectiveProjection( 45.0f, 16.0f / 10.0f, 0.1f, 1000.0f );
+//  cameraEntity->lens()->setPerspectiveProjection( 60.0f, 16.0f / 10.0f, 0.1f, 1000.0f );
+  cameraEntity->lens()->setProjectionType( Qt3DRender::QCameraLens::PerspectiveProjection );
   cameraEntity->setPosition( QVector3D( 0, 0, 20.0f ) );
   cameraEntity->setUpVector( QVector3D( 0, 1, 0 ) );
   cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
@@ -123,26 +126,11 @@ int main( int argc, char** argv ) {
   Qt3DCore::QEntity* lightEntity = new Qt3DCore::QEntity( rootEntity );
   Qt3DRender::QPointLight* light = new Qt3DRender::QPointLight( lightEntity );
   light->setColor( "white" );
-  light->setIntensity( 1 );
+  light->setIntensity( 1.0f );
   lightEntity->addComponent( light );
   Qt3DCore::QTransform* lightTransform = new Qt3DCore::QTransform( lightEntity );
   lightTransform->setTranslation( cameraEntity->position() );
   lightEntity->addComponent( lightTransform );
-
-//  // For camera controls
-//  CameraController* cameraControllerGui = new CameraController( rootEntity, cameraEntity );
-//  cameraController->setCameraController( 2 );
-
-  //Qt3DExtras::QOrbitCameraController* camController = new Qt3DExtras::QOrbitCameraController( rootEntity );
-  //camController->setCamera( cameraEntity );
-  //camController->setLinearSpeed( 150 );
-
-//  // TractorEntity
-////  TractorModel* tractorModelSimulation = new TractorModel( rootEntity );
-//  TractorModel* tractorModel = new TractorModel( rootEntity );
-//  TrailerModel* trailerModel = new TrailerModel( rootEntity );
-//  TrailerModel* trailerModel2 = new TrailerModel( rootEntity );
-//  TrailerModel* trailerModel3 = new TrailerModel( rootEntity );
 
   // draw an axis-cross: X-red, Y-green, Z-blue
   if( 1 ) {
@@ -151,24 +139,24 @@ int main( int argc, char** argv ) {
     Qt3DCore::QEntity* zaxis = new Qt3DCore::QEntity( rootEntity );
 
     Qt3DExtras::QCylinderMesh* cylinderMesh = new Qt3DExtras::QCylinderMesh();
-    cylinderMesh->setRadius( 0.05 );
-    cylinderMesh->setLength( 20 );
-    cylinderMesh->setRings( 2 );
-    cylinderMesh->setSlices( 4 );
+    cylinderMesh->setRadius( 0.05f );
+    cylinderMesh->setLength( 20.0f );
+    cylinderMesh->setRings( 2.0f );
+    cylinderMesh->setSlices( 4.0f );
 
     Qt3DExtras::QPhongMaterial* blueMaterial = new Qt3DExtras::QPhongMaterial();
     blueMaterial->setSpecular( Qt::white );
-    blueMaterial->setShininess( 10 );
+    blueMaterial->setShininess( 10.0f );
     blueMaterial->setAmbient( Qt::blue );
 
     Qt3DExtras::QPhongMaterial* redMaterial = new Qt3DExtras::QPhongMaterial();
     redMaterial->setSpecular( Qt::white );
-    redMaterial->setShininess( 10 );
+    redMaterial->setShininess( 10.0f );
     redMaterial->setAmbient( Qt::red );
 
     Qt3DExtras::QPhongMaterial* greenMaterial = new Qt3DExtras::QPhongMaterial();
     greenMaterial->setSpecular( Qt::white );
-    greenMaterial->setShininess( 10 );
+    greenMaterial->setShininess( 10.0f );
     greenMaterial->setAmbient( Qt::green );
 
     Qt3DCore::QTransform* xTransform = new Qt3DCore::QTransform();
@@ -205,7 +193,6 @@ int main( int argc, char** argv ) {
   // Create setting Window
   SettingsDialog* settingDialog = new SettingsDialog( rootEntity, widget );
 
-
   // GUI -> GUI
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     simulatorToolbar, SLOT( setVisible( bool ) ) );
@@ -215,10 +202,9 @@ int main( int argc, char** argv ) {
                     settingDialog, SLOT( toggleVisibility() ) );
 
 
-  // the processer of Pose etc
-  GuidanceFactory* poseSimulationFactory = new PoseSimulationFactory();
-  GuidanceBase* poseSimulation = poseSimulationFactory->createNewObject();
-  poseSimulationFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), poseSimulation );
+
+  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
+  // DON'T BREAK SAVED CONFIGS!
 
   // camera
   GuidanceFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
@@ -242,7 +228,13 @@ int main( int argc, char** argv ) {
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
                     cameraController, SLOT( setMode( int ) ) );
 
-  // Simulator GUI -> Simulator
+
+
+  // the processer of Pose etc
+  GuidanceFactory* poseSimulationFactory = new PoseSimulationFactory();
+  GuidanceBase* poseSimulation = poseSimulationFactory->createNewObject();
+  poseSimulationFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), poseSimulation );
+
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     poseSimulation, SLOT( setSimulation( bool ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
@@ -251,9 +243,21 @@ int main( int argc, char** argv ) {
                     poseSimulation, SLOT( setFrequency( int ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     poseSimulation, SLOT( setSteerAngle( float ) ) );
+
+  // grid
+  GuidanceFactory* gridModelFactory = new GridModelFactory( rootEntity );
+  GuidanceBase* gridModel = gridModelFactory->createNewObject();
+  gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
+  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
+                    gridModel, SLOT( setGrid( bool ) ) );
+  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, QColor ) ),
+                    gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
+
   // make the light follow the camera
   QObject::connect( cameraEntity, SIGNAL( positionChanged( QVector3D ) ),
                     lightTransform, SLOT( setTranslation( QVector3D ) ) );
+
+  settingDialog->emitAllConfigSignals();
 
   // Show window
   widget->show();
