@@ -56,6 +56,7 @@ class QNodesEditor : public QObject {
   private:
     QGraphicsScene* scene;
     QNEConnection* conn;
+    bool moved = false;
     // QNEBlock *selBlock;
 };
 

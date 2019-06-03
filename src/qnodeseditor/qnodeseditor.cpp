@@ -89,33 +89,11 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                 return true;
               }
 
-              break;
             }
+            break;
 
           case Qt::RightButton: {
-              QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
-
-              if( !item ) {
-                foreach( QGraphicsView* it, scene->views() ) {
-                  it->setDragMode( QGraphicsView::ScrollHandDrag );
-                }
-
-                break;
-              }
-
-              QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-              if( block && !block->systemBlock ) {
-                delete block;
-                break;
-              }
-
-              QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
-
-              if( connection /*&& connection->deleteable*/ ) {
-                delete connection;
-                break;
-              }
+              moved = false;
             }
             break;
         }
@@ -166,6 +144,11 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               view->verticalScrollBar()->setValue( int( newY ) );
             }
 
+            foreach( QGraphicsView* it, scene->views() ) {
+              it->setDragMode( QGraphicsView::ScrollHandDrag );
+            }
+
+            moved = true;
             return true;
           }
         }
@@ -183,6 +166,16 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               conn->updatePath();
               conn = nullptr;
               return true;
+            } else {
+              QNEPort* port1 = conn->port1();
+              conn->setPort1( port );
+
+              if( conn->setPort2( port1 ) ) {
+                conn->updatePosFromPorts();
+                conn->updatePath();
+                conn = nullptr;
+                return true;
+              }
             }
           }
 
@@ -191,9 +184,32 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           return true;
         }
 
-        foreach( QGraphicsView* it, scene->views() ) {
-          it->setDragMode( QGraphicsView::RubberBandDrag );
+        if( mouseEvent->button() == Qt::RightButton ) {
+          if( moved == false )  {
+            QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
+
+            if( item ) {
+              QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+              if( block ) {
+                if( !block->systemBlock ) {
+                  delete block;
+                }
+              } else {
+                QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+                if( connection /*&& connection->deleteable*/ ) {
+                  delete connection;
+                }
+              }
+            }
+          }
+
+          foreach( QGraphicsView* it, scene->views() ) {
+            it->setDragMode( QGraphicsView::RubberBandDrag );
+          }
         }
+
 
         break;
       }
