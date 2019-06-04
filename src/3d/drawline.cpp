@@ -1,5 +1,7 @@
 // https://forum.qt.io/topic/66808/qt3d-draw-grid-axis-lines/3
 
+// with fix from
+// https://forum.qt.io/topic/66808/qt3d-draw-grid-axis-lines/5
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 #include <Qt3DExtras/QPhongMaterial>
@@ -22,7 +24,7 @@ void drawLine( const QVector3D& start, const QVector3D& end, const QColor& color
   *positions++ = end.y();
   *positions++ = end.z();
 
-  auto* buf = new Qt3DRender::QBuffer( geometry );
+  auto *buf = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry);
   buf->setData( bufferBytes );
 
   auto* positionAttribute = new Qt3DRender::QAttribute( geometry );
@@ -42,7 +44,7 @@ void drawLine( const QVector3D& start, const QVector3D& end, const QColor& color
   *indices++ = 0;
   *indices++ = 1;
 
-  auto* indexBuffer = new Qt3DRender::QBuffer( geometry );
+  auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, geometry);
   indexBuffer->setData( indexBytes );
 
   auto* indexAttribute = new Qt3DRender::QAttribute( geometry );
