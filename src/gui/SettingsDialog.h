@@ -28,7 +28,7 @@
 #include <QGraphicsScene>
 #include <QSortFilterProxyModel>
 
-#include "../block/PoseCache.h"
+#include "../block/PoseSynchroniser.h"
 
 #include "VectorBlockModel.h"
 #include "LengthBlockModel.h"

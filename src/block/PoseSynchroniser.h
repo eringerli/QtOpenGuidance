@@ -29,11 +29,11 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-class PoseCache : public GuidanceBase {
+class PoseSynchroniser : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit PoseCache()
+    explicit PoseSynchroniser()
       : GuidanceBase() { }
 
   public slots:
@@ -67,15 +67,15 @@ class PoseCache : public GuidanceBase {
     QQuaternion orientation = QQuaternion();
 };
 
-class PoseCacheFactory : public GuidanceFactory {
+class PoseSynchroniserFactory : public GuidanceFactory {
     Q_OBJECT
 
   public:
-    PoseCacheFactory()
+    PoseSynchroniserFactory()
       : GuidanceFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Pose Cache" );
+      return QStringLiteral( "Pose Synchroniser" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -83,7 +83,7 @@ class PoseCacheFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return new PoseCache;
+      return new PoseSynchroniser;
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {

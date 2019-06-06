@@ -39,7 +39,7 @@
 #include "../block/TrailerModel.h"
 
 #include "../block/PoseSimulation.h"
-#include "../block/PoseCache.h"
+#include "../block/PoseSynchroniser.h"
 #include "../block/DebugSink.h"
 
 #include "../kinematic/FixedKinematic.h"
@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   ui->twValues->setModel( filterModel );
 
   // Factories for the blocks
-  poseCacheFactory = new PoseCacheFactory();
+  poseCacheFactory = new PoseSynchroniserFactory();
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;

@@ -71,7 +71,7 @@
 #include "block/GridModel.h"
 
 #include "block/PoseSimulation.h"
-#include "block/PoseCache.h"
+#include "block/PoseSynchroniser.h"
 
 
 #include "kinematic/FixedKinematic.h"

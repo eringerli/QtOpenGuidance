@@ -20,8 +20,8 @@ HEADERS += \
     src/block/GridModel.h \
     src/block/GuidanceBase.h \
     src/block/LengthObject.h \
-    src/block/PoseCache.h \
     src/block/PoseSimulation.h \
+    src/block/PoseSynchroniser.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
     src/block/VectorObject.h \
