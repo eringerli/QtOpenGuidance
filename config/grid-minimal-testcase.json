@@ -2,10 +2,10 @@
     "blocks": [
         {
             "id": 1000,
-            "name": "Pose Cache",
+            "name": "Pose Synchroniser",
             "positionX": 190,
             "positionY": 26,
-            "type": "Pose Cache"
+            "type": "Pose Synchroniser"
         },
         {
             "id": 2,
