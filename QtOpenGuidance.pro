@@ -3,6 +3,7 @@ QT += widgets core
 
 SOURCES += src/main.cpp \
     src/3d/drawline.cpp \
+    src/3d/drawpoints.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
@@ -15,6 +16,7 @@ SOURCES += src/main.cpp \
     
 HEADERS += \
     src/3d/drawline.h \
+    src/3d/drawpoints.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
     src/block/GridModel.h \
