@@ -33,6 +33,7 @@ HEADERS += \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
     src/gui/VectorBlockModel.h \
+    src/kinematic/Field.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/TrailerKinematic.h
 

@@ -97,6 +97,8 @@ class SettingsDialog : public QDialog {
     VectorBlockModel* vectorBlockModel;
     LengthBlockModel* lengthBlockModel;
 
+    GuidanceFactory* fieldFactory;
+
     QNEBlock* getBlockWithId( int id );
 
     QColor gridColor = QColor( 0xa2, 0xe3, 0xff );

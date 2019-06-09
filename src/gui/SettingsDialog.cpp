@@ -44,6 +44,7 @@
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
+#include "../kinematic/Field.h"
 
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent ) :
   QDialog( parent ),
@@ -81,6 +82,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   lengthFactory = new LengthFactory();
   debugSinkFactory = new DebugSinkFactory();
 
+  fieldFactory = new FieldFactory( rootEntity );
+
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
@@ -89,6 +92,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory->addToCombobox( ui->cbNodeType );
   lengthFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
+
+  fieldFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );

@@ -24,7 +24,7 @@ void drawLine( const QVector3D& start, const QVector3D& end, const QColor& color
   *positions++ = end.y();
   *positions++ = end.z();
 
-  auto *buf = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::VertexBuffer, geometry);
+  auto* buf = new Qt3DRender::QBuffer( Qt3DRender::QBuffer::VertexBuffer, geometry );
   buf->setData( bufferBytes );
 
   auto* positionAttribute = new Qt3DRender::QAttribute( geometry );
@@ -44,7 +44,7 @@ void drawLine( const QVector3D& start, const QVector3D& end, const QColor& color
   *indices++ = 0;
   *indices++ = 1;
 
-  auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, geometry);
+  auto* indexBuffer = new Qt3DRender::QBuffer( Qt3DRender::QBuffer::IndexBuffer, geometry );
   indexBuffer->setData( indexBytes );
 
   auto* indexAttribute = new Qt3DRender::QAttribute( geometry );
