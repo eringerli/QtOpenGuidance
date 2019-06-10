@@ -93,7 +93,7 @@ class Track {
       currentPosPointer = reinterpret_cast<float*>( positions.data() );
       currentOrientationPointer = reinterpret_cast<float*>( orientations.data() );
 
-      qDebug() << "Track()";
+      // qDebug() << "Track()";
     }
 
 //    // copy constructor
@@ -123,7 +123,7 @@ class Track {
       positionBuffer->updateData( 0, positions );
       positionAttribute->setCount( ++numSavedPose );
 
-      qDebug() << position << numSavedPose;
+      // qDebug() << position << numSavedPose;
 
       return numSavedPose > numPointsInTrack;
     }
@@ -210,7 +210,7 @@ class Tile {
 
       if( addNewTrack ) {
         tracks += Track( baseEntity );
-        qDebug() << "new Track";
+        // qDebug() << "new Track";
       }
     }
 
@@ -240,27 +240,35 @@ class Field : public GuidanceBase {
   public slots:
     void addNewPose( QVector3D position, QQuaternion orientation ) {
 
-      qDebug() << "Field::addNewPose()" << currentMinX << currentMaxX << currentMinY << currentMaxY << currentTileIndex << position;
+      // qDebug() << "Field::addNewPose()" << currentMinX << currentMaxX << currentMinY << currentMaxY << "currentTileIndex" << currentTileIndex << position;
 
-      if( position.x() > currentMinX &&
+      if( position.x() >= currentMinX &&
           position.x() < currentMaxX &&
-          position.y() > currentMinY &&
+          position.y() >= currentMinY &&
           position.y() < currentMaxY ) {
-        qDebug() << "tiles[currentTileIndex].addNewPose( position, orientation )";
+        // qDebug() << "tiles[currentTileIndex].addNewPose( position, orientation )";
         tiles[currentTileIndex].addNewPose( position, orientation );
       } else {
         int tileIndex = 0;
 
-        if( tiles.size() )
+        if( tiles.size() ) {
           for( ; tileIndex < tiles.size(); ++tileIndex ) {
             if( position.x() > tiles.at( tileIndex ).x &&
                 position.x() < ( tiles.at( tileIndex ).x + sizeOfTile ) &&
                 position.y() > tiles.at( tileIndex ).y &&
                 position.y() < ( tiles.at( tileIndex ).y + sizeOfTile ) ) {
               currentTileIndex = tileIndex;
-              qDebug() << "currentTileIndex = tileIndex";
+
+              currentMinX = tiles.at( tileIndex ).x;
+              currentMinY = tiles.at( tileIndex ).y;
+              currentMaxX = tiles.at( tileIndex ).x + sizeOfTile;
+              currentMaxY = tiles.at( tileIndex ).y + sizeOfTile;
+
+              // qDebug() << "currentTileIndex = tileIndex"<<currentTileIndex;
+              break;
             }
           }
+        }
 
         if( tileIndex == tiles.size() || tiles.size() == 0 ) {
           Tile tile( baseEntity );
@@ -268,13 +276,13 @@ class Field : public GuidanceBase {
           tile.y = qint64( std::floor( position.y() / sizeOfTile ) * sizeOfTile );
           tiles += tile;
 
-          currentMinY = tile.y;
           currentMinX = tile.x;
-          currentMaxY = tile.y + sizeOfTile;
+          currentMinY = tile.y;
           currentMaxX = tile.x + sizeOfTile;
+          currentMaxY = tile.y + sizeOfTile;
 
-          currentTileIndex = tileIndex;
-          qDebug() << "tileIndex == tiles.size()" << currentMinX << currentMaxX << currentMinY << currentMaxY << currentTileIndex;
+          currentTileIndex = tiles.size() - 1;
+          // qDebug() << "tileIndex == tiles.size()" << currentMinX << currentMaxX << currentMinY << currentMaxY << "currentTileIndex"<<currentTileIndex;
         }
 
         tiles[currentTileIndex].addNewPose( position, orientation );
@@ -312,7 +320,11 @@ class FieldFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return new Field( rootEntity );
+      GuidanceBase* obj = new Field( rootEntity );
+
+//      obj->moveToThread(&workerThread);
+
+      return obj;
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
