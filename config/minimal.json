@@ -22,14 +22,14 @@
             "type": "Tractor Model"
         },
         {
-            "id": 2,
+            "id": 1,
             "name": "Pose Simulation",
             "positionX": 3.2059702084025528,
             "positionY": 21.586268652773157,
             "type": "Pose Simulation"
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "Grid Model",
             "positionX": 921.5313445848562,
             "positionY": 230.16716451428113,
@@ -46,7 +46,7 @@
             }
         },
         {
-            "id": 1,
+            "id": 3,
             "name": "Camera",
             "positionX": 950.5313445848562,
             "positionY": 156.16716451428118,

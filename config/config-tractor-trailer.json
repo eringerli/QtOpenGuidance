@@ -13,7 +13,7 @@
             }
         },
         {
-            "id": 1,
+            "id": 3,
             "name": "Camera",
             "positionX": 557.697643125488,
             "positionY": 260.95308682003713,
@@ -97,7 +97,7 @@
             "type": "Fixed Kinematic"
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "Grid Model",
             "positionX": 527.4827523260625,
             "positionY": 191.98820764808892,
@@ -118,7 +118,7 @@
             "type": "Trailer Model"
         },
         {
-            "id": 2,
+            "id": 1,
             "name": "Pose Simulation",
             "positionX": -337.7663896204954,
             "positionY": 52.74885061591846,

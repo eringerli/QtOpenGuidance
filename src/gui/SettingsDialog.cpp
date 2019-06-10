@@ -37,9 +37,12 @@
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
 #include "../block/TrailerModel.h"
+#include "../block/GridModel.h"
 
 #include "../block/PoseSimulation.h"
+
 #include "../block/PoseSynchroniser.h"
+
 #include "../block/DebugSink.h"
 
 #include "../kinematic/FixedKinematic.h"
@@ -71,6 +74,24 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   filterModel->setSourceModel( vectorBlockModel );
   filterModel->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModel );
+
+  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
+  // DON'T BREAK SAVED CONFIGS!
+
+  // simulator
+  poseSimulationFactory = new PoseSimulationFactory();
+  poseSimulation = poseSimulationFactory->createNewObject();
+  poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
+
+  // grid
+  gridModelFactory = new GridModelFactory( rootEntity );
+  gridModel = gridModelFactory->createNewObject();
+  gridModelFactory->createBlock( ui->gvNodeEditor->scene(), gridModel );
+
+  QObject::connect( this, SIGNAL( setGrid( bool ) ),
+                    gridModel, SLOT( setGrid( bool ) ) );
+  QObject::connect( this, SIGNAL( setGridValues( float, float, float, QColor ) ),
+                    gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
 
   // Factories for the blocks
   poseCacheFactory = new PoseSynchroniserFactory();
@@ -113,8 +134,17 @@ SettingsDialog::~SettingsDialog() {
   delete lengthFactory;
   delete debugSinkFactory;
 
+  delete fieldFactory;
+
   delete vectorBlockModel;
   delete lengthBlockModel;
+
+  delete poseSimulationFactory;
+  delete gridModelFactory;
+
+  delete poseSimulation;
+  delete gridModel;
+
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {

@@ -190,6 +190,10 @@ int main( int argc, char** argv ) {
   GuidanceToolbar* guidaceToolbar = new GuidanceToolbar( widget );
   hLayout->addWidget( guidaceToolbar );
 
+
+  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
+  // DON'T BREAK SAVED CONFIGS!
+
   // Create setting Window
   SettingsDialog* settingDialog = new SettingsDialog( rootEntity, widget );
 
@@ -200,11 +204,6 @@ int main( int argc, char** argv ) {
                     cameraToolbar, SLOT( setVisible( bool ) ) );
   QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
                     settingDialog, SLOT( toggleVisibility() ) );
-
-
-
-  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
-  // DON'T BREAK SAVED CONFIGS!
 
   // camera
   GuidanceFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
@@ -228,30 +227,15 @@ int main( int argc, char** argv ) {
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
                     cameraController, SLOT( setMode( int ) ) );
 
-
-
   // the processer of Pose etc
-  GuidanceFactory* poseSimulationFactory = new PoseSimulationFactory();
-  GuidanceBase* poseSimulation = poseSimulationFactory->createNewObject();
-  poseSimulationFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), poseSimulation );
-
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
-                    poseSimulation, SLOT( setSimulation( bool ) ) );
+                    settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
-                    poseSimulation, SLOT( setVelocity( float ) ) );
+                    settingDialog->poseSimulation, SLOT( setVelocity( float ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( frequencyChanged( int ) ),
-                    poseSimulation, SLOT( setFrequency( int ) ) );
+                    settingDialog->poseSimulation, SLOT( setFrequency( int ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
-                    poseSimulation, SLOT( setSteerAngle( float ) ) );
-
-  // grid
-  GuidanceFactory* gridModelFactory = new GridModelFactory( rootEntity );
-  GuidanceBase* gridModel = gridModelFactory->createNewObject();
-  gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
-  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
-                    gridModel, SLOT( setGrid( bool ) ) );
-  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, QColor ) ),
-                    gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
+                    settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
   // make the light follow the camera
   QObject::connect( cameraEntity, SIGNAL( positionChanged( QVector3D ) ),

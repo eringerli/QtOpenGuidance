@@ -8,7 +8,7 @@
             "type": "Pose Synchroniser"
         },
         {
-            "id": 2,
+            "id": 1,
             "name": "Pose Simulation",
             "positionX": 0,
             "positionY": 0,
@@ -22,14 +22,14 @@
             "type": "Tractor Model"
         },
         {
-            "id": 3,
+            "id": 2,
             "name": "Grid Model",
             "positionX": 501,
             "positionY": -39,
             "type": "Grid Model"
         },
         {
-            "id": 1,
+            "id": 3,
             "name": "Camera",
             "positionX": 533,
             "positionY": 38,

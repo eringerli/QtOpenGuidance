@@ -79,10 +79,17 @@ class SettingsDialog : public QDialog {
 
     void on_pbColor_clicked();
 
+  public:
+    GuidanceBase* poseSimulation;
+    GuidanceBase* gridModel;
+
   private:
     Ui::SettingsDialog* ui;
 
     Qt3DCore::QEntity* rootEntity;
+
+    GuidanceFactory* poseSimulationFactory;
+    GuidanceFactory* gridModelFactory;
 
     GuidanceFactory* poseCacheFactory;
     GuidanceFactory* tractorModelFactory;
@@ -98,6 +105,7 @@ class SettingsDialog : public QDialog {
     LengthBlockModel* lengthBlockModel;
 
     GuidanceFactory* fieldFactory;
+
 
     QNEBlock* getBlockWithId( int id );
 
