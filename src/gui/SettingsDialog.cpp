@@ -44,6 +44,7 @@
 #include "../block/PoseSynchroniser.h"
 
 #include "../block/DebugSink.h"
+#include "../block/PrintLatency.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -102,6 +103,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory = new VectorFactory();
   lengthFactory = new LengthFactory();
   debugSinkFactory = new DebugSinkFactory();
+  printLatencyFactory = new PrintLatencyFactory();
 
   fieldFactory = new FieldFactory( rootEntity );
 
@@ -113,6 +115,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorFactory->addToCombobox( ui->cbNodeType );
   lengthFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
+  printLatencyFactory->addToCombobox( ui->cbNodeType );
 
   fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -133,6 +136,7 @@ SettingsDialog::~SettingsDialog() {
   delete vectorFactory;
   delete lengthFactory;
   delete debugSinkFactory;
+  delete printLatencyFactory;
 
   delete fieldFactory;
 

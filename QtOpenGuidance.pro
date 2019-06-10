@@ -24,6 +24,7 @@ HEADERS += \
     src/block/LengthObject.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
+    src/block/PrintLatency.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
     src/block/VectorObject.h \
