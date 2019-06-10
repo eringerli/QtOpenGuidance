@@ -94,7 +94,7 @@ QVariant LengthBlockModel::data( const QModelIndex& index, int role ) const {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
-              return block->getName();
+              return block->name;
 
             case 1:
               return object->length;

@@ -73,7 +73,7 @@ QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
 }
 
 QNEBlock::~QNEBlock() {
-  delete object;
+  object->deleteLater();
 }
 
 QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignature, bool isOutput, int flags ) {
@@ -84,6 +84,14 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
 
   if( systemBlock == true ) {
     flags |= QNEPort::SystemBlock;
+  }
+
+  if( flags & QNEPort::NamePort ) {
+    this->name = name;
+  }
+
+  if( flags & QNEPort::TypePort ) {
+    this->typeString = name;
   }
 
   port->setPortFlags( flags );
@@ -171,20 +179,6 @@ QVector<QNEPort*> QNEBlock::ports() {
   return res;
 }
 
-QString QNEBlock::getName() {
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
-
-      if( port && port->portFlags()&QNEPort::NamePort ) {
-        return port->getName();
-      }
-    }
-  }
-
-  return QStringLiteral( "" );
-}
-
 void QNEBlock::setName( QString name ) {
   foreach( QGraphicsItem* port_, childItems() ) {
     if( port_->type() == QNEPort::Type ) {
@@ -195,20 +189,8 @@ void QNEBlock::setName( QString name ) {
       }
     }
   }
-}
 
-QString QNEBlock::getType() {
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
-
-      if( port && port->portFlags()&QNEPort::TypePort ) {
-        return port->getName();
-      }
-    }
-  }
-
-  return QStringLiteral( "" );
+  this->name = name;
 }
 
 QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {
@@ -240,8 +222,8 @@ void QNEBlock::toJSON( QJsonObject& json ) {
 
   QJsonObject blockObject;
   blockObject["id"] = m_id;
-  blockObject["name"] = getName();
-  blockObject["type"] = getType();
+  blockObject["name"] = name;
+  blockObject["type"] = typeString;
   blockObject["positionX"] = x();
   blockObject["positionY"] = y();
 

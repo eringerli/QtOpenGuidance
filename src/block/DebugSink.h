@@ -44,7 +44,7 @@ class DebugSink : public GuidanceBase {
   public slots:
     void setPosition( QVector3D value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -52,7 +52,7 @@ class DebugSink : public GuidanceBase {
 
     void setOrientation( QQuaternion value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -60,7 +60,7 @@ class DebugSink : public GuidanceBase {
 
     void setSteeringAngle( float value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -68,7 +68,7 @@ class DebugSink : public GuidanceBase {
 
     void setPose( QVector3D position, QQuaternion orientation ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position << orientation;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << position << orientation;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << position << orientation;
       }
