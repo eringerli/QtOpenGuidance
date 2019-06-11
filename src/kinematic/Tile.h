@@ -27,6 +27,15 @@
 
 #include <QDebug>
 
+// Tiling works like this:
+// - create a QObject as root
+// - add a first Tile to that QObject
+// - all future Tiles have to add themselfs to this QObject, so they are in the children() of the root
+//
+// Tiles have a coordinate offset as an qint64, so the QVector3Ds can be used on these local coordinates, without
+// loosing precision due to the limited digits in a float. Also there is an Qt3D-Entity with the transformation
+// according to the offset, so all further manipulations can be done in local coordinates.
+
 class Tile: public QObject {
     Q_OBJECT
 
@@ -48,7 +57,8 @@ class Tile: public QObject {
     // this is an optimition, which isn't quite right from a point of ownership. Also, new Tiles are created here and
     // added to the parent of this Tile. This works, as the Tiles are organised as an object-tree (https://doc.qt.io/qt-5/objecttrees.html)
     // and manage themselfs
-    Tile* getTileForPosition( QVector3D position ) {
+    // if a new tile is created, the position is altered accordingly
+    Tile* getTileForPosition( QVector3D& position ) {
       // the point is in this Tile -> return it
       if( qint64( position.x() ) >= x &&
           qint64( position.x() ) < ( x + sizeOfTile ) &&
@@ -80,6 +90,11 @@ class Tile: public QObject {
                                qint64( std::floor( qint64( position.x() + x ) / sizeOfTile ) * sizeOfTile ),
                                qint64( std::floor( qint64( position.y() + y ) / sizeOfTile ) * sizeOfTile ),
                                rootEntity );
+
+        // alter the given position to be a local coordinate in the new Tile
+        position.setX( position.x() + ( x - tile->x ) );
+        position.setY( position.y() + ( y - tile->y ) );
+
         return tile;
       }
     }

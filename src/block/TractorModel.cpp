@@ -278,30 +278,23 @@ void TractorModel::setWheelbase( float wheelbase ) {
   setSteeringAngle( m_steeringAngle );
 }
 
-void TractorModel::setPoseTowPoint( QVector3D position, QQuaternion ) {
+void TractorModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion ) {
+  m_towPointEntity->setParent( tile->tileEntity );
   m_towPointTransform->setTranslation( position );
 }
 
-void TractorModel::setPoseHookPoint( QVector3D position, QQuaternion ) {
+void TractorModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion ) {
+  m_towHookEntity->setParent( tile->tileEntity );
   m_towHookTransform->setTranslation( position );
 }
 
-
-QVector3D TractorModel::position() {
-  return m_rootEntityTransform->translation();
-}
-
-QQuaternion TractorModel::rotation() {
-  return m_rootEntityTransform->rotation();
-}
-
-void TractorModel::setPosePivotPoint( QVector3D position, QQuaternion rotation ) {
+void TractorModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation ) {
+  m_pivotPointEntity->setParent( tile->tileEntity );
   m_pivotPointTransform->setTranslation( position );
 
+  m_rootEntity->setParent( tile->tileEntity );
   m_rootEntityTransform->setTranslation( position );
   m_rootEntityTransform->setRotation( rotation );
-  emit positionChanged( position );
-  emit rotationChanged( rotation );
 }
 
 // http://correll.cs.colorado.edu/?p=1869

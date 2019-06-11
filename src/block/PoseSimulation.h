@@ -167,6 +167,7 @@ class PoseSimulationFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
+      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
 
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );

@@ -25,6 +25,8 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
 
@@ -62,8 +64,9 @@ class CameraController : public GuidanceBase {
       }
     }
 
-    void setPose( QVector3D position, QQuaternion orientation ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       if( m_mode == 0 ) {
+        m_cameraEntity->setParent( tile->tileEntity );
         m_cameraEntity->setPosition( position + ( orientation * m_offset ) );
         m_cameraEntity->setViewCenter( position );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
@@ -181,7 +184,7 @@ class CameraControllerFactory : public GuidanceFactory {
 
       b->addPort( QStringLiteral( "Camera" ), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
-      b->addInputPort( "View Center Position", SLOT( setPose( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
 
       return b;
     }

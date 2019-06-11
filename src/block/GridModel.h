@@ -40,6 +40,8 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 #include "../3d/drawline.h"
 
 class GridModel : public GuidanceBase {
@@ -55,11 +57,11 @@ class GridModel : public GuidanceBase {
     }
 
   public slots:
-    void setPose( QVector3D position, QQuaternion ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion ) {
       if( m_baseEntity != nullptr ) {
-        using std::floor;
-        QVector3D positionModulo( floor( position.x() / xStep )*xStep,
-                                  floor( position.y() / yStep )*yStep,
+        m_baseEntity->setParent( tile->tileEntity );
+        QVector3D positionModulo( std::floor( position.x() / xStep )*xStep,
+                                  std::floor( position.y() / yStep )*yStep,
                                   position.z() );
         m_baseTransform->setTranslation( positionModulo );
       }
@@ -154,7 +156,7 @@ class GridModelFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
 
       return b;
     }

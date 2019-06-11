@@ -80,6 +80,9 @@ class SettingsDialog : public QDialog {
     void on_pbColor_clicked();
 
   public:
+    QObject tileRoot;
+
+  public:
     GuidanceBase* poseSimulation;
     GuidanceBase* gridModel;
 

@@ -48,7 +48,6 @@
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
-#include "../kinematic/Field.h"
 
 #include "../kinematic/Tile.h"
 
@@ -96,8 +95,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   QObject::connect( this, SIGNAL( setGridValues( float, float, float, QColor ) ),
                     gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
 
+  // initialise tiling
+  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity );
+
   // Factories for the blocks
-  poseCacheFactory = new PoseSynchroniserFactory();
+  poseCacheFactory = new PoseSynchroniserFactory( tile );
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;

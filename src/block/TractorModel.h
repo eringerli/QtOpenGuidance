@@ -37,6 +37,8 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 class TractorModel : public GuidanceBase {
     Q_OBJECT
 
@@ -48,16 +50,12 @@ class TractorModel : public GuidanceBase {
     QQuaternion rotation();
 
   public slots:
-    void setPoseHookPoint( QVector3D, QQuaternion );
-    void setPoseTowPoint( QVector3D, QQuaternion );
-    void setPosePivotPoint( QVector3D, QQuaternion );
+    void setPoseHookPoint( Tile*, QVector3D, QQuaternion );
+    void setPoseTowPoint( Tile*, QVector3D, QQuaternion );
+    void setPosePivotPoint( Tile*, QVector3D, QQuaternion );
 
     void setSteeringAngle( float steerAngle );
     void setWheelbase( float wheelbase );
-
-  signals:
-    void positionChanged( QVector3D position );
-    void rotationChanged( QQuaternion rotation );
 
   private:
     Qt3DCore::QEntity* m_rootEntity;
@@ -123,9 +121,9 @@ class TractorModelFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
-      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
 
       return b;

@@ -32,6 +32,8 @@
 
 #include "../block/GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 class FixedKinematic : public GuidanceBase {
     Q_OBJECT
 
@@ -48,19 +50,21 @@ class FixedKinematic : public GuidanceBase {
       m_offsetHookPoint = position;
     }
 
-    void setPose( QVector3D position, QQuaternion orientation ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       QVector3D positionPivotPoint = position + orientation * -m_offsetHookPoint;
       QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
 
-      emit poseHookPointChanged( position, orientation );
-      emit posePivotPointChanged( positionPivotPoint, orientation );
-      emit poseTowPointChanged( positionTowPoint, orientation );
+      Tile* currentTile = tile;
+
+      emit poseHookPointChanged( currentTile = currentTile->getTileForPosition( position ), position, orientation );
+      emit poseTowPointChanged( currentTile = currentTile->getTileForPosition( positionTowPoint ), positionTowPoint, orientation );
+      emit posePivotPointChanged( currentTile->getTileForPosition( positionPivotPoint ), positionPivotPoint, orientation );
     }
 
   signals:
-    void poseHookPointChanged( QVector3D, QQuaternion );
-    void posePivotPointChanged( QVector3D, QQuaternion );
-    void poseTowPointChanged( QVector3D, QQuaternion );
+    void poseHookPointChanged( Tile*, QVector3D, QQuaternion );
+    void posePivotPointChanged( Tile*, QVector3D, QQuaternion );
+    void poseTowPointChanged( Tile*, QVector3D, QQuaternion );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
@@ -96,11 +100,11 @@ class FixedKinematicFactory : public GuidanceFactory {
 
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );
-      b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
 
-      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( QVector3D, QQuaternion ) ) );
-      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( QVector3D, QQuaternion ) ) );
-      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Tile*, QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( Tile*, QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( Tile*, QVector3D, QQuaternion ) ) );
 
       return b;
     }

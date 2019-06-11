@@ -29,17 +29,21 @@
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "../kinematic/Tile.h"
+
 class PoseSynchroniser : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit PoseSynchroniser()
-      : GuidanceBase() { }
+    explicit PoseSynchroniser( Tile* tile )
+      : GuidanceBase(),
+        currentTile( tile ) { }
 
   public slots:
     void setPosition( QVector3D value ) {
       position = value;
-      emit poseChanged( position, orientation );
+      currentTile = currentTile->getTileForPosition( position );
+      emit poseChanged( currentTile, position, orientation );
     }
 
     void setOrientation( QQuaternion value ) {
@@ -52,17 +56,18 @@ class PoseSynchroniser : public GuidanceBase {
     }
 
   signals:
-    void poseChanged( QVector3D position, QQuaternion orientation );
+    void poseChanged( Tile* tile, QVector3D position, QQuaternion orientation );
     void steeringAngleChanged( float );
 
   public:
     virtual void emitConfigSignals() override {
-      emit poseChanged( position, orientation );
+      emit poseChanged( currentTile, position, orientation );
       emit steeringAngleChanged( steeringAngle );
     }
 
   public:
     float steeringAngle = 0;
+    Tile* currentTile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
 };
@@ -71,8 +76,9 @@ class PoseSynchroniserFactory : public GuidanceFactory {
     Q_OBJECT
 
   public:
-    PoseSynchroniserFactory()
-      : GuidanceFactory() {}
+    PoseSynchroniserFactory( Tile* tile )
+      : GuidanceFactory(),
+        tile( tile ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Pose Synchroniser" );
@@ -83,7 +89,7 @@ class PoseSynchroniserFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return new PoseSynchroniser;
+      return new PoseSynchroniser( tile );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -97,11 +103,14 @@ class PoseSynchroniserFactory : public GuidanceFactory {
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
 
-      b->addOutputPort( "Pose", SIGNAL( poseChanged( QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose", SIGNAL( poseChanged( Tile*, QVector3D, QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
 
       return b;
     }
+
+  private:
+    Tile* tile;
 };
 
 #endif // POSECACHE_H
