@@ -50,6 +50,8 @@
 #include "../kinematic/TrailerKinematic.h"
 #include "../kinematic/Field.h"
 
+#include "../kinematic/Tile.h"
+
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent ) :
   QDialog( parent ),
   ui( new Ui::SettingsDialog ),
@@ -105,7 +107,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
 
-  fieldFactory = new FieldFactory( rootEntity );
+//  fieldFactory = new FieldFactory( rootEntity );
 
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
@@ -117,7 +119,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
 
-  fieldFactory->addToCombobox( ui->cbNodeType );
+//  fieldFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -138,7 +140,7 @@ SettingsDialog::~SettingsDialog() {
   delete debugSinkFactory;
   delete printLatencyFactory;
 
-  delete fieldFactory;
+//  delete fieldFactory;
 
   delete vectorBlockModel;
   delete lengthBlockModel;

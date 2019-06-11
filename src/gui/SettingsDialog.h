@@ -105,7 +105,7 @@ class SettingsDialog : public QDialog {
     VectorBlockModel* vectorBlockModel;
     LengthBlockModel* lengthBlockModel;
 
-    GuidanceFactory* fieldFactory;
+//    GuidanceFactory* fieldFactory;
 
 
     QNEBlock* getBlockWithId( int id );
