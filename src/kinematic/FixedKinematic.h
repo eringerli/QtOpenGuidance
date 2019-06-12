@@ -54,11 +54,14 @@ class FixedKinematic : public GuidanceBase {
       QVector3D positionPivotPoint = position + orientation * -m_offsetHookPoint;
       QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
 
-      Tile* currentTile = tile;
+      Tile* currentTile = tile->getTileForPosition( position );
+      emit poseHookPointChanged( currentTile, position, orientation );
 
-      emit poseHookPointChanged( currentTile = currentTile->getTileForPosition( position ), position, orientation );
-      emit poseTowPointChanged( currentTile = currentTile->getTileForPosition( positionTowPoint ), positionTowPoint, orientation );
-      emit posePivotPointChanged( currentTile->getTileForPosition( positionPivotPoint ), positionPivotPoint, orientation );
+      currentTile = currentTile->getTileForPosition( positionTowPoint );
+      emit poseTowPointChanged( currentTile, positionTowPoint, orientation );
+
+      currentTile = currentTile->getTileForPosition( positionPivotPoint );
+      emit posePivotPointChanged( currentTile, positionPivotPoint, orientation );
     }
 
   signals:
