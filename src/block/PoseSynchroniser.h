@@ -37,13 +37,13 @@ class PoseSynchroniser : public GuidanceBase {
   public:
     explicit PoseSynchroniser( Tile* tile )
       : GuidanceBase() {
-      currentTile = tile->getTileForOffset( 0, 0 );
+      rootTile = tile->getTileForOffset( 0, 0 );
     }
 
   public slots:
     void setPosition( QVector3D value ) {
       position = value;
-      currentTile = currentTile->getTileForPosition( &position );
+      Tile* currentTile = rootTile->getTileForPosition( &position );
       emit poseChanged( currentTile, position, orientation );
     }
 
@@ -62,14 +62,14 @@ class PoseSynchroniser : public GuidanceBase {
 
   public:
     virtual void emitConfigSignals() override {
-      currentTile = currentTile->getTileForPosition( &position );
-      emit poseChanged( currentTile, position, orientation );
+      rootTile = rootTile->getTileForPosition( &position );
+      emit poseChanged( rootTile, position, orientation );
       emit steeringAngleChanged( steeringAngle );
     }
 
   public:
     float steeringAngle = 0;
-    Tile* currentTile = nullptr;
+    Tile* rootTile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
 };
