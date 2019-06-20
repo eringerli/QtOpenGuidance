@@ -39,6 +39,18 @@ class SimulatorToolbar : public QGroupBox {
     void on_sl_steerangle_valueChanged( int value );
     void on_sl_frequency_valueChanged( int value );
 
+    void on_dsb_velocity_valueChanged( double arg1 );
+
+    void on_dsb_steerangle_valueChanged( double arg1 );
+
+    void on_dsb_frequency_valueChanged( double arg1 );
+
+    void on_pb_frequencyReset_clicked();
+
+    void on_pb_steerangleReset_clicked();
+
+    void on_pb_velocityReset_clicked();
+
   signals:
     void velocityChanged( float );
     void steerangleChanged( float );

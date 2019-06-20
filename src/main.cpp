@@ -87,12 +87,13 @@ int main( int argc, char** argv ) {
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
   QWidget* container = QWidget::createWindowContainer( view );
-  QSize screenSize = view->screen()->size();
-  container->setMinimumSize( QSize( 500, 400 ) );
-  container->setMaximumSize( screenSize );
+//  QSize screenSize = view->screen()->size();
+//  container->setMinimumSize( QSize( 500, 400 ) );
+//  container->setMaximumSize( screenSize );
 
   QWidget* widget = new QWidget;
   QHBoxLayout* hLayout = new QHBoxLayout( widget );
+  QVBoxLayout* vLayout = new QVBoxLayout;
 
   // Camera Toolbar
   CameraToolbar* cameraToolbar = new CameraToolbar( widget );
@@ -100,7 +101,8 @@ int main( int argc, char** argv ) {
   hLayout->addWidget( cameraToolbar );
 
   // add the qt3d-widget to the hLayout
-  hLayout->addWidget( container, 1 );
+  vLayout->addWidget( container, 1 );
+  hLayout->addLayout( vLayout, 1 );
 
 
 
@@ -176,7 +178,7 @@ int main( int argc, char** argv ) {
 
   SimulatorToolbar* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
-  hLayout->addWidget( simulatorToolbar );
+  vLayout->addWidget( simulatorToolbar );
 
   GuidanceToolbar* guidaceToolbar = new GuidanceToolbar( widget );
   hLayout->addWidget( guidaceToolbar );
