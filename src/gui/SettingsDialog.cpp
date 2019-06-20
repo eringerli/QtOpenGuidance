@@ -103,7 +103,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
-  trailerKinematicFactory = new TrailerKinematicFactory;
+  trailerKinematicFactory = new TrailerKinematicFactory( tile );
   vectorFactory = new VectorFactory();
   lengthFactory = new LengthFactory();
   debugSinkFactory = new DebugSinkFactory();

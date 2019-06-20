@@ -1,0 +1,377 @@
+{
+    "blocks": [
+        {
+            "id": 1001,
+            "name": "Trailer 1 Model",
+            "positionX": 788.1718951131973,
+            "positionY": 373.3144077763008,
+            "type": "Trailer Model"
+        },
+        {
+            "id": 1015,
+            "name": "Antenna Position",
+            "positionX": -525.1026705746029,
+            "positionY": -168.65488517667114,
+            "type": "Vetor3D",
+            "values": {
+                "X": 2.5,
+                "Y": 0,
+                "Z": 1.5
+            }
+        },
+        {
+            "id": 1002,
+            "name": "Trailer 2 Kinematic",
+            "positionX": 612.5425441847651,
+            "positionY": 653.0198955608971,
+            "type": "Trailer Kinematic"
+        },
+        {
+            "id": 2,
+            "name": "Grid Model",
+            "positionX": 511.9916731506624,
+            "positionY": 164.20639976098192,
+            "type": "Grid Model"
+        },
+        {
+            "id": 1016,
+            "name": "Console Output",
+            "positionX": 526.559657509492,
+            "positionY": -149.70813791936538,
+            "type": "Console Output"
+        },
+        {
+            "id": 1005,
+            "name": "Wheelbase Tractor",
+            "positionX": -532.8481769398361,
+            "positionY": -238.43942241990595,
+            "type": "Length",
+            "values": {
+                "length": 2.5
+            }
+        },
+        {
+            "id": 3,
+            "name": "Camera",
+            "positionX": 536.8760297933718,
+            "positionY": 91.53455745473518,
+            "type": "Camera Controller"
+        },
+        {
+            "id": 1003,
+            "name": "Trailer 2 Model",
+            "positionX": 978.9106901006226,
+            "positionY": 661.43278710306,
+            "type": "Trailer Model"
+        },
+        {
+            "id": 1010,
+            "name": "Pose Synchroniser",
+            "positionX": -170.84390670279384,
+            "positionY": -19.209027380175655,
+            "type": "Pose Synchroniser"
+        },
+        {
+            "id": 1006,
+            "name": "Tractor Model",
+            "positionX": 528.4867666417911,
+            "positionY": -15.31332208847769,
+            "type": "Tractor Model"
+        },
+        {
+            "id": 1,
+            "name": "Pose Simulation",
+            "positionX": -339.8770692111202,
+            "positionY": -57.092872179512526,
+            "type": "Pose Simulation"
+        },
+        {
+            "id": 1004,
+            "name": "Position Hook Trailer 2",
+            "positionX": 414.223140488283,
+            "positionY": 552.8806051718334,
+            "type": "Vetor3D",
+            "values": {
+                "X": 7,
+                "Y": 0,
+                "Z": 0
+            }
+        },
+        {
+            "id": 1013,
+            "name": "Trailer 1 Kinematic",
+            "positionX": 421.80374919734004,
+            "positionY": 364.90151623413766,
+            "type": "Trailer Kinematic"
+        },
+        {
+            "id": 1012,
+            "name": "Wheelbase Trailer 1",
+            "positionX": 586.6296449798398,
+            "positionY": 299.82971385027713,
+            "type": "Length",
+            "values": {
+                "length": 1.5
+            }
+        },
+        {
+            "id": 1007,
+            "name": "Position Hook Trailer 1",
+            "positionX": 223.48434550085778,
+            "positionY": 264.76222584507383,
+            "type": "Vetor3D",
+            "values": {
+                "X": 2,
+                "Y": 0,
+                "Z": 0
+            }
+        },
+        {
+            "id": 1011,
+            "name": "Fixed Kinematic",
+            "positionX": 165.1299359494128,
+            "positionY": -44.17406341183843,
+            "type": "Fixed Kinematic"
+        },
+        {
+            "id": 1000,
+            "name": "Position Hitch Trailer 1",
+            "positionX": 226.67186814728257,
+            "positionY": 338.4748291805053,
+            "type": "Vetor3D",
+            "values": {
+                "X": -1,
+                "Y": 0,
+                "Z": 0
+            }
+        },
+        {
+            "id": 1008,
+            "name": "Wheelbase Trailer 2",
+            "positionX": 771.338597512012,
+            "positionY": 590.1480630443298,
+            "type": "Length",
+            "values": {
+                "length": 2.5
+            }
+        },
+        {
+            "id": 1009,
+            "name": "Tractor Hitch Position",
+            "positionX": -62.082430734003594,
+            "positionY": -73.64105335123762,
+            "type": "Vetor3D",
+            "values": {
+                "X": -0.5,
+                "Y": 0,
+                "Z": 0
+            }
+        },
+        {
+            "id": 1014,
+            "name": "Position Hitch Trailer 2",
+            "positionX": 417.41066313470765,
+            "positionY": 626.5932085072645,
+            "type": "Vetor3D",
+            "values": {
+                "X": -0.5,
+                "Y": 0,
+                "Z": 0
+            }
+        }
+    ],
+    "connections": [
+        {
+            "idFrom": 1013,
+            "idTo": 1002,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 1006,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose Pivot Point"
+        },
+        {
+            "idFrom": 1000,
+            "idTo": 1013,
+            "portFrom": "Position",
+            "portTo": "OffsetTowPoint"
+        },
+        {
+            "idFrom": 1010,
+            "idTo": 1011,
+            "portFrom": "Pose",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1001,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose Tow Point"
+        },
+        {
+            "idFrom": 1008,
+            "idTo": 1003,
+            "portFrom": "Length",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 1013,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1004,
+            "idTo": 1003,
+            "portFrom": "Position",
+            "portTo": "Offset Hook Point"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1001,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose Pivot Point"
+        },
+        {
+            "idFrom": 1014,
+            "idTo": 1002,
+            "portFrom": "Position",
+            "portTo": "OffsetTowPoint"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 1016,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1002,
+            "idTo": 1003,
+            "portFrom": "Pose Hook Point",
+            "portTo": "Pose Hook Point"
+        },
+        {
+            "idFrom": 1002,
+            "idTo": 1003,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose Pivot Point"
+        },
+        {
+            "idFrom": 1007,
+            "idTo": 1013,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1001,
+            "portFrom": "Pose Hook Point",
+            "portTo": "Pose Hook Point"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1010,
+            "portFrom": "Position",
+            "portTo": "Position"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 1006,
+            "portFrom": "Pose Hook Point",
+            "portTo": "Pose Hook Point"
+        },
+        {
+            "idFrom": 1004,
+            "idTo": 1002,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
+        },
+        {
+            "idFrom": 1012,
+            "idTo": 1001,
+            "portFrom": "Length",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 3,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "View Center Position"
+        },
+        {
+            "idFrom": 1002,
+            "idTo": 1003,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose Tow Point"
+        },
+        {
+            "idFrom": 1005,
+            "idTo": 1006,
+            "portFrom": "Length",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1010,
+            "portFrom": "Orientation",
+            "portTo": "Orientation"
+        },
+        {
+            "idFrom": 1010,
+            "idTo": 1006,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
+        },
+        {
+            "idFrom": 1005,
+            "idTo": 1,
+            "portFrom": "Length",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1007,
+            "idTo": 1001,
+            "portFrom": "Position",
+            "portTo": "Offset Hook Point"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1010,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 1006,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose Tow Point"
+        },
+        {
+            "idFrom": 1015,
+            "idTo": 1011,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 2,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1015,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Antenna Position"
+        },
+        {
+            "idFrom": 1009,
+            "idTo": 1011,
+            "portFrom": "Position",
+            "portTo": "OffsetTowPoint"
+        }
+    ]
+}

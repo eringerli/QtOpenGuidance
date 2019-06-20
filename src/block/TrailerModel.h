@@ -37,6 +37,8 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 class TrailerModel : public GuidanceBase {
     Q_OBJECT
 
@@ -44,20 +46,13 @@ class TrailerModel : public GuidanceBase {
     explicit TrailerModel( Qt3DCore::QEntity* rootEntity );
     ~TrailerModel();
 
-    QVector3D position();
-    QQuaternion rotation();
-
   public slots:
-    void setPoseHookPoint( QVector3D, QQuaternion );
-    void setPoseTowPoint( QVector3D, QQuaternion );
-    void setPosePivotPoint( QVector3D, QQuaternion );
+    void setPoseHookPoint( Tile*, QVector3D, QQuaternion );
+    void setPoseTowPoint( Tile*, QVector3D, QQuaternion );
+    void setPosePivotPoint( Tile*, QVector3D, QQuaternion );
 
     void setOffsetHookPointPosition( QVector3D position );
     void setWheelbase( float wheelbase );
-
-  signals:
-    void positionChanged( QVector3D position );
-    void rotationChanged( QQuaternion rotation );
 
   private:
     Qt3DCore::QEntity* m_rootEntity;
@@ -125,9 +120,9 @@ class TrailerModelFactory : public GuidanceFactory {
 
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
       b->addInputPort( "Offset Hook Point", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
-      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion ) ) );
 
       return b;
     }

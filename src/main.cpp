@@ -123,15 +123,6 @@ int main( int argc, char** argv ) {
   cameraEntity->rollAboutViewCenter( -90 );
   cameraEntity->tiltAboutViewCenter( -45 );
 
-  Qt3DCore::QEntity* lightEntity = new Qt3DCore::QEntity( rootEntity );
-  Qt3DRender::QPointLight* light = new Qt3DRender::QPointLight( lightEntity );
-  light->setColor( "white" );
-  light->setIntensity( 1.0f );
-  lightEntity->addComponent( light );
-  Qt3DCore::QTransform* lightTransform = new Qt3DCore::QTransform( lightEntity );
-  lightTransform->setTranslation( cameraEntity->position() );
-  lightEntity->addComponent( lightTransform );
-
   // draw an axis-cross: X-red, Y-green, Z-blue
   if( 1 ) {
     Qt3DCore::QEntity* xaxis = new Qt3DCore::QEntity( rootEntity );
@@ -236,10 +227,6 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setFrequency( int ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
-
-  // make the light follow the camera
-  QObject::connect( cameraEntity, SIGNAL( positionChanged( QVector3D ) ),
-                    lightTransform, SLOT( setTranslation( QVector3D ) ) );
 
   settingDialog->emitAllConfigSignals();
 

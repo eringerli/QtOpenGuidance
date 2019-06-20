@@ -28,6 +28,8 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -66,11 +68,11 @@ class DebugSink : public GuidanceBase {
       }
     }
 
-    void setPose( QVector3D position, QQuaternion orientation ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << position << orientation;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << position << orientation;
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << position << orientation;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")"  << position << orientation;
       }
     }
 
@@ -116,7 +118,7 @@ class DebugSinkFactory : public GuidanceFactory {
 
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
-      b->addInputPort( "Pose", SLOT( setPose( QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
 
       return b;

@@ -22,6 +22,7 @@
 #include <Qt3DExtras/QOrbitCameraController>
 
 #include <Qt3DRender/QCamera>
+#include <Qt3DRender/QPointLight>
 
 #include "GuidanceBase.h"
 
@@ -42,8 +43,20 @@ class CameraController : public GuidanceBase {
       m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
 
       calculateOffset();
-    }
 
+      m_lightEntity = new Qt3DCore::QEntity( rootEntity );
+      m_light = new Qt3DRender::QPointLight( m_lightEntity );
+      m_light->setColor( "white" );
+      m_light->setIntensity( 1.0f );
+      m_lightEntity->addComponent( m_light );
+      m_lightTransform = new Qt3DCore::QTransform( m_lightEntity );
+      m_lightTransform->setTranslation( cameraEntity->position() );
+      m_lightEntity->addComponent( m_lightTransform );
+
+      // make the light follow the camera
+      QObject::connect( m_cameraEntity, SIGNAL( positionChanged( QVector3D ) ),
+                        m_lightTransform, SLOT( setTranslation( QVector3D ) ) );
+    }
     ~CameraController() {}
 
   public slots:
@@ -67,6 +80,8 @@ class CameraController : public GuidanceBase {
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       if( m_mode == 0 ) {
         m_cameraEntity->setParent( tile->tileEntity );
+        m_lightEntity->setParent( tile->tileEntity );
+
         m_cameraEntity->setPosition( position + ( orientation * m_offset ) );
         m_cameraEntity->setViewCenter( position );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
@@ -157,6 +172,9 @@ class CameraController : public GuidanceBase {
     float panAngle = 0;
     float tiltAngle = 39;
 
+    Qt3DCore::QEntity* m_lightEntity;
+    Qt3DRender::QPointLight* m_light;
+    Qt3DCore::QTransform* m_lightTransform;
 };
 
 class CameraControllerFactory : public GuidanceFactory {

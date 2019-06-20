@@ -208,11 +208,13 @@ void TrailerModel::setOffsetHookPointPosition( QVector3D position ) {
   setProportions();
 }
 
-void TrailerModel::setPoseTowPoint( QVector3D position, QQuaternion ) {
+void TrailerModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion ) {
+  m_towPointEntity->setParent( tile->tileEntity );
   m_towPointTransform->setTranslation( position );
 }
 
-void TrailerModel::setPoseHookPoint( QVector3D position, QQuaternion ) {
+void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion ) {
+  m_towHookEntity->setParent( tile->tileEntity );
   m_towHookTransform->setTranslation( position );
 }
 
@@ -221,19 +223,11 @@ void TrailerModel::setWheelbase( float wheelbase ) {
   setProportions();
 }
 
-QVector3D TrailerModel::position() {
-  return m_rootEntityTransform->translation();
-}
-
-QQuaternion TrailerModel::rotation() {
-  return m_rootEntityTransform->rotation();
-}
-
-void TrailerModel::setPosePivotPoint( QVector3D position, QQuaternion rotation ) {
+void TrailerModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation ) {
+  m_pivotPointEntity->setParent( tile->tileEntity );
   m_pivotPointTransform->setTranslation( position );
 
+  m_rootEntity->setParent( tile->tileEntity );
   m_rootEntityTransform->setTranslation( position );
   m_rootEntityTransform->setRotation( rotation );
-  emit positionChanged( position );
-  emit rotationChanged( rotation );
 }

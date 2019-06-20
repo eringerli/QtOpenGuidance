@@ -26,6 +26,7 @@
 #include <QtGlobal>
 
 #include <QDebug>
+#include "../3d/drawline.h"
 
 // Tiling works like this:
 // - create a QObject as root
@@ -40,7 +41,7 @@ class Tile: public QObject {
     Q_OBJECT
 
   public:
-    static constexpr qint64 sizeOfTile = 50;
+    static constexpr float sizeOfTile = 50;
 
   public:
     Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity )
@@ -51,6 +52,18 @@ class Tile: public QObject {
 
       tileEntity = new Qt3DCore::QEntity( rootEntity );
       tileEntity->addComponent( tileTransform );
+
+      // comment in to draw lines around tile
+//      QVector3D pt1( 0, 0, 0 );
+//      QVector3D pt2( 50, 0, 0 );
+//      drawLine( pt1, pt2,  Qt::red, tileEntity );
+//      pt1 = QVector3D( 50, 50, 0 );
+//      drawLine( pt1, pt2,  Qt::red, tileEntity );
+//      pt2 = QVector3D( 0, 50, 0 );
+//      drawLine( pt1, pt2,  Qt::red, tileEntity );
+//      pt1 = QVector3D( 0, 0, 0 );
+//      drawLine( pt1, pt2,  Qt::red, tileEntity );
+
     }
 
     // the check for locality is done here, as it is highly probable, that the point is in the current tile
@@ -58,45 +71,56 @@ class Tile: public QObject {
     // added to the parent of this Tile. This works, as the Tiles are organised as an object-tree (https://doc.qt.io/qt-5/objecttrees.html)
     // and manage themselfs
     // if a new tile is created, the position is altered accordingly
-    Tile* getTileForPosition( QVector3D& position ) {
+    Tile* getTileForPosition( QVector3D* position ) {
       // the point is in this Tile -> return it
-      if( qint64( position.x() ) >= x &&
-          qint64( position.x() ) < ( x + sizeOfTile ) &&
-          qint64( position.y() ) >= y &&
-          qint64( position.y() ) < ( y + sizeOfTile ) ) {
+      if( position->x() >= 0 &&
+          position->y() >= 0 &&
+          position->x() < sizeOfTile &&
+          position->y() < sizeOfTile ) {
         return this;
       } else {
+        // calculate relative offset
+        qint64 relativeOffsetX = qint64( position->x() / sizeOfTile ) - ( ( position->x() < 0 ) ? 1 : 0 );
+        qint64 relativeOffsetY = qint64( position->y() / sizeOfTile ) - ( ( position->y() < 0 ) ? 1 : 0 );
+        relativeOffsetX *= qint64( sizeOfTile );
+        relativeOffsetY *= qint64( sizeOfTile );
 
-        // the point is in an existing Tile -> return it
-        if( parent()->children().size() ) {
-          for( int i = 0; i < parent()->children().size(); ++i ) {
-            Tile* tile = qobject_cast<Tile*>( parent()->children().at( i ) );
+        // offset the position
+        if( relativeOffsetX ) {
+          position->setX( position->x() - relativeOffsetX );
+        }
 
-            if( tile ) {
-              if( ( qint64( position.x() + x ) >= tile->x ) &&
-                  ( qint64( position.x() + x ) < ( tile->x + sizeOfTile ) ) &&
-                  ( qint64( position.y() + y ) >= tile->y ) &&
-                  ( qint64( position.y() + y ) < ( tile->y + sizeOfTile ) ) ) {
-                return tile;
-              }
+        if( relativeOffsetY ) {
+          position->setY( position->y() - relativeOffsetY );
+        }
+
+        // get the tile or create a new one
+        return getTileForOffset( this->x + relativeOffsetX, this->y + relativeOffsetY );
+      }
+    }
+
+
+    Tile* getTileForOffset( qint64 x, qint64 y ) {
+      // find a matching tile and return it
+      if( parent()->children().size() ) {
+        for( int i = 0; i < parent()->children().size(); ++i ) {
+          Tile* tile = qobject_cast<Tile*>( parent()->children().at( i ) );
+
+          if( tile ) {
+            if( tile->x == x && tile->y == y ) {
+              return tile;
             }
           }
         }
-
-        // the point is in no existing Tile -> create new one and return it
-        // as the tiles are organised as a tree of QObjects, a new one is automaticaly owned by the parent() of this one
-        // https://doc.qt.io/qt-5/objecttrees.html
-        Tile* tile = new Tile( parent(),
-                               qint64( std::floor( qint64( position.x() + x ) / sizeOfTile ) * sizeOfTile ),
-                               qint64( std::floor( qint64( position.y() + y ) / sizeOfTile ) * sizeOfTile ),
-                               rootEntity );
-
-        // alter the given position to be a local coordinate in the new Tile
-        position.setX( position.x() + ( x - tile->x ) );
-        position.setY( position.y() + ( y - tile->y ) );
-
-        return tile;
       }
+
+      // no tile found -> create new one
+      Tile* tile = new Tile( parent(),
+                             x,
+                             y,
+                             rootEntity );
+
+      return tile;
     }
 
   public:
