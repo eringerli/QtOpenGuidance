@@ -133,7 +133,7 @@ Qt::ItemFlags LengthBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void LengthBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Lengths" ), QVariant::fromValue( this ) );
+  combobox->addItem( QStringLiteral( "Length" ), QVariant::fromValue( this ) );
 }
 
 void LengthBlockModel::resetModel() {

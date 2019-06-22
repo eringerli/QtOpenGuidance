@@ -154,7 +154,7 @@ Qt::ItemFlags VectorBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void VectorBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Vectors" ), QVariant::fromValue( this ) );
+  combobox->addItem( QStringLiteral( "Vector3D" ), QVariant::fromValue( this ) );
 }
 
 void VectorBlockModel::resetModel() {
