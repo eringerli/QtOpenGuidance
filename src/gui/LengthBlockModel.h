@@ -61,6 +61,8 @@ class LengthBlockModel : public QAbstractTableModel {
 
   private:
     QGraphicsScene* scene;
+
+    int countBuffer = 0;
 };
 
 #endif // LENGTHBLOCKMODEL_H

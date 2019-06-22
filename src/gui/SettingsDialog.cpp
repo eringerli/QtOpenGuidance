@@ -295,14 +295,8 @@ void SettingsDialog::on_pbLoad_clicked() {
               block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
               block->fromJSON( blockObject );
               block->setSelected( true );
-
-              // reset the models
-              if( qobject_cast<VectorObject*>( obj ) ) {
-                vectorBlockModel->resetModel();
-              }
             }
           }
-
         }
       }
     }
@@ -360,6 +354,10 @@ void SettingsDialog::on_pbLoad_clicked() {
       }
     }
 
+    // reset the models
+    vectorBlockModel->resetModel();
+    lengthBlockModel->resetModel();
+
     // rescale the tableview
     ui->twValues->resizeColumnsToContents();
   }
@@ -376,6 +374,10 @@ void SettingsDialog::on_pbAddBlock_clicked() {
     // reset the models
     if( qobject_cast<VectorObject*>( obj ) ) {
       vectorBlockModel->resetModel();
+    }
+
+    if( qobject_cast<LengthObject*>( obj ) ) {
+      lengthBlockModel->resetModel();
     }
   }
 }

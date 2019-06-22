@@ -60,19 +60,7 @@ bool LengthBlockModel::setHeaderData( int section, Qt::Orientation orientation, 
 
 
 int LengthBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
-  int count = 0;
-
-  foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-    if( block ) {
-      if( qobject_cast<LengthObject*>( block->object ) ) {
-        count++;
-      }
-    }
-  }
-
-  return count;
+  return countBuffer;
 }
 
 int LengthBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
@@ -150,5 +138,17 @@ void LengthBlockModel::addToCombobox( QComboBox* combobox ) {
 
 void LengthBlockModel::resetModel() {
   beginResetModel();
+  countBuffer = 0;
+
+  foreach( QGraphicsItem* item, scene->items() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+    if( block ) {
+      if( qobject_cast<LengthObject*>( block->object ) ) {
+        countBuffer++;
+      }
+    }
+  }
+
   endResetModel();
 }

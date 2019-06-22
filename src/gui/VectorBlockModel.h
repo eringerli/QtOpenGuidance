@@ -61,6 +61,8 @@ class VectorBlockModel : public QAbstractTableModel {
 
   private:
     QGraphicsScene* scene;
+
+    int countBuffer = 0;
 };
 
 #endif // VECTRORBLOCKMODEL_H
