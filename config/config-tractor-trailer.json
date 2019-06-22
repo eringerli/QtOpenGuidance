@@ -5,7 +5,7 @@
             "name": "Position Hook Trailer",
             "positionX": 351.6859447841312,
             "positionY": 360.99568888777554,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 7,
                 "Y": 0,
@@ -17,7 +17,7 @@
             "name": "Antenna Position",
             "positionX": -471.902691568054,
             "positionY": -65.38877521975166,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 2.5,
                 "Y": 0,
@@ -67,7 +67,7 @@
             "name": "Tractor Hitch Position",
             "positionX": -47.76697883483769,
             "positionY": 22.36122002429449,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -0.5,
                 "Y": 0,
@@ -103,7 +103,7 @@
             "name": "Position Hitch Trailer",
             "positionX": 354.873467430556,
             "positionY": 434.70829222320714,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -0.5,
                 "Y": 0,

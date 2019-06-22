@@ -40,7 +40,7 @@
             "name": "Offset Hitch Tractor",
             "positionX": 313.8483590843578,
             "positionY": 11.309850777814702,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -0.5,
                 "Y": 0,
@@ -62,7 +62,7 @@
             "name": "Antenna Position",
             "positionX": -177.64955259764216,
             "positionY": -143.3098507778147,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 3,
                 "Y": 0,

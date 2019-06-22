@@ -81,7 +81,7 @@ class VectorFactory : public GuidanceFactory {
       : GuidanceFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Vetor3D" );
+      return QStringLiteral( "Vector3D" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {

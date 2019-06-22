@@ -5,7 +5,7 @@
             "name": "Position Hitch Trailer 1",
             "positionX": 226.67186814728257,
             "positionY": 338.4748291805053,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -1,
                 "Y": 0,
@@ -45,7 +45,7 @@
             "name": "Position Hook Trailer 2",
             "positionX": 414.223140488283,
             "positionY": 552.8806051718334,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 7,
                 "Y": 0,
@@ -74,7 +74,7 @@
             "name": "Position Hook Trailer 1",
             "positionX": 223.48434550085778,
             "positionY": 264.76222584507383,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 2,
                 "Y": 0,
@@ -96,7 +96,7 @@
             "name": "Tractor Hitch Position",
             "positionX": -62.082430734003594,
             "positionY": -73.64105335123762,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -0.5,
                 "Y": 0,
@@ -153,7 +153,7 @@
             "name": "Position Hitch Trailer 2",
             "positionX": 417.41066313470765,
             "positionY": 626.5932085072645,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": -0.5,
                 "Y": 0,
@@ -165,7 +165,7 @@
             "name": "Antenna Position",
             "positionX": -525.1026705746029,
             "positionY": -168.65488517667114,
-            "type": "Vetor3D",
+            "type": "Vector3D",
             "values": {
                 "X": 2.5,
                 "Y": 0,
