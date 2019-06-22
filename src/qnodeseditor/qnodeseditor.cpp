@@ -72,17 +72,16 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
         switch( ( int ) mouseEvent->button() ) {
           case Qt::LeftButton: {
-              QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
+              QNEPort* item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
-              if( item && item->type() == QNEPort::Type ) {
-
+              if( item ) {
                 foreach( QGraphicsView* it, scene->views() ) {
                   it->setDragMode( QGraphicsView::NoDrag );
                 }
 
                 currentConnection = new QNEConnection( nullptr );
                 scene->addItem( currentConnection );
-                currentConnection->setPort1( ( QNEPort* ) item );
+                currentConnection->setPort1( item );
                 currentConnection->setPos1( item->scenePos() );
                 currentConnection->setPos2( mouseEvent->scenePos() );
                 currentConnection->updatePath();
