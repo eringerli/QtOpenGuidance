@@ -113,9 +113,8 @@ class PoseSimulation : public GuidanceBase {
 
     void steeringAngleChanged( float );
     void positionChanged( QVector3D position );
-    void positionChangedRelative( QVector3D position );
+    void globalPositionChanged( double, double, double );
     void orientationChanged( QQuaternion orientation );
-    void orientationChangedRelative( QQuaternion orientation );
 
   public:
     virtual void emitConfigSignals() override {
@@ -139,6 +138,10 @@ class PoseSimulation : public GuidanceBase {
     QVector3D m_antennaPosition = QVector3D();
     QVector3D m_position = QVector3D();
     QQuaternion m_orientation = QQuaternion();
+
+    double latitude = qDegreesToRadians(7.5);
+    double longitude = qDegreesToRadians(40.0);
+    double height = 0;
 };
 
 class PoseSimulationFactory : public GuidanceFactory {
@@ -169,6 +172,7 @@ class PoseSimulationFactory : public GuidanceFactory {
       b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
 
+      b->addOutputPort( "Global Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );

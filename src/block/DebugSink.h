@@ -52,6 +52,14 @@ class DebugSink : public GuidanceBase {
       }
     }
 
+    void setGlobalPosition( double latitude, double longitude, double height ) {
+      if( block ) {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << latitude << longitude<<height;
+      } else {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << latitude << longitude<<height;
+      }
+    }
+
     void setOrientation( QQuaternion value ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
@@ -116,6 +124,7 @@ class DebugSinkFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
+      b->addInputPort( "Global Position", SLOT( setGlobalPosition( double, double, double ) ) );
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );

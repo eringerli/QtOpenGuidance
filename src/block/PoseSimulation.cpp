@@ -22,7 +22,7 @@
 #include <QEvent>
 #include <QtMath>
 
-#include <QtDebug>
+#include <QDebug>
 
 // http://correll.cs.colorado.edu/?p=1869
 // https://github.com/correll/Introduction-to-Autonomous-Robots/releases
@@ -34,6 +34,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     emit steeringAngleChanged( m_steerAngle );
 
+    // heading
     {
       QQuaternion difference = QQuaternion::fromEulerAngles( QVector3D(
                                  0,
@@ -42,9 +43,9 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
                                ) );
       m_orientation *=  difference;
       emit orientationChanged( m_orientation );
-      emit orientationChangedRelative( difference );
     }
 
+    // local position
     {
       float headingRad = qDegreesToRadians( lastOrientation.toEulerAngles().z() );
       QVector3D difference = QVector3D(
@@ -56,7 +57,28 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
       // emit signal with antenna offset
       emit positionChanged( m_position - m_orientation * ( -m_antennaPosition ) );
-      emit positionChangedRelative( difference );
+    }
+
+    // in global coordinates: WGS84
+    {
+      constexpr double R = 6378388; // Earth Radius in m
+      double distanceR = ( elapsedTime * m_velocity ) / R;
+
+      double cosDistanceR = qCos( distanceR );
+      double sinDistanceR = qSin( distanceR );
+      double cosLatitude = qCos( latitude );
+      double sinLatitude = qSin( latitude );
+
+      double headingInRad = qDegreesToRadians( m_orientation.toEulerAngles().z());
+
+      latitude = qAsin( ( sinLatitude * cosDistanceR ) +
+                           ( cosLatitude * sinDistanceR * qCos( headingInRad ) ) );
+
+      longitude += qAtan2( qSin( headingInRad ) * sinDistanceR * cosLatitude,
+                           cosDistanceR - ( sinLatitude * qSin( latitude ) ) );
+
+      emit globalPositionChanged( qRadiansToDegrees( latitude ), qRadiansToDegrees( longitude ), 450 );
+//      qDebug() << "lat, lon" << qRadiansToDegrees( latitude ) << qRadiansToDegrees( longitude );
     }
 
   }
