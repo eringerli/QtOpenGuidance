@@ -26,27 +26,34 @@
  */
 
 #include "qneport.h"
+#include "qneblock.h"
 
 #include <QGraphicsScene>
 #include <QFontMetrics>
 
 #include <QPen>
 
+#include <QEvent>
+#include <QGraphicsSceneMouseEvent>
+
+#include <QDebug>
+
 #include "qneconnection.h"
 
 QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
   QGraphicsPathItem( parent ),
-  slotSignalSignature( slotSignalSignature ), radius_( 5 ), margin( 2 ), m_portFlags( 0 ) {
+  slotSignalSignature( slotSignalSignature ), m_portFlags( 0 ) {
   label = new QGraphicsTextItem( this );
 
   QPainterPath p;
-  p.addEllipse( -radius_, -radius_, 2 * radius_, 2 * radius_ );
+  p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
   setPath( p );
 
   setPen( QPen( Qt::darkRed ) );
   setBrush( Qt::red );
 
   setFlag( QGraphicsItem::ItemSendsScenePositionChanges );
+  setAcceptHoverEvents( true );
 }
 
 QNEPort::~QNEPort() {
@@ -67,22 +74,15 @@ QString QNEPort::getName() {
   return label->toPlainText();
 }
 
-void QNEPort::setIsOutput( bool o ) {
-  isOutput_ = o;
-
-//  QFontMetrics fm( scene()->font() );
-//  QRect r = fm.boundingRect( name );
+void QNEPort::setIsOutput( bool output ) {
+  isOutput_ = output;
 
   if( isOutput_ ) {
-    label->setPos( -radius_ - margin - label->boundingRect().width(), -label->boundingRect().height() / 2 );
+    label->setPos( -radiusOfBullet - marginOfText - label->boundingRect().width(), -label->boundingRect().height() / 2 );
 
   } else {
-    label->setPos( radius_ + margin, -label->boundingRect().height() / 2 );
+    label->setPos( radiusOfBullet + marginOfText, -label->boundingRect().height() / 2 );
   }
-}
-
-int QNEPort::radius() {
-  return radius_;
 }
 
 bool QNEPort::isOutput() {
@@ -126,4 +126,12 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
   }
 
   return value;
+}
+
+void QNEPort::hoverLeaveEvent( QGraphicsSceneHoverEvent* event ) {
+  QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
+
+  if( block ) {
+    block->resizeBlockWidth();
+  }
 }

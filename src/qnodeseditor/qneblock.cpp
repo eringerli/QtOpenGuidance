@@ -56,9 +56,9 @@ int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
 
 QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    systemBlock( systemBlock ), horzMargin( 20 ), vertMargin( 5 ), width( 20 ), height( 5 ), object( object ) {
+    systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
   QPainterPath p;
-  p.addRoundedRect( -60, -30, 60, 30, 5, 5 );
+  p.addRoundedRect( -60, -30, 60, 30, cornerRadius, cornerRadius );
   setPath( p );
   setPen( QPen( Qt::darkGreen ) );
   setBrush( Qt::green );
@@ -66,9 +66,9 @@ QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   setFlag( QGraphicsItem::ItemIsSelectable );
 
   if( systemBlock ) {
-    m_id = getNextSystemId();
+    id = getNextSystemId();
   } else {
-    m_id = getNextUserId();
+    id = getNextUserId();
   }
 }
 
@@ -96,39 +96,9 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
 
   port->setPortFlags( flags );
 
-  QFontMetrics fm( scene()->font() );
-  int w = fm.width( name );
-  int h = fm.height();
+  height += port->getHeightOfLabelBoundingRect();
 
-  // port->setPos(0, height + h/2);
-  if( w > ( width - horzMargin ) ) {
-    width = w + horzMargin;
-  }
-
-  height += h;
-
-  QPainterPath p;
-  p.addRoundedRect( -width / 2, -height / 2, width, height, 5, 5 );
-  setPath( p );
-
-  double y = -height / 2 + vertMargin + port->radius();
-
-  foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() != QNEPort::Type ) {
-      continue;
-    }
-
-    QNEPort* port = ( QNEPort* ) port_;
-
-    if( port->isOutput() ) {
-      port->setPos( width / 2 + port->radius(), y );
-
-    } else {
-      port->setPos( -width / 2 - port->radius(), y );
-    }
-
-    y += h;
-  }
+  resizeBlockWidth();
 
   return port;
 }
@@ -146,7 +116,7 @@ void QNEBlock::addWidget( QWidget* widget ) {
   proxy->setParentItem( this );
   double heightBuffer = height;
   height += proxy->geometry().height() + 5;
-  width = qMax( proxy->geometry().width() + 10, ( double )width );
+  width = qMax( proxy->geometry().width() + 10, double( width ) );
   proxy->setX( -width / 2 + ( width - proxy->geometry().width() ) / 2 );
 
   proxy->setY( -height / 2 + heightBuffer + 10 );
@@ -171,8 +141,10 @@ QVector<QNEPort*> QNEBlock::ports() {
   QVector<QNEPort*> res;
 
   foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      res.append( ( QNEPort* ) port_ );
+    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+    if( port ) {
+      res.append( port );
     }
   }
 
@@ -181,36 +153,36 @@ QVector<QNEPort*> QNEBlock::ports() {
 
 void QNEBlock::setName( QString name ) {
   foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
-      if( port && port->portFlags()&QNEPort::NamePort ) {
-        port->setName( name );
-      }
+    if( port && port->portFlags()&QNEPort::NamePort ) {
+      port->setName( name );
     }
   }
 
   this->name = name;
+
+  resizeBlockWidth();
 }
 
 QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {
 
   Q_UNUSED( change )
 
+//  resizeBlockWidth();
+
   return value;
 }
 
 QNEPort* QNEBlock::getPortWithName( QString name, bool output ) {
   foreach( QGraphicsItem* port_, childItems() ) {
-    if( port_->type() == QNEPort::Type ) {
-      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
-      if( port &&
-          !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) &&
-          port->isOutput() == output &&
-          port->getName() == name ) {
-        return port;
-      }
+    if( port &&
+        !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) &&
+        port->isOutput() == output &&
+        port->getName() == name ) {
+      return port;
     }
   }
 
@@ -221,7 +193,7 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   QJsonArray blocksArray = json["blocks"].toArray();
 
   QJsonObject blockObject;
-  blockObject["id"] = m_id;
+  blockObject["id"] = id;
   blockObject["name"] = name;
   blockObject["type"] = typeString;
   blockObject["positionX"] = x();
@@ -242,4 +214,39 @@ void QNEBlock::fromJSON( QJsonObject& json ) {
 
 void QNEBlock::emitConfigSignals() {
   qobject_cast<GuidanceBase*>( object )->emitConfigSignals();
+}
+
+void QNEBlock::resizeBlockWidth() {
+
+  double y = -height / 2 + verticalMargin + cornerRadius;
+  width = 0;
+
+  foreach( QGraphicsItem* port_, childItems() ) {
+    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+    if( port ) {
+      if( width < port->getWidthOfLabelBoundingRect() ) {
+        width = port->getWidthOfLabelBoundingRect();
+      }
+    }
+  }
+
+  foreach( QGraphicsItem* port_, childItems() ) {
+    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+
+    if( port ) {
+      if( port->isOutput() ) {
+        port->setPos( width / 2 + cornerRadius, y );
+
+      } else {
+        port->setPos( -width / 2 - cornerRadius, y );
+      }
+
+      y += port->getHeightOfLabelBoundingRect();
+    }
+  }
+
+  QPainterPath p;
+  p.addRoundedRect( -width / 2, -height / 2, width, height, cornerRadius, cornerRadius );
+  setPath( p );
 }

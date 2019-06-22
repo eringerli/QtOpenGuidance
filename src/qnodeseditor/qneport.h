@@ -29,6 +29,8 @@
 #define QNEPORT_H
 
 #include <QGraphicsPathItem>
+#include <QTextDocument>
+#include <QFontMetrics>
 
 class QNEBlock;
 class QNEConnection;
@@ -45,7 +47,6 @@ class QNEPort : public QGraphicsPathItem {
     void setName( const QString& n );
     QString getName();
     void setIsOutput( bool o );
-    int radius();
     bool isOutput();
     QVector<QNEConnection*>& connections();
     void setPortFlags( int );
@@ -60,18 +61,29 @@ class QNEPort : public QGraphicsPathItem {
 
     QNEBlock* block() const;
 
+    qreal getWidthOfLabelBoundingRect() {
+      return marginOfText + label->boundingRect().width();
+    }
+
+    qreal getHeightOfLabelBoundingRect() {
+      QFontMetrics fm( label->font() );
+      return fm.height()/* + marginOfText*/;
+    }
+
   public:
     QString slotSignalSignature;
 
+    static constexpr qreal radiusOfBullet = 5;
+    static constexpr qreal marginOfText = 2;
+
   protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );
+    void hoverLeaveEvent( QGraphicsSceneHoverEvent* event );
 
   private:
     QNEBlock* m_block;
     bool isOutput_;
     QGraphicsTextItem* label;
-    int radius_;
-    int margin;
     QVector<QNEConnection*> m_connections;
     int m_portFlags;
 

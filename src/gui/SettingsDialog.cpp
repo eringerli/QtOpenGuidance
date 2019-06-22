@@ -224,7 +224,7 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( block->m_id == id ) {
+      if( block->id == id ) {
         return block;
       }
     }
@@ -274,7 +274,7 @@ void SettingsDialog::on_pbLoad_clicked() {
             QNEBlock* block = getBlockWithId( id );
 
             if( block ) {
-              idMap.insert( id, block->m_id );
+              idMap.insert( id, block->id );
               block->setX( blockObject["positionX"].toDouble( 0 ) );
               block->setY( blockObject["positionY"].toDouble( 0 ) );
             }
@@ -288,7 +288,7 @@ void SettingsDialog::on_pbLoad_clicked() {
               GuidanceBase* obj = factory->createNewObject();
               QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
 
-              idMap.insert( id, block->m_id );
+              idMap.insert( id, block->id );
 
               block->setX( blockObject["positionX"].toDouble( 0 ) );
               block->setY( blockObject["positionY"].toDouble( 0 ) );

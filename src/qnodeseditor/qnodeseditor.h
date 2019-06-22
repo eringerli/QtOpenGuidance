@@ -54,10 +54,9 @@ class QNodesEditor : public QObject {
     QGraphicsItem* itemAt( const QPointF& );
 
   private:
-    QGraphicsScene* scene;
-    QNEConnection* conn;
-    bool moved = false;
-    // QNEBlock *selBlock;
+    QGraphicsScene* scene = nullptr;
+    QNEConnection* currentConnection = nullptr;
+    bool isInPaningState = false;
 };
 
 #endif // QNODESEDITOR_H

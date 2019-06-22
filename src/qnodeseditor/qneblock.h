@@ -79,8 +79,15 @@ class QNEBlock : public QGraphicsPathItem {
       return m_nextUserId++;
     }
 
+  public slots:
+    void resizeBlockWidth();
+
   public:
-    int m_id = 0;
+    int id = 0;
+
+    static constexpr qreal horizontalMargin = 20;
+    static constexpr qreal verticalMargin = 5;
+    static constexpr qreal cornerRadius = 5;
 
   private:
     static int m_nextSystemId;
@@ -90,10 +97,8 @@ class QNEBlock : public QGraphicsPathItem {
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );
 
   private:
-    int horzMargin;
-    int vertMargin;
-    double width;
-    double height;
+    qreal width;
+    qreal height;
 
   public:
     QObject* object;

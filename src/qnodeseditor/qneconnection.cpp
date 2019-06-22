@@ -118,9 +118,6 @@ void QNEConnection::updatePosFromPorts() {
 void QNEConnection::updatePath() {
   QPainterPath p;
 
-  //QPointF pos1(m_port1->scenePos());
-  //QPointF pos2(m_port2->scenePos());
-
   p.moveTo( pos1 );
 
   qreal dx = pos2.x() - pos1.x();
@@ -146,9 +143,9 @@ void QNEConnection::toJSON( QJsonObject& json ) {
   QJsonArray connectionsArray = json["connections"].toArray();
 
   QJsonObject connectionObject;
-  connectionObject["idFrom"] = port1()->block()->m_id;
+  connectionObject["idFrom"] = port1()->block()->id;
   connectionObject["portFrom"] = port1()->getName();
-  connectionObject["idTo"] =  port2()->block()->m_id;
+  connectionObject["idTo"] =  port2()->block()->id;
   connectionObject["portTo"] = port2()->getName();
   connectionsArray.append( connectionObject );
 

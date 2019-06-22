@@ -37,7 +37,7 @@ class QNEConnection : public QGraphicsPathItem {
   public:
     enum { Type = QGraphicsItem::UserType + 2 };
 
-    QNEConnection( QGraphicsItem* parent = 0 );
+    QNEConnection( QGraphicsItem* parent = nullptr );
     ~QNEConnection();
 
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );

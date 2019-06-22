@@ -49,7 +49,7 @@ class QNEGraphicsView : public QGraphicsView {
 
   protected:
     void wheelEvent( QWheelEvent* event ) {
-//          if (event->modifiers() & Qt::ControlModifier) {
+
       // zoom
       const ViewportAnchor anchor = transformationAnchor();
       setTransformationAnchor( QGraphicsView::AnchorUnderMouse );
@@ -64,14 +64,6 @@ class QNEGraphicsView : public QGraphicsView {
 
       scale( factor, factor );
       setTransformationAnchor( anchor );
-//                  } else {
-//                      QGraphicsView::wheelEvent(event);
-//                  }
-
-//          qreal deltaScale = 1;
-//           deltaScale += event->delta() > 0 ? 0.1 : -0.1;
-//           setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-//           scale(deltaScale, deltaScale);
     }
 };
 

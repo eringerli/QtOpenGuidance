@@ -44,7 +44,6 @@
 
 QNodesEditor::QNodesEditor( QObject* parent ) :
   QObject( parent ) {
-  conn = nullptr;
 }
 
 void QNodesEditor::install( QGraphicsScene* s ) {
@@ -81,12 +80,12 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                   it->setDragMode( QGraphicsView::NoDrag );
                 }
 
-                conn = new QNEConnection( nullptr );
-                scene->addItem( conn );
-                conn->setPort1( ( QNEPort* ) item );
-                conn->setPos1( item->scenePos() );
-                conn->setPos2( mouseEvent->scenePos() );
-                conn->updatePath();
+                currentConnection = new QNEConnection( nullptr );
+                scene->addItem( currentConnection );
+                currentConnection->setPort1( ( QNEPort* ) item );
+                currentConnection->setPos1( item->scenePos() );
+                currentConnection->setPos2( mouseEvent->scenePos() );
+                currentConnection->updatePath();
 
                 return true;
               }
@@ -95,7 +94,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             break;
 
           case Qt::RightButton: {
-              moved = false;
+              isInPaningState = false;
             }
             break;
         }
@@ -131,9 +130,9 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
     case QEvent::GraphicsSceneMouseMove: {
         QGraphicsSceneMouseEvent* m = static_cast<QGraphicsSceneMouseEvent*>( e );
 
-        if( conn ) {
-          conn->setPos2( mouseEvent->scenePos() );
-          conn->updatePath();
+        if( currentConnection ) {
+          currentConnection->setPos2( mouseEvent->scenePos() );
+          currentConnection->updatePath();
           return true;
         } else {
           if( m->buttons() & Qt::RightButton ) {
@@ -150,7 +149,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               it->setDragMode( QGraphicsView::ScrollHandDrag );
             }
 
-            moved = true;
+            isInPaningState = true;
             return true;
           }
         }
@@ -159,35 +158,35 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
       }
 
     case QEvent::GraphicsSceneMouseRelease: {
-        if( conn && mouseEvent->button() == Qt::LeftButton ) {
+        if( currentConnection && mouseEvent->button() == Qt::LeftButton ) {
           QNEPort* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
-          if( port && port != conn->port1() ) {
-            if( conn->setPort2( port ) ) {
-              conn->updatePosFromPorts();
-              conn->updatePath();
-              conn = nullptr;
+          if( port && port != currentConnection->port1() ) {
+            if( currentConnection->setPort2( port ) ) {
+              currentConnection->updatePosFromPorts();
+              currentConnection->updatePath();
+              currentConnection = nullptr;
               return true;
             } else {
-              QNEPort* port1 = conn->port1();
-              conn->setPort1( port );
+              QNEPort* port1 = currentConnection->port1();
+              currentConnection->setPort1( port );
 
-              if( conn->setPort2( port1 ) ) {
-                conn->updatePosFromPorts();
-                conn->updatePath();
-                conn = nullptr;
+              if( currentConnection->setPort2( port1 ) ) {
+                currentConnection->updatePosFromPorts();
+                currentConnection->updatePath();
+                currentConnection = nullptr;
                 return true;
               }
             }
           }
 
-          delete conn;
-          conn = nullptr;
+          delete currentConnection;
+          currentConnection = nullptr;
           return true;
         }
 
         if( mouseEvent->button() == Qt::RightButton ) {
-          if( moved == false )  {
+          if( isInPaningState == false )  {
             QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
 
             if( item ) {
@@ -200,7 +199,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               } else {
                 QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-                if( connection /*&& connection->deleteable*/ ) {
+                if( connection ) {
                   delete connection;
                 }
               }
