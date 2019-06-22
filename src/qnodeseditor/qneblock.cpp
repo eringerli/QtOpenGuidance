@@ -31,6 +31,7 @@
 #include <QGraphicsScene>
 #include <QFontMetrics>
 #include <QPainter>
+#include <QGraphicsScene>
 
 #include <QGraphicsProxyWidget>
 #include <QStyleOptionGraphicsItem>
@@ -53,6 +54,7 @@
 
 int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
+//qreal QNEBlock::gridSpacing = 20;
 
 QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
@@ -217,8 +219,12 @@ void QNEBlock::emitConfigSignals() {
 }
 
 void QNEBlock::resizeBlockWidth() {
+  QFontMetrics fm( scene()->font() );
+  qreal gridSpacing = fm.height() * 2;
 
-  double y = -height / 2 + verticalMargin + cornerRadius;
+  qreal heightSnappedToGridSpacing = round( ( height - 2 * cornerRadius ) / ( gridSpacing ) ) * ( gridSpacing ) + 2 * cornerRadius;
+
+  double y = -heightSnappedToGridSpacing / 2 + verticalMargin + cornerRadius;
   width = 0;
 
   foreach( QGraphicsItem* port_, childItems() ) {
@@ -231,15 +237,17 @@ void QNEBlock::resizeBlockWidth() {
     }
   }
 
+  qreal widthSnappedToGridSpacing = ceil( width / ( gridSpacing ) ) * ( gridSpacing );
+
   foreach( QGraphicsItem* port_, childItems() ) {
     QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
       if( port->isOutput() ) {
-        port->setPos( width / 2 + cornerRadius, y );
+        port->setPos( widthSnappedToGridSpacing / 2 + cornerRadius, y );
 
       } else {
-        port->setPos( -width / 2 - cornerRadius, y );
+        port->setPos( -widthSnappedToGridSpacing / 2 - cornerRadius, y );
       }
 
       y += port->getHeightOfLabelBoundingRect();
@@ -247,6 +255,26 @@ void QNEBlock::resizeBlockWidth() {
   }
 
   QPainterPath p;
-  p.addRoundedRect( -width / 2, -height / 2, width, height, cornerRadius, cornerRadius );
+  p.addRoundedRect( -widthSnappedToGridSpacing / 2, -heightSnappedToGridSpacing / 2, widthSnappedToGridSpacing, heightSnappedToGridSpacing, cornerRadius, cornerRadius );
   setPath( p );
+}
+
+void QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
+  QFontMetrics fm( scene()->font() );
+  qreal gridSpacing = fm.height();
+
+  qreal xx = x();
+  qreal yy = y();
+
+  if( int( xx ) % int( gridSpacing ) ) {
+    xx = gridSpacing * round( xx / gridSpacing );
+  }
+
+  if( int( yy ) % int( gridSpacing ) ) {
+    yy = gridSpacing * round( yy / gridSpacing );
+  }
+
+  setPos( xx, yy );
+
+  QGraphicsItem::mouseReleaseEvent( event );
 }

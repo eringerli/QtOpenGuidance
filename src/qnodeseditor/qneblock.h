@@ -95,6 +95,7 @@ class QNEBlock : public QGraphicsPathItem {
 
   protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );
+    void mouseReleaseEvent( QGraphicsSceneMouseEvent* event );
 
   private:
     qreal width;
