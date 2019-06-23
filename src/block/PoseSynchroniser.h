@@ -47,6 +47,11 @@ class PoseSynchroniser : public GuidanceBase {
       emit poseChanged( currentTile, position, orientation );
     }
 
+    void setTiledPosition( Tile* tile, QVector3D position ) {
+      this->position = position;
+      emit poseChanged( tile, this->position, orientation );
+    }
+
     void setOrientation( QQuaternion value ) {
       orientation = value;
     }
@@ -101,6 +106,7 @@ class PoseSynchroniserFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
+      b->addInputPort( "Tiled Position", SLOT( setTiledPosition( Tile*, QVector3D ) ) );
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );

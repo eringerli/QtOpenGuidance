@@ -32,12 +32,20 @@
 
 #include "GuidanceBase.h"
 
+#include "../kinematic/Tile.h"
+
+#include <GeographicLib/TransverseMercator.hpp>
+using namespace std;
+using namespace GeographicLib;
+
 class PoseSimulation : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit PoseSimulation()
-      : GuidanceBase() {
+    explicit PoseSimulation( Tile* tile )
+      : GuidanceBase(),
+        _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ),
+        tile( tile ) {
       setSimulation( false );
     }
 
@@ -74,29 +82,19 @@ class PoseSimulation : public GuidanceBase {
 
     void setVelocity( float velocity ) {
       m_velocity = velocity;
-      emit velocityChanged( velocity );
     }
 
     void setWheelbase( float wheelbase ) {
       m_wheelbase = wheelbase;
-      emit wheelbaseChanged( m_wheelbase );
     }
 
     void setAntennaPosition( QVector3D position ) {
       m_antennaPosition = position;
-      emit antennaPositionChanged( m_position );
     }
 
-    void setPosition( QVector3D position ) {
-      m_position = position;
-      emit positionChanged( m_position );
+    void setInitialWGS84Position( QVector3D position ) {
+      m_initialWGS84Position = position;
     }
-
-    void setOrientation( QQuaternion orientation ) {
-      m_orientation = orientation;
-      emit orientationChanged( m_orientation );
-    }
-
 
   protected:
     void timerEvent( QTimerEvent* event ) override;
@@ -106,8 +104,6 @@ class PoseSimulation : public GuidanceBase {
     void intervalChanged( int interval );
 
     void steerAngleChanged( float steerAngle );
-    void velocityChanged( float velocity );
-    void wheelbaseChanged( float wheelbase );
 
     void antennaPositionChanged( QVector3D position );
 
@@ -119,7 +115,7 @@ class PoseSimulation : public GuidanceBase {
   public:
     virtual void emitConfigSignals() override {
       emit steerAngleChanged( m_steerAngle );
-      emit positionChanged( m_position );
+      emit positionChanged( QVector3D( float( x ), float( y ), float( height ) ) );
       emit orientationChanged( m_orientation );
     }
 
@@ -136,20 +132,25 @@ class PoseSimulation : public GuidanceBase {
     float m_wheelbase = 2.4f;
 
     QVector3D m_antennaPosition = QVector3D();
-    QVector3D m_position = QVector3D();
     QQuaternion m_orientation = QQuaternion();
 
-    double latitude = qDegreesToRadians(7.5);
-    double longitude = qDegreesToRadians(40.0);
+    QVector3D m_initialWGS84Position = QVector3D();
+
+    double x = 0;
+    double y = 0;
     double height = 0;
+    TransverseMercator _tm;
+
+    Tile* tile;
 };
 
 class PoseSimulationFactory : public GuidanceFactory {
     Q_OBJECT
 
   public:
-    PoseSimulationFactory()
-      : GuidanceFactory() {}
+    PoseSimulationFactory( Tile* tile )
+      : GuidanceFactory(),
+        tile( tile ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Pose Simulation" );
@@ -159,7 +160,7 @@ class PoseSimulationFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return new PoseSimulation;
+      return new PoseSimulation( tile );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -171,14 +172,18 @@ class PoseSimulationFactory : public GuidanceFactory {
 
       b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
+      b->addInputPort( "Initial WGS84 Position", SLOT( setInitialWGS84Position( QVector3D ) ) );
 
-      b->addOutputPort( "Global Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
+      b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
 
       return b;
     }
+
+  private:
+    Tile* tile;
 };
 
 #endif // POSESIMULATION_H

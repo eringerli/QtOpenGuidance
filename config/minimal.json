@@ -1,25 +1,61 @@
 {
     "blocks": [
         {
-            "id": 1003,
-            "name": "Tractor Kinematic",
-            "positionX": 594,
-            "positionY": 36,
-            "type": "Fixed Kinematic"
+            "id": 2,
+            "name": "Grid Model",
+            "positionX": 882,
+            "positionY": 288,
+            "type": "Grid Model"
+        },
+        {
+            "id": 1,
+            "name": "Pose Simulation",
+            "positionX": -378,
+            "positionY": -18,
+            "type": "Pose Simulation"
         },
         {
             "id": 1005,
+            "name": "Transverse Mercator",
+            "positionX": -126.060670900894,
+            "positionY": -36,
+            "type": "Transverse Mercator"
+        },
+        {
+            "id": 1000,
             "name": "Pose Synchroniser",
             "positionX": 180,
             "positionY": 18,
             "type": "Pose Synchroniser"
         },
         {
-            "id": 1002,
-            "name": "Tractor Model",
-            "positionX": 900,
-            "positionY": 72,
-            "type": "Tractor Model"
+            "id": 1006,
+            "name": "Antenna Position",
+            "positionX": -594,
+            "positionY": -234,
+            "type": "Vector3D",
+            "values": {
+                "X": 3,
+                "Y": 0,
+                "Z": 1.5
+            }
+        },
+        {
+            "id": 1004,
+            "name": "Tractor Kinematic",
+            "positionX": 594,
+            "positionY": 36,
+            "type": "Fixed Kinematic"
+        },
+        {
+            "id": 1003,
+            "name": "Wheelbase Tractor",
+            "positionX": -594,
+            "positionY": -144,
+            "type": "Length",
+            "values": {
+                "length": 2.5
+            }
         },
         {
             "id": 3,
@@ -29,40 +65,16 @@
             "type": "Camera Controller"
         },
         {
-            "id": 1,
-            "name": "Pose Simulation",
-            "positionX": 0,
-            "positionY": -18,
-            "type": "Pose Simulation"
-        },
-        {
-            "id": 1000,
-            "name": "Wheelbase Tractor",
-            "positionX": -216,
-            "positionY": -126,
-            "type": "Length",
-            "values": {
-                "length": 2.5
-            }
-        },
-        {
-            "id": 1004,
-            "name": "Antenna Position",
-            "positionX": -216.28989483310474,
-            "positionY": -216,
+            "id": 1007,
+            "name": "Vector3D",
+            "positionX": -594,
+            "positionY": -36,
             "type": "Vector3D",
             "values": {
-                "X": 3,
-                "Y": 0,
-                "Z": 1.5
+                "X": 7.5,
+                "Y": 47,
+                "Z": 0
             }
-        },
-        {
-            "id": 2,
-            "name": "Grid Model",
-            "positionX": 882,
-            "positionY": 288,
-            "type": "Grid Model"
         },
         {
             "id": 1001,
@@ -75,98 +87,117 @@
                 "Y": 0,
                 "Z": 0
             }
+        },
+        {
+            "id": 1002,
+            "name": "Tractor Model",
+            "positionX": 900,
+            "positionY": 72,
+            "type": "Tractor Model"
         }
     ],
     "connections": [
         {
-            "idFrom": 1003,
+            "idFrom": 1,
+            "idTo": 1000,
+            "portFrom": "Orientation",
+            "portTo": "Orientation"
+        },
+        {
+            "idFrom": 1004,
+            "idTo": 3,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "View Center Position"
+        },
+        {
+            "idFrom": 1000,
+            "idTo": 1002,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
+        },
+        {
+            "idFrom": 1004,
             "idTo": 1002,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose Pivot Point"
         },
         {
             "idFrom": 1004,
+            "idTo": 1002,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose Tow Point"
+        },
+        {
+            "idFrom": 1003,
             "idTo": 1,
-            "portFrom": "Position",
-            "portTo": "Antenna Position"
-        },
-        {
-            "idFrom": 1005,
-            "idTo": 1002,
-            "portFrom": "Steering Angle",
-            "portTo": "Steering Angle"
-        },
-        {
-            "idFrom": 1000,
-            "idTo": 1002,
             "portFrom": "Length",
             "portTo": "Length Wheelbase"
         },
         {
             "idFrom": 1004,
-            "idTo": 1003,
-            "portFrom": "Position",
-            "portTo": "OffsetHookPoint"
-        },
-        {
-            "idFrom": 1001,
-            "idTo": 1003,
-            "portFrom": "Position",
-            "portTo": "OffsetTowPoint"
-        },
-        {
-            "idFrom": 1,
-            "idTo": 1005,
-            "portFrom": "Steering Angle",
-            "portTo": "Steering Angle"
-        },
-        {
-            "idFrom": 1000,
-            "idTo": 1,
-            "portFrom": "Length",
-            "portTo": "Length Wheelbase"
-        },
-        {
-            "idFrom": 1003,
-            "idTo": 2,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 1005,
-            "idTo": 1003,
-            "portFrom": "Pose",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 1003,
             "idTo": 1002,
             "portFrom": "Pose Hook Point",
             "portTo": "Pose Hook Point"
         },
         {
-            "idFrom": 1,
-            "idTo": 1005,
-            "portFrom": "Orientation",
-            "portTo": "Orientation"
-        },
-        {
-            "idFrom": 1003,
-            "idTo": 3,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "View Center Position"
-        },
-        {
-            "idFrom": 1,
-            "idTo": 1005,
-            "portFrom": "Position",
-            "portTo": "Position"
-        },
-        {
             "idFrom": 1003,
             "idTo": 1002,
-            "portFrom": "Pose Tow Point",
-            "portTo": "Pose Tow Point"
+            "portFrom": "Length",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1001,
+            "idTo": 1004,
+            "portFrom": "Position",
+            "portTo": "OffsetTowPoint"
+        },
+        {
+            "idFrom": 1006,
+            "idTo": 1004,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
+        },
+        {
+            "idFrom": 1006,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Antenna Position"
+        },
+        {
+            "idFrom": 1000,
+            "idTo": 1004,
+            "portFrom": "Pose",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1007,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Initial WGS84 Position"
+        },
+        {
+            "idFrom": 1004,
+            "idTo": 2,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1005,
+            "portFrom": "WGS84 Position",
+            "portTo": "WGS84 Position"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1000,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
+        },
+        {
+            "idFrom": 1005,
+            "idTo": 1000,
+            "portFrom": "Tiled Position",
+            "portTo": "Tiled Position"
         }
     ]
 }

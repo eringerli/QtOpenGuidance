@@ -29,7 +29,7 @@
 
 void PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
-    float elapsedTime = float ( m_time.restart() ) / 1000;
+    double elapsedTime = double ( m_time.restart() ) / 1000;
     QQuaternion lastOrientation = m_orientation;
 
     emit steeringAngleChanged( m_steerAngle );
@@ -39,7 +39,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       QQuaternion difference = QQuaternion::fromEulerAngles( QVector3D(
                                  0,
                                  0,
-                                 qRadiansToDegrees( elapsedTime * ( qTan( qDegreesToRadians( m_steerAngle ) / m_wheelbase * m_velocity ) ) )
+                                 float( qRadiansToDegrees( elapsedTime * ( qTan( qDegreesToRadians( m_steerAngle ) / m_wheelbase * m_velocity ) ) ) )
                                ) );
       m_orientation *=  difference;
       emit orientationChanged( m_orientation );
@@ -47,38 +47,29 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     // local position
     {
-      float headingRad = qDegreesToRadians( lastOrientation.toEulerAngles().z() );
-      QVector3D difference = QVector3D(
-                               elapsedTime * qCos( headingRad ) * m_velocity,
-                               elapsedTime * qSin( headingRad ) * m_velocity,
-                               0
-                             );
-      m_position += difference;
-
-      // emit signal with antenna offset
-      emit positionChanged( m_position - m_orientation * ( -m_antennaPosition ) );
+      double headingRad = qDegreesToRadians( double( lastOrientation.toEulerAngles().z() ) );
+      double elapsedTimeVelocity = elapsedTime * double( m_velocity );
+      x +=  elapsedTimeVelocity * qCos( headingRad );
+      y += elapsedTimeVelocity * qSin( headingRad );
     }
+    QVector3D antenna =  m_orientation * ( m_antennaPosition );
+
+    double xWithAntennaOffset = x + double( antenna.x() );
+    double yWithAntennaOffset = y + double( antenna.y() );
+    double zWithAntennaOffset = height + double( antenna.z() );
+
+    // emit signal with antenna offset
+    emit positionChanged( QVector3D( float( xWithAntennaOffset ), float( yWithAntennaOffset ), float( zWithAntennaOffset ) ) );
+
 
     // in global coordinates: WGS84
     {
-      constexpr double R = 6378388; // Earth Radius in m
-      double distanceR = ( elapsedTime * m_velocity ) / R;
+      double latitude = 0, longitude = 0;
 
-      double cosDistanceR = qCos( distanceR );
-      double sinDistanceR = qSin( distanceR );
-      double cosLatitude = qCos( latitude );
-      double sinLatitude = qSin( latitude );
+      _tm.Reverse( double( m_initialWGS84Position.y() ), yWithAntennaOffset, xWithAntennaOffset, latitude, longitude );
+      latitude += double( m_initialWGS84Position.x() );
 
-      double headingInRad = qDegreesToRadians( m_orientation.toEulerAngles().z());
-
-      latitude = qAsin( ( sinLatitude * cosDistanceR ) +
-                           ( cosLatitude * sinDistanceR * qCos( headingInRad ) ) );
-
-      longitude += qAtan2( qSin( headingInRad ) * sinDistanceR * cosLatitude,
-                           cosDistanceR - ( sinLatitude * qSin( latitude ) ) );
-
-      emit globalPositionChanged( qRadiansToDegrees( latitude ), qRadiansToDegrees( longitude ), 450 );
-//      qDebug() << "lat, lon" << qRadiansToDegrees( latitude ) << qRadiansToDegrees( longitude );
+      emit globalPositionChanged( latitude, longitude, zWithAntennaOffset );
     }
 
   }

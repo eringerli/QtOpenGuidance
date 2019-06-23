@@ -42,6 +42,7 @@
 #include "../block/PoseSimulation.h"
 
 #include "../block/PoseSynchroniser.h"
+#include "../block/TransverseMercatorConverter.h"
 
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
@@ -80,8 +81,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
   // DON'T BREAK SAVED CONFIGS!
 
+  // initialise tiling
+  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity );
+
   // simulator
-  poseSimulationFactory = new PoseSimulationFactory();
+  poseSimulationFactory = new PoseSimulationFactory( tile );
   poseSimulation = poseSimulationFactory->createNewObject();
   poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
 
@@ -95,10 +99,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   QObject::connect( this, SIGNAL( setGridValues( float, float, float, QColor ) ),
                     gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
 
-  // initialise tiling
-  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity );
 
   // Factories for the blocks
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile );
   poseCacheFactory = new PoseSynchroniserFactory( tile );
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
@@ -111,6 +114,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
+  transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   poseCacheFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
@@ -132,6 +136,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 SettingsDialog::~SettingsDialog() {
   delete ui;
 
+  delete transverseMercatorConverterFactory;
   delete poseCacheFactory;
   delete tractorModelFactory;
   delete trailerModelFactory;

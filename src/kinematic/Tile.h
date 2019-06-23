@@ -28,6 +28,21 @@
 #include <QDebug>
 #include "../3d/drawline.h"
 
+class RootTile: public QObject {
+    Q_OBJECT
+
+  public:
+    RootTile()
+      : QObject() {
+    }
+
+  public:
+    bool isLatLonOffsetSet = false;
+    double height0 = 0;
+    double lon0 = 0;
+    double lat0 = 0;
+};
+
 // Tiling works like this:
 // - create a QObject as root
 // - add a first Tile to that QObject
@@ -42,6 +57,7 @@ class Tile: public QObject {
 
   public:
     static constexpr float sizeOfTile = 50;
+    static constexpr double sizeOfTileDouble = double( sizeOfTile );
 
   public:
     Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity )
@@ -49,6 +65,8 @@ class Tile: public QObject {
         rootEntity( rootEntity ), x( x ), y( y ) {
       tileTransform = new Qt3DCore::QTransform();
       tileTransform->setTranslation( QVector3D( x, y, 0 ) );
+
+      qDebug() << "new Tile:" << x << y << this;
 
       tileEntity = new Qt3DCore::QEntity( rootEntity );
       tileEntity->addComponent( tileTransform );
@@ -64,6 +82,39 @@ class Tile: public QObject {
 //      pt1 = QVector3D( 0, 0, 0 );
 //      drawLine( pt1, pt2,  Qt::red, tileEntity );
 
+    }
+
+    // the check for locality is done here, as it is highly probable, that the point is in the current tile
+    // this is an optimition, which isn't quite right from a point of ownership. Also, new Tiles are created here and
+    // added to the parent of this Tile. This works, as the Tiles are organised as an object-tree (https://doc.qt.io/qt-5/objecttrees.html)
+    // and manage themselfs
+    // if a new tile is created, the position is altered accordingly
+    Tile* getTileForPosition( double& x, double& y ) {
+      // the point is in this Tile -> return it
+      if( x >= 0 &&
+          x >= 0 &&
+          y < sizeOfTileDouble &&
+          y < sizeOfTileDouble ) {
+        return this;
+      } else {
+        // calculate relative offset
+        qint64 relativeOffsetX = qint64( x / sizeOfTileDouble ) - ( ( x < 0 ) ? 1 : 0 );
+        qint64 relativeOffsetY = qint64( y / sizeOfTileDouble ) - ( ( y < 0 ) ? 1 : 0 );
+        relativeOffsetX *= qint64( sizeOfTileDouble );
+        relativeOffsetY *= qint64( sizeOfTileDouble );
+
+        // offset the position
+        if( relativeOffsetX ) {
+          x -= relativeOffsetX;
+        }
+
+        if( relativeOffsetY ) {
+          y -= relativeOffsetY;
+        }
+
+        // get the tile or create a new one
+        return getTileForOffset( this->x + relativeOffsetX, this->y + relativeOffsetY );
+      }
     }
 
     // the check for locality is done here, as it is highly probable, that the point is in the current tile

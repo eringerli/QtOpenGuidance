@@ -52,11 +52,19 @@ class DebugSink : public GuidanceBase {
       }
     }
 
-    void setGlobalPosition( double latitude, double longitude, double height ) {
+    void setTiledPosition( Tile* tile, QVector3D value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << latitude << longitude<<height;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << value;
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << latitude << longitude<<height;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << value;
+      }
+    }
+
+    void setWGS84Position( double latitude, double longitude, double height ) {
+      if( block ) {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << latitude << longitude << height;
+      } else {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << latitude << longitude << height;
       }
     }
 
@@ -124,8 +132,9 @@ class DebugSinkFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Global Position", SLOT( setGlobalPosition( double, double, double ) ) );
+      b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
+      b->addInputPort( "Tiled Position", SLOT( setTiledPosition( Tile*, QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );

@@ -33,6 +33,8 @@
 #include "VectorBlockModel.h"
 #include "LengthBlockModel.h"
 
+#include "../kinematic/Tile.h"
+
 namespace Ui {
   class SettingsDialog;
 }
@@ -80,7 +82,7 @@ class SettingsDialog : public QDialog {
     void on_pbColor_clicked();
 
   public:
-    QObject tileRoot;
+    RootTile tileRoot;
 
   public:
     GuidanceBase* poseSimulation;
@@ -94,6 +96,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* poseSimulationFactory;
     GuidanceFactory* gridModelFactory;
 
+    GuidanceFactory* transverseMercatorConverterFactory;
     GuidanceFactory* poseCacheFactory;
     GuidanceFactory* tractorModelFactory;
     GuidanceFactory* trailerModelFactory;
