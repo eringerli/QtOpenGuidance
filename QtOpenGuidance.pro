@@ -54,3 +54,5 @@ RESOURCES += \
 #include($$PWD/lib/QuickQanava/src/quickqanava.pri)
 
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
+include($$PWD/lib/geographiclib.pri)
+
