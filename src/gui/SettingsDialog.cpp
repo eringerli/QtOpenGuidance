@@ -84,6 +84,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   // initialise tiling
   Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity );
 
+  // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
+  TransverseMercatorWrapper* tmw = new TransverseMercatorWrapper();
+
   // simulator
   poseSimulationFactory = new PoseSimulationFactory( tile );
   poseSimulation = poseSimulationFactory->createNewObject();
@@ -101,7 +104,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile );
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
   poseCacheFactory = new PoseSynchroniserFactory( tile );
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );

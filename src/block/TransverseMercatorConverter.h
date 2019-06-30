@@ -31,41 +31,73 @@
 
 #include "../kinematic/Tile.h"
 
+#include <QDebug>
+
 #include <GeographicLib/TransverseMercator.hpp>
 using namespace std;
 using namespace GeographicLib;
+
+// an instance of this class gets shared across all the blocks, so the conversions are the same everywhere
+class TransverseMercatorWrapper {
+  public:
+
+    TransverseMercatorWrapper()
+      : _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ) {
+    }
+
+    void Forward( double latitude, double longitude, double& height, double& x, double& y ) {
+      if( !isLatLonOffsetSet ) {
+        lat0 = latitude;
+        lon0 = longitude;
+        height0 = height;
+        isLatLonOffsetSet = true;
+      }
+
+      latitude -= lat0;
+      height -= height0;
+
+      double convergence, scale;
+      _tm.Forward( lon0, latitude, longitude, y, x, convergence, scale );
+//      qDebug() << "lat0, lon0, isLatLonOffsetSet" << lat0 << lon0 << isLatLonOffsetSet;
+//      qDebug() << x << y << convergence << scale;
+    }
+
+    void Reverse( double x, double y, double& latitude, double& longitude, double& height ) {
+      double convergence, scale;
+      _tm.Reverse( lon0, y, x, latitude, longitude, convergence, scale );
+
+      latitude += lat0;
+      height += height0;
+      qDebug() << lat0 << lon0;
+      qDebug() << x << y << convergence << scale;
+    }
+
+  private:
+    TransverseMercator _tm;
+
+    bool isLatLonOffsetSet = false;
+    double height0 = 0;
+    double lat0 = 0;
+    double lon0 = 0;
+};
 
 class TransverseMercatorConverter : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit TransverseMercatorConverter( Tile* tile, bool* isLatLonOffsetSet, double* height0, double* lat0, double* lon0 )
+    explicit TransverseMercatorConverter( Tile* tile, TransverseMercatorWrapper* tmw )
       : GuidanceBase(),
-        _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ),
-        isLatLonOffsetSet( isLatLonOffsetSet ), height0( height0 ), lat0( lat0 ), lon0( lon0 ) {
+        tmw( tmw ) {
       rootTile = tile->getTileForOffset( 0, 0 );
     }
 
   public slots:
     void setWGS84Position( double latitude, double longitude, double height ) {
-      if( !( *isLatLonOffsetSet ) ) {
-        *lat0 = latitude;
-        *lon0 = longitude;
-        *height0 = height;
-        *isLatLonOffsetSet = true;
-      }
 
-      latitude -= *lat0;
-      height -= *height0;
-
-      double x, y, convergence, scale;
-      _tm.Forward( *lon0, latitude, longitude, y, x, convergence, scale );
-
-//      qDebug() << x << y << convergence << scale;
-//      qDebug() << *lat0 << *lon0;
+      double x, y;
+      tmw->Forward( latitude, longitude, height, x, y );
 
       Tile* tile = rootTile->getTileForPosition( x, y );
-//      qDebug() << tile << "(" << tile->x << "|" << tile->y << ")" << x << y;
 
       emit tiledPositionChanged( tile, QVector3D( float( x ), float( y ), float( height ) ) );
     }
@@ -75,29 +107,24 @@ class TransverseMercatorConverter : public GuidanceBase {
 
   public:
     virtual void emitConfigSignals() override {
-      rootTile = rootTile->getTileForPosition( &position );
       emit tiledPositionChanged( rootTile, position );
     }
 
   public:
     Tile* rootTile = nullptr;
+    TransverseMercatorWrapper* tmw = nullptr;
     QVector3D position = QVector3D();
 
-    TransverseMercator _tm;
 
-    bool* isLatLonOffsetSet;
-    double* height0;
-    double* lat0;
-    double* lon0;
 };
 
 class TransverseMercatorConverterFactory : public GuidanceFactory {
     Q_OBJECT
 
   public:
-    TransverseMercatorConverterFactory( Tile* tile )
+    TransverseMercatorConverterFactory( Tile* tile, TransverseMercatorWrapper* tmw )
       : GuidanceFactory(),
-        tile( tile ) {}
+        tile( tile ), tmw( tmw ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Transverse Mercator" );
@@ -108,9 +135,7 @@ class TransverseMercatorConverterFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      RootTile* rootTile = qobject_cast<RootTile*>( tile->parent() );
-
-      return new TransverseMercatorConverter( tile, &( rootTile->isLatLonOffsetSet ), &( rootTile->height0 ), &( rootTile->lat0 ), &( rootTile->lon0 ) );
+      return new TransverseMercatorConverter( tile, tmw );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -129,6 +154,7 @@ class TransverseMercatorConverterFactory : public GuidanceFactory {
 
   private:
     Tile* tile;
+    TransverseMercatorWrapper* tmw;
 };
 
 #endif // TRANSVERSEMERCATORCONVERTER_H
