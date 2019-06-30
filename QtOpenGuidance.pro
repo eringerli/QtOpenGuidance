@@ -1,4 +1,4 @@
-QT += 3dcore 3drender 3dinput 3dextras
+QT += 3dcore 3drender 3dinput 3dextras serialport
 QT += widgets core
 
 SOURCES += src/main.cpp \
@@ -26,6 +26,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
+    src/block/SerialPort.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
