@@ -32,6 +32,7 @@
 
 #include "VectorBlockModel.h"
 #include "NumberBlockModel.h"
+#include "StringBlockModel.h"
 
 #include "../kinematic/Tile.h"
 
@@ -104,6 +105,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* trailerKinematicFactory;
     GuidanceFactory* vectorFactory;
     GuidanceFactory* numberFactory;
+    GuidanceFactory* stringFactory;
     GuidanceFactory* debugSinkFactory;
     GuidanceFactory* printLatencyFactory;
     GuidanceFactory* udpSocketFactory;
@@ -111,6 +113,7 @@ class SettingsDialog : public QDialog {
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;
     NumberBlockModel* numberBlockModel;
+    StringBlockModel* stringBlockModel;
 
 //    GuidanceFactory* fieldFactory;
 

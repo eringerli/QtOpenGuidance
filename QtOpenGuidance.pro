@@ -12,6 +12,7 @@ SOURCES += src/main.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/SettingsDialog.cpp \
     src/gui/SimulatorToolbar.cpp \
+    src/gui/StringBlockModel.cpp \
     src/gui/VectorBlockModel.cpp
     
 HEADERS += \
@@ -25,6 +26,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
+    src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
     src/block/TransverseMercatorConverter.h \
@@ -35,6 +37,7 @@ HEADERS += \
     src/gui/NumberBlockModel.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
+    src/gui/StringBlockModel.h \
     src/gui/VectorBlockModel.h \
     src/kinematic/Field.h \
     src/kinematic/FixedKinematic.h \

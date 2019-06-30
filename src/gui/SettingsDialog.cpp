@@ -33,6 +33,7 @@
 
 #include "../block/VectorObject.h"
 #include "../block/NumberObject.h"
+#include "../block/StringObject.h"
 
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
@@ -74,8 +75,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   filterModel = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
   numberBlockModel = new NumberBlockModel( scene );
+  stringBlockModel = new StringBlockModel( scene );
+
   vectorBlockModel->addToCombobox( ui->cbValues );
   numberBlockModel->addToCombobox( ui->cbValues );
+  stringBlockModel->addToCombobox( ui->cbValues );
   filterModel->setSourceModel( vectorBlockModel );
   filterModel->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModel );
@@ -114,6 +118,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerKinematicFactory = new TrailerKinematicFactory( tile );
   vectorFactory = new VectorFactory();
   numberFactory = new NumberFactory();
+  stringFactory = new StringFactory();
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
   udpSocketFactory = new UdpSocketFactory();
@@ -128,6 +133,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
+  stringFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
   udpSocketFactory->addToCombobox( ui->cbNodeType );
@@ -151,6 +157,7 @@ SettingsDialog::~SettingsDialog() {
   delete trailerKinematicFactory;
   delete vectorFactory;
   delete numberFactory;
+  delete stringFactory;
   delete debugSinkFactory;
   delete printLatencyFactory;
   delete udpSocketFactory;
@@ -370,6 +377,7 @@ void SettingsDialog::on_pbLoad_clicked() {
     // reset the models
     vectorBlockModel->resetModel();
     numberBlockModel->resetModel();
+    stringBlockModel->resetModel();
 
     // rescale the tableview
     ui->twValues->resizeColumnsToContents();
@@ -391,6 +399,10 @@ void SettingsDialog::on_pbAddBlock_clicked() {
 
     if( qobject_cast<NumberObject*>( obj ) ) {
       numberBlockModel->resetModel();
+    }
+
+    if( qobject_cast<StringObject*>( obj ) ) {
+      stringBlockModel->resetModel();
     }
   }
 }
