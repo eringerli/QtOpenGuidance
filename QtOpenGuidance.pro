@@ -28,6 +28,7 @@ HEADERS += \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
     src/block/TransverseMercatorConverter.h \
+    src/block/UdpSocket.h \
     src/block/VectorObject.h \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceToolbar.h \

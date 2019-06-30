@@ -47,6 +47,8 @@
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
 
+#include "../block/UdpSocket.h"
+
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 
@@ -114,6 +116,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   numberFactory = new NumberFactory();
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
+  udpSocketFactory = new UdpSocketFactory();
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
@@ -127,6 +130,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   numberFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
+  udpSocketFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -149,6 +153,7 @@ SettingsDialog::~SettingsDialog() {
   delete numberFactory;
   delete debugSinkFactory;
   delete printLatencyFactory;
+  delete udpSocketFactory;
 
 //  delete fieldFactory;
 
