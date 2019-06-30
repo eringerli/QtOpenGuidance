@@ -128,7 +128,7 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
   return value;
 }
 
-void QNEPort::hoverLeaveEvent( QGraphicsSceneHoverEvent* event ) {
+void QNEPort::hoverLeaveEvent( QGraphicsSceneHoverEvent* /*event*/ ) {
   QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
 
   if( block ) {
