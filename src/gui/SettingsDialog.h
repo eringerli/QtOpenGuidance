@@ -31,7 +31,7 @@
 #include "../block/PoseSynchroniser.h"
 
 #include "VectorBlockModel.h"
-#include "LengthBlockModel.h"
+#include "NumberBlockModel.h"
 
 #include "../kinematic/Tile.h"
 
@@ -103,13 +103,13 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* fixedKinematicFactory;
     GuidanceFactory* trailerKinematicFactory;
     GuidanceFactory* vectorFactory;
-    GuidanceFactory* lengthFactory;
+    GuidanceFactory* numberFactory;
     GuidanceFactory* debugSinkFactory;
     GuidanceFactory* printLatencyFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;
-    LengthBlockModel* lengthBlockModel;
+    NumberBlockModel* numberBlockModel;
 
 //    GuidanceFactory* fieldFactory;
 

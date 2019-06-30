@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef LENGTHBLOCKMODEL_H
-#define LENGTHBLOCKMODEL_H
+#ifndef NUMBERBLOCKMODEL_H
+#define NUMBERBLOCKMODEL_H
 
 #include <QObject>
 
@@ -27,13 +27,13 @@
 
 #include <QList>
 
-#include "../block/LengthObject.h"
+#include "../block/NumberObject.h"
 
-class LengthBlockModel : public QAbstractTableModel {
+class NumberBlockModel : public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    explicit LengthBlockModel( QGraphicsScene* scene );
+    explicit NumberBlockModel( QGraphicsScene* scene );
 
     // Header:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;
@@ -65,4 +65,4 @@ class LengthBlockModel : public QAbstractTableModel {
     int countBuffer = 0;
 };
 
-#endif // LENGTHBLOCKMODEL_H
+#endif // NUMBERBLOCKMODEL_H

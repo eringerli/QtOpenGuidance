@@ -78,7 +78,7 @@
             "name": "Wheelbase Tractor",
             "positionX": 695.3832855300577,
             "positionY": -11.975521749252415,
-            "type": "Length",
+            "type": "Number",
             "values": {
                 "length": 2.5
             }
@@ -156,7 +156,7 @@
         {
             "idFrom": 1004,
             "idTo": 1005,
-            "portFrom": "Length",
+            "portFrom": "Number",
             "portTo": "Length Wheelbase"
         },
         {

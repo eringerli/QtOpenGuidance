@@ -9,7 +9,7 @@ SOURCES += src/main.cpp \
     src/block/TrailerModel.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
-    src/gui/LengthBlockModel.cpp \
+    src/gui/NumberBlockModel.cpp \
     src/gui/SettingsDialog.cpp \
     src/gui/SimulatorToolbar.cpp \
     src/gui/VectorBlockModel.cpp
@@ -21,7 +21,7 @@ HEADERS += \
     src/block/DebugSink.h \
     src/block/GridModel.h \
     src/block/GuidanceBase.h \
-    src/block/LengthObject.h \
+    src/block/NumberObject.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
@@ -31,7 +31,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceToolbar.h \
-    src/gui/LengthBlockModel.h \
+    src/gui/NumberBlockModel.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
     src/gui/VectorBlockModel.h \

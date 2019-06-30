@@ -32,7 +32,7 @@
 #include "ui_SettingsDialog.h"
 
 #include "../block/VectorObject.h"
-#include "../block/LengthObject.h"
+#include "../block/NumberObject.h"
 
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
@@ -71,9 +71,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   // Models for the tableview
   filterModel = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
-  lengthBlockModel = new LengthBlockModel( scene );
+  numberBlockModel = new NumberBlockModel( scene );
   vectorBlockModel->addToCombobox( ui->cbValues );
-  lengthBlockModel->addToCombobox( ui->cbValues );
+  numberBlockModel->addToCombobox( ui->cbValues );
   filterModel->setSourceModel( vectorBlockModel );
   filterModel->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModel );
@@ -111,7 +111,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory( tile );
   vectorFactory = new VectorFactory();
-  lengthFactory = new LengthFactory();
+  numberFactory = new NumberFactory();
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
 
@@ -124,7 +124,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   fixedKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   vectorFactory->addToCombobox( ui->cbNodeType );
-  lengthFactory->addToCombobox( ui->cbNodeType );
+  numberFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
 
@@ -146,14 +146,14 @@ SettingsDialog::~SettingsDialog() {
   delete fixedKinematicFactory;
   delete trailerKinematicFactory;
   delete vectorFactory;
-  delete lengthFactory;
+  delete numberFactory;
   delete debugSinkFactory;
   delete printLatencyFactory;
 
 //  delete fieldFactory;
 
   delete vectorBlockModel;
-  delete lengthBlockModel;
+  delete numberBlockModel;
 
   delete poseSimulationFactory;
   delete gridModelFactory;
@@ -364,7 +364,7 @@ void SettingsDialog::on_pbLoad_clicked() {
 
     // reset the models
     vectorBlockModel->resetModel();
-    lengthBlockModel->resetModel();
+    numberBlockModel->resetModel();
 
     // rescale the tableview
     ui->twValues->resizeColumnsToContents();
@@ -384,8 +384,8 @@ void SettingsDialog::on_pbAddBlock_clicked() {
       vectorBlockModel->resetModel();
     }
 
-    if( qobject_cast<LengthObject*>( obj ) ) {
-      lengthBlockModel->resetModel();
+    if( qobject_cast<NumberObject*>( obj ) ) {
+      numberBlockModel->resetModel();
     }
   }
 }

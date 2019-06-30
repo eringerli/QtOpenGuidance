@@ -16,27 +16,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef LENGTHWIDGET_H
-#define LENGTHWIDGET_H
+#ifndef NUMBEROBJECT_H
+#define NUMBEROBJECT_H
 
 #include <QObject>
 
 #include "GuidanceBase.h"
 
-class LengthObject : public GuidanceBase {
+class NumberObject : public GuidanceBase {
     Q_OBJECT
 
   public:
-    explicit LengthObject()
+    explicit NumberObject()
       : GuidanceBase() {}
 
     void emitConfigSignals() override {
-      emit lengthChanged( length );
+      emit NumberChanged( number );
     }
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject["length"] = double( length );
+      valuesObject["Number"] = double( number );
       json["values"] = valuesObject;
     }
 
@@ -44,28 +44,28 @@ class LengthObject : public GuidanceBase {
       if( json["values"].isObject() ) {
         QJsonObject valuesObject = json["values"].toObject();
 
-        if( valuesObject["length"].isDouble() ) {
-          length = float( valuesObject["length"].toDouble() );
+        if( valuesObject["Number"].isDouble() ) {
+          number = float( valuesObject["Number"].toDouble() );
         }
       }
     }
 
   signals:
-    void lengthChanged( float );
+    void NumberChanged( float );
 
   public:
-    float length = 0;
+    float number = 0;
 };
 
-class LengthFactory : public GuidanceFactory {
+class NumberFactory : public GuidanceFactory {
     Q_OBJECT
 
   public:
-    LengthFactory()
+    NumberFactory()
       : GuidanceFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Length" );
+      return QStringLiteral( "Number" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -73,7 +73,7 @@ class LengthFactory : public GuidanceFactory {
     }
 
     virtual GuidanceBase* createNewObject() override {
-      return new LengthObject();
+      return new NumberObject();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -83,10 +83,10 @@ class LengthFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addOutputPort( "Length", SIGNAL( lengthChanged( float ) ) );
+      b->addOutputPort( "Number", SIGNAL( NumberChanged( float ) ) );
 
       return b;
     }
 };
 
-#endif // LENGTHWIDGET_H
+#endif // NUMBEROBJECT_H

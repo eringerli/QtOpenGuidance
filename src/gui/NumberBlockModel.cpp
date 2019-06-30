@@ -16,19 +16,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "LengthBlockModel.h"
+#include "NumberBlockModel.h"
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
 #include "../qnodeseditor/qneblock.h"
 
-LengthBlockModel::LengthBlockModel( QGraphicsScene* scene )
+NumberBlockModel::NumberBlockModel( QGraphicsScene* scene )
   : QAbstractTableModel(),
     scene( scene ) {
 }
 
-QVariant LengthBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant NumberBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -36,7 +36,7 @@ QVariant LengthBlockModel::headerData( int section, Qt::Orientation orientation,
         break;
 
       case 1:
-        return QStringLiteral( "Length" );
+        return QStringLiteral( "Number" );
         break;
 
       default:
@@ -48,7 +48,7 @@ QVariant LengthBlockModel::headerData( int section, Qt::Orientation orientation,
   return QVariant();
 }
 
-bool LengthBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool NumberBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     // FIXME: Implement me!
     emit headerDataChanged( orientation, section, section );
@@ -59,15 +59,15 @@ bool LengthBlockModel::setHeaderData( int section, Qt::Orientation orientation, 
 }
 
 
-int LengthBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int NumberBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return countBuffer;
 }
 
-int LengthBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int NumberBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 2;
 }
 
-QVariant LengthBlockModel::data( const QModelIndex& index, int role ) const {
+QVariant NumberBlockModel::data( const QModelIndex& index, int role ) const {
   if( !index.isValid() || ( role != Qt::DisplayRole &&  role != Qt::EditRole ) ) {
     return QVariant();
   }
@@ -78,14 +78,14 @@ QVariant LengthBlockModel::data( const QModelIndex& index, int role ) const {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( LengthObject* object = qobject_cast<LengthObject*>( block->object ) ) {
+      if( NumberObject* object = qobject_cast<NumberObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
               return block->name;
 
             case 1:
-              return object->length;
+              return object->number;
           }
         }
       }
@@ -95,14 +95,14 @@ QVariant LengthBlockModel::data( const QModelIndex& index, int role ) const {
   return QVariant();
 }
 
-bool LengthBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool NumberBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( LengthObject* object = qobject_cast<LengthObject*>( block->object ) ) {
+      if( NumberObject* object = qobject_cast<NumberObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -111,7 +111,7 @@ bool LengthBlockModel::setData( const QModelIndex& index, const QVariant& value,
               return true;
 
             case 1:
-              object->length = value.toString().toFloat();
+              object->number = value.toString().toFloat();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
@@ -124,7 +124,7 @@ bool LengthBlockModel::setData( const QModelIndex& index, const QVariant& value,
   return false;
 }
 
-Qt::ItemFlags LengthBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags NumberBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -132,11 +132,11 @@ Qt::ItemFlags LengthBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-void LengthBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Length" ), QVariant::fromValue( this ) );
+void NumberBlockModel::addToCombobox( QComboBox* combobox ) {
+  combobox->addItem( QStringLiteral( "Number" ), QVariant::fromValue( this ) );
 }
 
-void LengthBlockModel::resetModel() {
+void NumberBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
@@ -144,7 +144,7 @@ void LengthBlockModel::resetModel() {
     QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( qobject_cast<LengthObject*>( block->object ) ) {
+      if( qobject_cast<NumberObject*>( block->object ) ) {
         countBuffer++;
       }
     }

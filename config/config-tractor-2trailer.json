@@ -57,7 +57,7 @@
             "name": "Wheelbase Tractor",
             "positionX": -532.8481769398361,
             "positionY": -238.43942241990595,
-            "type": "Length",
+            "type": "Number",
             "values": {
                 "length": 2.5
             }
@@ -86,7 +86,7 @@
             "name": "Wheelbase Trailer 2",
             "positionX": 771.338597512012,
             "positionY": 590.1480630443298,
-            "type": "Length",
+            "type": "Number",
             "values": {
                 "length": 2.5
             }
@@ -136,7 +136,7 @@
             "name": "Wheelbase Trailer 1",
             "positionX": 586.6296449798398,
             "positionY": 299.82971385027713,
-            "type": "Length",
+            "type": "Number",
             "values": {
                 "length": 1.5
             }
@@ -237,7 +237,7 @@
         {
             "idFrom": 1007,
             "idTo": 1,
-            "portFrom": "Length",
+            "portFrom": "Number",
             "portTo": "Length Wheelbase"
         },
         {
@@ -255,7 +255,7 @@
         {
             "idFrom": 1000,
             "idTo": 1009,
-            "portFrom": "Length",
+            "portFrom": "Number",
             "portTo": "Length Wheelbase"
         },
         {
@@ -321,7 +321,7 @@
         {
             "idFrom": 1010,
             "idTo": 1002,
-            "portFrom": "Length",
+            "portFrom": "Number",
             "portTo": "Length Wheelbase"
         },
         {
@@ -345,7 +345,7 @@
         {
             "idFrom": 1007,
             "idTo": 1011,
-            "portFrom": "Length",
+            "portFrom": "Number",
             "portTo": "Length Wheelbase"
         },
         {
