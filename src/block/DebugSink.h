@@ -26,6 +26,8 @@
 
 #include <QDateTime>
 
+#include <QByteArray>
+
 #include "GuidanceBase.h"
 
 #include "../kinematic/Tile.h"
@@ -92,6 +94,13 @@ class DebugSink : public GuidanceBase {
       }
     }
 
+    void setData( QByteArray data ) {
+      if( block ) {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Data:" << data;
+      } else {
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << "Data:" << data;
+      }
+    }
   public:
     virtual void emitConfigSignals() override {
     }
@@ -138,6 +147,7 @@ class DebugSinkFactory : public GuidanceFactory {
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+      b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
 
       return b;
     }
