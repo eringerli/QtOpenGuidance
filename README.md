@@ -39,6 +39,8 @@ You get the structure of the configuration quite fast if you look at the differe
 
 To add new connections drag from a red circle to another. If the two ports are compatible, the connection is made instantly and data is transfered. To alter a value of a block, you can edit that in the next tab by double-clicking on a cell in the table view.
 
+If it crashes on start, try to use another build type.
+
 ## Issues and Bugs
 If you find an issue or a bug, report them on github.
 
