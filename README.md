@@ -5,10 +5,13 @@ every module of the software receives, modifies and then sends data. These modul
 calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on the screen and 
 finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
 
+## Word to the Wise
+**Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
+
 ## Warning
 As clearly in the file LICENSE stated (especialy Section 15 through 17), there are no guaranties of any kind. You're responsible to
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
-that's you thing.
+that's your thing.
 
 ## Installing QT
 If you are a developer or want to be one, this one should be a piece of cake for you, as it is really simple to do. If you can't do it on your own, I don't know if your fit to develop software anyway.
@@ -19,10 +22,22 @@ Use the normal installer of QT from this [link](https://www.qt.io/download). Mak
 ### Install on Linux
 Use your distributions packet management system. Make shure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
 
-## Compiling/Running
-This software uses QT5 and Qt3D. Install them on your machine along with qtcreator. Open the project in qtcreator, change the buildtype
-to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). It is developed on linux, but should 
-work on any platform supported by QT and Qt3D.
+## Cloning
+You can use qtcreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and make shure to enable "recursive". Hit "Import". qtcreator should help you from here on out.
+
+For the diehards out there who use git bash (like me), you have to ```git submodule init``` and then ```git submodule update```.
+
+## Compiling
+Open the project in qtcreator, change the buildtype to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). If the buttons are grayed out, do as suggested by qtcreator.
+
+It is developed on linux, but should work on any platform supported by QT and Qt3D.
+
+## Running
+To make something useful with the software and to test its functions, open the setup dialog and load a configuration out of the ```config/``` folder. ```minimal.json``` should work everytime, the others should too, but are sometimes not kept up to date with the development. Click on the checkbox for the simulator and you can steer the GPS-source.
+
+You get the structure of the configuration quite fast if you look at the different configurations. Don't try to edit them by hand, as it is possible, but not at all comfortable. You can do all the editing in the setup dialog. Deleting works by either hit the ```del```-key or the button. Zooming works with the mousewheel or the buttons, paning by right-click and drag.
+
+To add new connections drag from a red circle to another. If the two ports are compatible, the connection is made instantly and data is transfered. To alter a value of a block, you can edit that in the next tab by double-clicking on a cell in the table view.
 
 ## Issues and Bugs
 If you find an issue or a bug, report them on github.
