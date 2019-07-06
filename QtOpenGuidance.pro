@@ -20,6 +20,7 @@ HEADERS += \
     src/3d/drawpoints.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
+    src/block/FileStream.h \
     src/block/GridModel.h \
     src/block/GuidanceBase.h \
     src/block/NumberObject.h \

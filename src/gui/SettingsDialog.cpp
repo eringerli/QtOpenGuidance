@@ -50,6 +50,7 @@
 
 #include "../block/UdpSocket.h"
 #include "../block/SerialPort.h"
+#include "../block/FileStream.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -124,6 +125,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   printLatencyFactory = new PrintLatencyFactory();
   udpSocketFactory = new UdpSocketFactory();
   serialPortFactory = new SerialPortFactory();
+  fileStreamFactory = new FileStreamFactory();
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
@@ -140,6 +142,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   printLatencyFactory->addToCombobox( ui->cbNodeType );
   udpSocketFactory->addToCombobox( ui->cbNodeType );
   serialPortFactory->addToCombobox( ui->cbNodeType );
+  fileStreamFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -165,6 +168,7 @@ SettingsDialog::~SettingsDialog() {
   delete printLatencyFactory;
   delete udpSocketFactory;
   delete serialPortFactory;
+  delete fileStreamFactory;
 
 //  delete fieldFactory;
 
