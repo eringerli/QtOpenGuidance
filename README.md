@@ -10,6 +10,15 @@ As clearly in the file LICENSE stated (especialy Section 15 through 17), there a
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
 that's you thing.
 
+## Installing QT
+If you are a developer or want to be one, this one should be a piece of cake for you, as it is really simple to do. If you can't do it on your own, I don't know if your fit to develop software anyway.
+
+### Install QT on Windows
+Use the normal installer of QT from this [link](https://www.qt.io/download). Make shure to also install a compiler too. Use matching options: check under the newest QT-Version the runtime for MingW and also the the same compiler under "Developer and Designer Tools". Qt3D is automaticaly installed as part of QT. If you know what you do, you can enable other runtimes. The source is not needed and saves you a lot of space.
+
+### Install on Linux
+Use your distributions packet management system. Make shure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
+
 ## Compiling/Running
 This software uses QT5 and Qt3D. Install them on your machine along with qtcreator. Open the project in qtcreator, change the buildtype
 to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). It is developed on linux, but should 
