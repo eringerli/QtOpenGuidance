@@ -17,10 +17,10 @@ that's your thing.
 If you are a developer or want to be one, this one should be a piece of cake for you, as it is really simple to do. If you can't do it on your own, I don't know if your fit to develop software anyway.
 
 ### Install QT on Windows
-Use the normal installer of QT from this [link](https://www.qt.io/download). Make shure to also install a compiler too. Use matching options: check under the newest QT-Version the runtime for MingW and also the the same compiler under "Developer and Designer Tools". Qt3D is automaticaly installed as part of QT. If you know what you do, you can enable other runtimes. The source is not needed and saves you a lot of space.
+Use the normal installer of QT from this [link](https://www.qt.io/download). Make sure to also install a compiler too. Use matching options: check under the newest QT-Version the runtime for MingW and also the the same compiler under "Developer and Designer Tools". Qt3D is automaticaly installed as part of QT. If you know what you do, you can enable other runtimes. The source or multiple versions are not needed and saves you a lot of space.
 
 ### Install on Linux
-Use your distributions packet management system. Make shure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
+Use your distributions packet management system. Make sure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
 
 ## Cloning
 You can use qtcreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and make shure to enable "recursive". Hit "Import". qtcreator should help you from here on out.
