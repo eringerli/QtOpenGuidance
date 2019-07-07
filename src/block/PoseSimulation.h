@@ -85,7 +85,9 @@ class PoseSimulation : public GuidanceBase {
     }
 
     void setWheelbase( float wheelbase ) {
-      m_wheelbase = wheelbase;
+      if( !qFuzzyIsNull( wheelbase ) ) {
+        m_wheelbase = wheelbase;
+      }
     }
 
     void setAntennaPosition( QVector3D position ) {

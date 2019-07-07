@@ -246,36 +246,38 @@ TractorModel::~TractorModel() {
 
 void TractorModel::setWheelbase( float wheelbase ) {
 
-  m_wheelbase = wheelbase;
+  if( !qFuzzyIsNull( wheelbase ) ) {
+    m_wheelbase = wheelbase;
 
-  float offsetForWheels = wheelbase / 4 * 3 / 2 + .1;
+    float offsetForWheels = wheelbase / 4 * 3 / 2 + .1;
 
-  // base
-  {
-    m_baseMesh->setYExtent( wheelbase / 4 * 3 );
-    m_baseMesh->setXExtent( wheelbase );
-    m_baseMesh->setZExtent( wheelbase / 4 );
+    // base
+    {
+      m_baseMesh->setYExtent( wheelbase / 4 * 3 );
+      m_baseMesh->setXExtent( wheelbase );
+      m_baseMesh->setZExtent( wheelbase / 4 );
 
-    m_baseTransform->setTranslation( QVector3D( m_baseMesh->xExtent() / 2, 0, m_baseMesh->zExtent() / 2 + .25 ) );
+      m_baseTransform->setTranslation( QVector3D( m_baseMesh->xExtent() / 2, 0, m_baseMesh->zExtent() / 2 + .25 ) );
+    }
+
+    // wheels front
+    {
+      m_wheelFrontMesh->setRadius( wheelbase / 4 );
+      m_wheelFrontMesh->setLength( wheelbase / 5 );
+      m_wheelFrontLeftTransform->setTranslation( QVector3D( wheelbase, offsetForWheels + m_wheelFrontMesh->length() / 2, m_wheelFrontMesh->radius() ) );
+      m_wheelFrontRightTransform->setTranslation( QVector3D( wheelbase, -( offsetForWheels + m_wheelFrontMesh->length() / 2 ),  m_wheelFrontMesh->radius() ) );
+    }
+
+    // wheels back
+    {
+      m_wheelBackMesh->setRadius( wheelbase / 2 );
+      m_wheelBackMesh->setLength( wheelbase / 5 );
+      m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2,  m_wheelBackMesh->radius() ) );
+      m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ),  m_wheelBackMesh->radius() ) );
+    }
+
+    setSteeringAngle( m_steeringAngle );
   }
-
-  // wheels front
-  {
-    m_wheelFrontMesh->setRadius( wheelbase / 4 );
-    m_wheelFrontMesh->setLength( wheelbase / 5 );
-    m_wheelFrontLeftTransform->setTranslation( QVector3D( wheelbase, offsetForWheels + m_wheelFrontMesh->length() / 2, m_wheelFrontMesh->radius() ) );
-    m_wheelFrontRightTransform->setTranslation( QVector3D( wheelbase, -( offsetForWheels + m_wheelFrontMesh->length() / 2 ),  m_wheelFrontMesh->radius() ) );
-  }
-
-  // wheels back
-  {
-    m_wheelBackMesh->setRadius( wheelbase / 2 );
-    m_wheelBackMesh->setLength( wheelbase / 5 );
-    m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2,  m_wheelBackMesh->radius() ) );
-    m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ),  m_wheelBackMesh->radius() ) );
-  }
-
-  setSteeringAngle( m_steeringAngle );
 }
 
 void TractorModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion ) {

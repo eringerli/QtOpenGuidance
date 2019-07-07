@@ -219,8 +219,11 @@ void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion
 }
 
 void TrailerModel::setWheelbase( float wheelbase ) {
-  m_wheelbase = wheelbase;
-  setProportions();
+
+  if( !qFuzzyIsNull( wheelbase ) ) {
+    m_wheelbase = wheelbase;
+    setProportions();
+  }
 }
 
 void TrailerModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation ) {
