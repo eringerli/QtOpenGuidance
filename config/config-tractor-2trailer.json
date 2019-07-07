@@ -59,7 +59,7 @@
             "positionY": -238.43942241990595,
             "type": "Number",
             "values": {
-                "length": 2.5
+                "Number": 2.5
             }
         },
         {
@@ -88,7 +88,7 @@
             "positionY": 590.1480630443298,
             "type": "Number",
             "values": {
-                "length": 2.5
+                "Number": 2.5
             }
         },
         {
@@ -138,7 +138,7 @@
             "positionY": 299.82971385027713,
             "type": "Number",
             "values": {
-                "length": 1.5
+                "Number": 1.5
             }
         },
         {

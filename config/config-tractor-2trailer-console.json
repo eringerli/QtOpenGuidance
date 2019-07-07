@@ -26,7 +26,7 @@
             "positionY": 630,
             "type": "Number",
             "values": {
-                "length": 2.5
+                "Number": 2.5
             }
         },
         {
@@ -88,7 +88,7 @@
             "positionY": 342,
             "type": "Number",
             "values": {
-                "length": 1.5
+                "Number": 1.5
             }
         },
         {
@@ -112,7 +112,7 @@
             "positionY": -252,
             "type": "Number",
             "values": {
-                "length": 2.5
+                "Number": 2.5
             }
         },
         {
