@@ -40,8 +40,7 @@ class TrailerKinematic : public GuidanceBase {
 
   public:
     explicit TrailerKinematic( Tile* tile )
-      : GuidanceBase(),
-        m_offsetHookPoint( QVector3D( 6, 0, 0 ) ), m_offsetTowPoint( QVector3D( -1, 0, 0 ) ), m_positionPivotPoint( QVector3D( 0, 0, 0 ) ) {
+      : GuidanceBase() {
       m_tilePivotPoint = tile->getTileForOffset( 0, 0 );
     }
 
@@ -85,10 +84,10 @@ class TrailerKinematic : public GuidanceBase {
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
-    QVector3D m_offsetHookPoint;
-    QVector3D m_offsetTowPoint;
+    QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
+    QVector3D m_offsetTowPoint = QVector3D( -1, 0, 0 );
+    QVector3D m_positionPivotPoint = QVector3D( 0, 0, 0 );
 
-    QVector3D m_positionPivotPoint;
     Tile* m_tilePivotPoint;
 };
 
