@@ -147,35 +147,35 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
 
 // order is important! Crashes if a parent entity is removed first!
 TrailerModel::~TrailerModel() {
-  delete m_hitchMesh;
-  delete m_axleMesh;
-  delete m_wheelMesh;
+  m_hitchMesh->deleteLater();
+  m_axleMesh->deleteLater();
+  m_wheelMesh->deleteLater();
 
-  delete m_rootEntityTransform;
-  delete m_hitchTransform;
-  delete m_axleTransform;
-  delete m_wheelLeftTransform;
-  delete m_wheelRightTransform;
+  m_rootEntityTransform->deleteLater();
+  m_hitchTransform->deleteLater();
+  m_axleTransform->deleteLater();
+  m_wheelLeftTransform->deleteLater();
+  m_wheelRightTransform->deleteLater();
 
-  delete m_towHookMesh;
-  delete m_pivotPointMesh;
-  delete m_towPointMesh;
+  m_towHookMesh->deleteLater();
+  m_pivotPointMesh->deleteLater();
+  m_towPointMesh->deleteLater();
 
-  delete m_towHookTransform;
-  delete m_pivotPointTransform;
-  delete m_towPointTransform;
+  m_towHookTransform->deleteLater();
+  m_pivotPointTransform->deleteLater();
+  m_towPointTransform->deleteLater();
 
-  delete m_wheelLeftEntity;
-  delete m_wheelRightEntity;
+  m_wheelLeftEntity->deleteLater();
+  m_wheelRightEntity->deleteLater();
 
-  delete m_towHookEntity;
-  delete m_pivotPointEntity;
-  delete m_towPointEntity;
+  m_towHookEntity->deleteLater();
+  m_pivotPointEntity->deleteLater();
+  m_towPointEntity->deleteLater();
 
-  delete m_hitchEntity;
-  delete m_axleEntity;
+  m_hitchEntity->deleteLater();
+  m_axleEntity->deleteLater();
 
-  delete m_rootEntity;
+  m_rootEntity->deleteLater();
 }
 
 void TrailerModel::setProportions() {

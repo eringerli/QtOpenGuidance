@@ -60,6 +60,8 @@ QNEPort::~QNEPort() {
   foreach( QNEConnection* conn, m_connections ) {
     delete conn;
   }
+
+  label->deleteLater();
 }
 
 void QNEPort::setNEBlock( QNEBlock* b ) {

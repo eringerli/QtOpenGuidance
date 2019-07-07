@@ -57,7 +57,6 @@ class CameraController : public GuidanceBase {
       QObject::connect( m_cameraEntity, SIGNAL( positionChanged( QVector3D ) ),
                         m_lightTransform, SLOT( setTranslation( QVector3D ) ) );
     }
-    ~CameraController() {}
 
   public slots:
     void setMode( int camMode ) {

@@ -36,6 +36,12 @@ class SerialPort : public GuidanceBase {
                this, SLOT( processPendingData() ) );
     }
 
+    ~SerialPort() {
+      if( serialPort ) {
+        serialPort->deleteLater();
+      }
+    }
+
     void emitConfigSignals() override {
     }
 

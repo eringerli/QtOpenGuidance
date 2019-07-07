@@ -155,31 +155,31 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 SettingsDialog::~SettingsDialog() {
   delete ui;
 
-  delete transverseMercatorConverterFactory;
-  delete poseCacheFactory;
-  delete tractorModelFactory;
-  delete trailerModelFactory;
-  delete fixedKinematicFactory;
-  delete trailerKinematicFactory;
-  delete vectorFactory;
-  delete numberFactory;
-  delete stringFactory;
-  delete debugSinkFactory;
-  delete printLatencyFactory;
-  delete udpSocketFactory;
-  delete serialPortFactory;
-  delete fileStreamFactory;
+  transverseMercatorConverterFactory->deleteLater();
+  poseCacheFactory->deleteLater();
+  tractorModelFactory->deleteLater();
+  trailerModelFactory->deleteLater();
+  fixedKinematicFactory->deleteLater();
+  trailerKinematicFactory->deleteLater();
+  vectorFactory->deleteLater();
+  numberFactory->deleteLater();
+  stringFactory->deleteLater();
+  debugSinkFactory->deleteLater();
+  printLatencyFactory->deleteLater();
+  udpSocketFactory->deleteLater();
+  serialPortFactory->deleteLater();
+  fileStreamFactory->deleteLater();
 
-//  delete fieldFactory;
+//  fieldFactory->deleteLater();
 
-  delete vectorBlockModel;
-  delete numberBlockModel;
+  vectorBlockModel->deleteLater();
+  numberBlockModel->deleteLater();
 
-  delete poseSimulationFactory;
-  delete gridModelFactory;
+  poseSimulationFactory->deleteLater();
+  gridModelFactory->deleteLater();
 
-  delete poseSimulation;
-  delete gridModel;
+  poseSimulation->deleteLater();
+  gridModel->deleteLater();
 
 }
 
@@ -356,10 +356,10 @@ void SettingsDialog::on_pbLoad_clicked() {
 
               if( portFrom && portTo ) {
                 QNEConnection* conn = new QNEConnection();
-                blockFrom->scene()->addItem( conn );
                 conn->setPort1( portFrom );
 
                 if( conn->setPort2( portTo ) ) {
+                  blockFrom->scene()->addItem( conn );
                   conn->updatePosFromPorts();
                   conn->updatePath();
                   conn->setSelected( true );

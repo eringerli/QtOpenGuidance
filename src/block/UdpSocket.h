@@ -36,6 +36,12 @@ class UdpSocket : public GuidanceBase {
                this, SLOT( processPendingDatagrams() ) );
     }
 
+    ~UdpSocket() {
+      if( udpSocket ) {
+        udpSocket->deleteLater();
+      }
+    }
+
     void emitConfigSignals() override {
     }
 

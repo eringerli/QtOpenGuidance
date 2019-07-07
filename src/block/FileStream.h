@@ -34,6 +34,16 @@ class FileStream : public GuidanceBase {
       fileStream = new QTextStream();
     }
 
+    ~FileStream() override {
+      if( file ) {
+        file->deleteLater();
+      }
+
+      if( fileStream ) {
+        delete fileStream;
+      }
+    }
+
     void emitConfigSignals() override {
     }
 
@@ -47,7 +57,7 @@ class FileStream : public GuidanceBase {
       if( file ) {
         fileStream->setDevice( nullptr );
         file->close();
-        delete file;
+        file->deleteLater();
         file = nullptr;
       }
 

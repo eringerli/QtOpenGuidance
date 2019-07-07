@@ -52,8 +52,8 @@ class GridModel : public GuidanceBase {
       m_rootEntity = rootEntity;
     }
     ~GridModel() {
-      delete m_baseEntity;
-      delete m_baseTransform;
+      m_baseEntity->deleteLater();
+      m_baseTransform->deleteLater();
     }
 
   public slots:
@@ -80,7 +80,7 @@ class GridModel : public GuidanceBase {
       this->yStep = yStep;
 
       if( m_baseEntity != nullptr ) {
-        delete m_baseEntity;
+        m_baseEntity->deleteLater();
       }
 
       m_baseTransform = new Qt3DCore::QTransform();

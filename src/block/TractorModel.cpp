@@ -211,37 +211,37 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
 
 // order is important! Crashes if a parent entity is removed first!
 TractorModel::~TractorModel() {
-  delete  m_baseMesh;
-  delete m_wheelFrontMesh;
-  delete m_wheelBackMesh;
+  m_baseMesh->deleteLater();
+  m_wheelFrontMesh->deleteLater();
+  m_wheelBackMesh->deleteLater();
 
-  delete  m_towHookMesh;
-  delete m_pivotPointMesh;
-  delete m_towPointMesh;
+  m_towHookMesh->deleteLater();
+  m_pivotPointMesh->deleteLater();
+  m_towPointMesh->deleteLater();
 
-  delete m_rootEntityTransform;
-  delete m_baseTransform;
-  delete m_wheelFrontLeftTransform;
-  delete m_wheelFrontRightTransform;
-  delete m_wheelBackLeftTransform;
-  delete m_wheelBackRightTransform;
+  m_rootEntityTransform->deleteLater();
+  m_baseTransform->deleteLater();
+  m_wheelFrontLeftTransform->deleteLater();
+  m_wheelFrontRightTransform->deleteLater();
+  m_wheelBackLeftTransform->deleteLater();
+  m_wheelBackRightTransform->deleteLater();
 
-  delete m_towHookTransform;
-  delete m_pivotPointTransform;
-  delete m_towPointTransform;
+  m_towHookTransform->deleteLater();
+  m_pivotPointTransform->deleteLater();
+  m_towPointTransform->deleteLater();
 
 
-  delete m_towHookEntity;
-  delete m_pivotPointEntity;
-  delete m_towPointEntity;
+  m_towHookEntity->deleteLater();
+  m_pivotPointEntity->deleteLater();
+  m_towPointEntity->deleteLater();
 
-  delete m_wheelFrontLeftEntity;
-  delete m_wheelFrontRightEntity;
-  delete m_wheelBackLeftEntity;
-  delete m_wheelBackRightEntity;
-  delete m_baseEntity;
+  m_wheelFrontLeftEntity->deleteLater();
+  m_wheelFrontRightEntity->deleteLater();
+  m_wheelBackLeftEntity->deleteLater();
+  m_wheelBackRightEntity->deleteLater();
+  m_baseEntity->deleteLater();
 
-  delete m_rootEntity;
+  m_rootEntity->deleteLater();
 }
 
 void TractorModel::setWheelbase( float wheelbase ) {
