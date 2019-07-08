@@ -28,6 +28,9 @@
        <height>80</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="contextMenuPolicy">
       <enum>Qt::NoContextMenu</enum>
      </property>
@@ -82,6 +85,9 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -106,6 +112,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="btn_snap">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -136,6 +145,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="btn_autosteer">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="toolTip">
       <string>Autosteer</string>
      </property>
@@ -172,6 +184,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="btn_selfTurn">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="toolTip">
       <string>Auto Turn</string>
      </property>
@@ -212,6 +227,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="btn_rec">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -245,6 +263,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="cbCamera">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Camera Ctlr</string>
      </property>
@@ -252,6 +273,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="checkBox">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Simulator</string>
      </property>
@@ -259,6 +283,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="checkBox_2">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Field Mgmt</string>
      </property>
@@ -266,6 +293,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="btn_settings">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
