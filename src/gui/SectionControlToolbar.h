@@ -56,21 +56,21 @@ class SectionControlToolbar : public QGroupBox {
 
     QPalette buttonYellow, buttonRed, buttonGreen, buttonDefault;
 
-    ButtonState pbAllState,
-                pb1State,
-                pb2State,
-                pb3State,
-                pb4State,
-                pb5State,
-                pb6State,
-                pb7State,
-                pb8State,
-                pb9State,
-                pb10State,
-                pb11State,
-                pb12State,
-                pb13State,
-                pb14State;
+    ButtonState pbAllState = ButtonState::Normal,
+                pb1State = ButtonState::Normal,
+                pb2State = ButtonState::Normal,
+                pb3State = ButtonState::Normal,
+                pb4State = ButtonState::Normal,
+                pb5State = ButtonState::Normal,
+                pb6State = ButtonState::Normal,
+                pb7State = ButtonState::Normal,
+                pb8State = ButtonState::Normal,
+                pb9State = ButtonState::Normal,
+                pb10State = ButtonState::Normal,
+                pb11State = ButtonState::Normal,
+                pb12State = ButtonState::Normal,
+                pb13State = ButtonState::Normal,
+                pb14State = ButtonState::Normal;
 };
 
 #endif // SECTIONCONTROLTOOLBAR_H

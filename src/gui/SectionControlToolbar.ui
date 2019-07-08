@@ -2,22 +2,20 @@
 <ui version="4.0">
  <class>SectionControlToolbar</class>
  <widget class="QGroupBox" name="SectionControlToolbar">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>491</width>
-    <height>60</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>GroupBox</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <widget class="QLabel" name="lbName">
      <property name="enabled">
       <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="text">
       <string>Name</string>
@@ -25,9 +23,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pbAll">
+    <widget class="QToolButton" name="pbAll">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -38,18 +36,12 @@
      <property name="text">
       <string>All</string>
      </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb1">
+    <widget class="QToolButton" name="pb1">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -63,9 +55,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb2">
+    <widget class="QToolButton" name="pb2">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -79,9 +71,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb3">
+    <widget class="QToolButton" name="pb3">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -95,9 +87,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb4">
+    <widget class="QToolButton" name="pb4">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -111,9 +103,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb5">
+    <widget class="QToolButton" name="pb5">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -127,9 +119,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb6">
+    <widget class="QToolButton" name="pb6">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -143,9 +135,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb7">
+    <widget class="QToolButton" name="pb7">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -159,9 +151,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb8">
+    <widget class="QToolButton" name="pb8">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -175,9 +167,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb9">
+    <widget class="QToolButton" name="pb9">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -191,9 +183,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb10">
+    <widget class="QToolButton" name="pb10">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -207,9 +199,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb11">
+    <widget class="QToolButton" name="pb11">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -223,9 +215,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb12">
+    <widget class="QToolButton" name="pb12">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -239,9 +231,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb13">
+    <widget class="QToolButton" name="pb13">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -255,9 +247,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pb14">
+    <widget class="QToolButton" name="pb14">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -271,9 +263,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pbAuto">
+    <widget class="QToolButton" name="pbAuto">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
