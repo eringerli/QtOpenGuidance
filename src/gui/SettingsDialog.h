@@ -83,6 +83,8 @@ class SettingsDialog : public QDialog {
     void on_pbColor_clicked();
 
   public:
+    QComboBox* getCbNodeType();
+
     RootTile tileRoot;
 
   public:

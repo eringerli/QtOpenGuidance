@@ -10,6 +10,7 @@ SOURCES += src/main.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/NumberBlockModel.cpp \
+    src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
     src/gui/SimulatorToolbar.cpp \
     src/gui/StringBlockModel.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
+    src/block/SectionControl.h \
     src/block/SerialPort.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
@@ -37,6 +39,7 @@ HEADERS += \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/NumberBlockModel.h \
+    src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
@@ -49,6 +52,7 @@ HEADERS += \
 FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/GuidanceToolbar.ui \
+    src/gui/SectionControlToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
     src/gui/lengthwidget.ui \

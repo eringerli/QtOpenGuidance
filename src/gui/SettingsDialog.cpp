@@ -475,3 +475,7 @@ void SettingsDialog::on_pbColor_clicked() {
 void SettingsDialog::emitAllConfigSignals() {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
 }
+
+QComboBox* SettingsDialog::getCbNodeType() {
+  return ui->cbNodeType;
+}

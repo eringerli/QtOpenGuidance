@@ -69,6 +69,7 @@
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
+#include "block/SectionControl.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -229,6 +230,10 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setFrequency( int ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
+
+  // Section control toolbar
+  GuidanceFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );
+  sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   settingDialog->emitAllConfigSignals();
 
