@@ -31,7 +31,7 @@ class StringObject : public GuidanceBase {
       : GuidanceBase() {}
 
     void emitConfigSignals() override {
-      emit StringChanged( string );
+      emit stringChanged( string );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -51,7 +51,7 @@ class StringObject : public GuidanceBase {
     }
 
   signals:
-    void StringChanged( QString );
+    void stringChanged( QString );
 
   public:
     QString string;
@@ -83,7 +83,7 @@ class StringFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addOutputPort( "String", SIGNAL( StringChanged( QString ) ) );
+      b->addOutputPort( "String", SIGNAL( stringChanged( QString ) ) );
 
       return b;
     }

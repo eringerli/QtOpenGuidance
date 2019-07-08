@@ -31,7 +31,7 @@ class NumberObject : public GuidanceBase {
       : GuidanceBase() {}
 
     void emitConfigSignals() override {
-      emit NumberChanged( number );
+      emit numberChanged( number );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -51,7 +51,7 @@ class NumberObject : public GuidanceBase {
     }
 
   signals:
-    void NumberChanged( float );
+    void numberChanged( float );
 
   public:
     float number = 0;
@@ -83,7 +83,7 @@ class NumberFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addOutputPort( "Number", SIGNAL( NumberChanged( float ) ) );
+      b->addOutputPort( "Number", SIGNAL( numberChanged( float ) ) );
 
       return b;
     }
