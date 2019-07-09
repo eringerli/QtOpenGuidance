@@ -82,7 +82,7 @@ QVariant StringBlockModel::data( const QModelIndex& index, int role ) const {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
-              return block->name;
+              return block->getName();
 
             case 1:
               return object->string;

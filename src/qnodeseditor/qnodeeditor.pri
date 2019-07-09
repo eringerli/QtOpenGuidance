@@ -10,7 +10,7 @@ SOURCES +=     $$PWD/qneblock.cpp \
 #    $$PWD/main.cpp \
 #    $$PWD/qnemainwindow.cpp
 
-HEADERS  += $$PWD/qneblock.h \
+HEADERS += $$PWD/qneblock.h \
     $$PWD/qnegraphicsview.h \
     $$PWD/qneport.h \
     $$PWD/qneconnection.h \

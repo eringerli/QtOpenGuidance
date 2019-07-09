@@ -43,7 +43,11 @@ class SectionControl : public GuidanceBase {
 
   public slots:
     void setName( QString name ) {
-      sectionControlToolbar->setName( name );
+      if( name == QStringLiteral( "SectionControl" ) ) {
+        sectionControlToolbar->setName( QString() );
+      } else {
+        sectionControlToolbar->setName( name );
+      }
     }
     void setNumberOfSections( float number ) {
       sectionControlToolbar->setNumberOfSections( number );
@@ -83,7 +87,6 @@ class SectionControlFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Name", SLOT( setName( QString ) ) );
       b->addInputPort( "Number Of Sections", SLOT( setNumberOfSections( float ) ) );
 
       return b;

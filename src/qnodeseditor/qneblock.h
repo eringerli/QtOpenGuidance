@@ -64,7 +64,7 @@ class QNEBlock : public QGraphicsPathItem {
       return Type;
     }
 
-    void setName( QString str );
+    void setName( QString str, bool setFromLabel = false );
     void setType( QString str );
 
     QNEPort* getPortWithName( QString name, bool output );
@@ -100,11 +100,15 @@ class QNEBlock : public QGraphicsPathItem {
   private:
     qreal width;
     qreal height;
+    QString name;
+
+  public:
+    QString getName() {
+      return name;
+    }
 
   public:
     QObject* object;
-
-    QString name;
     QString typeString;
 };
 

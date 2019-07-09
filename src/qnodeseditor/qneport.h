@@ -31,9 +31,14 @@
 #include <QGraphicsPathItem>
 #include <QTextDocument>
 #include <QFontMetrics>
+#include <QTextDocument>
+
+#include <QDebug>
 
 class QNEBlock;
 class QNEConnection;
+
+class QNEPortHelper;
 
 class QNEPort : public QGraphicsPathItem {
   public:
@@ -50,6 +55,8 @@ class QNEPort : public QGraphicsPathItem {
     bool isOutput();
     QVector<QNEConnection*>& connections();
     void setPortFlags( int );
+
+    void contentsChanged();
 
     int portFlags() const {
       return m_portFlags;
@@ -76,17 +83,38 @@ class QNEPort : public QGraphicsPathItem {
     static constexpr qreal radiusOfBullet = 5;
     static constexpr qreal marginOfText = 2;
 
+    QGraphicsTextItem* label = nullptr;
+
   protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant& value );
-    void hoverLeaveEvent( QGraphicsSceneHoverEvent* event );
 
   private:
-    QNEBlock* m_block;
-    bool isOutput_;
-    QGraphicsTextItem* label;
+    QNEBlock* m_block = nullptr;
+    bool isOutput_ = false;
     QVector<QNEConnection*> m_connections;
-    int m_portFlags;
+    int m_portFlags = 0;
 
+    QNEPortHelper* porthelper = nullptr;
+};
+
+class QNEPortHelper : public QObject {
+    Q_OBJECT
+
+  public:
+    QNEPortHelper( QNEPort* port )
+      : QObject(), port( port ) {
+      QObject::connect( port->label->document(), &QTextDocument::contentsChanged, this, &QNEPortHelper::contentsChanged );
+    }
+
+  public slots:
+    void contentsChanged() {
+      bool oldState = port->label->document()->blockSignals( true );
+      port->contentsChanged();
+      port->label->document()->blockSignals( oldState );
+    }
+
+  private:
+    QNEPort* port = nullptr;
 };
 
 #endif // QNEPORT_H

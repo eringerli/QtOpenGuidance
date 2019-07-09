@@ -153,16 +153,24 @@ QVector<QNEPort*> QNEBlock::ports() {
   return res;
 }
 
-void QNEBlock::setName( QString name ) {
-  foreach( QGraphicsItem* port_, childItems() ) {
-    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+void QNEBlock::setName( QString name, bool setFromLabel ) {
+  if( !setFromLabel ) {
+    foreach( QGraphicsItem* port_, childItems() ) {
+      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
-    if( port && port->portFlags()&QNEPort::NamePort ) {
-      port->setName( name );
+      if( port && port->portFlags()&QNEPort::NamePort ) {
+        port->setName( name );
+      }
     }
   }
 
   this->name = name;
+
+  GuidanceBase* obj = qobject_cast<GuidanceBase*>( object );
+
+  if( obj ) {
+    obj->setName( name );
+  }
 
   resizeBlockWidth();
 }
@@ -170,8 +178,6 @@ void QNEBlock::setName( QString name ) {
 QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {
 
   Q_UNUSED( change )
-
-//  resizeBlockWidth();
 
   return value;
 }
@@ -245,7 +251,6 @@ void QNEBlock::resizeBlockWidth() {
     if( port ) {
       if( port->isOutput() ) {
         port->setPos( widthSnappedToGridSpacing / 2 + cornerRadius, y );
-
       } else {
         port->setPos( -widthSnappedToGridSpacing / 2 - cornerRadius, y );
       }

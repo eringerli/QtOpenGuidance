@@ -50,7 +50,7 @@ class PrintLatency : public GuidanceBase {
 
     void input2() {
       if( timer.isValid() ) {
-        qDebug()  << block->name << timer.nsecsElapsed() << "ns";
+        qDebug() << block->getName() << timer.nsecsElapsed() << "ns";
         timer.invalidate();
       }
     }

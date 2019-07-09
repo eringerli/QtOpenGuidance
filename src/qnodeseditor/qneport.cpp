@@ -42,7 +42,7 @@
 
 QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
   QGraphicsPathItem( parent ),
-  slotSignalSignature( slotSignalSignature ), m_portFlags( 0 ) {
+  slotSignalSignature( slotSignalSignature ) {
   label = new QGraphicsTextItem( this );
 
   QPainterPath p;
@@ -53,7 +53,6 @@ QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
   setBrush( Qt::red );
 
   setFlag( QGraphicsItem::ItemSendsScenePositionChanges );
-  setAcceptHoverEvents( true );
 }
 
 QNEPort::~QNEPort() {
@@ -62,6 +61,10 @@ QNEPort::~QNEPort() {
   }
 
   label->deleteLater();
+
+  if( porthelper ) {
+    porthelper->deleteLater();
+  }
 }
 
 void QNEPort::setNEBlock( QNEBlock* b ) {
@@ -110,6 +113,7 @@ void QNEPort::setPortFlags( int f ) {
     setPath( QPainterPath() );
 
     if( !( m_portFlags & QNEPort::SystemBlock ) ) {
+      porthelper = new QNEPortHelper( this );
       label->setTextInteractionFlags( Qt::TextEditorInteraction );
     }
   }
@@ -130,10 +134,11 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
   return value;
 }
 
-void QNEPort::hoverLeaveEvent( QGraphicsSceneHoverEvent* /*event*/ ) {
+void QNEPort::contentsChanged() {
   QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
 
   if( block ) {
+    block->setName( label->toPlainText(), true );
     block->resizeBlockWidth();
   }
 }

@@ -41,6 +41,8 @@ class GuidanceBase : public QObject {
 
     virtual void toJSON( QJsonObject& /*json*/ ) {}
     virtual void fromJSON( QJsonObject& /*json*/ ) {}
+
+    virtual void setName( QString ) {}
 };
 
 class GuidanceFactory : public QObject {

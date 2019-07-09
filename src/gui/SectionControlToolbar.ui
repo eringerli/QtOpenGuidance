@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>SectionControlToolbar</class>
  <widget class="QGroupBox" name="SectionControlToolbar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>694</width>
+    <height>50</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>GroupBox</string>
   </property>
@@ -12,7 +20,7 @@
       <bool>true</bool>
      </property>
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>

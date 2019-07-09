@@ -48,7 +48,7 @@ class DebugSink : public GuidanceBase {
   public slots:
     void setPosition( QVector3D value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -56,7 +56,7 @@ class DebugSink : public GuidanceBase {
 
     void setTiledPosition( Tile* tile, QVector3D value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << value;
       }
@@ -64,7 +64,7 @@ class DebugSink : public GuidanceBase {
 
     void setWGS84Position( double latitude, double longitude, double height ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << latitude << longitude << height;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << latitude << longitude << height;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << latitude << longitude << height;
       }
@@ -72,7 +72,7 @@ class DebugSink : public GuidanceBase {
 
     void setOrientation( QQuaternion value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -80,7 +80,7 @@ class DebugSink : public GuidanceBase {
 
     void setSteeringAngle( float value ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
       }
@@ -88,7 +88,7 @@ class DebugSink : public GuidanceBase {
 
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << position << orientation;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")" << position << orientation;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << "Tile:" << tile << "(" << tile->x << "|" << tile->y << ")"  << position << orientation;
       }
@@ -96,7 +96,7 @@ class DebugSink : public GuidanceBase {
 
     void setData( QByteArray data ) {
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->name << "Data:" << data;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << "Data:" << data;
       } else {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << "Data:" << data;
       }
