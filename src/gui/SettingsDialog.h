@@ -55,9 +55,10 @@ class SettingsDialog : public QDialog {
     void setGrid( bool );
     void setGridValues( float, float, float, QColor );
 
-
   public slots:
     void toggleVisibility();
+
+    void saveConfigOnExit();
 
 
   private slots:
@@ -81,6 +82,20 @@ class SettingsDialog : public QDialog {
     void on_dsbGridSize_valueChanged( double arg1 );
 
     void on_pbColor_clicked();
+
+    void on_cbSaveConfigOnExit_stateChanged( int arg1 );
+    void on_cbLoadConfigOnStart_stateChanged( int arg1 );
+    void on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 );
+    void on_cbShowCameraToolbarOnStart_stateChanged( int arg1 );
+    void on_cbRunSimulatorOnStart_stateChanged( int arg1 );
+
+    void on_pbDeleteSettings_clicked();
+
+  private:
+    void saveGridValuesInSettings();
+
+    void saveConfigToFile( QFile& file );
+    void loadConfigFromFile( QFile& file );
 
   public:
     QComboBox* getCbNodeType();

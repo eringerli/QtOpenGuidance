@@ -16,6 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include <QSettings>
+#include <QStandardPaths>
+
 #include "GuidanceToolbar.h"
 #include "ui_GuidanceToolbar.h"
 
@@ -29,7 +32,7 @@ GuidanceToolbar::~GuidanceToolbar() {
   delete ui;
 }
 
-void GuidanceToolbar::on_checkBox_stateChanged( int arg1 ) {
+void GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
   bool enabled = false;
 
   if( arg1 == Qt::Checked ) {

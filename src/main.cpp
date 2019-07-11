@@ -25,6 +25,9 @@
 // https://ch.mathworks.com/help/driving/ug/coordinate-systems.html
 
 #include <QGuiApplication>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QEvent>
 
 #include <Qt3DRender/QCamera>
 #include <Qt3DCore/QEntity>
@@ -84,6 +87,8 @@
 
 int main( int argc, char** argv ) {
   QApplication app( argc, argv );
+  app.setOrganizationDomain( "QtOpenGuidance.org" );
+  app.setApplicationName( "QtOpenGuidance" );
 
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
@@ -240,6 +245,20 @@ int main( int argc, char** argv ) {
   // Show window
   widget->show();
   widget->resize( 1200, 800 );
+
+  // load states of checkboxes from global config
+  {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
+
+    simulatorToolbar->setVisible( settings.value( "RunSimulatorOnStart", false ).toBool() );
+    qobject_cast<PoseSimulation*>( settingDialog->poseSimulation )->setSimulation( settings.value( "RunSimulatorOnStart", false ).toBool() );
+    cameraToolbar->setVisible( settings.value( "RunSimulatorOnStart", false ).toBool() );
+
+    if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
+      settingDialog->show();
+    }
+  }
 
   return app.exec();
 }

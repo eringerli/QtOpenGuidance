@@ -35,7 +35,7 @@ class GuidanceToolbar : public QGroupBox {
     ~GuidanceToolbar();
 
   private slots:
-    void on_checkBox_stateChanged( int arg1 );
+    void on_cbSimulator_stateChanged( int arg1 );
 
     void on_btn_settings_clicked();
 

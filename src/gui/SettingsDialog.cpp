@@ -63,6 +63,24 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   rootEntity( rootEntity ) {
   ui->setupUi( this );
 
+  // load states of checkboxes from global config
+  {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
+
+    ui->cbSaveConfigOnExit->setCheckState( settings.value( "SaveConfigOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    ui->cbShowCameraToolbarOnStart->setCheckState( settings.value( "ShowCameraToolbarOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+
+    ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
+    ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 10 ).toDouble() );
+    ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 10 ).toDouble() );
+    ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
+    gridColor = settings.value( "Grid/Color", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+  }
+
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
 
   QGraphicsScene* scene = new QGraphicsScene();
@@ -180,7 +198,6 @@ SettingsDialog::~SettingsDialog() {
 
   poseSimulation->deleteLater();
   gridModel->deleteLater();
-
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
@@ -189,6 +206,26 @@ QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
 
 void SettingsDialog::toggleVisibility() {
   setVisible( ! isVisible() );
+}
+
+void SettingsDialog::saveConfigOnExit() {
+  qDebug() << "SettingsDialog::saveConfigOnExit()";
+
+  // save the current config if enabled
+  if( ui->cbSaveConfigOnExit->isChecked() ) {
+    qDebug() << "SettingsDialog::saveConfigOnExit()2";
+    QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
+
+    if( saveFile.open( QIODevice::WriteOnly ) ) {
+
+      // select all items, so everything gets saved
+      foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+        item->setSelected( true );
+      }
+
+      saveConfigToFile( saveFile );
+    }
+  }
 }
 
 void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
@@ -218,33 +255,38 @@ void SettingsDialog::on_pbSaveSelected_clicked() {
       return;
     }
 
-    QJsonObject jsonObject;
-    QJsonArray blocks;
-    QJsonArray connections;
-    jsonObject["blocks"] = blocks;
-    jsonObject["connections"] = connections;
+    saveConfigToFile( saveFile );
 
-    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
-      {
-        QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+  }
+}
 
-        if( block ) {
-          block->toJSON( jsonObject );
-        }
-      }
+void SettingsDialog::saveConfigToFile( QFile& file ) {
+  QJsonObject jsonObject;
+  QJsonArray blocks;
+  QJsonArray connections;
+  jsonObject["blocks"] = blocks;
+  jsonObject["connections"] = connections;
 
-      {
-        QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+    {
+      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-        if( connection ) {
-          connection->toJSON( jsonObject );
-        }
+      if( block ) {
+        block->toJSON( jsonObject );
       }
     }
 
-    QJsonDocument jsonDocument( jsonObject );
-    saveFile.write( jsonDocument.toJson() );
+    {
+      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+      if( connection ) {
+        connection->toJSON( jsonObject );
+      }
+    }
   }
+
+  QJsonDocument jsonDocument( jsonObject );
+  file.write( jsonDocument.toJson() );
 }
 
 QNEBlock* SettingsDialog::getBlockWithId( int id ) {
@@ -262,7 +304,6 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
 }
 
 void SettingsDialog::on_pbLoad_clicked() {
-
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
   QString fileName = QFileDialog::getOpenFileName( this,
@@ -274,122 +315,127 @@ void SettingsDialog::on_pbLoad_clicked() {
   if( !fileName.isEmpty() ) {
     QFile loadFile( fileName );
 
+
     if( !loadFile.open( QIODevice::ReadOnly ) ) {
       qWarning( "Couldn't open save file." );
       return;
     }
 
-    QByteArray saveData = loadFile.readAll();
+    loadConfigFromFile( loadFile );
+  }
+}
 
-    QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
-    QJsonObject json = loadDoc.object();
+void SettingsDialog::loadConfigFromFile( QFile& file ) {
+  QByteArray saveData = file.readAll();
 
-    // as the new object get new id, here is a QMap to hold the conversions
-    // first int: id in file, second int: id in the graphicsview
-    QMap<int, int> idMap;
+  QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
+  QJsonObject json = loadDoc.object();
 
-    if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
-      QJsonArray blocksArray = json["blocks"].toArray();
+  // as the new object get new id, here is a QMap to hold the conversions
+  // first int: id in file, second int: id in the graphicsview
+  QMap<int, int> idMap;
 
-      for( int blockIndex = 0; blockIndex < blocksArray.size(); ++blockIndex ) {
-        QJsonObject blockObject = blocksArray[blockIndex].toObject();
-        int id = blockObject["id"].toInt( 0 );
+  if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
+    QJsonArray blocksArray = json["blocks"].toArray();
 
-        // if id is a system-id -> search the block and set the values
-        if( id != 0 ) {
-          // system id -> don't create new blocks
-          if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
-            QNEBlock* block = getBlockWithId( id );
+    for( int blockIndex = 0; blockIndex < blocksArray.size(); ++blockIndex ) {
+      QJsonObject blockObject = blocksArray[blockIndex].toObject();
+      int id = blockObject["id"].toInt( 0 );
 
-            if( block ) {
-              idMap.insert( id, block->id );
-              block->setX( blockObject["positionX"].toDouble( 0 ) );
-              block->setY( blockObject["positionY"].toDouble( 0 ) );
-            }
+      // if id is a system-id -> search the block and set the values
+      if( id != 0 ) {
+        // system id -> don't create new blocks
+        if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
+          QNEBlock* block = getBlockWithId( id );
 
-            // id is not a system-id -> create new blocks
-          } else {
-            int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
-            GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
+          if( block ) {
+            idMap.insert( id, block->id );
+            block->setX( blockObject["positionX"].toDouble( 0 ) );
+            block->setY( blockObject["positionY"].toDouble( 0 ) );
+          }
 
-            if( factory ) {
-              GuidanceBase* obj = factory->createNewObject();
-              QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
+          // id is not a system-id -> create new blocks
+        } else {
+          int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
+          GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
-              idMap.insert( id, block->id );
+          if( factory ) {
+            GuidanceBase* obj = factory->createNewObject();
+            QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
 
-              block->setX( blockObject["positionX"].toDouble( 0 ) );
-              block->setY( blockObject["positionY"].toDouble( 0 ) );
-              block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
-              block->fromJSON( blockObject );
-              block->setSelected( true );
-            }
+            idMap.insert( id, block->id );
+
+            block->setX( blockObject["positionX"].toDouble( 0 ) );
+            block->setY( blockObject["positionY"].toDouble( 0 ) );
+            block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
+            block->fromJSON( blockObject );
+            block->setSelected( true );
           }
         }
       }
     }
+  }
 
-    if( json.contains( "connections" ) && json["connections"].isArray() ) {
-      QJsonArray connectionsArray = json["connections"].toArray();
+  if( json.contains( "connections" ) && json["connections"].isArray() ) {
+    QJsonArray connectionsArray = json["connections"].toArray();
 
-      for( int connectionsIndex = 0; connectionsIndex < connectionsArray.size(); ++connectionsIndex ) {
-        QJsonObject connectionsObject = connectionsArray[connectionsIndex].toObject();
+    for( int connectionsIndex = 0; connectionsIndex < connectionsArray.size(); ++connectionsIndex ) {
+      QJsonObject connectionsObject = connectionsArray[connectionsIndex].toObject();
 
-        if( !connectionsObject["idFrom"].isUndefined() &&
-            !connectionsObject["idTo"].isUndefined() &&
-            !connectionsObject["portFrom"].isUndefined() &&
-            !connectionsObject["portTo"].isUndefined() ) {
+      if( !connectionsObject["idFrom"].isUndefined() &&
+          !connectionsObject["idTo"].isUndefined() &&
+          !connectionsObject["portFrom"].isUndefined() &&
+          !connectionsObject["portTo"].isUndefined() ) {
 
-          int idFrom = idMap[connectionsObject["idFrom"].toInt()];
-          int idTo = idMap[connectionsObject["idTo"].toInt()];
+        int idFrom = idMap[connectionsObject["idFrom"].toInt()];
+        int idTo = idMap[connectionsObject["idTo"].toInt()];
 
-          if( idFrom != 0 && idTo != 0 ) {
-            QNEBlock* blockFrom = getBlockWithId( idFrom );
-            QNEBlock* blockTo = getBlockWithId( idTo );
+        if( idFrom != 0 && idTo != 0 ) {
+          QNEBlock* blockFrom = getBlockWithId( idFrom );
+          QNEBlock* blockTo = getBlockWithId( idTo );
 
-            if( blockFrom && blockTo ) {
-              QString portFromName = connectionsObject["portFrom"].toString();
-              QString portToName = connectionsObject["portTo"].toString();
+          if( blockFrom && blockTo ) {
+            QString portFromName = connectionsObject["portFrom"].toString();
+            QString portToName = connectionsObject["portTo"].toString();
 
-              QNEPort* portFrom = blockFrom->getPortWithName( portFromName, true );
-              QNEPort* portTo = blockTo->getPortWithName( portToName, false );
+            QNEPort* portFrom = blockFrom->getPortWithName( portFromName, true );
+            QNEPort* portTo = blockTo->getPortWithName( portToName, false );
 
-              if( portFrom && portTo ) {
-                QNEConnection* conn = new QNEConnection();
-                conn->setPort1( portFrom );
+            if( portFrom && portTo ) {
+              QNEConnection* conn = new QNEConnection();
+              conn->setPort1( portFrom );
 
-                if( conn->setPort2( portTo ) ) {
-                  blockFrom->scene()->addItem( conn );
-                  conn->updatePosFromPorts();
-                  conn->updatePath();
-                  conn->setSelected( true );
-                } else {
-                  delete conn;
-                }
+              if( conn->setPort2( portTo ) ) {
+                blockFrom->scene()->addItem( conn );
+                conn->updatePosFromPorts();
+                conn->updatePath();
+                conn->setSelected( true );
+              } else {
+                delete conn;
               }
             }
           }
         }
       }
     }
-
-    // as new values for the blocks are added above, emit all signals now, when the connections are made
-    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
-      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-      if( block ) {
-        block->emitConfigSignals();
-      }
-    }
-
-    // reset the models
-    vectorBlockModel->resetModel();
-    numberBlockModel->resetModel();
-    stringBlockModel->resetModel();
-
-    // rescale the tableview
-    ui->twValues->resizeColumnsToContents();
   }
+
+  // as new values for the blocks are added above, emit all signals now, when the connections are made
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+    if( block ) {
+      block->emitConfigSignals();
+    }
+  }
+
+  // reset the models
+  vectorBlockModel->resetModel();
+  numberBlockModel->resetModel();
+  stringBlockModel->resetModel();
+
+  // rescale the tableview
+  ui->twValues->resizeColumnsToContents();
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
@@ -444,18 +490,22 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
 }
 
 void SettingsDialog::on_gbGrid_toggled( bool arg1 ) {
+  saveGridValuesInSettings();
   emit setGrid( arg1 );
 }
 
 void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
+  saveGridValuesInSettings();
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
 }
 
 void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
+  saveGridValuesInSettings();
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
 }
 
 void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
+  saveGridValuesInSettings();
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
 }
 
@@ -468,8 +518,22 @@ void SettingsDialog::on_pbColor_clicked() {
     ui->lbColor->setPalette( QPalette( gridColor ) );
     ui->lbColor->setAutoFillBackground( true );
 
+    saveGridValuesInSettings();
     emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
   }
+}
+
+void SettingsDialog::saveGridValuesInSettings() {
+
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "Grid/Enabled", bool( ui->gbGrid->isChecked() ) );
+  settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
+  settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
+  settings.setValue( "Grid/Size", ui->dsbGridSize->value() );
+  settings.setValue( "Grid/Color", gridColor );
+  settings.sync();
 }
 
 void SettingsDialog::emitAllConfigSignals() {
@@ -478,4 +542,52 @@ void SettingsDialog::emitAllConfigSignals() {
 
 QComboBox* SettingsDialog::getCbNodeType() {
   return ui->cbNodeType;
+}
+
+void SettingsDialog::on_cbSaveConfigOnExit_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "SaveConfigOnExit", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}
+
+void SettingsDialog::on_cbLoadConfigOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "LoadConfigOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}
+
+void SettingsDialog::on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "OpenSettingsDialogOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}
+
+void SettingsDialog::on_cbShowCameraToolbarOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "ShowCameraToolbarOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}
+
+void SettingsDialog::on_cbRunSimulatorOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "RunSimulatorOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}
+
+void SettingsDialog::on_pbDeleteSettings_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.clear();
+  settings.sync();
 }

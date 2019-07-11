@@ -13,8 +13,8 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout_10">
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
@@ -29,11 +29,11 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTabWidget" name="verticalTabWidget">
+      <widget class="QTabWidget" name="twConfiguration">
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="tab_3">
+       <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
          <string>Configuration</string>
         </attribute>
@@ -175,7 +175,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="verticalTabWidgetPage1">
+       <widget class="QWidget" name="tabValues">
         <attribute name="title">
          <string>Values</string>
         </attribute>
@@ -232,7 +232,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="verticalTabWidgetPage2">
+       <widget class="QWidget" name="tabImplements">
         <attribute name="title">
          <string>Implement/Sections</string>
         </attribute>
@@ -330,7 +330,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_5">
+       <widget class="QWidget" name="tabGraphics">
         <attribute name="title">
          <string>Graphics</string>
         </attribute>
@@ -494,13 +494,93 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="tabGeneral">
+        <attribute name="title">
+         <string>General</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>Configuration</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QCheckBox" name="cbSaveConfigOnExit">
+              <property name="text">
+               <string>Save current configuration on exit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbLoadConfigOnStart">
+              <property name="text">
+               <string>Load last configuration on start</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_8">
+           <property name="title">
+            <string>Main Window</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="cbOpenSettingsDialogOnStart">
+              <property name="text">
+               <string>Open setting dialog on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbShowCameraToolbarOnStart">
+              <property name="text">
+               <string>Show camera toolbar on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbRunSimulatorOnStart">
+              <property name="text">
+               <string>Run Simulator on start</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbDeleteSettings">
+           <property name="text">
+            <string>Delete Settings</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>298</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabExperimental">
         <attribute name="title">
          <string>Experimental Stuff</string>
         </attribute>
         <layout class="QFormLayout" name="formLayout_5"/>
        </widget>
-       <widget class="QWidget" name="tab_2">
+       <widget class="QWidget" name="tabCoordinateSystem">
         <attribute name="title">
          <string>Coordinate System</string>
         </attribute>
@@ -520,17 +600,17 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_4">
+       <widget class="QWidget" name="tabLicences">
         <attribute name="title">
          <string>Licences</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="twLicences">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
-           <widget class="QWidget" name="tabWidgetPage1" native="true">
+           <widget class="QWidget" name="tabQtOpenGuidance">
             <attribute name="title">
              <string>QtOpenGuidance</string>
             </attribute>
@@ -1235,7 +1315,7 @@ Public License instead of this License.  But first, please read
              </item>
             </layout>
            </widget>
-           <widget class="QWidget" name="tab_6">
+           <widget class="QWidget" name="tabQnodeseditor">
             <attribute name="title">
              <string>qnodeseditor</string>
             </attribute>
@@ -1289,7 +1369,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
