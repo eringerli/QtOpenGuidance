@@ -27,7 +27,7 @@ void drawPoints( const QVector3D& start, const QVector3D& end, const QColor& col
   *positions++ = end.y();
   *positions++ = end.z();
 
-  auto* buf = new Qt3DRender::QBuffer( Qt3DRender::QBuffer::VertexBuffer, geometry );
+  auto* buf = new Qt3DRender::QBuffer( /*Qt3DRender::QBuffer::VertexBuffer,*/ geometry );
   buf->setData( bufferBytes );
 
   auto* positionAttribute = new Qt3DRender::QAttribute( geometry );
