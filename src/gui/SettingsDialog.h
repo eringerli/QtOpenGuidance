@@ -58,8 +58,11 @@ class SettingsDialog : public QDialog {
   public slots:
     void toggleVisibility();
 
+    void loadConfigOnStart();
     void saveConfigOnExit();
 
+    void loadDefaultConfig();
+    void saveDefaultConfig();
 
   private slots:
     void on_cbValues_currentIndexChanged( int index );
@@ -89,6 +92,8 @@ class SettingsDialog : public QDialog {
     void on_cbShowCameraToolbarOnStart_stateChanged( int arg1 );
     void on_cbRunSimulatorOnStart_stateChanged( int arg1 );
 
+    void on_pbSaveAsDefault_clicked();
+    void on_pbLoadSavedConfig_clicked();
     void on_pbDeleteSettings_clicked();
 
   private:

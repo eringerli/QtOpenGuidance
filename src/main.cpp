@@ -63,6 +63,7 @@
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DExtras/QOrbitCameraController>
 
+#include "gui/MainWindow.h"
 #include "gui/SettingsDialog.h"
 #include "gui/GuidanceToolbar.h"
 #include "gui/SimulatorToolbar.h"
@@ -93,11 +94,11 @@ int main( int argc, char** argv ) {
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
   QWidget* container = QWidget::createWindowContainer( view );
-//  QSize screenSize = view->screen()->size();
-//  container->setMinimumSize( QSize( 500, 400 ) );
-//  container->setMaximumSize( screenSize );
+  QSize screenSize = view->screen()->size();
+  container->setMinimumSize( QSize( 500, 400 ) );
+  container->setMaximumSize( screenSize );
 
-  QWidget* widget = new QWidget;
+  MainWindow* widget = new MainWindow;
   QHBoxLayout* hLayout = new QHBoxLayout( widget );
   QVBoxLayout* vLayout = new QVBoxLayout;
 
@@ -109,8 +110,6 @@ int main( int argc, char** argv ) {
   // add the qt3d-widget to the hLayout
   vLayout->addWidget( container, 1 );
   hLayout->addLayout( vLayout, 1 );
-
-
 
   widget->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
 
@@ -189,7 +188,6 @@ int main( int argc, char** argv ) {
   GuidanceToolbar* guidaceToolbar = new GuidanceToolbar( widget );
   hLayout->addWidget( guidaceToolbar );
 
-
   // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
   // DON'T BREAK SAVED CONFIGS!
 
@@ -253,12 +251,17 @@ int main( int argc, char** argv ) {
 
     simulatorToolbar->setVisible( settings.value( "RunSimulatorOnStart", false ).toBool() );
     qobject_cast<PoseSimulation*>( settingDialog->poseSimulation )->setSimulation( settings.value( "RunSimulatorOnStart", false ).toBool() );
-    cameraToolbar->setVisible( settings.value( "RunSimulatorOnStart", false ).toBool() );
+    cameraToolbar->setVisible( settings.value( "ShowCameraToolbarOnStart", false ).toBool() );
 
     if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
       settingDialog->show();
     }
   }
+
+  settingDialog->loadConfigOnStart();
+
+  QObject::connect( widget, SIGNAL( closed() ),
+                    settingDialog, SLOT( saveConfigOnExit() ) );
 
   return app.exec();
 }

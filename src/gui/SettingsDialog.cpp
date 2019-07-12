@@ -208,22 +208,43 @@ void SettingsDialog::toggleVisibility() {
   setVisible( ! isVisible() );
 }
 
-void SettingsDialog::saveConfigOnExit() {
-  qDebug() << "SettingsDialog::saveConfigOnExit()";
+void SettingsDialog::loadConfigOnStart() {
+  // save the current config if enabled
+  if( ui->cbLoadConfigOnStart->isChecked() ) {
+    loadDefaultConfig();
+  }
+}
 
+void SettingsDialog::saveConfigOnExit() {
   // save the current config if enabled
   if( ui->cbSaveConfigOnExit->isChecked() ) {
-    qDebug() << "SettingsDialog::saveConfigOnExit()2";
-    QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
+    saveDefaultConfig();
+  }
+}
 
-    if( saveFile.open( QIODevice::WriteOnly ) ) {
+void SettingsDialog::loadDefaultConfig() {
+  QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
 
-      // select all items, so everything gets saved
-      foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
-        item->setSelected( true );
-      }
+  if( saveFile.open( QIODevice::ReadOnly ) ) {
+    loadConfigFromFile( saveFile );
+  }
+}
 
-      saveConfigToFile( saveFile );
+void SettingsDialog::saveDefaultConfig() {
+  QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
+
+  if( saveFile.open( QIODevice::WriteOnly ) ) {
+
+    // select all items, so everything gets saved
+    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+      item->setSelected( true );
+    }
+
+    saveConfigToFile( saveFile );
+
+    // deselect all items
+    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+      item->setSelected( false );
     }
   }
 }
@@ -590,4 +611,12 @@ void SettingsDialog::on_pbDeleteSettings_clicked() {
 
   settings.clear();
   settings.sync();
+}
+
+void SettingsDialog::on_pbSaveAsDefault_clicked() {
+  saveDefaultConfig();
+}
+
+void SettingsDialog::on_pbLoadSavedConfig_clicked() {
+  loadDefaultConfig();
 }

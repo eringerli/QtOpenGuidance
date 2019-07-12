@@ -38,6 +38,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceToolbar.h \
+    src/gui/MainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
