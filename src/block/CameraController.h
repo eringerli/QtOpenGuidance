@@ -32,7 +32,6 @@
 #define CAMERACONTROLLER_H
 
 class CameraController : public GuidanceBase {
-
     Q_OBJECT
 
   public:
@@ -56,6 +55,9 @@ class CameraController : public GuidanceBase {
       // make the light follow the camera
       QObject::connect( m_cameraEntity, SIGNAL( positionChanged( QVector3D ) ),
                         m_lightTransform, SLOT( setTranslation( QVector3D ) ) );
+
+      loadValuesFromConfig();
+      calculateOffset();
     }
 
   public slots:
@@ -156,6 +158,24 @@ class CameraController : public GuidanceBase {
         QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
         QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) *
         QVector3D( -lenghtToViewCenter, 0, 0 );
+    }
+
+    void saveValuesToConfig() {
+      QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                          QSettings::IniFormat );
+
+      settings.setValue( "Camera/lenghtToViewCenter", lenghtToViewCenter );
+      settings.setValue( "Camera/panAngle", panAngle );
+      settings.setValue( "Camera/tiltAngle", tiltAngle );
+    }
+
+    void loadValuesFromConfig() {
+      QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                          QSettings::IniFormat );
+
+      lenghtToViewCenter = settings.value( "Camera/lenghtToViewCenter", 20 ).toFloat();
+      panAngle = settings.value( "Camera/panAngle", 0 ).toFloat();
+      tiltAngle = settings.value( "Camera/tiltAngle", 39 ).toFloat();
     }
 
   private:

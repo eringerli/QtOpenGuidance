@@ -258,10 +258,14 @@ int main( int argc, char** argv ) {
     }
   }
 
+  // default config
   settingDialog->loadConfigOnStart();
-
   QObject::connect( widget, SIGNAL( closed() ),
                     settingDialog, SLOT( saveConfigOnExit() ) );
+
+  // camera controller
+  QObject::connect( widget, SIGNAL( closed() ),
+                    cameraController, SLOT( saveValuesToConfig() ) );
 
   return app.exec();
 }
