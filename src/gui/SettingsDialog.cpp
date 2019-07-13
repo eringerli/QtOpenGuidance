@@ -256,6 +256,8 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
     filterModel->setSourceModel( model );
     ui->twValues->resizeColumnsToContents();
   }
+
+  ui->pbSetStringToFilename->setEnabled( ui->cbValues->currentText() == "String" );
 }
 
 void SettingsDialog::on_pbSaveSelected_clicked() {
@@ -277,7 +279,6 @@ void SettingsDialog::on_pbSaveSelected_clicked() {
     }
 
     saveConfigToFile( saveFile );
-
   }
 }
 
@@ -619,4 +620,23 @@ void SettingsDialog::on_pbSaveAsDefault_clicked() {
 
 void SettingsDialog::on_pbLoadSavedConfig_clicked() {
   loadDefaultConfig();
+}
+
+void SettingsDialog::on_pbSetStringToFilename_clicked() {
+  QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
+
+  if( index.isValid() ) {
+    QString dir = ui->twValues->model()->data( index, Qt::DisplayRole ).toString();
+    qDebug() << dir;
+    QString fileName = QFileDialog::getOpenFileName( this,
+                       tr( "Set Filename to String" ),
+                       dir );
+
+    if( !fileName.isEmpty() ) {
+      ui->twValues->model()->setData( index, fileName );
+    }
+  }
+
+  // as the size of the cell is most likely not enough for the filename, resize it
+  ui->twValues->resizeColumnsToContents();
 }

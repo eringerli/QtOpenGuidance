@@ -227,6 +227,16 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="pbSetStringToFilename">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Set string to filename</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>

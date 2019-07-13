@@ -66,17 +66,14 @@ class SettingsDialog : public QDialog {
 
   private slots:
     void on_cbValues_currentIndexChanged( int index );
-
-    void on_pbLoad_clicked();
-
-    void on_pbSaveSelected_clicked();
+    void on_pbSetStringToFilename_clicked();
 
     void on_pbAddBlock_clicked();
+    void on_pbSaveSelected_clicked();
+    void on_pbLoad_clicked();
 
     void on_pbZoomOut_clicked();
-
     void on_pbZoomIn_clicked();
-
     void on_pbDeleteSelected_clicked();
 
     void on_gbGrid_toggled( bool arg1 );
