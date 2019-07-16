@@ -130,6 +130,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* udpSocketFactory;
     GuidanceFactory* serialPortFactory;
     GuidanceFactory* fileStreamFactory;
+    GuidanceFactory* nmeaParserFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;

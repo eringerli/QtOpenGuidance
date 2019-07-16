@@ -23,6 +23,8 @@
 
 #include <QFileDialog>
 
+#include <QDebug>
+
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"
@@ -43,6 +45,8 @@
 #include "../block/PoseSimulation.h"
 
 #include "../block/PoseSynchroniser.h"
+
+#include "../block/NmeaParser.h"
 #include "../block/TransverseMercatorConverter.h"
 
 #include "../block/DebugSink.h"
@@ -51,6 +55,7 @@
 #include "../block/UdpSocket.h"
 #include "../block/SerialPort.h"
 #include "../block/FileStream.h"
+
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -144,6 +149,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   udpSocketFactory = new UdpSocketFactory();
   serialPortFactory = new SerialPortFactory();
   fileStreamFactory = new FileStreamFactory();
+  nmeaParserFactory = new NmeaParserFactory();
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
@@ -161,6 +167,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   udpSocketFactory->addToCombobox( ui->cbNodeType );
   serialPortFactory->addToCombobox( ui->cbNodeType );
   fileStreamFactory->addToCombobox( ui->cbNodeType );
+  nmeaParserFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -187,6 +194,7 @@ SettingsDialog::~SettingsDialog() {
   udpSocketFactory->deleteLater();
   serialPortFactory->deleteLater();
   fileStreamFactory->deleteLater();
+  nmeaParserFactory->deleteLater();
 
 //  fieldFactory->deleteLater();
 
