@@ -19,6 +19,10 @@ If you are a developer or want to be one, this one should be a piece of cake for
 ### Install QT on Windows
 Use the normal installer of QT from this [link](https://www.qt.io/download). Make sure to also install a compiler too. Use matching options: check under the newest QT-Version the runtime for MingW and also the the same compiler under "Developer and Designer Tools". Qt3D is automaticaly installed as part of QT. If you know what you do, you can enable other runtimes. The source or multiple versions are not needed and saves you a lot of space.
 
+Use options similar to these, but normaly you don't need 32 __and__ 64bit versions:
+![QT Runtime Selection](doc/Screenshot_20190718_221100.png)
+![QT Compile Selection](doc/Screenshot_20190718_221126.png)
+
 ### Install on Linux
 Use your distributions packet management system. Make sure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
 
