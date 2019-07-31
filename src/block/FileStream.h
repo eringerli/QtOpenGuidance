@@ -79,7 +79,7 @@ class FileStream : public GuidanceBase {
       if( qFuzzyIsNull( linerate ) ) {
         timer.stop();
       } else {
-        timer.start( 1000 / linerate, Qt::PreciseTimer, this );
+        timer.start( int( 1000 / linerate ), Qt::PreciseTimer, this );
       }
     }
 

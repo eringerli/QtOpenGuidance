@@ -52,7 +52,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       x +=  elapsedTimeVelocity * qCos( headingRad );
       y += elapsedTimeVelocity * qSin( headingRad );
     }
-    QVector3D antenna =  m_orientation * ( m_antennaPosition );
+    QVector3D antenna =  m_orientation * m_antennaPosition;
 
     double xWithAntennaOffset = x + double( antenna.x() );
     double yWithAntennaOffset = y + double( antenna.y() );
