@@ -123,7 +123,8 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* gridModelFactory;
 
     GuidanceFactory* transverseMercatorConverterFactory;
-    GuidanceFactory* poseCacheFactory;
+    GuidanceFactory* poseSynchroniserFactory;
+    GuidanceFactory* poseFromPositionFactory;
     GuidanceFactory* tractorModelFactory;
     GuidanceFactory* trailerModelFactory;
     GuidanceFactory* fixedKinematicFactory;

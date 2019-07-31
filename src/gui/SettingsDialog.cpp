@@ -47,6 +47,7 @@
 #include "../block/PoseSimulation.h"
 
 #include "../block/PoseSynchroniser.h"
+#include "../block/PoseFromPosition.h"
 
 #include "../block/NmeaParser.h"
 #include "../block/TransverseMercatorConverter.h"
@@ -138,7 +139,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
-  poseCacheFactory = new PoseSynchroniserFactory( tile );
+  poseSynchroniserFactory = new PoseSynchroniserFactory( tile );
+  poseFromPositionFactory = new PoseFromPositionFactory( tile );
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
@@ -156,7 +158,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 //  fieldFactory = new FieldFactory( rootEntity );
 
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
-  poseCacheFactory->addToCombobox( ui->cbNodeType );
+  poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
+  poseFromPositionFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   fixedKinematicFactory->addToCombobox( ui->cbNodeType );
@@ -186,7 +189,8 @@ SettingsDialog::~SettingsDialog() {
   delete ui;
 
   transverseMercatorConverterFactory->deleteLater();
-  poseCacheFactory->deleteLater();
+  poseSynchroniserFactory->deleteLater();
+  poseFromPositionFactory->deleteLater();
   tractorModelFactory->deleteLater();
   trailerModelFactory->deleteLater();
   fixedKinematicFactory->deleteLater();
