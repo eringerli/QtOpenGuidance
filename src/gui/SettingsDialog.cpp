@@ -23,6 +23,8 @@
 
 #include <QFileDialog>
 
+#include <QSerialPortInfo>
+
 #include <QDebug>
 
 #include "qneblock.h"
@@ -175,6 +177,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   ui->lbColor->setText( gridColor.name() );
   ui->lbColor->setPalette( QPalette( gridColor ) );
   ui->lbColor->setAutoFillBackground( true );
+
+  this->on_pbBaudrateRefresh_clicked();
+  this->on_pbComPortRefresh_clicked();
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -265,7 +270,8 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
     ui->twValues->resizeColumnsToContents();
   }
 
-  ui->pbSetStringToFilename->setEnabled( ui->cbValues->currentText() == "String" );
+  ui->grpString->setHidden( !( ui->cbValues->currentText() == "String" ) );
+  ui->grpNumber->setHidden( !( ui->cbValues->currentText() == "Number" ) );
 }
 
 void SettingsDialog::on_pbSaveSelected_clicked() {
@@ -647,4 +653,40 @@ void SettingsDialog::on_pbSetStringToFilename_clicked() {
 
   // as the size of the cell is most likely not enough for the filename, resize it
   ui->twValues->resizeColumnsToContents();
+}
+
+void SettingsDialog::on_pbComPortRefresh_clicked() {
+  ui->cbComPorts->clear();
+
+  const auto infos = QSerialPortInfo::availablePorts();
+
+  for( const QSerialPortInfo& info : infos ) {
+    ui->cbComPorts->addItem( info.portName() );
+  }
+}
+
+void SettingsDialog::on_pbBaudrateRefresh_clicked() {
+  ui->cbBaudrate->clear();
+
+  const auto baudrates = QSerialPortInfo::standardBaudRates();
+
+  for( const quint32& baudrate : baudrates ) {
+    ui->cbBaudrate->addItem( QString::number( baudrate ) );
+  }
+}
+
+void SettingsDialog::on_pbComPortSet_clicked() {
+  QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
+
+  if( index.isValid() ) {
+    ui->twValues->model()->setData( index, ui->cbComPorts->currentText() );
+  }
+}
+
+void SettingsDialog::on_pbBaudrateSet_clicked() {
+  QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
+
+  if( index.isValid() ) {
+    ui->twValues->model()->setData( index, ui->cbBaudrate->currentText() );
+  }
 }

@@ -93,6 +93,12 @@ class SettingsDialog : public QDialog {
     void on_pbLoadSavedConfig_clicked();
     void on_pbDeleteSettings_clicked();
 
+    void on_pbComPortRefresh_clicked();
+    void on_pbBaudrateRefresh_clicked();
+
+    void on_pbComPortSet_clicked();
+    void on_pbBaudrateSet_clicked();
+
   private:
     void saveGridValuesInSettings();
 
