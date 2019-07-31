@@ -41,12 +41,6 @@ class PoseSynchroniser : public GuidanceBase {
     }
 
   public slots:
-    void setPosition( QVector3D value ) {
-      position = value;
-      Tile* currentTile = rootTile->getTileForPosition( &position );
-      emit poseChanged( currentTile, position, orientation );
-    }
-
     void setTiledPosition( Tile* tile, QVector3D position ) {
       this->position = position;
       emit poseChanged( tile, this->position, orientation );
@@ -56,24 +50,16 @@ class PoseSynchroniser : public GuidanceBase {
       orientation = value;
     }
 
-    void setSteeringAngle( float value ) {
-      steeringAngle = value;
-      emit steeringAngleChanged( steeringAngle );
-    }
-
   signals:
     void poseChanged( Tile* tile, QVector3D position, QQuaternion orientation );
-    void steeringAngleChanged( float );
 
   public:
     virtual void emitConfigSignals() override {
       rootTile = rootTile->getTileForPosition( &position );
       emit poseChanged( rootTile, position, orientation );
-      emit steeringAngleChanged( steeringAngle );
     }
 
   public:
-    float steeringAngle = 0;
     Tile* rootTile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
@@ -107,12 +93,9 @@ class PoseSynchroniserFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Tiled Position", SLOT( setTiledPosition( Tile*, QVector3D ) ) );
-      b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
 
       b->addOutputPort( "Pose", SIGNAL( poseChanged( Tile*, QVector3D, QQuaternion ) ) );
-      b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
 
       return b;
     }
