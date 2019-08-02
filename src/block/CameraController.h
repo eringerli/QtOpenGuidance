@@ -219,7 +219,7 @@ class CameraControllerFactory : public GuidanceFactory {
       QNEBlock* b = new QNEBlock( obj, true );
       scene->addItem( b );
 
-      b->addPort( QStringLiteral( "Camera" ), QStringLiteral( "" ), 0, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
       b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
 

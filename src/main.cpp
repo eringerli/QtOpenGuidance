@@ -188,9 +188,6 @@ int main( int argc, char** argv ) {
   GuidanceToolbar* guidaceToolbar = new GuidanceToolbar( widget );
   hLayout->addWidget( guidaceToolbar );
 
-  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
-  // DON'T BREAK SAVED CONFIGS!
-
   // Create setting Window
   SettingsDialog* settingDialog = new SettingsDialog( rootEntity, widget );
 

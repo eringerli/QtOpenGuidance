@@ -148,6 +148,7 @@ class SettingsDialog : public QDialog {
 
 
     QNEBlock* getBlockWithId( int id );
+    QNEBlock* getBlockWithName( QString name );
 
     QColor gridColor = QColor( 0xa2, 0xe3, 0xff );
 };

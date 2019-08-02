@@ -343,6 +343,20 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
   return nullptr;
 }
 
+QNEBlock* SettingsDialog::getBlockWithName( QString name ) {
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+    if( block ) {
+      if( block->getName() == name ) {
+        return block;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 void SettingsDialog::on_pbLoad_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
@@ -386,7 +400,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
       if( id != 0 ) {
         // system id -> don't create new blocks
         if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
-          QNEBlock* block = getBlockWithId( id );
+          QNEBlock* block = getBlockWithName( blockObject["type"].toString() );
 
           if( block ) {
             idMap.insert( id, block->id );
