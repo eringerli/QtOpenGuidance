@@ -61,7 +61,6 @@
 #include "../block/SerialPort.h"
 #include "../block/FileStream.h"
 
-
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 
@@ -693,7 +692,7 @@ void SettingsDialog::on_pbBaudrateRefresh_clicked() {
 
   const auto baudrates = QSerialPortInfo::standardBaudRates();
 
-  for( const quint32& baudrate : baudrates ) {
+  for( const qint32& baudrate : baudrates ) {
     ui->cbBaudrate->addItem( QString::number( baudrate ) );
   }
 }
