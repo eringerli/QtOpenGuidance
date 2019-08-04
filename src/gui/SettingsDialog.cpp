@@ -44,6 +44,8 @@
 #include "../block/TrailerModel.h"
 #include "../block/GridModel.h"
 
+#include "../block/AckermannSteering.h"
+
 #include "../block/PoseSimulation.h"
 
 #include "../block/PoseSynchroniser.h"
@@ -154,6 +156,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   serialPortFactory = new SerialPortFactory();
   fileStreamFactory = new FileStreamFactory();
   nmeaParserFactory = new NmeaParserFactory();
+  ackermannSteeringFactory = new AckermannSteeringFactory();
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
@@ -173,6 +176,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   serialPortFactory->addToCombobox( ui->cbNodeType );
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   nmeaParserFactory->addToCombobox( ui->cbNodeType );
+  ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -204,6 +208,7 @@ SettingsDialog::~SettingsDialog() {
   serialPortFactory->deleteLater();
   fileStreamFactory->deleteLater();
   nmeaParserFactory->deleteLater();
+  ackermannSteeringFactory->deleteLater();
 
 //  fieldFactory->deleteLater();
 

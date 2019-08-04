@@ -138,6 +138,7 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* serialPortFactory;
     GuidanceFactory* fileStreamFactory;
     GuidanceFactory* nmeaParserFactory;
+    GuidanceFactory* ackermannSteeringFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;

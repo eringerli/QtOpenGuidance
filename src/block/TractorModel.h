@@ -54,7 +54,8 @@ class TractorModel : public GuidanceBase {
     void setPoseTowPoint( Tile*, QVector3D, QQuaternion );
     void setPosePivotPoint( Tile*, QVector3D, QQuaternion );
 
-    void setSteeringAngle( float steerAngle );
+    void setSteeringAngleLeft( float steerAngle );
+    void setSteeringAngleRight( float steerAngle );
     void setWheelbase( float wheelbase );
 
   private:
@@ -124,7 +125,8 @@ class TractorModelFactory : public GuidanceFactory {
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+      b->addInputPort( "Steering Angle Left", SLOT( setSteeringAngleLeft( float ) ) );
+      b->addInputPort( "Steering Angle Right", SLOT( setSteeringAngleRight( float ) ) );
 
       return b;
     }

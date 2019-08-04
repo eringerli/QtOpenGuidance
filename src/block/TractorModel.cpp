@@ -160,7 +160,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   // Axis
-  if( false ) {
+  if( /* DISABLES CODE */ (false) ) {
     auto* xaxis = new Qt3DCore::QEntity( m_rootEntity );
     auto* yaxis = new Qt3DCore::QEntity( m_rootEntity );
     auto* zaxis = new Qt3DCore::QEntity( m_rootEntity );
@@ -275,8 +275,6 @@ void TractorModel::setWheelbase( float wheelbase ) {
       m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2,  m_wheelBackMesh->radius() ) );
       m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ),  m_wheelBackMesh->radius() ) );
     }
-
-    setSteeringAngle( m_steeringAngle );
   }
 }
 
@@ -299,32 +297,11 @@ void TractorModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternio
   m_rootEntityTransform->setRotation( rotation );
 }
 
-// http://correll.cs.colorado.edu/?p=1869
-void TractorModel::setSteeringAngle( float steerAngle ) {
-  m_steeringAngle = steerAngle;
-
-  if( steerAngle != 0 ) {
-    float distanceBetweenFrontWheels = m_wheelbase / 4 * 3  + .2 + m_wheelbase / 5;
-    float radiusVirtualCurve = m_wheelbase / qTan( qDegreesToRadians( steerAngle ) );
-
-    float steeringAngleLeft = qAtan( m_wheelbase / ( radiusVirtualCurve - ( distanceBetweenFrontWheels / 2 ) ) );
-    float steeringAngleRight = qAtan( m_wheelbase / ( radiusVirtualCurve + ( distanceBetweenFrontWheels / 2 ) ) );
-
-    // some trickery here: instead of turning the orientation later, do it in radians. the 'official' formala calls for -=M_PI_2 and *=-1
-    // steeringAngleLeft -= M_PI_2;
-    // steeringAngleRight -= M_PI_2;
-    // steeringAngleLeft *= -1;
-    // steeringAngleRight *= -1;
-    steeringAngleLeft -= M_PI;
-    steeringAngleRight -= M_PI;
-
-    QQuaternion rotationLeft =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), qRadiansToDegrees( steeringAngleLeft ) );
+void TractorModel::setSteeringAngleLeft( float steerAngle ) {
+    QQuaternion rotationLeft =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
     m_wheelFrontLeftTransform->setRotation( rotationLeft );
-
-    QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), qRadiansToDegrees( steeringAngleRight ) );
+}
+void TractorModel::setSteeringAngleRight( float steerAngle ) {
+    QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle);
     m_wheelFrontRightTransform->setRotation( rotationRight );
-  } else {
-    m_wheelFrontLeftTransform->setRotation( QQuaternion() );
-    m_wheelFrontRightTransform->setRotation( QQuaternion() );
-  }
 }

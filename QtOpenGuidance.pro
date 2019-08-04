@@ -19,6 +19,7 @@ SOURCES += src/main.cpp \
 HEADERS += \
     src/3d/drawline.h \
     src/3d/drawpoints.h \
+    src/block/AckermannSteering.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
     src/block/FileStream.h \
