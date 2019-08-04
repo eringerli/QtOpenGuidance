@@ -713,3 +713,12 @@ void SettingsDialog::on_pbBaudrateSet_clicked() {
     ui->twValues->model()->setData( index, ui->cbBaudrate->currentText() );
   }
 }
+
+void SettingsDialog::on_pbClear_clicked() {
+  // select all items, so everything gets deleted with a call to on_pbDeleteSelected_clicked()
+  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    item->setSelected( true );
+  }
+
+  on_pbDeleteSelected_clicked();
+}

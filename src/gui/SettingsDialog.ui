@@ -170,6 +170,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="pbClear">
+              <property name="text">
+               <string>Clear All</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
