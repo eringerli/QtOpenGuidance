@@ -46,9 +46,6 @@ class TractorModel : public GuidanceBase {
     explicit TractorModel( Qt3DCore::QEntity* rootEntity );
     ~TractorModel();
 
-    QVector3D position();
-    QQuaternion rotation();
-
   public slots:
     void setPoseHookPoint( Tile*, QVector3D, QQuaternion );
     void setPoseTowPoint( Tile*, QVector3D, QQuaternion );
@@ -56,9 +53,13 @@ class TractorModel : public GuidanceBase {
 
     void setSteeringAngleLeft( float steerAngle );
     void setSteeringAngleRight( float steerAngle );
+
     void setWheelbase( float wheelbase );
+    void setTrackwidth( float trackwidth );
 
   private:
+    void setProportions();
+
     Qt3DCore::QEntity* m_rootEntity;
 
     Qt3DCore::QEntity* m_baseEntity;
@@ -90,8 +91,8 @@ class TractorModel : public GuidanceBase {
     Qt3DCore::QTransform* m_pivotPointTransform;
     Qt3DCore::QTransform* m_towPointTransform;
 
-    float m_wheelbase = 2.4;
-    float m_steeringAngle = 0;
+    float m_wheelbase = 2.4f;
+    float m_trackwidth = 2;
 };
 
 class TractorModelFactory : public GuidanceFactory {
@@ -122,9 +123,12 @@ class TractorModelFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
+      b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
+
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion ) ) );
+
       b->addInputPort( "Steering Angle Left", SLOT( setSteeringAngleLeft( float ) ) );
       b->addInputPort( "Steering Angle Right", SLOT( setSteeringAngleRight( float ) ) );
 
