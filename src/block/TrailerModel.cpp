@@ -182,9 +182,11 @@ void TrailerModel::setProportions() {
 
   // wheels
   {
-    m_wheelMesh->setRadius( m_wheelbase / 4 );
-    m_wheelMesh->setLength( m_wheelbase / 5 );
-    float offsetForWheels = m_wheelbase / 4 * 3 / 2 + .1;
+    m_wheelMesh->setRadius( m_trackwidth / 4 );
+    m_wheelMesh->setLength( m_trackwidth / 5 );
+
+    float offsetForWheels = m_trackwidth / 2;
+
     m_wheelLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelMesh->length() / 2, m_wheelMesh->radius() ) );
     m_wheelRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelMesh->length() / 2 ),  m_wheelMesh->radius() ) );
   }
@@ -197,7 +199,7 @@ void TrailerModel::setProportions() {
 
   // axle
   {
-    m_axleMesh->setLength( m_wheelbase );
+    m_axleMesh->setLength( m_trackwidth );
     m_axleTransform->setTranslation( QVector3D( 0, 0, m_wheelMesh->radius() ) );
   }
 
@@ -218,10 +220,9 @@ void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion
   m_towHookTransform->setTranslation( position );
 }
 
-void TrailerModel::setWheelbase( float wheelbase ) {
-
-  if( !qFuzzyIsNull( wheelbase ) ) {
-    m_wheelbase = wheelbase;
+void TrailerModel::setTrackwidth( float trackwidth ) {
+  if( !qFuzzyIsNull( trackwidth ) ) {
+    m_trackwidth = trackwidth;
     setProportions();
   }
 }

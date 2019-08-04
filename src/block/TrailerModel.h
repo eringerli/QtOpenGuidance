@@ -52,7 +52,10 @@ class TrailerModel : public GuidanceBase {
     void setPosePivotPoint( Tile*, QVector3D, QQuaternion );
 
     void setOffsetHookPointPosition( QVector3D position );
-    void setWheelbase( float wheelbase );
+    void setTrackwidth( float trackwidth );
+
+  private:
+    void setProportions();
 
   private:
     Qt3DCore::QEntity* m_rootEntity;
@@ -86,9 +89,7 @@ class TrailerModel : public GuidanceBase {
     Qt3DCore::QTransform* m_towPointTransform;
 
     QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
-    float m_wheelbase = 2.4f;
-
-    void setProportions();
+    float m_trackwidth = 2.4f;
 };
 
 class TrailerModelFactory : public GuidanceFactory {
@@ -118,7 +119,7 @@ class TrailerModelFactory : public GuidanceFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
+      b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
       b->addInputPort( "Offset Hook Point", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
