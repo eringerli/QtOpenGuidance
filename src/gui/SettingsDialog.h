@@ -116,6 +116,11 @@ class SettingsDialog : public QDialog {
     GuidanceBase* poseSimulation;
     GuidanceBase* gridModel;
 
+    GuidanceBase* plannerGui;
+    GuidanceBase* globalPlanner;
+    GuidanceBase* localPlanner;
+    GuidanceBase* stanleyGuidance;
+
   private:
     Ui::SettingsDialog* ui;
 
@@ -141,6 +146,11 @@ class SettingsDialog : public QDialog {
     GuidanceFactory* fileStreamFactory;
     GuidanceFactory* nmeaParserFactory;
     GuidanceFactory* ackermannSteeringFactory;
+
+    GuidanceFactory* plannerGuiFactory;
+    GuidanceFactory* globalPlannerFactory;
+    GuidanceFactory* localPlannerFactory;
+    GuidanceFactory* stanleyGuidanceFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;

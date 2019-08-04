@@ -54,6 +54,11 @@
 #include "../block/NmeaParser.h"
 #include "../block/TransverseMercatorConverter.h"
 
+#include "../block/GuidancePlannerGui.h"
+#include "../block/GuidanceGlobalPlanner.h"
+#include "../block/GuidanceLocalPlanner.h"
+#include "../block/GuidanceStanley.h"
+
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
 
@@ -137,6 +142,23 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   QObject::connect( this, SIGNAL( setGridValues( float, float, float, QColor ) ),
                     gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
 
+  // guidance
+  plannerGuiFactory = new PlannerGuiFactory( tile );
+  plannerGui = plannerGuiFactory->createNewObject();
+  plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
+
+  globalPlannerFactory = new GlobalPlannerFactory( tile );
+  globalPlanner = globalPlannerFactory->createNewObject();
+  globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
+
+  localPlannerFactory = new LocalPlannerFactory( tile );
+  localPlanner = localPlannerFactory->createNewObject();
+  localPlannerFactory->createBlock( ui->gvNodeEditor->scene(), localPlanner );
+
+  stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
+  stanleyGuidance = stanleyGuidanceFactory->createNewObject();
+  stanleyGuidanceFactory->createBlock( ui->gvNodeEditor->scene(), stanleyGuidance );
+
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
@@ -219,6 +241,15 @@ SettingsDialog::~SettingsDialog() {
 
   poseSimulation->deleteLater();
   gridModel->deleteLater();
+
+  plannerGuiFactory->deleteLater();
+  plannerGui->deleteLater();
+  globalPlannerFactory->deleteLater();
+  globalPlanner->deleteLater();
+  localPlannerFactory->deleteLater();
+  localPlanner->deleteLater();
+  stanleyGuidanceFactory->deleteLater();
+  stanleyGuidance->deleteLater();
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
