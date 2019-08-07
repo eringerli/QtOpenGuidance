@@ -42,51 +42,50 @@
 
 #include "../kinematic/Tile.h"
 
-#include "../3d/drawline.h"
+#include "../3d/linemesh.h"
 
 class GridModel : public GuidanceBase {
     Q_OBJECT
 
   public:
     explicit GridModel( Qt3DCore::QEntity* rootEntity ) {
-      m_rootEntity = rootEntity;
+      m_baseEntity = new Qt3DCore::QEntity(rootEntity);
+
+      m_baseTransform = new Qt3DCore::QTransform();
+      m_baseEntity->addComponent(m_baseTransform);
+
+      m_lineMesh = new LineMesh();
+      m_baseEntity->addComponent(m_lineMesh);
+
+      m_material = new Qt3DExtras::QPhongMaterial( m_baseEntity );
+      m_baseEntity->addComponent(m_material);
     }
+
     ~GridModel() {
-      m_baseEntity->deleteLater();
+      m_lineMesh->deleteLater();
+      m_material->deleteLater();
       m_baseTransform->deleteLater();
+      m_baseEntity->deleteLater();
     }
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion ) {
-      if( m_baseEntity != nullptr ) {
         m_baseEntity->setParent( tile->tileEntity );
         QVector3D positionModulo( std::floor( position.x() / xStep )*xStep,
                                   std::floor( position.y() / yStep )*yStep,
                                   position.z() );
         m_baseTransform->setTranslation( positionModulo );
-      }
     }
 
     void setGrid( bool enabled ) {
-      gridEnabled = enabled;
-
-      if( m_baseEntity != nullptr ) {
-        m_baseEntity->setEnabled( gridEnabled );
-      }
+        m_baseEntity->setEnabled( enabled );
     }
 
     void setGridValues( float xStep, float yStep, float size, QColor color ) {
       this->xStep = xStep;
       this->yStep = yStep;
 
-      if( m_baseEntity != nullptr ) {
-        m_baseEntity->deleteLater();
-      }
-
-      m_baseTransform = new Qt3DCore::QTransform();
-      m_baseEntity = new Qt3DCore::QEntity( m_rootEntity );
-      m_baseEntity->addComponent( m_baseTransform );
-      m_baseEntity->setEnabled( gridEnabled );
+      QVector<QVector3D> lines;
 
       // Lines in X direction
       {
@@ -95,10 +94,13 @@ class GridModel : public GuidanceBase {
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
           start.setY( lineDistance );
           end.setY( lineDistance );
-          drawLine( start, end,  color, m_baseEntity );
+          lines.append(start);
+          lines.append(end);
+
           start.setY( -lineDistance );
           end.setY( -lineDistance );
-          drawLine( start, end,  color, m_baseEntity );
+          lines.append(start);
+          lines.append(end);
         }
       }
 
@@ -109,25 +111,31 @@ class GridModel : public GuidanceBase {
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
           start.setX( lineDistance );
           end.setX( lineDistance );
-          drawLine( start, end,  color, m_baseEntity );
+          lines.append(start);
+          lines.append(end);
+
           start.setX( -lineDistance );
           end.setX( -lineDistance );
-          drawLine( start, end,  color, m_baseEntity );
+          lines.append(start);
+          lines.append(end);
         }
       }
+
+      m_material->setAmbient( color );
+
+      m_lineMesh->posUpdate(lines);
     }
 
   signals:
 
   private:
-    Qt3DCore::QEntity* m_rootEntity = nullptr;
     Qt3DCore::QEntity* m_baseEntity = nullptr;
-
     Qt3DCore::QTransform* m_baseTransform = nullptr;
+    LineMesh* m_lineMesh = nullptr;
+    Qt3DExtras::QPhongMaterial* m_material = nullptr;
 
     float xStep = 10;
     float yStep = 10;
-    bool gridEnabled = true;
 };
 
 class GridModelFactory : public GuidanceFactory {
@@ -163,8 +171,6 @@ class GridModelFactory : public GuidanceFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
-    Qt3DCore::QEntity* m_baseEntity = nullptr;
-    Qt3DCore::QTransform* m_baseTransform = nullptr;
 };
 
 #endif // GRIDMODEL_H

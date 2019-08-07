@@ -2,6 +2,8 @@ QT += 3dcore 3drender 3dinput 3dextras serialport
 QT += widgets core
 
 SOURCES += src/main.cpp \
+    src/3d/linemesh.cpp \
+    src/3d/linemeshgeometry.cpp \
     src/3d/drawline.cpp \
     src/3d/drawpoints.cpp \
     src/block/PoseSimulation.cpp \
@@ -19,6 +21,8 @@ SOURCES += src/main.cpp \
 HEADERS += \
     src/3d/drawline.h \
     src/3d/drawpoints.h \
+    src/3d/linemeshgeometry.h \
+    src/3d/linemesh.h \
     src/block/AckermannSteering.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
