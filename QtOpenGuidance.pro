@@ -6,6 +6,8 @@ SOURCES += src/main.cpp \
     src/3d/linemeshgeometry.cpp \
     src/3d/drawline.cpp \
     src/3d/drawpoints.cpp \
+    src/3d/pointmesh.cpp \
+    src/3d/pointmeshgeometry.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
@@ -23,6 +25,8 @@ HEADERS += \
     src/3d/drawpoints.h \
     src/3d/linemeshgeometry.h \
     src/3d/linemesh.h \
+    src/3d/pointmesh.h \
+    src/3d/pointmeshgeometry.h \
     src/block/AckermannSteering.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
