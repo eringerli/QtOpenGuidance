@@ -49,16 +49,16 @@ class GridModel : public GuidanceBase {
 
   public:
     explicit GridModel( Qt3DCore::QEntity* rootEntity ) {
-      m_baseEntity = new Qt3DCore::QEntity(rootEntity);
+      m_baseEntity = new Qt3DCore::QEntity( rootEntity );
 
       m_baseTransform = new Qt3DCore::QTransform();
-      m_baseEntity->addComponent(m_baseTransform);
+      m_baseEntity->addComponent( m_baseTransform );
 
       m_lineMesh = new LineMesh();
-      m_baseEntity->addComponent(m_lineMesh);
+      m_baseEntity->addComponent( m_lineMesh );
 
       m_material = new Qt3DExtras::QPhongMaterial( m_baseEntity );
-      m_baseEntity->addComponent(m_material);
+      m_baseEntity->addComponent( m_material );
     }
 
     ~GridModel() {
@@ -70,15 +70,15 @@ class GridModel : public GuidanceBase {
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion ) {
-        m_baseEntity->setParent( tile->tileEntity );
-        QVector3D positionModulo( std::floor( position.x() / xStep )*xStep,
-                                  std::floor( position.y() / yStep )*yStep,
-                                  position.z() );
-        m_baseTransform->setTranslation( positionModulo );
+      m_baseEntity->setParent( tile->tileEntity );
+      QVector3D positionModulo( ( std::floor( ( tile->x + position.x() ) / xStep )*xStep ) - tile->x,
+                                ( std::floor( ( tile->y + position.y() ) / yStep )*yStep ) - tile->y,
+                                position.z() );
+      m_baseTransform->setTranslation( positionModulo );
     }
 
     void setGrid( bool enabled ) {
-        m_baseEntity->setEnabled( enabled );
+      m_baseEntity->setEnabled( enabled );
     }
 
     void setGridValues( float xStep, float yStep, float size, QColor color ) {
@@ -91,16 +91,16 @@ class GridModel : public GuidanceBase {
       {
         QVector3D start( -size / 2, 0, 0 ), end( size / 2, 0, 0 );
 
-        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
+        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
           start.setY( lineDistance );
           end.setY( lineDistance );
-          lines.append(start);
-          lines.append(end);
+          lines.append( start );
+          lines.append( end );
 
           start.setY( -lineDistance );
           end.setY( -lineDistance );
-          lines.append(start);
-          lines.append(end);
+          lines.append( start );
+          lines.append( end );
         }
       }
 
@@ -108,22 +108,22 @@ class GridModel : public GuidanceBase {
       {
         QVector3D start( 0, -size / 2, 0 ), end( 0, size / 2, 0 );
 
-        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
+        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
           start.setX( lineDistance );
           end.setX( lineDistance );
-          lines.append(start);
-          lines.append(end);
+          lines.append( start );
+          lines.append( end );
 
           start.setX( -lineDistance );
           end.setX( -lineDistance );
-          lines.append(start);
-          lines.append(end);
+          lines.append( start );
+          lines.append( end );
         }
       }
 
       m_material->setAmbient( color );
 
-      m_lineMesh->posUpdate(lines);
+      m_lineMesh->posUpdate( lines );
     }
 
   signals:
