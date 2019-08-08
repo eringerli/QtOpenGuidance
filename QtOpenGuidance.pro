@@ -4,8 +4,6 @@ QT += widgets core
 SOURCES += src/main.cpp \
     src/3d/linemesh.cpp \
     src/3d/linemeshgeometry.cpp \
-    src/3d/drawline.cpp \
-    src/3d/drawpoints.cpp \
     src/3d/pointmesh.cpp \
     src/3d/pointmeshgeometry.cpp \
     src/block/PoseSimulation.cpp \
@@ -21,8 +19,6 @@ SOURCES += src/main.cpp \
     src/gui/VectorBlockModel.cpp
     
 HEADERS += \
-    src/3d/drawline.h \
-    src/3d/drawpoints.h \
     src/3d/linemeshgeometry.h \
     src/3d/linemesh.h \
     src/3d/pointmesh.h \
