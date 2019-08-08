@@ -101,8 +101,12 @@ class SettingsDialog : public QDialog {
 
     void on_pbClear_clicked();
 
+    void on_pbTileColor_clicked();
+    void on_gbShowTiles_toggled( bool arg1 );
+
   private:
     void saveGridValuesInSettings();
+    void saveTileValuesInSettings();
 
     void saveConfigToFile( QFile& file );
     void loadConfigFromFile( QFile& file );
@@ -164,6 +168,7 @@ class SettingsDialog : public QDialog {
     QNEBlock* getBlockWithName( QString name );
 
     QColor gridColor = QColor( 0xa2, 0xe3, 0xff );
+    QColor tileColor = QColor( 0xff, 0x00, 0x00 );
 };
 
 #endif // SETTINGSDIALOG_H

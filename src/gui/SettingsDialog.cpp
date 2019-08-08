@@ -93,6 +93,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
     ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 10 ).toDouble() );
     ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
     gridColor = settings.value( "Grid/Color", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+
+    ui->gbShowTiles->setChecked( settings.value( "Tile/Enabled", true ).toBool() );
+    tileColor = settings.value( "Tile/Color", QColor( 0xff, 0xda, 0x21 ) ).value<QColor>();
   }
 
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
@@ -118,11 +121,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   filterModel->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModel );
 
-  // IMPORTANT: the order of the systemblocks should not change, as they get their id in order of creation
-  // DON'T BREAK SAVED CONFIGS!
-
   // initialise tiling
-  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity );
+  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
 
   // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
   TransverseMercatorWrapper* tmw = new TransverseMercatorWrapper();
@@ -205,6 +205,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   ui->lbColor->setText( gridColor.name() );
   ui->lbColor->setPalette( QPalette( gridColor ) );
   ui->lbColor->setAutoFillBackground( true );
+
+  // tile color picker
+  ui->lbTileColor->setText( tileColor.name() );
+  ui->lbTileColor->setPalette( QPalette( tileColor ) );
+  ui->lbTileColor->setAutoFillBackground( true );
+  tileRoot.setShowColor( tileColor );
+  tileRoot.setShowEnable( ui->gbShowTiles->isChecked() );
 
   this->on_pbBaudrateRefresh_clicked();
   this->on_pbComPortRefresh_clicked();
@@ -613,7 +620,6 @@ void SettingsDialog::on_pbColor_clicked() {
 }
 
 void SettingsDialog::saveGridValuesInSettings() {
-
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
@@ -622,6 +628,15 @@ void SettingsDialog::saveGridValuesInSettings() {
   settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
   settings.setValue( "Grid/Size", ui->dsbGridSize->value() );
   settings.setValue( "Grid/Color", gridColor );
+  settings.sync();
+}
+
+void SettingsDialog::saveTileValuesInSettings() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "Tile/Enabled", bool( ui->gbShowTiles->isChecked() ) );
+  settings.setValue( "Tile/Color", tileColor );
   settings.sync();
 }
 
@@ -751,4 +766,23 @@ void SettingsDialog::on_pbClear_clicked() {
   }
 
   on_pbDeleteSelected_clicked();
+}
+
+void SettingsDialog::on_pbTileColor_clicked() {
+  const QColor color = QColorDialog::getColor( tileColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    tileColor = color;
+    ui->lbTileColor->setText( tileColor.name() );
+    ui->lbTileColor->setPalette( QPalette( tileColor ) );
+    ui->lbTileColor->setAutoFillBackground( true );
+
+    tileRoot.setShowColor( tileColor );
+    saveTileValuesInSettings();
+  }
+}
+
+void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
+  tileRoot.setShowEnable( enabled );
+  saveTileValuesInSettings();
 }

@@ -42,23 +42,10 @@
 #include <QtMath>
 #include <QtGlobal>
 
+#include "../3d/linemesh.h"
+#include <Qt3DExtras/QPhongMaterial>
+
 #include <QDebug>
-#include "../3d/drawline.h"
-
-class RootTile: public QObject {
-    Q_OBJECT
-
-  public:
-    RootTile()
-      : QObject() {
-    }
-
-  public:
-    bool isLatLonOffsetSet = false;
-    double height0 = 0;
-    double lon0 = 0;
-    double lat0 = 0;
-};
 
 // Tiling works like this:
 // - create a QObject as root
@@ -77,7 +64,7 @@ class Tile: public QObject {
     static constexpr double sizeOfTileDouble = double( sizeOfTile );
 
   public:
-    Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity )
+    Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity, bool showTileEnabled, QColor color )
       : QObject( parent ),
         rootEntity( rootEntity ), x( x ), y( y ) {
       tileTransform = new Qt3DCore::QTransform();
@@ -88,17 +75,38 @@ class Tile: public QObject {
       tileEntity = new Qt3DCore::QEntity( rootEntity );
       tileEntity->addComponent( tileTransform );
 
-      // comment in to draw lines around tile
-//      QVector3D pt1( 0, 0, 0 );
-//      QVector3D pt2( 50, 0, 0 );
-//      drawLine( pt1, pt2,  Qt::red, tileEntity );
-//      pt1 = QVector3D( 50, 50, 0 );
-//      drawLine( pt1, pt2,  Qt::red, tileEntity );
-//      pt2 = QVector3D( 0, 50, 0 );
-//      drawLine( pt1, pt2,  Qt::red, tileEntity );
-//      pt1 = QVector3D( 0, 0, 0 );
-//      drawLine( pt1, pt2,  Qt::red, tileEntity );
+      limitsEntity = new Qt3DCore::QEntity( tileEntity );
 
+      // comment in to draw lines around tile
+      LineMesh* linemesh = new LineMesh();
+      QVector<QVector3D> lines;
+      lines.append( QVector3D( 0, 0, 0 ) );
+      lines.append( QVector3D( sizeOfTile, 0, 0 ) );
+      lines.append( QVector3D( sizeOfTile, sizeOfTile, 0 ) );
+      lines.append( QVector3D( 0, sizeOfTile, 0 ) );
+      linemesh->posUpdate( lines );
+      linemesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineLoop );
+
+      this->color = color;
+      this->showTileEnabled = showTileEnabled;
+
+      material = new Qt3DExtras::QPhongMaterial();
+      material->setAmbient( color );
+      limitsEntity->addComponent( linemesh );
+      limitsEntity->addComponent( material );
+
+      limitsEntity->setParent( tileEntity );
+      limitsEntity->setEnabled( showTileEnabled );
+    }
+
+    void setShowEnable( bool enabled ) {
+      showTileEnabled = enabled;
+      limitsEntity->setEnabled( enabled );
+    }
+
+    void setShowColor( QColor color ) {
+      this->color = color;
+      material->setAmbient( color );
     }
 
     // the check for locality is done here, as it is highly probable, that the point is in the current tile
@@ -186,7 +194,9 @@ class Tile: public QObject {
       Tile* tile = new Tile( parent(),
                              x,
                              y,
-                             rootEntity );
+                             rootEntity, showTileEnabled, color );
+
+      qDebug() << "parent()->children().size():" << parent()->children().size();
 
       return tile;
     }
@@ -195,9 +205,43 @@ class Tile: public QObject {
     Qt3DCore::QEntity* tileEntity = nullptr;
     Qt3DCore::QTransform* tileTransform = nullptr;
 
+    Qt3DCore::QEntity* limitsEntity = nullptr;
+    Qt3DExtras::QPhongMaterial* material = nullptr;
+    QColor color = Qt::red;
+    bool showTileEnabled = false;
+
     Qt3DCore::QEntity* rootEntity;
     qint64 x;
     qint64 y;
+};
+
+class RootTile: public QObject {
+    Q_OBJECT
+
+  public:
+    RootTile()
+      : QObject() {
+    }
+
+    void setShowColor( QColor color ) {
+      for( int i = 0; i < children().size(); ++i ) {
+        Tile* tile = qobject_cast<Tile*>( children().at( i ) );
+        tile->setShowColor( color );
+      }
+    }
+
+    void setShowEnable( bool enabled ) {
+      for( int i = 0; i < children().size(); ++i ) {
+        Tile* tile = qobject_cast<Tile*>( children().at( i ) );
+        tile->setShowEnable( enabled );
+      }
+    }
+
+  public:
+    bool isLatLonOffsetSet = false;
+    double height0 = 0;
+    double lon0 = 0;
+    double lat0 = 0;
 };
 
 #endif // TILE_H
