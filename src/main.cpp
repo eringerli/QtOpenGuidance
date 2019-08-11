@@ -231,6 +231,14 @@ int main( int argc, char** argv ) {
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
+  // Guidance
+  QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
+                    settingDialog->plannerGui, SLOT( a_clicked() ) );
+  QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
+                    settingDialog->plannerGui, SLOT( b_clicked() ) );
+  QObject::connect( guidaceToolbar, SIGNAL( snap_clicked() ),
+                    settingDialog->plannerGui, SLOT( snap_clicked() ) );
+
   // Section control toolbar
   BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );
   sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );

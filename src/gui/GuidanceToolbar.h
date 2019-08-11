@@ -41,10 +41,18 @@ class GuidanceToolbar : public QGroupBox {
 
     void on_cbCamera_stateChanged( int arg1 );
 
+    void on_btn_AB_clicked( bool checked );
+
+    void on_btn_snap_clicked();
+
   signals:
     void simulatorChanged( bool );
     void toggleSettings();
     void cameraChanged( bool );
+
+    void a_clicked();
+    void b_clicked();
+    void snap_clicked();
 
   private:
     Ui::GuidanceToolbar* ui;

@@ -55,3 +55,15 @@ void GuidanceToolbar::on_cbCamera_stateChanged( int arg1 ) {
 
   emit cameraChanged( enabled );
 }
+
+void GuidanceToolbar::on_btn_AB_clicked( bool checked ) {
+  if( checked ) {
+    emit a_clicked();
+  } else {
+    emit b_clicked();
+  }
+}
+
+void GuidanceToolbar::on_btn_snap_clicked() {
+  emit snap_clicked();
+}
