@@ -23,14 +23,14 @@
 
 #include "../gui/SectionControlToolbar.h"
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class SectionControl : public GuidanceBase {
+class SectionControl : public BlockBase {
     Q_OBJECT
 
   public:
     explicit SectionControl( QWidget* parent, QVBoxLayout* vLayout )
-      : GuidanceBase() {
+      : BlockBase() {
       sectionControlToolbar = new SectionControlToolbar( parent );
 //      sectionControlToolbar->setVisible( true );
       vLayout->addWidget( sectionControlToolbar );
@@ -60,12 +60,12 @@ class SectionControl : public GuidanceBase {
     SectionControlToolbar* sectionControlToolbar = nullptr;
 };
 
-class SectionControlFactory : public GuidanceFactory {
+class SectionControlFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     SectionControlFactory( QWidget* parent, QVBoxLayout* vlayout )
-      : GuidanceFactory(),
+      : BlockFactory(),
         parent( parent ), vlayout( vlayout ) {}
 
     QString getNameOfFactory() override {
@@ -76,7 +76,7 @@ class SectionControlFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new SectionControl( parent, vlayout );
     }
 

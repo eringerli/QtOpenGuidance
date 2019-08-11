@@ -35,11 +35,11 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
-class TrailerModel : public GuidanceBase {
+class TrailerModel : public BlockBase {
     Q_OBJECT
 
   public:
@@ -92,12 +92,12 @@ class TrailerModel : public GuidanceBase {
     float m_trackwidth = 2.4f;
 };
 
-class TrailerModelFactory : public GuidanceFactory {
+class TrailerModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     TrailerModelFactory( Qt3DCore::QEntity* rootEntity )
-      : GuidanceFactory(),
+      : BlockFactory(),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -108,7 +108,7 @@ class TrailerModelFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new TrailerModel( rootEntity );
     }
 

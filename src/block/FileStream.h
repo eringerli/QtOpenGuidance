@@ -23,14 +23,14 @@
 #include <QByteArray>
 #include <QTextStream>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class FileStream : public GuidanceBase {
+class FileStream : public BlockBase {
     Q_OBJECT
 
   public:
     explicit FileStream()
-      : GuidanceBase() {
+      : BlockBase() {
       fileStream = new QTextStream();
     }
 
@@ -113,12 +113,12 @@ class FileStream : public GuidanceBase {
     QFile* file = nullptr;
 };
 
-class FileStreamFactory : public GuidanceFactory {
+class FileStreamFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     FileStreamFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "File Stream" );
@@ -128,7 +128,7 @@ class FileStreamFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new FileStream();
     }
 

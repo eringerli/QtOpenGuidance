@@ -26,7 +26,7 @@
 
 #include <QDateTime>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -35,12 +35,12 @@
 
 #include <QDebug>
 
-class PrintLatency : public GuidanceBase {
+class PrintLatency : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PrintLatency()
-      : GuidanceBase(),
+      : BlockBase(),
         block( nullptr ) {}
 
   public slots:
@@ -66,12 +66,12 @@ class PrintLatency : public GuidanceBase {
     QElapsedTimer timer;
 };
 
-class PrintLatencyFactory : public GuidanceFactory {
+class PrintLatencyFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     PrintLatencyFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Print Latency" );
@@ -81,8 +81,8 @@ class PrintLatencyFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
-      GuidanceBase* obj = new PrintLatency;
+    virtual BlockBase* createNewObject() override {
+      BlockBase* obj = new PrintLatency;
 
 //      obj->moveToThread( &workerThread );
 

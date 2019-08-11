@@ -453,10 +453,10 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
           // id is not a system-id -> create new blocks
         } else {
           int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
-          GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
+          BlockFactory* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
           if( factory ) {
-            GuidanceBase* obj = factory->createNewObject();
+            BlockBase* obj = factory->createNewObject();
             QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
 
             idMap.insert( id, block->id );
@@ -536,10 +536,10 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 
 void SettingsDialog::on_pbAddBlock_clicked() {
   QString currentText = ui->cbNodeType->currentText();
-  GuidanceFactory* factory = qobject_cast<GuidanceFactory*>( qvariant_cast<GuidanceFactory*>( ui->cbNodeType->currentData() ) );
+  BlockFactory* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
 
   if( factory ) {
-    GuidanceBase* obj = factory->createNewObject();
+    BlockBase* obj = factory->createNewObject();
     factory->createBlock( ui->gvNodeEditor->scene(), obj );
 
     // reset the models

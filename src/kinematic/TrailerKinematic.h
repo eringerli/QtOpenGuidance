@@ -31,16 +31,16 @@
 #include <QtMath>
 #include <QtDebug>
 
-#include "../block/GuidanceBase.h"
+#include "../block/BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
-class TrailerKinematic : public GuidanceBase {
+class TrailerKinematic : public BlockBase {
     Q_OBJECT
 
   public:
     explicit TrailerKinematic( Tile* tile )
-      : GuidanceBase() {
+      : BlockBase() {
       m_tilePivotPoint = tile->getTileForOffset( 0, 0 );
     }
 
@@ -91,12 +91,12 @@ class TrailerKinematic : public GuidanceBase {
     Tile* m_tilePivotPoint;
 };
 
-class TrailerKinematicFactory : public GuidanceFactory {
+class TrailerKinematicFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     TrailerKinematicFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -107,7 +107,7 @@ class TrailerKinematicFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new TrailerKinematic( tile );
     }
 

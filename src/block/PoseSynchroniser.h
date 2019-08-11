@@ -24,19 +24,19 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
 
-class PoseSynchroniser : public GuidanceBase {
+class PoseSynchroniser : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PoseSynchroniser( Tile* tile )
-      : GuidanceBase() {
+      : BlockBase() {
       rootTile = tile->getTileForOffset( 0, 0 );
     }
 
@@ -65,12 +65,12 @@ class PoseSynchroniser : public GuidanceBase {
     QQuaternion orientation = QQuaternion();
 };
 
-class PoseSynchroniserFactory : public GuidanceFactory {
+class PoseSynchroniserFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     PoseSynchroniserFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -81,7 +81,7 @@ class PoseSynchroniserFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new PoseSynchroniser( tile );
     }
 

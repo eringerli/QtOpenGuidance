@@ -35,11 +35,11 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
-class TractorModel : public GuidanceBase {
+class TractorModel : public BlockBase {
     Q_OBJECT
 
   public:
@@ -95,12 +95,12 @@ class TractorModel : public GuidanceBase {
     float m_trackwidth = 2;
 };
 
-class TractorModelFactory : public GuidanceFactory {
+class TractorModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     TractorModelFactory( Qt3DCore::QEntity* rootEntity )
-      : GuidanceFactory(),
+      : BlockFactory(),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -111,7 +111,7 @@ class TractorModelFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new TractorModel( rootEntity );
     }
 

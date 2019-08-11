@@ -45,7 +45,7 @@
 
 #include <QDebug>
 
-#include "../block/GuidanceBase.h"
+#include "../block/BlockBase.h"
 
 class Tile;
 class Track;
@@ -243,7 +243,7 @@ class Tile {
     QList<Track> tracks;
 };
 
-class Field : public GuidanceBase {
+class Field : public BlockBase {
     Q_OBJECT
   public:
     explicit Field( Qt3DCore::QEntity* rootEntity ) {
@@ -321,12 +321,12 @@ class Field : public GuidanceBase {
     qint64 currentMaxX = 0;
 };
 
-class FieldFactory : public GuidanceFactory {
+class FieldFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     FieldFactory( Qt3DCore::QEntity* rootEntity )
-      : GuidanceFactory(),
+      : BlockFactory(),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -337,8 +337,8 @@ class FieldFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
-      GuidanceBase* obj = new Field( rootEntity );
+    virtual BlockBase* createNewObject() override {
+      BlockBase* obj = new Field( rootEntity );
 
 //      obj->moveToThread(&workerThread);
 

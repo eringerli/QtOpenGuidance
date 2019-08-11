@@ -21,14 +21,14 @@
 
 #include <QObject>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class NumberObject : public GuidanceBase {
+class NumberObject : public BlockBase {
     Q_OBJECT
 
   public:
     explicit NumberObject()
-      : GuidanceBase() {}
+      : BlockBase() {}
 
     void emitConfigSignals() override {
       emit numberChanged( number );
@@ -57,12 +57,12 @@ class NumberObject : public GuidanceBase {
     float number = 0;
 };
 
-class NumberFactory : public GuidanceFactory {
+class NumberFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     NumberFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Number" );
@@ -72,7 +72,7 @@ class NumberFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new NumberObject();
     }
 

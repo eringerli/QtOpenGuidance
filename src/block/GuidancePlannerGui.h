@@ -24,19 +24,19 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
 
-class PlannerGui : public GuidanceBase {
+class PlannerGui : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PlannerGui( Tile* tile )
-      : GuidanceBase() {
+      : BlockBase() {
       rootTile = tile->getTileForOffset( 0, 0 );
     }
 
@@ -59,12 +59,12 @@ class PlannerGui : public GuidanceBase {
     QQuaternion orientation = QQuaternion();
 };
 
-class PlannerGuiFactory : public GuidanceFactory {
+class PlannerGuiFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     PlannerGuiFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -75,7 +75,7 @@ class PlannerGuiFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new PlannerGui( tile );
     }
 

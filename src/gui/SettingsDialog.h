@@ -117,44 +117,44 @@ class SettingsDialog : public QDialog {
     RootTile tileRoot;
 
   public:
-    GuidanceBase* poseSimulation;
-    GuidanceBase* gridModel;
+    BlockBase* poseSimulation;
+    BlockBase* gridModel;
 
-    GuidanceBase* plannerGui;
-    GuidanceBase* globalPlanner;
-    GuidanceBase* localPlanner;
-    GuidanceBase* stanleyGuidance;
+    BlockBase* plannerGui;
+    BlockBase* globalPlanner;
+    BlockBase* localPlanner;
+    BlockBase* stanleyGuidance;
 
   private:
     Ui::SettingsDialog* ui;
 
     Qt3DCore::QEntity* rootEntity;
 
-    GuidanceFactory* poseSimulationFactory;
-    GuidanceFactory* gridModelFactory;
+    BlockFactory* poseSimulationFactory;
+    BlockFactory* gridModelFactory;
 
-    GuidanceFactory* transverseMercatorConverterFactory;
-    GuidanceFactory* poseSynchroniserFactory;
-    GuidanceFactory* poseFromPositionFactory;
-    GuidanceFactory* tractorModelFactory;
-    GuidanceFactory* trailerModelFactory;
-    GuidanceFactory* fixedKinematicFactory;
-    GuidanceFactory* trailerKinematicFactory;
-    GuidanceFactory* vectorFactory;
-    GuidanceFactory* numberFactory;
-    GuidanceFactory* stringFactory;
-    GuidanceFactory* debugSinkFactory;
-    GuidanceFactory* printLatencyFactory;
-    GuidanceFactory* udpSocketFactory;
-    GuidanceFactory* serialPortFactory;
-    GuidanceFactory* fileStreamFactory;
-    GuidanceFactory* nmeaParserFactory;
-    GuidanceFactory* ackermannSteeringFactory;
+    BlockFactory* transverseMercatorConverterFactory;
+    BlockFactory* poseSynchroniserFactory;
+    BlockFactory* poseFromPositionFactory;
+    BlockFactory* tractorModelFactory;
+    BlockFactory* trailerModelFactory;
+    BlockFactory* fixedKinematicFactory;
+    BlockFactory* trailerKinematicFactory;
+    BlockFactory* vectorFactory;
+    BlockFactory* numberFactory;
+    BlockFactory* stringFactory;
+    BlockFactory* debugSinkFactory;
+    BlockFactory* printLatencyFactory;
+    BlockFactory* udpSocketFactory;
+    BlockFactory* serialPortFactory;
+    BlockFactory* fileStreamFactory;
+    BlockFactory* nmeaParserFactory;
+    BlockFactory* ackermannSteeringFactory;
 
-    GuidanceFactory* plannerGuiFactory;
-    GuidanceFactory* globalPlannerFactory;
-    GuidanceFactory* localPlannerFactory;
-    GuidanceFactory* stanleyGuidanceFactory;
+    BlockFactory* plannerGuiFactory;
+    BlockFactory* globalPlannerFactory;
+    BlockFactory* localPlannerFactory;
+    BlockFactory* stanleyGuidanceFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;

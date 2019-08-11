@@ -28,7 +28,7 @@
 
 #include <QByteArray>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
@@ -37,12 +37,12 @@
 
 #include <QDebug>
 
-class DebugSink : public GuidanceBase {
+class DebugSink : public BlockBase {
     Q_OBJECT
 
   public:
     explicit DebugSink()
-      : GuidanceBase(),
+      : BlockBase(),
         block( nullptr ) {}
 
   public slots:
@@ -109,12 +109,12 @@ class DebugSink : public GuidanceBase {
     QNEBlock* block;
 };
 
-class DebugSinkFactory : public GuidanceFactory {
+class DebugSinkFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     DebugSinkFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Console Output" );
@@ -124,7 +124,7 @@ class DebugSinkFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new DebugSink;
     }
 

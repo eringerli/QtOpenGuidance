@@ -47,7 +47,7 @@
 
 #include <QDebug>
 
-#include "../block/GuidanceBase.h"
+#include "../block/BlockBase.h"
 
 #include "qneport.h"
 #include "qneconnection.h"
@@ -166,7 +166,7 @@ void QNEBlock::setName( QString name, bool setFromLabel ) {
 
   this->name = name;
 
-  GuidanceBase* obj = qobject_cast<GuidanceBase*>( object );
+  BlockBase* obj = qobject_cast<BlockBase*>( object );
 
   if( obj ) {
     obj->setName( name );
@@ -207,7 +207,7 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   blockObject["positionX"] = x();
   blockObject["positionY"] = y();
 
-  qobject_cast<GuidanceBase*>( object )->toJSON( blockObject );
+  qobject_cast<BlockBase*>( object )->toJSON( blockObject );
 
   blocksArray.append( blockObject );
 
@@ -216,12 +216,12 @@ void QNEBlock::toJSON( QJsonObject& json ) {
 
 void QNEBlock::fromJSON( QJsonObject& json ) {
   if( json["values"].isObject() ) {
-    qobject_cast<GuidanceBase*>( object )->fromJSON( json );
+    qobject_cast<BlockBase*>( object )->fromJSON( json );
   }
 }
 
 void QNEBlock::emitConfigSignals() {
-  qobject_cast<GuidanceBase*>( object )->emitConfigSignals();
+  qobject_cast<BlockBase*>( object )->emitConfigSignals();
 }
 
 void QNEBlock::resizeBlockWidth() {

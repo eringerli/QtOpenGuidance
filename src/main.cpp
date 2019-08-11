@@ -200,8 +200,8 @@ int main( int argc, char** argv ) {
                     settingDialog, SLOT( toggleVisibility() ) );
 
   // camera
-  GuidanceFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
-  GuidanceBase* cameraController = cameraControllerFactory->createNewObject();
+  BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
+  BlockBase* cameraController = cameraControllerFactory->createNewObject();
   cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), cameraController );
 
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
@@ -232,7 +232,7 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
   // Section control toolbar
-  GuidanceFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );
+  BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );
   sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   settingDialog->emitAllConfigSignals();

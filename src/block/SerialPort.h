@@ -23,14 +23,14 @@
 #include <QByteArray>
 #include <QSerialPort>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class SerialPort : public GuidanceBase {
+class SerialPort : public BlockBase {
     Q_OBJECT
 
   public:
     explicit SerialPort()
-      : GuidanceBase() {
+      : BlockBase() {
       serialPort = new QSerialPort( this );
       connect( serialPort, SIGNAL( readyRead() ),
                this, SLOT( processPendingData() ) );
@@ -84,12 +84,12 @@ class SerialPort : public GuidanceBase {
     QSerialPort* serialPort = nullptr;
 };
 
-class SerialPortFactory : public GuidanceFactory {
+class SerialPortFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     SerialPortFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Serial Port" );
@@ -99,7 +99,7 @@ class SerialPortFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new SerialPort();
     }
 

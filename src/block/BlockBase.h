@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GUIDANCEBASE_H
-#define GUIDANCEBASE_H
+#ifndef BLOCKBASE_H
+#define BLOCKBASE_H
 
 #include <QObject>
 
@@ -31,11 +31,11 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-class GuidanceBase : public QObject {
+class BlockBase : public QObject {
     Q_OBJECT
 
   public:
-    GuidanceBase() {}
+    BlockBase() {}
 
     virtual void emitConfigSignals() {}
 
@@ -45,21 +45,21 @@ class GuidanceBase : public QObject {
     virtual void setName( QString ) {}
 };
 
-class GuidanceFactory : public QObject {
+class BlockFactory : public QObject {
     Q_OBJECT
 
   public:
-    GuidanceFactory() {}
-    ~GuidanceFactory() {}
+    BlockFactory() {}
+    ~BlockFactory() {}
 
     virtual QString getNameOfFactory() = 0;
 
     virtual void addToCombobox( QComboBox* combobox ) = 0;
 
-    virtual GuidanceBase* createNewObject() = 0;
+    virtual BlockBase* createNewObject() = 0;
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
 
 };
 
-#endif // GUIDANCEBASE_H
+#endif // BLOCKBASE_H

@@ -42,7 +42,7 @@
 #include "qneconnection.h"
 #include "qneblock.h"
 
-#include "../block/GuidanceBase.h"
+#include "../block/BlockBase.h"
 
 QNodesEditor::QNodesEditor( QObject* parent ) :
   QObject( parent ) {
@@ -166,7 +166,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             if( currentConnection->setPort2( port ) ) {
               currentConnection->updatePosFromPorts();
               currentConnection->updatePath();
-              GuidanceBase* block = qobject_cast<GuidanceBase*> ( currentConnection->port1()->block()->object );
+              BlockBase* block = qobject_cast<BlockBase*> ( currentConnection->port1()->block()->object );
 
               if( block ) {
                 block->emitConfigSignals();
@@ -181,7 +181,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               if( currentConnection->setPort2( port1 ) ) {
                 currentConnection->updatePosFromPorts();
                 currentConnection->updatePath();
-                GuidanceBase* block = qobject_cast<GuidanceBase*> ( currentConnection->port1()->block()->object );
+                BlockBase* block = qobject_cast<BlockBase*> ( currentConnection->port1()->block()->object );
 
                 if( block ) {
                   block->emitConfigSignals();

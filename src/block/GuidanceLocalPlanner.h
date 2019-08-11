@@ -24,19 +24,19 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
 
-class LocalPlanner : public GuidanceBase {
+class LocalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
     explicit LocalPlanner( Tile* tile )
-      : GuidanceBase() {
+      : BlockBase() {
       rootTile = tile->getTileForOffset( 0, 0 );
     }
 
@@ -59,12 +59,12 @@ class LocalPlanner : public GuidanceBase {
     QQuaternion orientation = QQuaternion();
 };
 
-class LocalPlannerFactory : public GuidanceFactory {
+class LocalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     LocalPlannerFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -75,7 +75,7 @@ class LocalPlannerFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new LocalPlanner( tile );
     }
 

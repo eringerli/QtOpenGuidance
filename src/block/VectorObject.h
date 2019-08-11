@@ -24,9 +24,9 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class VectorObject : public GuidanceBase {
+class VectorObject : public BlockBase {
     Q_OBJECT
 
   public:
@@ -73,12 +73,12 @@ class VectorObject : public GuidanceBase {
 
 
 
-class VectorFactory : public GuidanceFactory {
+class VectorFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     VectorFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Vector3D" );
@@ -88,7 +88,7 @@ class VectorFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new VectorObject();
     }
 

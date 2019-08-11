@@ -30,7 +30,7 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
@@ -38,12 +38,12 @@
 using namespace std;
 using namespace GeographicLib;
 
-class PoseSimulation : public GuidanceBase {
+class PoseSimulation : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PoseSimulation( Tile* tile )
-      : GuidanceBase(),
+      : BlockBase(),
         _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ),
         tile( tile ) {
       setSimulation( false );
@@ -146,12 +146,12 @@ class PoseSimulation : public GuidanceBase {
     Tile* tile;
 };
 
-class PoseSimulationFactory : public GuidanceFactory {
+class PoseSimulationFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     PoseSimulationFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -161,7 +161,7 @@ class PoseSimulationFactory : public GuidanceFactory {
     virtual void addToCombobox( QComboBox* ) override {
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new PoseSimulation( tile );
     }
 

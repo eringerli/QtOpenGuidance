@@ -38,13 +38,13 @@
 #include <QColor>
 #include <QtMath>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
 #include "../3d/linemesh.h"
 
-class GridModel : public GuidanceBase {
+class GridModel : public BlockBase {
     Q_OBJECT
 
   public:
@@ -138,12 +138,12 @@ class GridModel : public GuidanceBase {
     float yStep = 10;
 };
 
-class GridModelFactory : public GuidanceFactory {
+class GridModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     GridModelFactory( Qt3DCore::QEntity* rootEntity )
-      : GuidanceFactory(),
+      : BlockFactory(),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -153,7 +153,7 @@ class GridModelFactory : public GuidanceFactory {
     virtual void addToCombobox( QComboBox* /*combobox*/ ) override {
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new GridModel( rootEntity );
     }
 

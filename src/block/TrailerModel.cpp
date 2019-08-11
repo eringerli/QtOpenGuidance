@@ -23,7 +23,7 @@
 
 
 TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
-  : GuidanceBase() {
+  : BlockBase() {
   m_rootEntityTransform = new Qt3DCore::QTransform();
 
   // add an etry, so all coordinates are local

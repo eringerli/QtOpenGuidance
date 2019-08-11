@@ -21,14 +21,14 @@
 
 #include <QObject>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class StringObject : public GuidanceBase {
+class StringObject : public BlockBase {
     Q_OBJECT
 
   public:
     explicit StringObject()
-      : GuidanceBase() {}
+      : BlockBase() {}
 
     void emitConfigSignals() override {
       emit stringChanged( string );
@@ -57,12 +57,12 @@ class StringObject : public GuidanceBase {
     QString string;
 };
 
-class StringFactory : public GuidanceFactory {
+class StringFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     StringFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "String" );
@@ -72,7 +72,7 @@ class StringFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new StringObject();
     }
 

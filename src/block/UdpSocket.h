@@ -23,14 +23,14 @@
 #include <QtNetwork>
 
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class UdpSocket : public GuidanceBase {
+class UdpSocket : public BlockBase {
     Q_OBJECT
 
   public:
     explicit UdpSocket()
-      : GuidanceBase() {
+      : BlockBase() {
       udpSocket = new QUdpSocket( this );
       connect( udpSocket, SIGNAL( readyRead() ),
                this, SLOT( processPendingDatagrams() ) );
@@ -76,12 +76,12 @@ class UdpSocket : public GuidanceBase {
     QUdpSocket* udpSocket = nullptr;
 };
 
-class UdpSocketFactory : public GuidanceFactory {
+class UdpSocketFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     UdpSocketFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "UDP Socket" );
@@ -91,7 +91,7 @@ class UdpSocketFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new UdpSocket();
     }
 

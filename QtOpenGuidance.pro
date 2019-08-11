@@ -24,11 +24,11 @@ HEADERS += \
     src/3d/pointmesh.h \
     src/3d/pointmeshgeometry.h \
     src/block/AckermannSteering.h \
+    src/block/BlockBase.h \
     src/block/CameraController.h \
     src/block/DebugSink.h \
     src/block/FileStream.h \
     src/block/GridModel.h \
-    src/block/GuidanceBase.h \
     src/block/GuidanceGlobalPlanner.h \
     src/block/GuidanceLocalPlanner.h \
     src/block/GuidancePlannerGui.h \

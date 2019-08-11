@@ -24,14 +24,14 @@
 #include <Qt3DRender/QCamera>
 #include <Qt3DRender/QPointLight>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
 
-class CameraController : public GuidanceBase {
+class CameraController : public BlockBase {
     Q_OBJECT
 
   public:
@@ -196,12 +196,12 @@ class CameraController : public GuidanceBase {
     Qt3DCore::QTransform* m_lightTransform;
 };
 
-class CameraControllerFactory : public GuidanceFactory {
+class CameraControllerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     CameraControllerFactory( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : GuidanceFactory(),
+      : BlockFactory(),
         m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
     QString getNameOfFactory() override {
@@ -211,7 +211,7 @@ class CameraControllerFactory : public GuidanceFactory {
     virtual void addToCombobox( QComboBox* ) override {
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new CameraController( m_rootEntity, m_cameraEntity );
     }
 

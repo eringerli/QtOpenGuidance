@@ -30,16 +30,16 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "../block/GuidanceBase.h"
+#include "../block/BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
-class FixedKinematic : public GuidanceBase {
+class FixedKinematic : public BlockBase {
     Q_OBJECT
 
   public:
     explicit FixedKinematic()
-      : GuidanceBase(),
+      : BlockBase(),
         m_offsetHookPoint( QVector3D( 0, 0, 0 ) ), m_offsetTowPoint( QVector3D( -1, 0, 0 ) ) {}
 
   public slots:
@@ -74,12 +74,12 @@ class FixedKinematic : public GuidanceBase {
     QVector3D m_offsetTowPoint;
 };
 
-class FixedKinematicFactory : public GuidanceFactory {
+class FixedKinematicFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     FixedKinematicFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Fixed Kinematic" );
@@ -89,7 +89,7 @@ class FixedKinematicFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new FixedKinematic;
     }
 

@@ -22,14 +22,14 @@
 #include <QObject>
 
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
-class NmeaParser : public GuidanceBase {
+class NmeaParser : public BlockBase {
     Q_OBJECT
 
   public:
     explicit NmeaParser()
-      : GuidanceBase() {
+      : BlockBase() {
     }
 
     void emitConfigSignals() override {
@@ -201,12 +201,12 @@ class NmeaParser : public GuidanceBase {
     QByteArray dataToParse;
 };
 
-class NmeaParserFactory : public GuidanceFactory {
+class NmeaParserFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     NmeaParserFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "NMEA Parser" );
@@ -216,7 +216,7 @@ class NmeaParserFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new NmeaParser();
     }
 

@@ -21,13 +21,13 @@
 
 #include <QObject>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
 
 // all the formulas are from https://www.xarg.org/book/kinematics/ackerman-steering/
 
-class AckermannSteering : public GuidanceBase {
+class AckermannSteering : public BlockBase {
     Q_OBJECT
 
   public:
@@ -95,12 +95,12 @@ class AckermannSteering : public GuidanceBase {
     qreal m_correction = 2 / ( 2 * 2.4 );
 };
 
-class AckermannSteeringFactory : public GuidanceFactory {
+class AckermannSteeringFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     AckermannSteeringFactory()
-      : GuidanceFactory() {}
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Ackermann Steering" );
@@ -110,7 +110,7 @@ class AckermannSteeringFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new AckermannSteering();
     }
 

@@ -26,19 +26,19 @@
 
 #include <QDebug>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
 
-class PoseFromPosition : public GuidanceBase {
+class PoseFromPosition : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PoseFromPosition( Tile* tile )
-      : GuidanceBase() {
+      : BlockBase() {
       this->tile = tile;
     }
 
@@ -76,12 +76,12 @@ class PoseFromPosition : public GuidanceBase {
     QQuaternion orientation = QQuaternion();
 };
 
-class PoseFromPositionFactory : public GuidanceFactory {
+class PoseFromPositionFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     PoseFromPositionFactory( Tile* tile )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ) {}
 
     QString getNameOfFactory() override {
@@ -92,7 +92,7 @@ class PoseFromPositionFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new PoseFromPosition( tile );
     }
 

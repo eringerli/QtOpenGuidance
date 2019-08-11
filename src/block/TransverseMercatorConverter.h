@@ -24,7 +24,7 @@
 #include <QQuaternion>
 #include <QVector3D>
 
-#include "GuidanceBase.h"
+#include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -81,12 +81,12 @@ class TransverseMercatorWrapper {
     double lon0 = 0;
 };
 
-class TransverseMercatorConverter : public GuidanceBase {
+class TransverseMercatorConverter : public BlockBase {
     Q_OBJECT
 
   public:
     explicit TransverseMercatorConverter( Tile* tile, TransverseMercatorWrapper* tmw )
-      : GuidanceBase(),
+      : BlockBase(),
         tmw( tmw ) {
       rootTile = tile->getTileForOffset( 0, 0 );
     }
@@ -118,12 +118,12 @@ class TransverseMercatorConverter : public GuidanceBase {
 
 };
 
-class TransverseMercatorConverterFactory : public GuidanceFactory {
+class TransverseMercatorConverterFactory : public BlockFactory {
     Q_OBJECT
 
   public:
     TransverseMercatorConverterFactory( Tile* tile, TransverseMercatorWrapper* tmw )
-      : GuidanceFactory(),
+      : BlockFactory(),
         tile( tile ), tmw( tmw ) {}
 
     QString getNameOfFactory() override {
@@ -134,7 +134,7 @@ class TransverseMercatorConverterFactory : public GuidanceFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual GuidanceBase* createNewObject() override {
+    virtual BlockBase* createNewObject() override {
       return new TransverseMercatorConverter( tile, tmw );
     }
 
