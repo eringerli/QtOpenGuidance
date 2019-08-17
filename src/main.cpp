@@ -233,11 +233,11 @@ int main( int argc, char** argv ) {
 
   // Guidance
   QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
-                    settingDialog->plannerGui, SLOT( a_clicked() ) );
+                    settingDialog->plannerGui, SLOT( aToolbar_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
-                    settingDialog->plannerGui, SLOT( b_clicked() ) );
+                    settingDialog->plannerGui, SLOT( bToolbar_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( snap_clicked() ),
-                    settingDialog->plannerGui, SLOT( snap_clicked() ) );
+                    settingDialog->plannerGui, SLOT( snapToolbar_clicked() ) );
 
   // Section control toolbar
   BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );

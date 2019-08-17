@@ -143,11 +143,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
                     gridModel, SLOT( setGridValues( float, float, float, QColor ) ) );
 
   // guidance
-  plannerGuiFactory = new PlannerGuiFactory( tile );
+  plannerGuiFactory = new PlannerGuiFactory( tile, rootEntity );
   plannerGui = plannerGuiFactory->createNewObject();
   plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
 
-  globalPlannerFactory = new GlobalPlannerFactory( tile );
+  globalPlannerFactory = new GlobalPlannerFactory( tile, rootEntity );
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
