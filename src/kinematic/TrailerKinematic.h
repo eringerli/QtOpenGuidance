@@ -52,6 +52,10 @@ class TrailerKinematic : public BlockBase {
       m_offsetHookPoint = position;
     }
 
+    void setMaxJackknifeAngle( float maxAngle ) {
+      m_maxJackknifeAngle = maxAngle;
+    }
+
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
       QQuaternion orientationTrailer = QQuaternion::fromAxisAndAngle(
                                          QVector3D( 0.0f, 0.0f, 1.0f ),
@@ -60,8 +64,8 @@ class TrailerKinematic : public BlockBase {
                                              position.x() - m_positionPivotPoint.x() + ( tile->x - m_tilePivotPoint->x ) ) )
                                        );
 
-      // the angle between tractor and trailer >120° -> reset orientation to the one from the tractor
-      if( qAbs( ( orientation.inverted()*orientationTrailer ).toEulerAngles().z() ) < 120 ) {
+      // the angle between tractor and trailer >m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor
+      if( qAbs( ( orientation.inverted()*orientationTrailer ).toEulerAngles().z() ) < m_maxJackknifeAngle ) {
         orientation = orientationTrailer;
       }
 
@@ -87,6 +91,8 @@ class TrailerKinematic : public BlockBase {
     QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
     QVector3D m_offsetTowPoint = QVector3D( -1, 0, 0 );
     QVector3D m_positionPivotPoint = QVector3D( 0, 0, 0 );
+
+    float m_maxJackknifeAngle = 120;
 
     Tile* m_tilePivotPoint;
 };
@@ -120,6 +126,7 @@ class TrailerKinematicFactory : public BlockFactory {
 
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );
+      b->addInputPort( "MaxJackknifeAngle", SLOT( setMaxJackknifeAngle( float ) ) );
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
 
       b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Tile*, QVector3D, QQuaternion ) ) );
