@@ -85,7 +85,7 @@ class GridModel : public BlockBase {
       this->xStep = xStep;
       this->yStep = yStep;
 
-      QVector<QVector3D> lines;
+      QVector<QVector3D> linesPoints;
 
       // Lines in X direction
       {
@@ -94,13 +94,13 @@ class GridModel : public BlockBase {
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
           start.setY( lineDistance );
           end.setY( lineDistance );
-          lines.append( start );
-          lines.append( end );
+          linesPoints.append( start );
+          linesPoints.append( end );
 
           start.setY( -lineDistance );
           end.setY( -lineDistance );
-          lines.append( start );
-          lines.append( end );
+          linesPoints.append( start );
+          linesPoints.append( end );
         }
       }
 
@@ -111,19 +111,19 @@ class GridModel : public BlockBase {
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
           start.setX( lineDistance );
           end.setX( lineDistance );
-          lines.append( start );
-          lines.append( end );
+          linesPoints.append( start );
+          linesPoints.append( end );
 
           start.setX( -lineDistance );
           end.setX( -lineDistance );
-          lines.append( start );
-          lines.append( end );
+          linesPoints.append( start );
+          linesPoints.append( end );
         }
       }
 
       m_material->setAmbient( color );
 
-      m_lineMesh->posUpdate( lines );
+      m_lineMesh->posUpdate( linesPoints );
     }
 
   signals:
