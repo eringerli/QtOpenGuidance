@@ -86,6 +86,8 @@ class CameraController : public BlockBase {
         m_cameraEntity->setPosition( position + ( orientation * m_offset ) );
         m_cameraEntity->setViewCenter( position );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
+        m_cameraEntity->rollAboutViewCenter( 0 );
+        m_cameraEntity->tiltAboutViewCenter( 0 );
       }
     }
 
