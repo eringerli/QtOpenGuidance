@@ -67,3 +67,11 @@ void GuidanceToolbar::on_btn_AB_clicked( bool checked ) {
 void GuidanceToolbar::on_btn_snap_clicked() {
   emit snap_clicked();
 }
+
+void GuidanceToolbar::cbCameraSetChecked( bool enabled ) {
+  ui->cbCamera->setChecked( enabled );
+}
+
+void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
+  ui->cbSimulator->setChecked( enabled );
+}

@@ -34,6 +34,9 @@ class GuidanceToolbar : public QGroupBox {
     explicit GuidanceToolbar( QWidget* parent = nullptr );
     ~GuidanceToolbar();
 
+    void cbCameraSetChecked( bool enabled );
+    void cbSimulatorSetChecked( bool enabled );
+
   private slots:
     void on_cbSimulator_stateChanged( int arg1 );
 
@@ -44,6 +47,7 @@ class GuidanceToolbar : public QGroupBox {
     void on_btn_AB_clicked( bool checked );
 
     void on_btn_snap_clicked();
+
 
   signals:
     void simulatorChanged( bool );

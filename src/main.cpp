@@ -254,9 +254,8 @@ int main( int argc, char** argv ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    simulatorToolbar->setVisible( settings.value( "RunSimulatorOnStart", false ).toBool() );
-    qobject_cast<PoseSimulation*>( settingDialog->poseSimulation )->setSimulation( settings.value( "RunSimulatorOnStart", false ).toBool() );
-    cameraToolbar->setVisible( settings.value( "ShowCameraToolbarOnStart", false ).toBool() );
+    guidaceToolbar->cbSimulatorSetChecked( settings.value( "RunSimulatorOnStart", false ).toBool() );
+    guidaceToolbar->cbCameraSetChecked( settings.value( "ShowCameraToolbarOnStart", false ).toBool() );
 
     if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
       settingDialog->show();
