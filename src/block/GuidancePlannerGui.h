@@ -52,14 +52,14 @@ class PlannerGui : public BlockBase {
 
     void aToolbar_clicked() {
       emit a_clicked();
-}
+    }
 
     void bToolbar_clicked() {
       emit b_clicked();
-}
+    }
     void snapToolbar_clicked() {
       emit snap_clicked();
-}
+    }
 
   signals:
     void a_clicked();

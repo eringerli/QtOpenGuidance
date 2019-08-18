@@ -31,32 +31,42 @@
 
 #include "../kinematic/Tile.h"
 
+#include <QVector>
+#include <QSharedPointer>
+#include "PathPrimitive.h"
+
 class LocalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
     explicit LocalPlanner( Tile* tile )
       : BlockBase() {
-      rootTile = tile->getTileForOffset( 0, 0 );
+      this->tile = tile->getTileForOffset( 0, 0 );
     }
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
+      this->tile = tile;
       this->position = position;
       this->orientation = orientation;
     }
 
-  signals:
-
-  public:
-    virtual void emitConfigSignals() override {
-      rootTile = rootTile->getTileForPosition( &position );
+    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
+      this->plan = plan;
+      emit planChanged( plan );
     }
 
+
+  signals:
+    void planChanged( QVector<QSharedPointer<PathPrimitive>> );
+
   public:
-    Tile* rootTile = nullptr;
+    Tile* tile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
+
+  private:
+    QVector<QSharedPointer<PathPrimitive>> plan;
 };
 
 class LocalPlannerFactory : public BlockFactory {
@@ -87,6 +97,8 @@ class LocalPlannerFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       return b;
     }

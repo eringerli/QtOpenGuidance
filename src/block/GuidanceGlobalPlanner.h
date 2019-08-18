@@ -39,6 +39,11 @@
 
 #include "../kinematic/Tile.h"
 
+#include <QVector>
+#include <QSharedPointer>
+#include "PathPrimitive.h"
+
+
 class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
@@ -46,7 +51,7 @@ class GlobalPlanner : public BlockBase {
     explicit GlobalPlanner( Tile* tile, Qt3DCore::QEntity* rootEntity )
       : BlockBase(),
         rootEntity( rootEntity ) {
-      tile = tile->getTileForOffset( 0, 0 );
+      this->tile = tile->getTileForOffset( 0, 0 );
 
       // a point marker -> orange
       {
@@ -171,6 +176,19 @@ class GlobalPlanner : public BlockBase {
       lineMesh->posUpdate(linePoints);
 
       lineEntity->setEnabled( true );
+
+      QVector<QSharedPointer<PathPrimitive>> plan;
+//      ac = -200;
+//      double x1tmp = x1 + (ac * (x2 - x1) / ab);
+//      double y1tmp = y1 + (ac * (y2 - y1) / ab);
+//      ac = 200;
+//      double x2tmp = x1 + (ac * (x2 - x1) / ab);
+//      double y2tmp = y1 + (ac * (y2 - y1) / ab);
+
+      plan.append(QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1,x2,y2, false ) ));
+      plan.append(QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1,x2,y2, true ) ));
+      emit planChanged(plan);
+
       qDebug() << "b_clicked()" << x1 << y1 << x2 << y2 << x1 - x2 << y1 - y2 << qRadiansToDegrees( headingOfABLine );
     }
 
@@ -179,6 +197,7 @@ class GlobalPlanner : public BlockBase {
     }
 
   signals:
+    void planChanged(QVector<QSharedPointer<PathPrimitive>>);
 
   public:
     Tile* tile = nullptr;
@@ -244,6 +263,8 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( "A clicked", SLOT( a_clicked() ) );
       b->addInputPort( "B clicked", SLOT( b_clicked() ) );
       b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
+
+      b->addOutputPort("Plan", SIGNAL(planChanged(QVector<QSharedPointer<PathPrimitive>>)));
 
       return b;
     }

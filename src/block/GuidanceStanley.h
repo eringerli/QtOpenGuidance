@@ -31,37 +31,103 @@
 
 #include "../kinematic/Tile.h"
 
+#include <QVector>
+#include <QSharedPointer>
+#include "PathPrimitive.h"
+
 class StanleyGuidance : public BlockBase {
     Q_OBJECT
 
   public:
     explicit StanleyGuidance( Tile* tile )
       : BlockBase() {
-      rootTile = tile->getTileForOffset( 0, 0 );
+      this->tile = tile->getTileForOffset( 0, 0 );
     }
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
+      this->tile = tile;
       this->position = position;
       this->orientation = orientation;
-      emit distanceFromLineChanged( 0 );
+
+      double distance = qInf();
+
+      for( auto primitive : plan ) {
+        PathPrimitiveLine* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+
+        if( line ) {
+          double distanceTmp = lineToPointDistance2D(
+                                 line->x1, line->y1,
+                                 line->x2, line->y2,
+                                 tile->x + double( position.x() ), tile->y + double( position.y() ),
+                                 line->segment
+                               );
+          qDebug() << "tmp:" << distanceTmp << line->x1 << line->y1 <<
+                   line->x2 << line->y2 << line->segment <<
+                   tile->x + double( position.x() ) << tile->y + double( position.y() );
+
+          distance = qMin( distance, distanceTmp );
+        }
+      }
+
+      qDebug() << "result:" << distance;
+      emit distanceFromLineChanged( distance );
     }
 
-//    void setAPoint
+    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
+      this->plan = plan;
+    }
 
   signals:
     void distanceFromLineChanged( float );
 
-  public:
-    virtual void emitConfigSignals() override {
-      rootTile = rootTile->getTileForPosition( &position );
-      emit distanceFromLineChanged( 0 );
+  private:
+
+    // https://stackoverflow.com/a/4448097
+
+    // Compute the dot product AB . BC
+    double dotProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
+      return ( bX - aX ) * ( cX - bX ) + ( bY - aY ) * ( cY - bY );
+    }
+
+    // Compute the cross product AB x AC
+    double crossProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
+      return ( bX - aX ) * ( cY - aY ) - ( bY - aY ) * ( cX - aX );
+    }
+
+    // Compute the distance from A to B
+    double Distance( double aX, double aY, double bX, double bY ) {
+      double d1 = aX - bX;
+      double d2 = aY - bY;
+
+      return qSqrt( d1 * d1 + d2 * d2 );
+    }
+
+    // Compute the distance from AB to C
+    // if isSegment is true, AB is a segment, not a line.
+    double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
+      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / Distance( aX, aY, bX, bY );
+
+      if( isSegment ) {
+        if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
+          return Distance( bX, bY, cX, cY );
+        }
+
+        if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
+          return Distance( aX, aY, cX, cY );
+        }
+      }
+
+      return qAbs( dist );
     }
 
   public:
-    Tile* rootTile = nullptr;
+    Tile* tile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
+
+  private:
+    QVector<QSharedPointer<PathPrimitive>> plan;
 };
 
 class StanleyGuidanceFactory : public BlockFactory {
@@ -92,6 +158,7 @@ class StanleyGuidanceFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       b->addOutputPort( "Distance from Line", SIGNAL( distanceFromLineChanged( float ) ) );
 
