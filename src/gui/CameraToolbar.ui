@@ -25,6 +25,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="comboBox">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="frame">
       <bool>true</bool>
      </property>
@@ -42,6 +45,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbReset">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -78,6 +84,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbUp">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -101,6 +110,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbDown">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -137,6 +149,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbPanLeft">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -160,6 +175,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbPanRight">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -199,6 +217,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbZoomIn">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -222,6 +243,9 @@
    </item>
    <item>
     <widget class="QPushButton" name="pbZoomOut">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string/>
      </property>

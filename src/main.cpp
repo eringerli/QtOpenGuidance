@@ -66,6 +66,7 @@
 #include "gui/MainWindow.h"
 #include "gui/SettingsDialog.h"
 #include "gui/GuidanceToolbar.h"
+#include "gui/GuidanceToolbarTop.h"
 #include "gui/SimulatorToolbar.h"
 #include "gui/CameraToolbar.h"
 
@@ -77,7 +78,6 @@
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
-
 
 #include "kinematic/FixedKinematic.h"
 #include "kinematic/TrailerKinematic.h"
@@ -101,6 +101,9 @@ int main( int argc, char** argv ) {
   MainWindow* widget = new MainWindow;
   QHBoxLayout* hLayout = new QHBoxLayout( widget );
   QVBoxLayout* vLayout = new QVBoxLayout;
+
+  GuidanceToolbarTop* guidaceToolbarTop = new GuidanceToolbarTop( widget );
+  vLayout->addWidget( guidaceToolbarTop );
 
   // Camera Toolbar
   CameraToolbar* cameraToolbar = new CameraToolbar( widget );
@@ -238,6 +241,12 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SLOT( bToolbar_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( snap_clicked() ),
                     settingDialog->plannerGui, SLOT( snapToolbar_clicked() ) );
+  QObject::connect( guidaceToolbarTop, SIGNAL( turnLeft() ),
+                    settingDialog->plannerGui, SLOT( turnLeftToolbar_clicked() ) );
+  QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
+                    settingDialog->plannerGui, SLOT( turnRightToolbar_clicked() ) );
+  QObject::connect( settingDialog->plannerGui, SIGNAL( xteChanged( double ) ),
+                    guidaceToolbarTop, SLOT( setXte( double ) ) );
 
   // Section control toolbar
   BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );

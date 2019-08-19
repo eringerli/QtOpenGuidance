@@ -61,10 +61,24 @@ class PlannerGui : public BlockBase {
       emit snap_clicked();
     }
 
+    void turnLeftToolbar_clicked() {
+      emit turnLeft_clicked();
+    }
+    void turnRightToolbar_clicked() {
+      emit turnRight_clicked();
+    }
+
+    void setXte( double xte ) {
+      emit xteChanged( xte );
+    }
+
   signals:
     void a_clicked();
     void b_clicked();
     void snap_clicked();
+    void turnLeft_clicked();
+    void turnRight_clicked();
+    void xteChanged( double );
 
   public:
     Tile* tile = nullptr;
@@ -107,6 +121,9 @@ class PlannerGuiFactory : public BlockFactory {
       b->addOutputPort( "A clicked", SIGNAL( a_clicked() ) );
       b->addOutputPort( "B clicked", SIGNAL( b_clicked() ) );
       b->addOutputPort( "Snap clicked", SIGNAL( snap_clicked() ) );
+      b->addOutputPort( "Turn Left", SIGNAL( turnLeft_clicked() ) );
+      b->addOutputPort( "Turn Right", SIGNAL( turnRight_clicked() ) );
+      b->addInputPort( "XTE", SLOT( setXte( double ) ) );
 
       return b;
     }

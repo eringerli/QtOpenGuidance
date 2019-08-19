@@ -52,6 +52,7 @@ class GlobalPlanner : public BlockBase {
       : BlockBase(),
         rootEntity( rootEntity ) {
       this->tile = tile->getTileForOffset( 0, 0 );
+      this->tile00 = tile->getTileForOffset( 0, 0 );
 
       // a point marker -> orange
       {
@@ -115,7 +116,7 @@ class GlobalPlanner : public BlockBase {
 
       // line marker
       {
-        lineEntity = new Qt3DCore::QEntity( rootEntity );
+        lineEntity = new Qt3DCore::QEntity( tile00->tileEntity );
         lineEntity->setEnabled(false);
 
         lineTransform = new Qt3DCore::QTransform();
@@ -170,9 +171,9 @@ class GlobalPlanner : public BlockBase {
 
       double ab = qSqrt( qPow( (x2 - x1),2) + qPow( (y2 - y1),2) );
       double ac = -200;
-      linePoints.append(QVector3D(x1 + (ac * (x2 - x1) / ab),y1 + (ac * (y2 - y1) / ab),0));
+      linePoints.append(QVector3D(x1 + (ac * (x2 - x1) / ab),y1 + (ac * (y2 - y1) / ab),position.z()));
       ac = 200;
-      linePoints.append(QVector3D(x2 + (ac * (x2 - x1) / ab),y2 + (ac * (y2 - y1) / ab),0));
+      linePoints.append(QVector3D(x2 + (ac * (x2 - x1) / ab),y2 + (ac * (y2 - y1) / ab),position.z()));
       lineMesh->posUpdate(linePoints);
 
       lineEntity->setEnabled( true );
@@ -196,11 +197,19 @@ class GlobalPlanner : public BlockBase {
       qDebug() << "snap_clicked()";
     }
 
+    void turnLeft_clicked() {
+      qDebug() << "turnLeft_clicked()";
+    }
+    void turnRight_clicked() {
+      qDebug() << "turnRight_clicked()";
+    }
+
   signals:
     void planChanged(QVector<QSharedPointer<PathPrimitive>>);
 
   public:
     Tile* tile = nullptr;
+    Tile* tile00 = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
 
@@ -263,6 +272,8 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( "A clicked", SLOT( a_clicked() ) );
       b->addInputPort( "B clicked", SLOT( b_clicked() ) );
       b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
+      b->addInputPort( "Turn Left", SLOT( turnLeft_clicked() ) );
+      b->addInputPort( "Turn Right", SLOT( turnRight_clicked() ) );
 
       b->addOutputPort("Plan", SIGNAL(planChanged(QVector<QSharedPointer<PathPrimitive>>)));
 

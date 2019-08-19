@@ -71,7 +71,7 @@ class StanleyGuidance : public BlockBase {
       }
 
       qDebug() << "result:" << distance;
-      emit distanceFromLineChanged( distance );
+      emit xteChanged( distance );
     }
 
     void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
@@ -79,7 +79,7 @@ class StanleyGuidance : public BlockBase {
     }
 
   signals:
-    void distanceFromLineChanged( float );
+    void xteChanged( double );
 
   private:
 
@@ -96,7 +96,7 @@ class StanleyGuidance : public BlockBase {
     }
 
     // Compute the distance from A to B
-    double Distance( double aX, double aY, double bX, double bY ) {
+    double distance( double aX, double aY, double bX, double bY ) {
       double d1 = aX - bX;
       double d2 = aY - bY;
 
@@ -105,20 +105,21 @@ class StanleyGuidance : public BlockBase {
 
     // Compute the distance from AB to C
     // if isSegment is true, AB is a segment, not a line.
+    // if <0: left side of line
     double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / Distance( aX, aY, bX, bY );
+      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
 
       if( isSegment ) {
         if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
-          return Distance( bX, bY, cX, cY );
+          return distance( bX, bY, cX, cY );
         }
 
         if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
-          return Distance( aX, aY, cX, cY );
+          return distance( aX, aY, cX, cY );
         }
       }
 
-      return qAbs( dist );
+      return dist;
     }
 
   public:
@@ -160,7 +161,7 @@ class StanleyGuidanceFactory : public BlockFactory {
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
-      b->addOutputPort( "Distance from Line", SIGNAL( distanceFromLineChanged( float ) ) );
+      b->addOutputPort( "XTE", SIGNAL( xteChanged( double ) ) );
 
       return b;
     }
