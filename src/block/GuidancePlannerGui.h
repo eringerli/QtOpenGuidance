@@ -50,32 +50,11 @@ class PlannerGui : public BlockBase {
       this->orientation = orientation;
     }
 
-    void aToolbar_clicked() {
-      emit a_clicked();
-    }
-
-    void bToolbar_clicked() {
-      emit b_clicked();
-    }
-    void snapToolbar_clicked() {
-      emit snap_clicked();
-    }
-
-    void turnLeftToolbar_clicked() {
-      emit turnLeft_clicked();
-    }
-    void turnRightToolbar_clicked() {
-      emit turnRight_clicked();
-    }
-
-    void setXte( double xte ) {
-      emit xteChanged( xte );
-    }
-
   signals:
     void a_clicked();
     void b_clicked();
     void snap_clicked();
+    void autosteerEnabled( bool );
     void turnLeft_clicked();
     void turnRight_clicked();
     void xteChanged( double );
@@ -123,7 +102,8 @@ class PlannerGuiFactory : public BlockFactory {
       b->addOutputPort( "Snap clicked", SIGNAL( snap_clicked() ) );
       b->addOutputPort( "Turn Left", SIGNAL( turnLeft_clicked() ) );
       b->addOutputPort( "Turn Right", SIGNAL( turnRight_clicked() ) );
-      b->addInputPort( "XTE", SLOT( setXte( double ) ) );
+      b->addOutputPort( "Autosteer Enabled", SIGNAL( autosteerEnabled( bool ) ) );
+      b->addInputPort( "XTE", SIGNAL( xteChanged( double ) ) );
 
       return b;
     }

@@ -236,15 +236,17 @@ int main( int argc, char** argv ) {
 
   // Guidance
   QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
-                    settingDialog->plannerGui, SLOT( aToolbar_clicked() ) );
+                    settingDialog->plannerGui, SIGNAL( a_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
-                    settingDialog->plannerGui, SLOT( bToolbar_clicked() ) );
+                    settingDialog->plannerGui, SIGNAL( b_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( snap_clicked() ),
-                    settingDialog->plannerGui, SLOT( snapToolbar_clicked() ) );
+                    settingDialog->plannerGui, SIGNAL( snap_clicked() ) );
+  QObject::connect( guidaceToolbar, SIGNAL( autosteerEnabled( bool ) ),
+                    settingDialog->plannerGui, SIGNAL( autosteerEnabled( bool ) ) );
   QObject::connect( guidaceToolbarTop, SIGNAL( turnLeft() ),
-                    settingDialog->plannerGui, SLOT( turnLeftToolbar_clicked() ) );
+                    settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
   QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
-                    settingDialog->plannerGui, SLOT( turnRightToolbar_clicked() ) );
+                    settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
   QObject::connect( settingDialog->plannerGui, SIGNAL( xteChanged( double ) ),
                     guidaceToolbarTop, SLOT( setXte( double ) ) );
 

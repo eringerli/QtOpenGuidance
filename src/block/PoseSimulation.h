@@ -77,7 +77,10 @@ class PoseSimulation : public BlockBase {
 
     void setSteerAngle( float steerAngle ) {
       m_steerAngle = steerAngle;
-      emit steerAngleChanged( m_steerAngle );
+    }
+
+    void setSteerAngleFromAutosteer( float steerAngle ) {
+      m_steerAngleFromAutosteer = steerAngle;
     }
 
     void setVelocity( float velocity ) {
@@ -98,21 +101,25 @@ class PoseSimulation : public BlockBase {
       m_initialWGS84Position = position;
     }
 
+    void autosteerEnabled( bool enabled ) {
+      m_autosteerEnabled = enabled;
+    }
+
   protected:
     void timerEvent( QTimerEvent* event ) override;
 
   signals:
-    void simulationChanged( bool enabled );
-    void intervalChanged( int interval );
+    void simulationChanged( bool );
+    void intervalChanged( int );
 
-    void steerAngleChanged( float steerAngle );
+    void steerAngleChanged( float );
 
-    void antennaPositionChanged( QVector3D position );
+    void antennaPositionChanged( QVector3D );
 
     void steeringAngleChanged( float );
-    void positionChanged( QVector3D position );
+    void positionChanged( QVector3D );
     void globalPositionChanged( double, double, double );
-    void orientationChanged( QQuaternion orientation );
+    void orientationChanged( QQuaternion );
 
   public:
     virtual void emitConfigSignals() override {
@@ -123,6 +130,7 @@ class PoseSimulation : public BlockBase {
 
   private:
     bool m_enabled = false;
+    bool m_autosteerEnabled = false;
     int m_interval = 50;
 
     QBasicTimer m_timer;
@@ -130,6 +138,7 @@ class PoseSimulation : public BlockBase {
     QTime m_time;
 
     float m_steerAngle = 0;
+    float m_steerAngleFromAutosteer = 0;
     float m_velocity = 0;
     float m_wheelbase = 2.4f;
 
@@ -180,6 +189,9 @@ class PoseSimulationFactory : public BlockFactory {
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+
+      b->addInputPort( "Autosteer Enabled", SLOT( autosteerEnabled( bool ) ) );
+      b->addInputPort( "Autosteer Steering Angle", SLOT( setSteerAngleFromAutosteer( float ) ) );
 
       return b;
     }

@@ -32,14 +32,22 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     double elapsedTime = double ( m_time.restart() ) / 1000;
     QQuaternion lastOrientation = m_orientation;
 
-    emit steeringAngleChanged( m_steerAngle );
+    float steerAngle = 0;
+
+    if( m_autosteerEnabled ) {
+      steerAngle = m_steerAngleFromAutosteer;
+    } else {
+      steerAngle = m_steerAngle;
+    }
+
+    emit steeringAngleChanged( steerAngle );
 
     // heading
     {
       QQuaternion difference = QQuaternion::fromEulerAngles( QVector3D(
                                  0,
                                  0,
-                                 float( qRadiansToDegrees( elapsedTime * ( qTan( qDegreesToRadians( m_steerAngle ) / m_wheelbase * m_velocity ) ) ) )
+                                 float( qRadiansToDegrees( elapsedTime * ( qTan( qDegreesToRadians( steerAngle ) / m_wheelbase * m_velocity ) ) ) )
                                ) );
       m_orientation *=  difference;
       emit orientationChanged( m_orientation );

@@ -75,3 +75,7 @@ void GuidanceToolbar::cbCameraSetChecked( bool enabled ) {
 void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
   ui->cbSimulator->setChecked( enabled );
 }
+
+void GuidanceToolbar::on_btn_autosteer_clicked( bool checked ) {
+  emit autosteerEnabled( checked );
+}

@@ -49,6 +49,8 @@ class GuidanceToolbar : public QGroupBox {
     void on_btn_snap_clicked();
 
 
+    void on_btn_autosteer_clicked( bool checked );
+
   signals:
     void simulatorChanged( bool );
     void toggleSettings();
@@ -57,6 +59,8 @@ class GuidanceToolbar : public QGroupBox {
     void a_clicked();
     void b_clicked();
     void snap_clicked();
+
+    void autosteerEnabled( bool );
 
   private:
     Ui::GuidanceToolbar* ui;
