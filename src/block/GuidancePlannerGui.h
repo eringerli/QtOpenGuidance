@@ -57,7 +57,7 @@ class PlannerGui : public BlockBase {
     void autosteerEnabled( bool );
     void turnLeft_clicked();
     void turnRight_clicked();
-    void xteChanged( double );
+    void xteChanged( float );
 
   public:
     Tile* tile = nullptr;
@@ -103,7 +103,7 @@ class PlannerGuiFactory : public BlockFactory {
       b->addOutputPort( "Turn Left", SIGNAL( turnLeft_clicked() ) );
       b->addOutputPort( "Turn Right", SIGNAL( turnRight_clicked() ) );
       b->addOutputPort( "Autosteer Enabled", SIGNAL( autosteerEnabled( bool ) ) );
-      b->addInputPort( "XTE", SIGNAL( xteChanged( double ) ) );
+      b->addInputPort( "XTE", SIGNAL( xteChanged( float ) ) );
 
       return b;
     }

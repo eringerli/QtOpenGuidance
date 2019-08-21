@@ -120,12 +120,15 @@ class PoseSimulation : public BlockBase {
     void positionChanged( QVector3D );
     void globalPositionChanged( double, double, double );
     void orientationChanged( QQuaternion );
+    void velocityChanged( float );
 
   public:
     virtual void emitConfigSignals() override {
       emit steerAngleChanged( m_steerAngle );
       emit positionChanged( QVector3D( float( x ), float( y ), float( height ) ) );
       emit orientationChanged( m_orientation );
+      emit steerAngleChanged( 0 );
+      emit velocityChanged( 0 );
     }
 
   private:
@@ -188,6 +191,7 @@ class PoseSimulationFactory : public BlockFactory {
       b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
+      b->addOutputPort( "Velocity", SIGNAL( velocityChanged( float ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
 
       b->addInputPort( "Autosteer Enabled", SLOT( autosteerEnabled( bool ) ) );

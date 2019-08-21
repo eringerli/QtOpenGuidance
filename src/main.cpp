@@ -247,8 +247,8 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
   QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
-  QObject::connect( settingDialog->plannerGui, SIGNAL( xteChanged( double ) ),
-                    guidaceToolbarTop, SLOT( setXte( double ) ) );
+  QObject::connect( settingDialog->plannerGui, SIGNAL( xteChanged( float ) ),
+                    guidaceToolbarTop, SLOT( setXte( float ) ) );
 
   // Section control toolbar
   BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );

@@ -163,7 +163,7 @@ class GlobalPlanner : public BlockBase {
       x2 = double( position.x() ) + tile->x;
       y2 = double( position.y() ) + tile->y;
 
-      headingOfABLine = atan2( x1 - x2, y1 - y2 ) + M_PI_2;
+      headingOfABLine = atan2( y1 - y2,x1 - x2 ) - M_PI;
 
       QVector<QVector3D> linePoints;
 
@@ -187,7 +187,6 @@ class GlobalPlanner : public BlockBase {
 //      double y2tmp = y1 + (ac * (y2 - y1) / ab);
 
       plan.append(QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1,x2,y2, false ) ));
-      plan.append(QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1,x2,y2, true ) ));
       emit planChanged(plan);
 
       qDebug() << "b_clicked()" << x1 << y1 << x2 << y2 << x1 - x2 << y1 - y2 << qRadiansToDegrees( headingOfABLine );

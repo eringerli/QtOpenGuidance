@@ -41,6 +41,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     }
 
     emit steeringAngleChanged( steerAngle );
+    emit velocityChanged( m_velocity );
 
     // heading
     {
