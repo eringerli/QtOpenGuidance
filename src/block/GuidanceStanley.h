@@ -55,40 +55,23 @@ class StanleyGuidance : public BlockBase {
     }
 
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
+      this->tile = tile;
+      this->position = position;
+      this->orientation1Ago=this->orientation;
+      this->orientation = orientation;
+    }
 
-      double distance = qInf();
-      double headingOfABLine = 0;
+    void setHeadingOfPath(float headingOfPath) {
+      this->headingOfPath = headingOfPath;
+    }
 
-      for( auto primitive : plan ) {
-        PathPrimitiveLine* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
-
-        if( line ) {
-          double distanceTmp = lineToPointDistance2D(
-                                 line->x1, line->y1,
-                                 line->x2, line->y2,
-                                 tile->x + double( position.x() ), tile->y + double( position.y() ),
-                                 line->segment
-                               );
-
-          if( distanceTmp < distance ) {
-            headingOfABLine = qAtan2( line->y1 - line->y2, line->x1 - line->x2 ) - M_PI;
-            distance = distanceTmp;
-          }
-        }
-      }
-
+    void setXte(float distance){
       if( !qIsInf( distance ) ) {
-        emit xteChanged( float( distance ) );
-      } else {
-        emit xteChanged( 0 );
-      }
-
-      if( !qIsInf( distance ) ) {
-        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfABLine ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
-        double stanleyXteCompensation = atan( ( stanleyGainK * -distance ) / ( double( velocity ) + stanleyGainKSoft ) );
+        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPath ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
+        double stanleyXteCompensation = atan( ( stanleyGainK * double(-distance) ) / ( double( velocity ) + stanleyGainKSoft ) );
         double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYaw *
-            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( orientation.toEulerAngles().z() ) ) ) -
-              ( yawTrajectory1Ago - headingOfABLine ) ) );
+            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1Ago.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientation.toEulerAngles().z() ) ) ) -
+              ( yawTrajectory1Ago - headingOfPath ) ) );
         double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteering * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
         double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
@@ -103,13 +86,8 @@ class StanleyGuidance : public BlockBase {
 //        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfABLine ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
 
         emit steerAngleChanged( float( steerAngleRequested ) );
-
-        this->tile = tile;
-        this->position = position;
-        this->orientation = orientation;
-        yawTrajectory1Ago = headingOfABLine;
+        yawTrajectory1Ago = headingOfPath;
       }
-
     }
 
     void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
@@ -138,12 +116,10 @@ class StanleyGuidance : public BlockBase {
     }
 
     void emitConfigSignals() override {
-      emit xteChanged( 0 );
       emit steerAngleChanged( 0 );
     }
 
   signals:
-    void xteChanged( float );
     void steerAngleChanged( float );
 
   private:
@@ -185,7 +161,7 @@ class StanleyGuidance : public BlockBase {
     }
 
     // Compute the distance from A to B
-    double distance( double aX, double aY, double bX, double bY ) {
+    double distance2D( double aX, double aY, double bX, double bY ) {
       double d1 = aX - bX;
       double d2 = aY - bY;
 
@@ -196,15 +172,15 @@ class StanleyGuidance : public BlockBase {
     // if isSegment is true, AB is a segment, not a line.
     // if <0: left side of line
     double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
+      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / distance2D( aX, aY, bX, bY );
 
       if( isSegment ) {
         if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
-          return distance( bX, bY, cX, cY );
+          return distance2D( bX, bY, cX, cY );
         }
 
         if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
-          return distance( aX, aY, cX, cY );
+          return distance2D( aX, aY, cX, cY );
         }
       }
 
@@ -215,7 +191,10 @@ class StanleyGuidance : public BlockBase {
     Tile* tile = nullptr;
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
+    QQuaternion orientation1Ago = QQuaternion();
     double velocity = 0;
+    double headingOfPath = 0;
+    double distance = 0;
 
     double stanleyGainK = 1;
     double stanleyGainKSoft = 1;
@@ -263,6 +242,8 @@ class StanleyGuidanceFactory : public BlockFactory {
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
       b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
+      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
+      b->addInputPort( "Heading of Path", SLOT( setHeadingOfPath( float ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
       b->addInputPort( "Stanley Gain K", SLOT( setStanleyGainK( float ) ) );
       b->addInputPort( "Stanley Gain K Softening", SLOT( setStanleyGainKSoft( float ) ) );
@@ -270,7 +251,6 @@ class StanleyGuidanceFactory : public BlockFactory {
       b->addInputPort( "Stanley Gain Steering Dampening", SLOT( setStanleyGainDampeningSteering( float ) ) );
       b->addInputPort( "Max Steering Angle", SLOT( setMaxSteeringAngle( float ) ) );
 
-      b->addOutputPort( "XTE", SIGNAL( xteChanged( float ) ) );
       b->addOutputPort( "Steer Angle", SIGNAL( steerAngleChanged( float ) ) );
 
       return b;

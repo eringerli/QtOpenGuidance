@@ -34,6 +34,7 @@ HEADERS += \
     src/block/GuidanceLocalPlanner.h \
     src/block/GuidancePlannerGui.h \
     src/block/GuidanceStanley.h \
+    src/block/GuidanceXte.h \
     src/block/NmeaParser.h \
     src/block/NumberObject.h \
     src/block/PathPrimitive.h \

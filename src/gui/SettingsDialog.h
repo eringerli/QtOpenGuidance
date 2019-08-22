@@ -124,6 +124,7 @@ class SettingsDialog : public QDialog {
     BlockBase* globalPlanner;
     BlockBase* localPlanner;
     BlockBase* stanleyGuidance;
+    BlockBase* xteGuidance;
 
   private:
     Ui::SettingsDialog* ui;
@@ -155,6 +156,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* globalPlannerFactory;
     BlockFactory* localPlannerFactory;
     BlockFactory* stanleyGuidanceFactory;
+    BlockFactory* xteGuidanceFactory;
 
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;

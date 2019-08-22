@@ -58,6 +58,7 @@
 #include "../block/GuidanceGlobalPlanner.h"
 #include "../block/GuidanceLocalPlanner.h"
 #include "../block/GuidanceStanley.h"
+#include "../block/GuidanceXte.h"
 
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
@@ -159,6 +160,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   stanleyGuidance = stanleyGuidanceFactory->createNewObject();
   stanleyGuidanceFactory->createBlock( ui->gvNodeEditor->scene(), stanleyGuidance );
 
+  xteGuidanceFactory = new XteGuidanceFactory( tile );
+  xteGuidance = xteGuidanceFactory->createNewObject();
+  xteGuidanceFactory->createBlock( ui->gvNodeEditor->scene(), xteGuidance );
+
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
@@ -257,6 +262,8 @@ SettingsDialog::~SettingsDialog() {
   localPlanner->deleteLater();
   stanleyGuidanceFactory->deleteLater();
   stanleyGuidance->deleteLater();
+  xteGuidanceFactory->deleteLater();
+  xteGuidance->deleteLater();
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {

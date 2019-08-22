@@ -1,157 +1,20 @@
 {
     "blocks": [
         {
-            "id": 6,
-            "name": "Stanley Path Follower",
-            "positionX": 1818,
-            "positionY": 522,
-            "type": "Stanley Path Follower"
-        },
-        {
-            "id": 1013,
-            "name": "Stanley Gain K",
-            "positionX": 1404,
-            "positionY": -54,
-            "type": "Number",
-            "values": {
-                "Number": 10
-            }
-        },
-        {
-            "id": 1,
-            "name": "Pose Simulation",
-            "positionX": -378,
-            "positionY": -18,
-            "type": "Pose Simulation"
-        },
-        {
-            "id": 5,
-            "name": "Local Planner",
-            "positionX": 1404,
-            "positionY": 504.3065827565432,
-            "type": "Local Planner"
-        },
-        {
-            "id": 1002,
-            "name": "Tractor Kinematic",
-            "positionX": 594,
-            "positionY": 36,
-            "type": "Fixed Kinematic"
-        },
-        {
-            "id": 1000,
-            "name": "Stanley Maximal Steering Angle",
-            "positionX": 1350.9482768673315,
-            "positionY": 306,
-            "type": "Number",
-            "values": {
-                "Number": 40
-            }
-        },
-        {
-            "id": 4,
-            "name": "Global Planner",
-            "positionX": 1134.7341671377349,
-            "positionY": 468,
-            "type": "Global Planner"
-        },
-        {
-            "id": 1007,
-            "name": "Tractor Model",
-            "positionX": 900,
-            "positionY": 72,
-            "type": "Tractor Model"
-        },
-        {
-            "id": 1016,
-            "name": "Track Width Tractor",
-            "positionX": -612.0000000000001,
-            "positionY": -180,
-            "type": "Number",
-            "values": {
-                "Number": 1.7999999523162842
-            }
-        },
-        {
-            "id": 1004,
-            "name": "Pose Synchroniser",
-            "positionX": 36,
-            "positionY": 18,
-            "type": "Pose Synchroniser"
+            "id": 7,
+            "name": "Cross Track Error",
+            "positionX": 1710,
+            "positionY": 432,
+            "type": "Cross Track Error"
         },
         {
             "id": 1003,
-            "name": "Front Axle",
-            "positionX": 1386,
-            "positionY": -216,
-            "type": "Fixed Kinematic"
-        },
-        {
-            "id": 1008,
-            "name": "Stanley Gain K Softening",
-            "positionX": 1368,
-            "positionY": 36,
-            "type": "Number",
-            "values": {
-                "Number": 1
-            }
-        },
-        {
-            "id": 1011,
-            "name": "Transverse Mercator",
-            "positionX": -162,
-            "positionY": -36,
-            "type": "Transverse Mercator"
-        },
-        {
-            "id": 1012,
-            "name": "Ackermann Steering",
-            "positionX": 36,
-            "positionY": 198,
-            "type": "Ackermann Steering"
-        },
-        {
-            "id": 1015,
-            "name": "Antenna Position",
-            "positionX": -612,
-            "positionY": -378,
-            "type": "Vector3D",
-            "values": {
-                "X": 3,
-                "Y": 0,
-                "Z": 1.5
-            }
-        },
-        {
-            "id": 1001,
-            "name": "Offset Pivot/Front Axle",
-            "positionX": 1176.6370605127058,
-            "positionY": -325.47953762452505,
-            "type": "Vector3D",
-            "values": {
-                "X": -2.5,
-                "Y": 0,
-                "Z": 0
-            }
-        },
-        {
-            "id": 1006,
-            "name": "Stanley Gain Yaw Dampening",
-            "positionX": 1350,
-            "positionY": 126,
-            "type": "Number",
-            "values": {
-                "Number": 10
-            }
-        },
-        {
-            "id": 1014,
             "name": "Stanley Gain Steering Dampening",
-            "positionX": 1350,
-            "positionY": 216,
+            "positionX": 1632.5252266821858,
+            "positionY": 174.04080791848725,
             "type": "Number",
             "values": {
-                "Number": -0.5
+                "Number": -0.10000000149011612
             }
         },
         {
@@ -167,6 +30,61 @@
             }
         },
         {
+            "id": 1004,
+            "name": "Front Axle",
+            "positionX": 1350,
+            "positionY": 72,
+            "type": "Fixed Kinematic"
+        },
+        {
+            "id": 6,
+            "name": "Stanley Path Follower",
+            "positionX": 2100.525226682186,
+            "positionY": 480.0408079184873,
+            "type": "Stanley Path Follower"
+        },
+        {
+            "id": 1008,
+            "name": "Stanley Gain K Softening",
+            "positionX": 1650.5252266821858,
+            "positionY": -5.959192081512768,
+            "type": "Number",
+            "values": {
+                "Number": 1
+            }
+        },
+        {
+            "id": 5,
+            "name": "Local Planner",
+            "positionX": 1404,
+            "positionY": 504.3065827565432,
+            "type": "Local Planner"
+        },
+        {
+            "id": 1005,
+            "name": "Ackermann Steering",
+            "positionX": 36,
+            "positionY": 198,
+            "type": "Ackermann Steering"
+        },
+        {
+            "id": 4,
+            "name": "Global Planner",
+            "positionX": 1134.7341671377349,
+            "positionY": 468,
+            "type": "Global Planner"
+        },
+        {
+            "id": 1014,
+            "name": "Wheelbase Tractor",
+            "positionX": -612.7255898545593,
+            "positionY": -281.32099226676905,
+            "type": "Number",
+            "values": {
+                "Number": 2.5
+            }
+        },
+        {
             "id": 2,
             "name": "Grid Model",
             "positionX": 882,
@@ -174,7 +92,46 @@
             "type": "Grid Model"
         },
         {
-            "id": 1010,
+            "id": 1013,
+            "name": "Tractor Kinematic",
+            "positionX": 594,
+            "positionY": 36,
+            "type": "Fixed Kinematic"
+        },
+        {
+            "id": 1001,
+            "name": "Stanley Maximal Steering Angle",
+            "positionX": 1633.4735035495173,
+            "positionY": 264.04080791848725,
+            "type": "Number",
+            "values": {
+                "Number": 40
+            }
+        },
+        {
+            "id": 1016,
+            "name": "Offset Pivot/Front Axle",
+            "positionX": 1152,
+            "positionY": 18,
+            "type": "Vector3D",
+            "values": {
+                "X": -2.5,
+                "Y": 0,
+                "Z": 0
+            }
+        },
+        {
+            "id": 1011,
+            "name": "Stanley Gain Yaw Dampening",
+            "positionX": 1632.5252266821858,
+            "positionY": 84.04080791848722,
+            "type": "Number",
+            "values": {
+                "Number": 1
+            }
+        },
+        {
+            "id": 1015,
             "name": "Offset Hitch Tractor",
             "positionX": 378.00000000000006,
             "positionY": -108,
@@ -186,102 +143,98 @@
             }
         },
         {
-            "id": 3,
-            "name": "Planner GUI",
-            "positionX": 900,
-            "positionY": 468,
-            "type": "Planner GUI"
-        },
-        {
-            "id": 7,
+            "id": 8,
             "name": "Camera Controller",
             "positionX": 900,
             "positionY": 216,
             "type": "Camera Controller"
         },
         {
-            "id": 1005,
-            "name": "Wheelbase Tractor",
-            "positionX": -612.7255898545593,
-            "positionY": -281.32099226676905,
+            "id": 1010,
+            "name": "Pose Synchroniser",
+            "positionX": 36,
+            "positionY": 18,
+            "type": "Pose Synchroniser"
+        },
+        {
+            "id": 1002,
+            "name": "Stanley Gain K",
+            "positionX": 1692,
+            "positionY": -90,
             "type": "Number",
             "values": {
-                "Number": 2.5
+                "Number": 8
             }
+        },
+        {
+            "id": 1000,
+            "name": "Antenna Position",
+            "positionX": -612,
+            "positionY": -378,
+            "type": "Vector3D",
+            "values": {
+                "X": 3,
+                "Y": 0,
+                "Z": 1.5
+            }
+        },
+        {
+            "id": 1012,
+            "name": "Track Width Tractor",
+            "positionX": -612.0000000000001,
+            "positionY": -180,
+            "type": "Number",
+            "values": {
+                "Number": 1.7999999523162842
+            }
+        },
+        {
+            "id": 1007,
+            "name": "Transverse Mercator",
+            "positionX": -162,
+            "positionY": -36,
+            "type": "Transverse Mercator"
+        },
+        {
+            "id": 1006,
+            "name": "Tractor Model",
+            "positionX": 900,
+            "positionY": 72,
+            "type": "Tractor Model"
+        },
+        {
+            "id": 1,
+            "name": "Pose Simulation",
+            "positionX": -378,
+            "positionY": -18,
+            "type": "Pose Simulation"
+        },
+        {
+            "id": 3,
+            "name": "Planner GUI",
+            "positionX": 900,
+            "positionY": 468,
+            "type": "Planner GUI"
         }
     ],
     "connections": [
         {
-            "idFrom": 1015,
+            "idFrom": 6,
             "idTo": 1,
-            "portFrom": "Position",
-            "portTo": "Antenna Position"
+            "portFrom": "Steer Angle",
+            "portTo": "Autosteer Steering Angle"
         },
         {
-            "idFrom": 1005,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Length Wheelbase"
+            "idFrom": 1,
+            "idTo": 6,
+            "portFrom": "Velocity",
+            "portTo": "Velocity"
         },
         {
-            "idFrom": 3,
-            "idTo": 4,
-            "portFrom": "Turn Right",
-            "portTo": "Turn Right"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 1007,
-            "portFrom": "Pose Hook Point",
-            "portTo": "Pose Hook Point"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 7,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "View Center Position"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 3,
-            "portFrom": "Pose Pivot Point",
+            "idFrom": 1010,
+            "idTo": 1013,
+            "portFrom": "Pose",
             "portTo": "Pose"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 1007,
-            "portFrom": "Pose Tow Point",
-            "portTo": "Pose Tow Point"
-        },
-        {
-            "idFrom": 1,
-            "idTo": 1012,
-            "portFrom": "Steering Angle",
-            "portTo": "Steering Angle"
-        },
-        {
-            "idFrom": 1,
-            "idTo": 1011,
-            "portFrom": "WGS84 Position",
-            "portTo": "WGS84 Position"
-        },
-        {
-            "idFrom": 3,
-            "idTo": 1,
-            "portFrom": "Autosteer Enabled",
-            "portTo": "Autosteer Enabled"
-        },
-        {
-            "idFrom": 1016,
-            "idTo": 1007,
-            "portFrom": "Number",
-            "portTo": "Track Width"
-        },
-        {
-            "idFrom": 1001,
-            "idTo": 1003,
-            "portFrom": "Position",
-            "portTo": "OffsetHookPoint"
         },
         {
             "idFrom": 3,
@@ -290,7 +243,25 @@
             "portTo": "A clicked"
         },
         {
-            "idFrom": 1003,
+            "idFrom": 1013,
+            "idTo": 1004,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 5,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1008,
+            "idTo": 6,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain K Softening"
+        },
+        {
+            "idFrom": 1004,
             "idTo": 6,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose"
@@ -302,52 +273,28 @@
             "portTo": "Plan"
         },
         {
-            "idFrom": 1002,
-            "idTo": 2,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 1010,
-            "idTo": 1002,
-            "portFrom": "Position",
-            "portTo": "OffsetTowPoint"
-        },
-        {
-            "idFrom": 1005,
-            "idTo": 1,
-            "portFrom": "Number",
-            "portTo": "Length Wheelbase"
-        },
-        {
-            "idFrom": 1016,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Track Width"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 4,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 1007,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose Pivot Point"
-        },
-        {
-            "idFrom": 1006,
+            "idFrom": 1001,
             "idTo": 6,
             "portFrom": "Number",
-            "portTo": "Stanley Gain Yaw Dampening"
+            "portTo": "Max Steering Angle"
         },
         {
             "idFrom": 1,
+            "idTo": 1005,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
+        },
+        {
+            "idFrom": 1003,
             "idTo": 6,
-            "portFrom": "Velocity",
-            "portTo": "Velocity"
+            "portFrom": "Number",
+            "portTo": "Stanley Gain Steering Dampening"
+        },
+        {
+            "idFrom": 1016,
+            "idTo": 1004,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
         },
         {
             "idFrom": 1,
@@ -356,80 +303,14 @@
             "portTo": "Steering Angle"
         },
         {
-            "idFrom": 1013,
-            "idTo": 6,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain K"
-        },
-        {
             "idFrom": 1005,
-            "idTo": 1007,
-            "portFrom": "Number",
-            "portTo": "Length Wheelbase"
-        },
-        {
-            "idFrom": 1002,
-            "idTo": 1003,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 3,
-            "idTo": 4,
-            "portFrom": "Turn Left",
-            "portTo": "Turn Left"
-        },
-        {
-            "idFrom": 1004,
-            "idTo": 1002,
-            "portFrom": "Pose",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 5,
-            "idTo": 6,
-            "portFrom": "Plan",
-            "portTo": "Plan"
-        },
-        {
-            "idFrom": 1011,
-            "idTo": 1004,
-            "portFrom": "Tiled Position",
-            "portTo": "Tiled Position"
-        },
-        {
-            "idFrom": 1015,
-            "idTo": 1002,
-            "portFrom": "Position",
-            "portTo": "OffsetHookPoint"
-        },
-        {
-            "idFrom": 3,
-            "idTo": 4,
-            "portFrom": "Snap clicked",
-            "portTo": "Snap clicked"
-        },
-        {
-            "idFrom": 1000,
-            "idTo": 6,
-            "portFrom": "Number",
-            "portTo": "Max Steering Angle"
-        },
-        {
-            "idFrom": 6,
-            "idTo": 1,
-            "portFrom": "Steer Angle",
-            "portTo": "Autosteer Steering Angle"
-        },
-        {
-            "idFrom": 1008,
-            "idTo": 6,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain K Softening"
+            "idTo": 1006,
+            "portFrom": "Steering Angle Left",
+            "portTo": "Steering Angle Left"
         },
         {
             "idFrom": 1,
-            "idTo": 1004,
+            "idTo": 1010,
             "portFrom": "Orientation",
             "portTo": "Orientation"
         },
@@ -440,22 +321,46 @@
             "portTo": "Initial WGS84 Position"
         },
         {
-            "idFrom": 1014,
-            "idTo": 6,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain Steering Dampening"
+            "idFrom": 1013,
+            "idTo": 3,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1006,
+            "portFrom": "Pose Hook Point",
+            "portTo": "Pose Hook Point"
         },
         {
             "idFrom": 1012,
-            "idTo": 1007,
-            "portFrom": "Steering Angle Left",
-            "portTo": "Steering Angle Left"
+            "idTo": 1005,
+            "portFrom": "Number",
+            "portTo": "Track Width"
         },
         {
-            "idFrom": 6,
-            "idTo": 3,
-            "portFrom": "XTE",
-            "portTo": "XTE"
+            "idFrom": 1004,
+            "idTo": 7,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 2,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
+        {
+            "idFrom": 1012,
+            "idTo": 1006,
+            "portFrom": "Number",
+            "portTo": "Track Width"
+        },
+        {
+            "idFrom": 3,
+            "idTo": 1,
+            "portFrom": "Autosteer Enabled",
+            "portTo": "Autosteer Enabled"
         },
         {
             "idFrom": 3,
@@ -464,16 +369,142 @@
             "portTo": "B clicked"
         },
         {
+            "idFrom": 1013,
+            "idTo": 1006,
+            "portFrom": "Pose Tow Point",
+            "portTo": "Pose Tow Point"
+        },
+        {
+            "idFrom": 7,
+            "idTo": 6,
+            "portFrom": "Heading of Path",
+            "portTo": "Heading of Path"
+        },
+        {
+            "idFrom": 5,
+            "idTo": 6,
+            "portFrom": "Plan",
+            "portTo": "Plan"
+        },
+        {
+            "idFrom": 1014,
+            "idTo": 1,
+            "portFrom": "Number",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1000,
+            "idTo": 1013,
+            "portFrom": "Position",
+            "portTo": "OffsetHookPoint"
+        },
+        {
+            "idFrom": 1015,
+            "idTo": 1013,
+            "portFrom": "Position",
+            "portTo": "OffsetTowPoint"
+        },
+        {
+            "idFrom": 1014,
+            "idTo": 1006,
+            "portFrom": "Number",
+            "portTo": "Length Wheelbase"
+        },
+        {
             "idFrom": 1002,
-            "idTo": 5,
+            "idTo": 6,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain K"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1006,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose Pivot Point"
+        },
+        {
+            "idFrom": 1011,
+            "idTo": 6,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain Yaw Dampening"
+        },
+        {
+            "idFrom": 3,
+            "idTo": 4,
+            "portFrom": "Snap clicked",
+            "portTo": "Snap clicked"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 8,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "View Center Position"
+        },
+        {
+            "idFrom": 1007,
+            "idTo": 1010,
+            "portFrom": "Tiled Position",
+            "portTo": "Tiled Position"
+        },
+        {
+            "idFrom": 1005,
+            "idTo": 1006,
+            "portFrom": "Steering Angle Right",
+            "portTo": "Steering Angle Right"
+        },
+        {
+            "idFrom": 7,
+            "idTo": 3,
+            "portFrom": "XTE",
+            "portTo": "XTE"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1007,
+            "portFrom": "WGS84 Position",
+            "portTo": "WGS84 Position"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 4,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose"
         },
         {
-            "idFrom": 1012,
-            "idTo": 1007,
-            "portFrom": "Steering Angle Right",
-            "portTo": "Steering Angle Right"
+            "idFrom": 1014,
+            "idTo": 1005,
+            "portFrom": "Number",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1000,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Antenna Position"
+        },
+        {
+            "idFrom": 5,
+            "idTo": 7,
+            "portFrom": "Plan",
+            "portTo": "Plan"
+        },
+        {
+            "idFrom": 3,
+            "idTo": 4,
+            "portFrom": "Turn Right",
+            "portTo": "Turn Right"
+        },
+        {
+            "idFrom": 3,
+            "idTo": 4,
+            "portFrom": "Turn Left",
+            "portTo": "Turn Left"
+        },
+        {
+            "idFrom": 7,
+            "idTo": 6,
+            "portFrom": "XTE",
+            "portTo": "XTE"
         }
     ]
 }
