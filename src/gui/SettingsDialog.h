@@ -136,7 +136,6 @@ class SettingsDialog : public QDialog {
 
     BlockFactory* transverseMercatorConverterFactory;
     BlockFactory* poseSynchroniserFactory;
-    BlockFactory* poseFromPositionFactory;
     BlockFactory* tractorModelFactory;
     BlockFactory* trailerModelFactory;
     BlockFactory* fixedKinematicFactory;

@@ -49,7 +49,6 @@
 #include "../block/PoseSimulation.h"
 
 #include "../block/PoseSynchroniser.h"
-#include "../block/PoseFromPosition.h"
 
 #include "../block/NmeaParser.h"
 #include "../block/TransverseMercatorConverter.h"
@@ -159,7 +158,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
   poseSynchroniserFactory = new PoseSynchroniserFactory( tile );
-  poseFromPositionFactory = new PoseFromPositionFactory( tile );
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
@@ -177,26 +175,25 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
 //  fieldFactory = new FieldFactory( rootEntity );
 
-  transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
-  poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
-  poseFromPositionFactory->addToCombobox( ui->cbNodeType );
-  tractorModelFactory->addToCombobox( ui->cbNodeType );
-  trailerModelFactory->addToCombobox( ui->cbNodeType );
-  fixedKinematicFactory->addToCombobox( ui->cbNodeType );
-  trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
   stringFactory->addToCombobox( ui->cbNodeType );
-  debugSinkFactory->addToCombobox( ui->cbNodeType );
-  printLatencyFactory->addToCombobox( ui->cbNodeType );
-  udpSocketFactory->addToCombobox( ui->cbNodeType );
-  serialPortFactory->addToCombobox( ui->cbNodeType );
-  fileStreamFactory->addToCombobox( ui->cbNodeType );
-  nmeaParserFactory->addToCombobox( ui->cbNodeType );
+  fixedKinematicFactory->addToCombobox( ui->cbNodeType );
+  tractorModelFactory->addToCombobox( ui->cbNodeType );
+  trailerKinematicFactory->addToCombobox( ui->cbNodeType );
+  trailerModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
+  poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
+  transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
   localPlannerFactory->addToCombobox( ui->cbNodeType );
+  nmeaParserFactory->addToCombobox( ui->cbNodeType );
+  debugSinkFactory->addToCombobox( ui->cbNodeType );
+  udpSocketFactory->addToCombobox( ui->cbNodeType );
+  serialPortFactory->addToCombobox( ui->cbNodeType );
+  fileStreamFactory->addToCombobox( ui->cbNodeType );
+  printLatencyFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 
@@ -221,7 +218,6 @@ SettingsDialog::~SettingsDialog() {
 
   transverseMercatorConverterFactory->deleteLater();
   poseSynchroniserFactory->deleteLater();
-  poseFromPositionFactory->deleteLater();
   tractorModelFactory->deleteLater();
   trailerModelFactory->deleteLater();
   fixedKinematicFactory->deleteLater();
