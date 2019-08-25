@@ -30,6 +30,9 @@
      </property>
      <item>
       <widget class="QTabWidget" name="twConfiguration">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="currentIndex">
         <number>0</number>
        </property>
@@ -40,6 +43,9 @@
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="6" column="0" colspan="4">
           <widget class="QNEGraphicsView" name="gvNodeEditor">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="renderHints">
             <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
            </property>
@@ -47,6 +53,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QGroupBox" name="groupBox_5">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string/>
            </property>
@@ -58,6 +67,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="insertPolicy">
                <enum>QComboBox::InsertAlphabetically</enum>
@@ -72,6 +84,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Add</string>
               </property>
@@ -82,6 +97,9 @@
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="label_9">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Scroll to zoom, Right-Click or &lt;Del&gt; to remove, Ctrl+Click to select multiple nodes</string>
            </property>
@@ -92,12 +110,18 @@
          </item>
          <item row="1" column="1" colspan="3">
           <widget class="QGroupBox" name="groupBox_6">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string/>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
              <widget class="QPushButton" name="pbSaveSelected">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Save</string>
               </property>
@@ -105,6 +129,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pbLoad">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Load</string>
               </property>
@@ -115,6 +142,9 @@
          </item>
          <item row="7" column="1" colspan="3">
           <widget class="QGroupBox" name="groupBox_7">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string/>
            </property>
@@ -139,6 +169,9 @@
             </property>
             <item>
              <widget class="QPushButton" name="pbZoomOut">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Zoom Out</string>
               </property>
@@ -152,6 +185,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pbZoomIn">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Zoom In</string>
               </property>
@@ -165,6 +201,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pbDeleteSelected">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Delete Selected</string>
               </property>
@@ -172,6 +211,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pbClear">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Clear All</string>
               </property>
@@ -189,6 +231,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QGroupBox" name="groupBox_2">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Type</string>
            </property>
@@ -200,6 +245,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
              </widget>
             </item>
@@ -213,6 +261,9 @@
              <horstretch>0</horstretch>
              <verstretch>1</verstretch>
             </sizepolicy>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
            </property>
            <property name="title">
             <string>Values</string>
@@ -229,6 +280,9 @@
                 <verstretch>1</verstretch>
                </sizepolicy>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="sortingEnabled">
                <bool>true</bool>
               </property>
@@ -236,6 +290,9 @@
             </item>
             <item>
              <widget class="QGroupBox" name="grpString">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="title">
                <string/>
               </property>
@@ -251,10 +308,16 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="1">
                 <widget class="QPushButton" name="pbComPortRefresh">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -278,6 +341,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                  <property name="text">
                   <string>Set</string>
                  </property>
@@ -287,6 +353,9 @@
                 <widget class="QPushButton" name="pbSetStringToFilename">
                  <property name="enabled">
                   <bool>true</bool>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
                  </property>
                  <property name="text">
                   <string>Set String to filename</string>
@@ -298,6 +367,9 @@
             </item>
             <item>
              <widget class="QGroupBox" name="grpNumber">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="title">
                <string/>
               </property>
@@ -310,10 +382,16 @@
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="1">
                 <widget class="QPushButton" name="pbBaudrateRefresh">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -337,6 +415,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
                  <property name="text">
                   <string>Set</string>
                  </property>
@@ -357,6 +438,9 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <widget class="QGroupBox" name="groupBox_3">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Implements</string>
            </property>
@@ -371,19 +455,29 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="comboBox">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_4">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Sections</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="6" column="3">
              <widget class="QPushButton" name="btnSectApply">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Apply</string>
               </property>
@@ -391,6 +485,9 @@
             </item>
             <item row="5" column="3">
              <spacer name="verticalSpacer_2">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -403,10 +500,17 @@
              </spacer>
             </item>
             <item row="0" column="0" rowspan="8">
-             <widget class="QTableWidget" name="tbSections"/>
+             <widget class="QTableWidget" name="tbSections">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+             </widget>
             </item>
             <item row="3" column="3">
              <widget class="QPushButton" name="btnSectMoveUp">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Move Up</string>
               </property>
@@ -414,6 +518,9 @@
             </item>
             <item row="2" column="3">
              <widget class="QCheckBox" name="btnSectConfirmation">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Confirmation</string>
               </property>
@@ -424,6 +531,9 @@
             </item>
             <item row="1" column="3">
              <widget class="QPushButton" name="btnSectRemove">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Remove</string>
               </property>
@@ -431,6 +541,9 @@
             </item>
             <item row="0" column="3">
              <widget class="QPushButton" name="btnSectAdd">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Add</string>
               </property>
@@ -438,6 +551,9 @@
             </item>
             <item row="4" column="3">
              <widget class="QPushButton" name="btnSectMoveDown">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Move Down</string>
               </property>
@@ -455,6 +571,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_9">
          <item>
           <widget class="QGroupBox" name="gbGrid">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Show Grid</string>
            </property>
@@ -467,6 +586,9 @@
            <layout class="QGridLayout" name="gridLayout_6">
             <item row="3" column="1">
              <widget class="QLabel" name="lbColor">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>TextLabel</string>
               </property>
@@ -482,6 +604,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="suffix">
                <string notr="true"> m</string>
@@ -502,6 +627,9 @@
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_3">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Y step</string>
               </property>
@@ -514,6 +642,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="suffix">
                <string notr="true"> m</string>
@@ -543,6 +674,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>X step</string>
               </property>
@@ -550,6 +684,9 @@
             </item>
             <item row="3" column="2">
              <widget class="QPushButton" name="pbColor">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Choose Color</string>
               </property>
@@ -562,6 +699,9 @@
                 <horstretch>2</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="suffix">
                <string notr="true"> m</string>
@@ -585,6 +725,9 @@
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_5">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Color</string>
               </property>
@@ -592,6 +735,9 @@
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_4">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Size</string>
               </property>
@@ -602,6 +748,9 @@
          </item>
          <item>
           <widget class="QGroupBox" name="gbShowTiles">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Show Tiles</string>
            </property>
@@ -614,6 +763,9 @@
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
              <widget class="QLabel" name="label_6">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Color</string>
               </property>
@@ -626,6 +778,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="text">
                <string>TextLabel</string>
@@ -643,6 +798,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Choose Color</string>
               </property>
@@ -653,6 +811,9 @@
          </item>
          <item>
           <spacer name="verticalSpacer">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -673,12 +834,18 @@
         <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <widget class="QGroupBox" name="groupBox">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Configuration</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
             <item row="1" column="0">
              <widget class="QCheckBox" name="cbLoadConfigOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Load last configuration on start</string>
               </property>
@@ -686,6 +853,9 @@
             </item>
             <item row="2" column="0">
              <widget class="QPushButton" name="pbSaveAsDefault">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Save current config as default</string>
               </property>
@@ -693,6 +863,9 @@
             </item>
             <item row="0" column="0">
              <widget class="QCheckBox" name="cbSaveConfigOnExit">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Save current configuration on exit</string>
               </property>
@@ -700,6 +873,9 @@
             </item>
             <item row="2" column="1">
              <widget class="QPushButton" name="pbLoadSavedConfig">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Load saved default config</string>
               </property>
@@ -710,12 +886,18 @@
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_8">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="title">
             <string>Main Window</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
              <widget class="QCheckBox" name="cbOpenSettingsDialogOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Open setting dialog on start</string>
               </property>
@@ -723,6 +905,9 @@
             </item>
             <item>
              <widget class="QCheckBox" name="cbShowCameraToolbarOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Show camera toolbar on start</string>
               </property>
@@ -730,6 +915,9 @@
             </item>
             <item>
              <widget class="QCheckBox" name="cbRunSimulatorOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Run Simulator on start</string>
               </property>
@@ -740,6 +928,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pbDeleteSettings">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Delete Settings</string>
            </property>
@@ -747,6 +938,9 @@
          </item>
          <item>
           <spacer name="verticalSpacer_3">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -773,6 +967,9 @@
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
           <widget class="QLabel" name="label_8">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string/>
            </property>
@@ -793,6 +990,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QTabWidget" name="twLicences">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -803,6 +1003,9 @@
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
               <widget class="QLabel" name="label">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="text">
                 <string>See especialy Section 15 through 17!</string>
                </property>
@@ -814,6 +1017,9 @@
                 <font>
                  <family>Noto Sans Mono</family>
                 </font>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
                </property>
                <property name="verticalScrollBarPolicy">
                 <enum>Qt::ScrollBarAsNeeded</enum>
@@ -1513,6 +1719,9 @@ Public License instead of this License.  But first, please read
                  <family>Noto Sans Mono</family>
                 </font>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -1557,6 +1766,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>

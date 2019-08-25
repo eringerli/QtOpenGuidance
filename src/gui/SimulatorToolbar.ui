@@ -28,6 +28,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Reset</string>
      </property>
@@ -40,6 +43,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
      </property>
      <property name="minimum">
       <number>1</number>
@@ -75,6 +81,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Steeringangle</string>
      </property>
@@ -85,6 +94,9 @@
    </item>
    <item row="0" column="4">
     <widget class="QDoubleSpinBox" name="dsb_steerangle">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="suffix">
       <string> °</string>
      </property>
@@ -109,6 +121,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
      </property>
      <property name="minimum">
       <number>-400</number>
@@ -153,6 +168,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Velocity</string>
      </property>
@@ -174,6 +192,9 @@
        <width>0</width>
        <height>25</height>
       </size>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
       <string>Frequency</string>
@@ -197,6 +218,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Reset</string>
      </property>
@@ -216,6 +240,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="text">
       <string>Reset</string>
      </property>
@@ -223,6 +250,9 @@
    </item>
    <item row="0" column="7">
     <widget class="QDoubleSpinBox" name="dsb_frequency">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="suffix">
       <string> Hz</string>
      </property>
@@ -248,6 +278,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="minimum">
       <number>-100</number>
      </property>
@@ -267,6 +300,9 @@
    </item>
    <item row="0" column="1">
     <widget class="QDoubleSpinBox" name="dsb_velocity">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="suffix">
       <string> m/s</string>
      </property>
