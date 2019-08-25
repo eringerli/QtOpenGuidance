@@ -74,7 +74,8 @@
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
-#include "block/SectionControl.h"
+#include "block/SectionControlModel.h"
+#include "block/XteBarModel.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -169,7 +170,6 @@ int main( int argc, char** argv ) {
     zTransform->setTranslation( QVector3D( 0, 0, 10 ) );
     zTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 1, 0, 0 ), 90 ) );
 
-
     xaxis->addComponent( cylinderMesh );
     xaxis->addComponent( redMaterial );
     xaxis->addComponent( xTransform );
@@ -235,6 +235,9 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
   // Guidance
+  BlockFactory* xteBarModelFactory = new XteBarModelFactory( widget, guidaceToolbarTop->getCenterLayout() );
+  xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
+
   QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
                     settingDialog->plannerGui, SIGNAL( a_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
@@ -247,11 +250,9 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
   QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
-  QObject::connect( settingDialog->plannerGui, SIGNAL( xteChanged( float ) ),
-                    guidaceToolbarTop, SLOT( setXte( float ) ) );
 
   // Section control toolbar
-  BlockFactory* sectionControlFactory = new SectionControlFactory( widget, vLayout );
+  BlockFactory* sectionControlFactory = new SectionControlModelFactory( widget, vLayout );
   sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   settingDialog->emitAllConfigSignals();

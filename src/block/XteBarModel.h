@@ -16,60 +16,57 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SECTIONCONTROL_H
-#define SECTIONCONTROL_H
+#ifndef XTEBARMODEL_H
+#define XTEBARMODEL_H
 
 #include <QObject>
 
-#include "../gui/SectionControlToolbar.h"
+#include "../gui/GuidanceXteBar.h"
 
 #include "BlockBase.h"
 
-class SectionControl : public BlockBase {
+class XteBarModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit SectionControl( QWidget* parent, QVBoxLayout* vLayout )
+    explicit XteBarModel( QWidget* parent, QHBoxLayout* hLayout )
       : BlockBase() {
-      sectionControlToolbar = new SectionControlToolbar( parent );
-//      sectionControlToolbar->setVisible( true );
-      vLayout->addWidget( sectionControlToolbar );
+      guidanceXteBar = new GuidanceXteBar( parent );
+      hLayout->addWidget( guidanceXteBar );
     }
 
-    ~SectionControl() {
-      sectionControlToolbar->deleteLater();
+    ~XteBarModel() {
+      guidanceXteBar->deleteLater();
     }
 
 
   public slots:
     void setName( QString name ) {
-      if( name == QStringLiteral( "SectionControl" ) ) {
-        sectionControlToolbar->setName( QString() );
+      if( name == QStringLiteral( "XteBarModel" ) ) {
+        guidanceXteBar->setName( QString() );
       } else {
-        sectionControlToolbar->setName( name );
+        guidanceXteBar->setName( name );
       }
     }
-    void setNumberOfSections( float number ) {
-      sectionControlToolbar->setNumberOfSections( number );
+
+    void setXte( float xte ) {
+      guidanceXteBar->setXte( xte );
     }
 
-  signals:
-    void sectionStateChanged( int, int );
-
   public:
-    SectionControlToolbar* sectionControlToolbar = nullptr;
+    GuidanceXteBar* guidanceXteBar = nullptr;
 };
 
-class SectionControlFactory : public BlockFactory {
+class XteBarModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    SectionControlFactory( QWidget* parent, QVBoxLayout* vlayout )
+    XteBarModelFactory( QWidget* parent, QHBoxLayout* hlayout )
       : BlockFactory(),
-        parent( parent ), vlayout( vlayout ) {}
+        parent( parent ), hlayout( hlayout ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "SectionControl" );
+      return QStringLiteral( "XteBarModel" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -77,7 +74,7 @@ class SectionControlFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new SectionControl( parent, vlayout );
+      return new XteBarModel( parent, hlayout );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -87,14 +84,14 @@ class SectionControlFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Number Of Sections", SLOT( setNumberOfSections( float ) ) );
+      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
 
       return b;
     }
 
   private:
     QWidget* parent = nullptr;
-    QVBoxLayout* vlayout = nullptr;
+    QHBoxLayout* hlayout = nullptr;
 };
 
-#endif // SECTIONCONTROL_H
+#endif // XTEBARMODEL_H

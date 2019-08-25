@@ -20,6 +20,7 @@
 #define GUIDANCETOOLBARTOP_H
 
 #include <QGroupBox>
+#include <QHBoxLayout>
 
 namespace Ui {
   class GuidanceToolbarTop;
@@ -32,11 +33,11 @@ class GuidanceToolbarTop : public QGroupBox {
     explicit GuidanceToolbarTop( QWidget* parent = nullptr );
     ~GuidanceToolbarTop();
 
+    QHBoxLayout* getCenterLayout();
+
   private slots:
     void on_pbLeft_clicked();
     void on_pbRight_clicked();
-
-    void setXte( float xte );
 
   signals:
     void turnLeft();

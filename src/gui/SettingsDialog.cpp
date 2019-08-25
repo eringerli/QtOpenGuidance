@@ -153,17 +153,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
   localPlannerFactory = new LocalPlannerFactory( tile );
-  localPlanner = localPlannerFactory->createNewObject();
-  localPlannerFactory->createBlock( ui->gvNodeEditor->scene(), localPlanner );
-
   stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
-  stanleyGuidance = stanleyGuidanceFactory->createNewObject();
-  stanleyGuidanceFactory->createBlock( ui->gvNodeEditor->scene(), stanleyGuidance );
-
   xteGuidanceFactory = new XteGuidanceFactory( tile );
-  xteGuidance = xteGuidanceFactory->createNewObject();
-  xteGuidanceFactory->createBlock( ui->gvNodeEditor->scene(), xteGuidance );
-
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
@@ -203,6 +194,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   nmeaParserFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
+  xteGuidanceFactory->addToCombobox( ui->cbNodeType );
+  stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
+  localPlannerFactory->addToCombobox( ui->cbNodeType );
 
 //  fieldFactory->addToCombobox( ui->cbNodeType );
 

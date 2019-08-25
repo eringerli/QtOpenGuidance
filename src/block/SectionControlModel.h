@@ -16,69 +16,60 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef LOCALPLANNER_H
-#define LOCALPLANNER_H
+#ifndef SECTIONCONTROLMODEL_H
+#define SECTIONCONTROLMODEL_H
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
+#include "../gui/SectionControlToolbar.h"
 
 #include "BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include "../kinematic/Tile.h"
-
-#include <QVector>
-#include <QSharedPointer>
-#include "PathPrimitive.h"
-
-class LocalPlanner : public BlockBase {
+class SectionControlModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit LocalPlanner( Tile* tile )
+    explicit SectionControlModel( QWidget* parent, QVBoxLayout* vLayout )
       : BlockBase() {
-      this->tile = tile->getTileForOffset( 0, 0 );
+      sectionControlToolbar = new SectionControlToolbar( parent );
+//      sectionControlToolbar->setVisible( true );
+      vLayout->addWidget( sectionControlToolbar );
     }
+
+    ~SectionControlModel() {
+      sectionControlToolbar->deleteLater();
+    }
+
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
-      this->tile = tile;
-      this->position = position;
-      this->orientation = orientation;
+    void setName( QString name ) {
+      if( name == QStringLiteral( "SectionControl Model" ) ) {
+        sectionControlToolbar->setName( QString() );
+      } else {
+        sectionControlToolbar->setName( name );
+      }
     }
-
-    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
-      this->plan = plan;
-      emit planChanged( plan );
+    void setNumberOfSections( float number ) {
+      sectionControlToolbar->setNumberOfSections( number );
     }
-
 
   signals:
-    void planChanged( QVector<QSharedPointer<PathPrimitive>> );
+    void sectionStateChanged( int, int );
 
   public:
-    Tile* tile = nullptr;
-    QVector3D position = QVector3D();
-    QQuaternion orientation = QQuaternion();
-
-  private:
-    QVector<QSharedPointer<PathPrimitive>> plan;
+    SectionControlToolbar* sectionControlToolbar = nullptr;
 };
 
-class LocalPlannerFactory : public BlockFactory {
+class SectionControlModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    LocalPlannerFactory( Tile* tile )
+    SectionControlModelFactory( QWidget* parent, QVBoxLayout* vlayout )
       : BlockFactory(),
-        tile( tile ) {}
+        parent( parent ), vlayout( vlayout ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Local Planner" );
+      return QStringLiteral( "SectionControl Model" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -86,7 +77,7 @@ class LocalPlannerFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new LocalPlanner( tile );
+      return new SectionControlModel( parent, vlayout );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -96,16 +87,14 @@ class LocalPlannerFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
-      b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addInputPort( "Number Of Sections", SLOT( setNumberOfSections( float ) ) );
 
       return b;
     }
 
   private:
-    Tile* tile;
+    QWidget* parent = nullptr;
+    QVBoxLayout* vlayout = nullptr;
 };
 
-#endif // LOCALPLANNER_H
-
+#endif // SECTIONCONTROLMODEL_H

@@ -72,11 +72,11 @@ class XteGuidance : public BlockBase {
       }
 
       if( !qIsInf( distance ) ) {
-        emit headingOfPathChanged(float(headingOfABLine));
-      emit xteChanged( float( distance ) );
+        emit headingOfPathChanged( float( headingOfABLine ) );
+        emit xteChanged( float( distance ) );
       } else {
-        emit headingOfPathChanged(qInf());
-      emit xteChanged( qInf() );
+        emit headingOfPathChanged( qInf() );
+        emit xteChanged( qInf() );
       }
     }
 
@@ -188,7 +188,7 @@ class XteGuidanceFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj, true );
+      QNEBlock* b = new QNEBlock( obj );
       scene->addItem( b );
 
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );

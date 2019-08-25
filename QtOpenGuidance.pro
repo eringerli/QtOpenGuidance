@@ -12,6 +12,7 @@ SOURCES += src/main.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceToolbarTop.cpp \
+    src/gui/GuidanceXteBar.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
@@ -42,7 +43,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
-    src/block/SectionControl.h \
+    src/block/SectionControlModel.h \
     src/block/SerialPort.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
@@ -50,9 +51,11 @@ HEADERS += \
     src/block/TransverseMercatorConverter.h \
     src/block/UdpSocket.h \
     src/block/VectorObject.h \
+    src/block/XteBarModel.h \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceToolbarTop.h \
+    src/gui/GuidanceXteBar.h \
     src/gui/MainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/SectionControlToolbar.h \
@@ -69,6 +72,7 @@ FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceToolbarTop.ui \
+    src/gui/GuidanceXteBar.ui \
     src/gui/SectionControlToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
