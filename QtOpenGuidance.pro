@@ -39,7 +39,6 @@ HEADERS += \
     src/block/NmeaParser.h \
     src/block/NumberObject.h \
     src/block/PathPrimitive.h \
-    src/block/PoseFromPosition.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
