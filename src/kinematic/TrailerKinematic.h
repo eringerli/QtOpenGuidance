@@ -57,6 +57,10 @@ class TrailerKinematic : public BlockBase {
       m_maxJackknifeAngle = maxAngle;
     }
 
+    void setMaxAngle( float maxAngle ) {
+      m_maxAngle = maxAngle;
+    }
+
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
       QQuaternion orientationTrailer;
 
@@ -71,8 +75,16 @@ class TrailerKinematic : public BlockBase {
                              );
 
         // the angle between tractor and trailer >m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor
-        if( qAbs( ( orientation.inverted()*orientationTrailer ).toEulerAngles().z() ) < m_maxJackknifeAngle ) {
-          orientation = orientationTrailer;
+        float angle = ( orientation.inverted() * orientationTrailer ).toEulerAngles().z();
+
+        if( qAbs( angle ) < m_maxJackknifeAngle ) {
+
+          // limit the angle to m_maxAngle
+          if( qAbs( angle ) > m_maxAngle ) {
+            orientation = orientation * QQuaternion::fromAxisAndAngle( QVector3D( 0.0f, 0.0f, 1.0f ), m_maxAngle * ( angle > 0 ? 1 : -1 ) );
+          } else {
+            orientation = orientationTrailer;
+          }
         }
       }
 
@@ -103,9 +115,7 @@ class TrailerKinematic : public BlockBase {
       }
 
       emit poseTowPointChanged( currentTile, positionTowPoint, orientation, options );
-
       emit posePivotPointChanged( tilePivotPoint, positionPivotPoint, orientation, options );
-
     }
 
   signals:
@@ -114,12 +124,13 @@ class TrailerKinematic : public BlockBase {
     void poseTowPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
 
   private:
-    // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
+    // defined in the normal way: x+ is forwards, so m_offsetTowPoint is a negative vector
     QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
     QVector3D m_offsetTowPoint = QVector3D( -1, 0, 0 );
     QVector3D m_positionPivotPoint = QVector3D( 0, 0, 0 );
 
     float m_maxJackknifeAngle = 120;
+    float m_maxAngle = 150;
 
     Tile* m_tilePivotPoint;
 };
@@ -154,6 +165,7 @@ class TrailerKinematicFactory : public BlockFactory {
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );
       b->addInputPort( "MaxJackknifeAngle", SLOT( setMaxJackknifeAngle( float ) ) );
+      b->addInputPort( "MaxAngle", SLOT( setMaxAngle( float ) ) );
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
