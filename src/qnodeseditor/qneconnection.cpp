@@ -64,10 +64,7 @@ QNEConnection::~QNEConnection() {
 }
 
 
-void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
-  Q_UNUSED( option )
-  Q_UNUSED( widget )
-
+void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* ) {
   if( isSelected() ) {
     painter->setPen( QPen( Qt::red, 3 ) );
     painter->setBrush( Qt::NoBrush );
