@@ -69,11 +69,13 @@ void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem* op
   Q_UNUSED( widget )
 
   if( isSelected() ) {
-    painter->setPen( QPen( Qt::darkYellow, 3 ) );
+    painter->setPen( QPen( Qt::red, 3 ) );
     painter->setBrush( Qt::NoBrush );
+    setZValue( 1.5 );
   } else {
     painter->setPen( QPen( Qt::darkGreen, 3 ) );
     painter->setBrush( Qt::NoBrush );
+    setZValue( 0 );
   }
 
   painter->drawPath( path() );

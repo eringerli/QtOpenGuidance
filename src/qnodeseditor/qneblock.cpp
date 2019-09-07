@@ -131,9 +131,11 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
   if( isSelected() ) {
     painter->setPen( QPen( Qt::darkYellow ) );
     painter->setBrush( Qt::yellow );
+    setZValue( 1 );
   } else {
     painter->setPen( QPen( Qt::darkGreen ) );
     painter->setBrush( Qt::green );
+    setZValue( 0.5 );
   }
 
   painter->drawPath( path() );
