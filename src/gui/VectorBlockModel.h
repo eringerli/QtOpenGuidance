@@ -27,7 +27,7 @@
 
 #include <QList>
 
-#include "../block/VectorObject.h"
+#include <QGraphicsScene>
 
 class VectorBlockModel : public QAbstractTableModel {
     Q_OBJECT

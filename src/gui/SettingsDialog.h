@@ -140,9 +140,6 @@ class SettingsDialog : public QDialog {
     BlockFactory* trailerModelFactory;
     BlockFactory* fixedKinematicFactory;
     BlockFactory* trailerKinematicFactory;
-    BlockFactory* vectorFactory;
-    BlockFactory* numberFactory;
-    BlockFactory* stringFactory;
     BlockFactory* debugSinkFactory;
     BlockFactory* printLatencyFactory;
     BlockFactory* udpSocketFactory;
@@ -157,6 +154,9 @@ class SettingsDialog : public QDialog {
     BlockFactory* stanleyGuidanceFactory;
     BlockFactory* xteGuidanceFactory;
 
+    BlockFactory* vectorFactory;
+    BlockFactory* numberFactory;
+    BlockFactory* stringFactory;
     QSortFilterProxyModel* filterModel;
     VectorBlockModel* vectorBlockModel;
     NumberBlockModel* numberBlockModel;
@@ -165,6 +165,7 @@ class SettingsDialog : public QDialog {
 //    GuidanceFactory* fieldFactory;
 
 
+  private:
     QNEBlock* getBlockWithId( int id );
     QNEBlock* getBlockWithName( QString name );
 

@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "../block/StringObject.h"
+
 #include "StringBlockModel.h"
 
 #include <QGraphicsItem>
@@ -145,7 +147,7 @@ void StringBlockModel::resetModel() {
 
     if( block ) {
       if( qobject_cast<StringObject*>( block->object ) ) {
-        countBuffer++;
+        ++countBuffer;
       }
     }
   }

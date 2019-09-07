@@ -27,7 +27,7 @@
 
 #include <QList>
 
-#include "../block/NumberObject.h"
+#include <QGraphicsScene>
 
 class NumberBlockModel : public QAbstractTableModel {
     Q_OBJECT

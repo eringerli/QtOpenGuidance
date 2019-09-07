@@ -162,9 +162,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory( tile );
-  vectorFactory = new VectorFactory();
-  numberFactory = new NumberFactory();
-  stringFactory = new StringFactory();
+  vectorFactory = new VectorFactory( vectorBlockModel );
+  numberFactory = new NumberFactory( numberBlockModel );
+  stringFactory = new StringFactory( stringBlockModel );
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
   udpSocketFactory = new UdpSocketFactory();
@@ -194,8 +194,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   serialPortFactory->addToCombobox( ui->cbNodeType );
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
-
-//  fieldFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -237,6 +235,8 @@ SettingsDialog::~SettingsDialog() {
 
   vectorBlockModel->deleteLater();
   numberBlockModel->deleteLater();
+  stringBlockModel->deleteLater();
+  filterModel->deleteLater();
 
   poseSimulationFactory->deleteLater();
   gridModelFactory->deleteLater();
@@ -522,11 +522,6 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
     }
   }
 
-  // reset the models
-  vectorBlockModel->resetModel();
-  numberBlockModel->resetModel();
-  stringBlockModel->resetModel();
-
   // rescale the tableview
   ui->twValues->resizeColumnsToContents();
 }
@@ -538,19 +533,6 @@ void SettingsDialog::on_pbAddBlock_clicked() {
   if( factory ) {
     BlockBase* obj = factory->createNewObject();
     factory->createBlock( ui->gvNodeEditor->scene(), obj );
-
-    // reset the models
-    if( qobject_cast<VectorObject*>( obj ) ) {
-      vectorBlockModel->resetModel();
-    }
-
-    if( qobject_cast<NumberObject*>( obj ) ) {
-      numberBlockModel->resetModel();
-    }
-
-    if( qobject_cast<StringObject*>( obj ) ) {
-      stringBlockModel->resetModel();
-    }
   }
 }
 

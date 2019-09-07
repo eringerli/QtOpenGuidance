@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "../gui/VectorBlockModel.h"
+
 #ifndef VECTOROBJECT_H
 #define VECTOROBJECT_H
 
@@ -77,8 +79,9 @@ class VectorFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    VectorFactory()
-      : BlockFactory() {}
+    VectorFactory( VectorBlockModel* model )
+      : BlockFactory(),
+        model( model ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Vector3D" );
@@ -101,8 +104,13 @@ class VectorFactory : public BlockFactory {
 
       b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
 
+      model->resetModel();
+
       return b;
     }
+
+  private:
+    VectorBlockModel* model = nullptr;
 };
 
 #endif // VECTOROBJECT_H

@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "../gui/StringBlockModel.h"
+
 #ifndef STRINGOBJECT_H
 #define STRINGOBJECT_H
 
@@ -61,8 +63,9 @@ class StringFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    StringFactory()
-      : BlockFactory() {}
+    StringFactory( StringBlockModel* model )
+      : BlockFactory(),
+        model( model ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "String" );
@@ -85,8 +88,13 @@ class StringFactory : public BlockFactory {
 
       b->addOutputPort( "String", SIGNAL( stringChanged( QString ) ) );
 
+      model->resetModel();
+
       return b;
     }
+
+  private:
+    StringBlockModel* model = nullptr;
 };
 
 #endif // STRINGOBJECT_H

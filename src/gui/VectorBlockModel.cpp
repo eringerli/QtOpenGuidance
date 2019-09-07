@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "../block/VectorObject.h"
+
 #include "VectorBlockModel.h"
 
 #include <QGraphicsItem>
@@ -166,7 +168,7 @@ void VectorBlockModel::resetModel() {
 
     if( block ) {
       if( qobject_cast<VectorObject*>( block->object ) ) {
-        countBuffer++;
+        ++countBuffer;
       }
     }
   }
