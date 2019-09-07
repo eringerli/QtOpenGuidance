@@ -13,6 +13,7 @@ SOURCES += src/main.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceToolbarTop.cpp \
     src/gui/GuidanceXteBar.cpp \
+    src/gui/ImplementBlockModel.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     src/block/GuidancePlannerGui.h \
     src/block/GuidanceStanley.h \
     src/block/GuidanceXte.h \
+    src/block/Implement.h \
     src/block/NmeaParser.h \
     src/block/NumberObject.h \
     src/block/PathPrimitive.h \
@@ -55,6 +57,7 @@ HEADERS += \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceToolbarTop.h \
     src/gui/GuidanceXteBar.h \
+    src/gui/ImplementBlockModel.h \
     src/gui/MainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/SectionControlToolbar.h \

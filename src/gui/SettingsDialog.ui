@@ -52,7 +52,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="gbNodeType">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -96,7 +96,7 @@
           </widget>
          </item>
          <item row="7" column="0">
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="lbNode">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -109,7 +109,7 @@
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
-          <widget class="QGroupBox" name="groupBox_6">
+          <widget class="QGroupBox" name="gpNodeSaveLoad">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -141,7 +141,7 @@
           </widget>
          </item>
          <item row="7" column="1" colspan="3">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="gbNodeTools">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -230,7 +230,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QGroupBox" name="groupBox_2">
+          <widget class="QGroupBox" name="gbValues">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -437,7 +437,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QGroupBox" name="groupBox_3">
+          <widget class="QGroupBox" name="gbImplements">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -455,7 +455,7 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
-             <widget class="QComboBox" name="comboBox">
+             <widget class="QComboBox" name="cbImplements">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
@@ -465,49 +465,35 @@
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="gbSections">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="title">
             <string>Sections</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="6" column="3">
-             <widget class="QPushButton" name="btnSectApply">
+           <property name="checkable">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="_2">
+            <item row="0" column="3">
+             <widget class="QPushButton" name="btnSectionAdd">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
               <property name="text">
-               <string>Apply</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="3">
-             <spacer name="verticalSpacer_2">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>149</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="0" rowspan="8">
-             <widget class="QTableWidget" name="tbSections">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
+               <string>Add Section</string>
               </property>
              </widget>
             </item>
             <item row="3" column="3">
-             <widget class="QPushButton" name="btnSectMoveUp">
+             <widget class="QPushButton" name="btnSectionMoveUp">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
@@ -516,21 +502,18 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="3">
-             <widget class="QCheckBox" name="btnSectConfirmation">
+            <item row="4" column="3">
+             <widget class="QPushButton" name="btnSectionMoveDown">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
               <property name="text">
-               <string>Confirmation</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
+               <string>Move Down</string>
               </property>
              </widget>
             </item>
             <item row="1" column="3">
-             <widget class="QPushButton" name="btnSectRemove">
+             <widget class="QPushButton" name="btnSectionRemove">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
@@ -539,25 +522,34 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
-             <widget class="QPushButton" name="btnSectAdd">
+            <item row="0" column="0" rowspan="6">
+             <widget class="QTableView" name="twSections">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
-              <property name="text">
-               <string>Add</string>
+              <property name="sortingEnabled">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="4" column="3">
-             <widget class="QPushButton" name="btnSectMoveDown">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
+            <item row="2" column="3">
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
               </property>
-              <property name="text">
-               <string>Move Down</string>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
               </property>
-             </widget>
+             </spacer>
             </item>
            </layout>
           </widget>

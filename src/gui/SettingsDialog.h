@@ -33,6 +33,7 @@
 #include "VectorBlockModel.h"
 #include "NumberBlockModel.h"
 #include "StringBlockModel.h"
+#include "ImplementBlockModel.h"
 
 #include "../kinematic/Tile.h"
 
@@ -104,6 +105,10 @@ class SettingsDialog : public QDialog {
     void on_pbTileColor_clicked();
     void on_gbShowTiles_toggled( bool arg1 );
 
+    void on_cbImplements_currentIndexChanged( int index );
+
+    void implementModelReset();
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -157,13 +162,14 @@ class SettingsDialog : public QDialog {
     BlockFactory* vectorFactory;
     BlockFactory* numberFactory;
     BlockFactory* stringFactory;
-    QSortFilterProxyModel* filterModel;
+    QSortFilterProxyModel* filterModelValues;
     VectorBlockModel* vectorBlockModel;
     NumberBlockModel* numberBlockModel;
     StringBlockModel* stringBlockModel;
 
-//    GuidanceFactory* fieldFactory;
-
+    BlockFactory* implementFactory;
+    QSortFilterProxyModel* filterModelImplements;
+    ImplementBlockModel* implementBlockModel;
 
   private:
     QNEBlock* getBlockWithId( int id );

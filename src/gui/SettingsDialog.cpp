@@ -39,6 +39,8 @@
 #include "../block/NumberObject.h"
 #include "../block/StringObject.h"
 
+#include "../block/Implement.h"
+
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
 #include "../block/TrailerModel.h"
@@ -109,7 +111,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   nodesEditor->install( scene );
 
   // Models for the tableview
-  filterModel = new QSortFilterProxyModel( scene );
+  filterModelValues = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
   numberBlockModel = new NumberBlockModel( scene );
   stringBlockModel = new StringBlockModel( scene );
@@ -117,9 +119,20 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   vectorBlockModel->addToCombobox( ui->cbValues );
   numberBlockModel->addToCombobox( ui->cbValues );
   stringBlockModel->addToCombobox( ui->cbValues );
-  filterModel->setSourceModel( vectorBlockModel );
-  filterModel->sort( 0, Qt::AscendingOrder );
-  ui->twValues->setModel( filterModel );
+  filterModelValues->setSourceModel( vectorBlockModel );
+  filterModelValues->sort( 0, Qt::AscendingOrder );
+  ui->twValues->setModel( filterModelValues );
+
+  implementBlockModel = new ImplementBlockModel( scene );
+  filterModelImplements = new QSortFilterProxyModel( scene );
+  filterModelImplements->setDynamicSortFilter( true );
+  filterModelImplements->setSourceModel( implementBlockModel );
+  filterModelImplements->sort( 0, Qt::AscendingOrder );
+  ui->cbImplements->setModel( filterModelImplements );
+  ui->twSections->setModel( filterModelImplements );
+  ui->cbImplements->setCurrentIndex( 0 );
+  QObject::connect( implementBlockModel, &QAbstractItemModel::modelReset,
+                    this, &SettingsDialog::implementModelReset );
 
   // initialise tiling
   Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
@@ -172,8 +185,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   fileStreamFactory = new FileStreamFactory();
   nmeaParserFactory = new NmeaParserFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
-
-//  fieldFactory = new FieldFactory( rootEntity );
+  implementFactory = new ImplementFactory( implementBlockModel );
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -183,6 +195,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
+  implementFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
@@ -230,13 +243,13 @@ SettingsDialog::~SettingsDialog() {
   fileStreamFactory->deleteLater();
   nmeaParserFactory->deleteLater();
   ackermannSteeringFactory->deleteLater();
-
-//  fieldFactory->deleteLater();
+  implementFactory->deleteLater();
 
   vectorBlockModel->deleteLater();
   numberBlockModel->deleteLater();
   stringBlockModel->deleteLater();
-  filterModel->deleteLater();
+
+  implementBlockModel->deleteLater();
 
   poseSimulationFactory->deleteLater();
   gridModelFactory->deleteLater();
@@ -309,7 +322,7 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
   QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
 
   if( model ) {
-    filterModel->setSourceModel( model );
+    filterModelValues->setSourceModel( model );
     ui->twValues->resizeColumnsToContents();
   }
 
@@ -764,4 +777,16 @@ void SettingsDialog::on_pbTileColor_clicked() {
 void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
   tileRoot.setShowEnable( enabled );
   saveTileValuesInSettings();
+}
+
+void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
+
+}
+
+void SettingsDialog::implementModelReset() {
+  qDebug() << ui->cbImplements->currentIndex();
+
+  if( ui->cbImplements->currentIndex() == -1 ) {
+    ui->cbImplements->setCurrentIndex( 0 );
+  }
 }
