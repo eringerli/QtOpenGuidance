@@ -44,7 +44,7 @@
          <item row="6" column="0" colspan="4">
           <widget class="QNEGraphicsView" name="gvNodeEditor">
            <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
+            <enum>Qt::StrongFocus</enum>
            </property>
            <property name="renderHints">
             <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
