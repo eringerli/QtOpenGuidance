@@ -34,6 +34,7 @@
 #include <QDebug>
 
 #include <GeographicLib/TransverseMercator.hpp>
+
 using namespace std;
 using namespace GeographicLib;
 

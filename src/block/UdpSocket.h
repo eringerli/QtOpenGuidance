@@ -22,7 +22,6 @@
 #include <QObject>
 #include <QtNetwork>
 
-
 #include "BlockBase.h"
 
 class UdpSocket : public BlockBase {

@@ -30,6 +30,7 @@
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -48,35 +49,37 @@ class XteGuidance : public BlockBase {
     }
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
 
-      double distance = qInf();
-      double headingOfABLine = 0;
+        double distance = qInf();
+        double headingOfABLine = 0;
 
-      for( auto primitive : plan ) {
-        PathPrimitiveLine* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+        for( auto primitive : plan ) {
+          PathPrimitiveLine* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-        if( line ) {
-          double distanceTmp = lineToPointDistance2D(
-                                 line->x1, line->y1,
-                                 line->x2, line->y2,
-                                 tile->x + double( position.x() ), tile->y + double( position.y() ),
-                                 line->segment
-                               );
+          if( line ) {
+            double distanceTmp = lineToPointDistance2D(
+                                   line->x1, line->y1,
+                                   line->x2, line->y2,
+                                   tile->x + double( position.x() ), tile->y + double( position.y() ),
+                                   line->segment
+                                 );
 
-          if( distanceTmp < distance ) {
-            headingOfABLine = qAtan2( line->y1 - line->y2, line->x1 - line->x2 ) - M_PI;
-            distance = distanceTmp;
+            if( distanceTmp < distance ) {
+              headingOfABLine = qAtan2( line->y1 - line->y2, line->x1 - line->x2 ) - M_PI;
+              distance = distanceTmp;
+            }
           }
         }
-      }
 
-      if( !qIsInf( distance ) ) {
-        emit headingOfPathChanged( float( headingOfABLine ) );
-        emit xteChanged( float( distance ) );
-      } else {
-        emit headingOfPathChanged( qInf() );
-        emit xteChanged( qInf() );
+        if( !qIsInf( distance ) ) {
+          emit headingOfPathChanged( float( headingOfABLine ) );
+          emit xteChanged( float( distance ) );
+        } else {
+          emit headingOfPathChanged( qInf() );
+          emit xteChanged( qInf() );
+        }
       }
     }
 
@@ -194,7 +197,7 @@ class XteGuidanceFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       b->addOutputPort( "XTE", SIGNAL( xteChanged( float ) ) );

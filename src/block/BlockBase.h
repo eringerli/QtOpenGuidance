@@ -39,8 +39,8 @@ class BlockBase : public QObject {
 
     virtual void emitConfigSignals() {}
 
-    virtual void toJSON( QJsonObject& /*json*/ ) {}
-    virtual void fromJSON( QJsonObject& /*json*/ ) {}
+    virtual void toJSON( QJsonObject& ) {}
+    virtual void fromJSON( QJsonObject& ) {}
 
     virtual void setName( QString ) {}
 };

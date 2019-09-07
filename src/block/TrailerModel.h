@@ -38,6 +38,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 class TrailerModel : public BlockBase {
     Q_OBJECT
@@ -47,9 +48,9 @@ class TrailerModel : public BlockBase {
     ~TrailerModel();
 
   public slots:
-    void setPoseHookPoint( Tile*, QVector3D, QQuaternion );
-    void setPoseTowPoint( Tile*, QVector3D, QQuaternion );
-    void setPosePivotPoint( Tile*, QVector3D, QQuaternion );
+    void setPoseHookPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void setPoseTowPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void setPosePivotPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
 
     void setOffsetHookPointPosition( QVector3D position );
     void setTrackwidth( float trackwidth );
@@ -121,9 +122,9 @@ class TrailerModelFactory : public BlockFactory {
 
       b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
       b->addInputPort( "Offset Hook Point", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
-      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion ) ) );
-      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

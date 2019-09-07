@@ -30,6 +30,7 @@
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -54,11 +55,13 @@ class StanleyGuidance : public BlockBase {
       this->steeringAngle = double( steeringAngle );
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
-      this->tile = tile;
-      this->position = position;
-      this->orientation1Ago = this->orientation;
-      this->orientation = orientation;
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        this->tile = tile;
+        this->position = position;
+        this->orientation1Ago = this->orientation;
+        this->orientation = orientation;
+      }
     }
 
     void setHeadingOfPath( float headingOfPath ) {
@@ -232,7 +235,7 @@ class StanleyGuidanceFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
       b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
       b->addInputPort( "XTE", SLOT( setXte( float ) ) );

@@ -41,6 +41,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 #include "../3d/linemesh.h"
 
@@ -69,7 +70,7 @@ class GridModel : public BlockBase {
     }
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options ) {
       m_baseEntity->setParent( tile->tileEntity );
       QVector3D positionModulo( ( std::floor( ( tile->x + position.x() ) / xStep )*xStep ) - tile->x,
                                 ( std::floor( ( tile->y + position.y() ) / yStep )*yStep ) - tile->y,
@@ -164,7 +165,7 @@ class GridModelFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

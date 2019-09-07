@@ -64,6 +64,7 @@ HEADERS += \
     src/gui/VectorBlockModel.h \
     src/kinematic/Field.h \
     src/kinematic/FixedKinematic.h \
+    src/kinematic/PoseOptions.h \
     src/kinematic/Tile.h \
     src/kinematic/TrailerKinematic.h
 

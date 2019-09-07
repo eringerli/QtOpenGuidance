@@ -32,6 +32,7 @@
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 class PlannerGui : public BlockBase {
     Q_OBJECT
@@ -44,10 +45,12 @@ class PlannerGui : public BlockBase {
     }
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
-      this->tile = tile;
-      this->position = position;
-      this->orientation = orientation;
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        this->tile = tile;
+        this->position = position;
+        this->orientation = orientation;
+      }
     }
 
   signals:
@@ -96,7 +99,7 @@ class PlannerGuiFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addOutputPort( "A clicked", SIGNAL( a_clicked() ) );
       b->addOutputPort( "B clicked", SIGNAL( b_clicked() ) );
       b->addOutputPort( "Snap clicked", SIGNAL( snap_clicked() ) );

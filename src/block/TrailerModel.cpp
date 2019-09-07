@@ -210,16 +210,6 @@ void TrailerModel::setOffsetHookPointPosition( QVector3D position ) {
   setProportions();
 }
 
-void TrailerModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion ) {
-  m_towPointEntity->setParent( tile->tileEntity );
-  m_towPointTransform->setTranslation( position );
-}
-
-void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion ) {
-  m_towHookEntity->setParent( tile->tileEntity );
-  m_towHookTransform->setTranslation( position );
-}
-
 void TrailerModel::setTrackwidth( float trackwidth ) {
   if( !qFuzzyIsNull( trackwidth ) ) {
     m_trackwidth = trackwidth;
@@ -227,11 +217,27 @@ void TrailerModel::setTrackwidth( float trackwidth ) {
   }
 }
 
-void TrailerModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation ) {
-  m_pivotPointEntity->setParent( tile->tileEntity );
-  m_pivotPointTransform->setTranslation( position );
+void TrailerModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    m_towPointEntity->setParent( tile->tileEntity );
+    m_towPointTransform->setTranslation( position );
+  }
+}
 
-  m_rootEntity->setParent( tile->tileEntity );
-  m_rootEntityTransform->setTranslation( position );
-  m_rootEntityTransform->setRotation( rotation );
+void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    m_towHookEntity->setParent( tile->tileEntity );
+    m_towHookTransform->setTranslation( position );
+  }
+}
+
+void TrailerModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation, PoseOption::Options options ) {
+  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    m_pivotPointEntity->setParent( tile->tileEntity );
+    m_pivotPointTransform->setTranslation( position );
+
+    m_rootEntity->setParent( tile->tileEntity );
+    m_rootEntityTransform->setTranslation( position );
+    m_rootEntityTransform->setRotation( rotation );
+  }
 }

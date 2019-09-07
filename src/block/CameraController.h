@@ -27,6 +27,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 #ifndef CAMERACONTROLLER_H
 #define CAMERACONTROLLER_H
@@ -78,8 +79,8 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
-      if( m_mode == 0 ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         m_cameraEntity->setParent( tile->tileEntity );
         m_lightEntity->setParent( tile->tileEntity );
 
@@ -223,7 +224,7 @@ class CameraControllerFactory : public BlockFactory {
 
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
-      b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

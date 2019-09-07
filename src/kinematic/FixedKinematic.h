@@ -33,6 +33,7 @@
 #include "../block/BlockBase.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 class FixedKinematic : public BlockBase {
     Q_OBJECT
@@ -50,23 +51,39 @@ class FixedKinematic : public BlockBase {
       m_offsetHookPoint = position;
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+        orientation = QQuaternion();
+      }
+
       QVector3D positionPivotPoint = position + orientation * -m_offsetHookPoint;
       QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
 
-      emit poseHookPointChanged( tile, position, orientation );
+      emit poseHookPointChanged( tile, position, orientation, options );
 
-      Tile* currentTile = tile->getTileForPosition( &positionTowPoint );
-      emit poseTowPointChanged( currentTile, positionTowPoint, orientation );
+      Tile* currentTile;
 
-      currentTile = tile->getTileForPosition( &positionPivotPoint );
-      emit posePivotPointChanged( currentTile, positionPivotPoint, orientation );
+      if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
+        currentTile = tile;
+      } else {
+        currentTile = tile->getTileForPosition( &positionTowPoint );
+      }
+
+      emit poseTowPointChanged( currentTile, positionTowPoint, orientation, options );
+
+      if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
+        currentTile = tile;
+      } else {
+        currentTile = tile->getTileForPosition( &positionPivotPoint );
+      }
+
+      emit posePivotPointChanged( currentTile, positionPivotPoint, orientation, options );
     }
 
   signals:
-    void poseHookPointChanged( Tile*, QVector3D, QQuaternion );
-    void posePivotPointChanged( Tile*, QVector3D, QQuaternion );
-    void poseTowPointChanged( Tile*, QVector3D, QQuaternion );
+    void poseHookPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void posePivotPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void poseTowPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
@@ -102,11 +119,11 @@ class FixedKinematicFactory : public BlockFactory {
 
       b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
       b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
-      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Tile*, QVector3D, QQuaternion ) ) );
-      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( Tile*, QVector3D, QQuaternion ) ) );
-      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( Tile*, QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

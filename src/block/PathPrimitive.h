@@ -28,8 +28,6 @@
 
 #include <Qt3DCore/QEntity>
 
-#include "../kinematic/Tile.h"
-
 class PathPrimitive : public QObject {
     Q_OBJECT
 

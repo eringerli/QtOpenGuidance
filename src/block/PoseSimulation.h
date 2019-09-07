@@ -35,6 +35,7 @@
 #include "../kinematic/Tile.h"
 
 #include <GeographicLib/TransverseMercator.hpp>
+
 using namespace std;
 using namespace GeographicLib;
 

@@ -30,6 +30,7 @@
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 class PoseSynchroniser : public BlockBase {
     Q_OBJECT
@@ -43,7 +44,7 @@ class PoseSynchroniser : public BlockBase {
   public slots:
     void setTiledPosition( Tile* tile, QVector3D position ) {
       this->position = position;
-      emit poseChanged( tile, this->position, orientation );
+      emit poseChanged( tile, this->position, orientation, PoseOption::NoOptions );
     }
 
     void setOrientation( QQuaternion value ) {
@@ -51,12 +52,12 @@ class PoseSynchroniser : public BlockBase {
     }
 
   signals:
-    void poseChanged( Tile* tile, QVector3D position, QQuaternion orientation );
+    void poseChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
 
   public:
     virtual void emitConfigSignals() override {
       rootTile = rootTile->getTileForPosition( &position );
-      emit poseChanged( rootTile, position, orientation );
+      emit poseChanged( rootTile, position, orientation, PoseOption::NoOptions );
     }
 
   public:
@@ -95,7 +96,7 @@ class PoseSynchroniserFactory : public BlockFactory {
       b->addInputPort( "Tiled Position", SLOT( setTiledPosition( Tile*, QVector3D ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
 
-      b->addOutputPort( "Pose", SIGNAL( poseChanged( Tile*, QVector3D, QQuaternion ) ) );
+      b->addOutputPort( "Pose", SIGNAL( poseChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

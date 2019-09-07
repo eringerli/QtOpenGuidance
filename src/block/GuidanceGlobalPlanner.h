@@ -38,6 +38,7 @@
 #include "qneport.h"
 
 #include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -117,7 +118,7 @@ class GlobalPlanner : public BlockBase {
       // line marker
       {
         lineEntity = new Qt3DCore::QEntity( tile00->tileEntity );
-        lineEntity->setEnabled(false);
+        lineEntity->setEnabled( false );
 
         lineTransform = new Qt3DCore::QTransform();
         lineEntity->addComponent( lineTransform );
@@ -132,13 +133,15 @@ class GlobalPlanner : public BlockBase {
     }
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation ) {
-      this->tile = tile;
-      this->position = position;
-      this->orientation = orientation;
+    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        this->tile = tile;
+        this->position = position;
+        this->orientation = orientation;
 
-      aPointTransform->setRotation( orientation );
-      bPointTransform->setRotation( orientation );
+        aPointTransform->setRotation( orientation );
+        bPointTransform->setRotation( orientation );
+      }
     }
 
     void a_clicked() {
@@ -163,18 +166,18 @@ class GlobalPlanner : public BlockBase {
       x2 = double( position.x() ) + tile->x;
       y2 = double( position.y() ) + tile->y;
 
-      headingOfABLine = atan2( y1 - y2,x1 - x2 ) - M_PI;
+      headingOfABLine = atan2( y1 - y2, x1 - x2 ) - M_PI;
 
       QVector<QVector3D> linePoints;
 
       // extend the points 200m in either direction
 
-      double ab = qSqrt( qPow( (x2 - x1),2) + qPow( (y2 - y1),2) );
+      double ab = qSqrt( qPow( ( x2 - x1 ), 2 ) + qPow( ( y2 - y1 ), 2 ) );
       double ac = -200;
-      linePoints.append(QVector3D(x1 + (ac * (x2 - x1) / ab),y1 + (ac * (y2 - y1) / ab),position.z()));
+      linePoints.append( QVector3D( x1 + ( ac * ( x2 - x1 ) / ab ), y1 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
       ac = 200;
-      linePoints.append(QVector3D(x2 + (ac * (x2 - x1) / ab),y2 + (ac * (y2 - y1) / ab),position.z()));
-      lineMesh->posUpdate(linePoints);
+      linePoints.append( QVector3D( x2 + ( ac * ( x2 - x1 ) / ab ), y2 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
+      lineMesh->posUpdate( linePoints );
 
       lineEntity->setEnabled( true );
 
@@ -186,14 +189,27 @@ class GlobalPlanner : public BlockBase {
 //      double x2tmp = x1 + (ac * (x2 - x1) / ab);
 //      double y2tmp = y1 + (ac * (y2 - y1) / ab);
 
-      plan.append(QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1,x2,y2, false ) ));
-      emit planChanged(plan);
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1, x2, y2, false ) ) );
+      emit planChanged( plan );
 
       qDebug() << "b_clicked()" << x1 << y1 << x2 << y2 << x1 - x2 << y1 - y2 << qRadiansToDegrees( headingOfABLine );
     }
 
     void snap_clicked() {
       qDebug() << "snap_clicked()";
+
+      QVector<QSharedPointer<PathPrimitive>> plan;
+//      ac = -200;
+//      double x1tmp = x1 + (ac * (x2 - x1) / ab);
+//      double y1tmp = y1 + (ac * (y2 - y1) / ab);
+//      ac = 200;
+//      double x2tmp = x1 + (ac * (x2 - x1) / ab);
+//      double y2tmp = y1 + (ac * (y2 - y1) / ab);
+
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x(), position.y(), position.x(), position.y() + 20, true ) ) );
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x() + 20, position.y(), position.x() + 20, position.y() + 20, false ) ) );
+
+      emit planChanged( plan );
     }
 
     void turnLeft_clicked() {
@@ -204,7 +220,7 @@ class GlobalPlanner : public BlockBase {
     }
 
   signals:
-    void planChanged(QVector<QSharedPointer<PathPrimitive>>);
+    void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
   public:
     Tile* tile = nullptr;
@@ -267,14 +283,14 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "A clicked", SLOT( a_clicked() ) );
       b->addInputPort( "B clicked", SLOT( b_clicked() ) );
       b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
       b->addInputPort( "Turn Left", SLOT( turnLeft_clicked() ) );
       b->addInputPort( "Turn Right", SLOT( turnRight_clicked() ) );
 
-      b->addOutputPort("Plan", SIGNAL(planChanged(QVector<QSharedPointer<PathPrimitive>>)));
+      b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       return b;
     }
