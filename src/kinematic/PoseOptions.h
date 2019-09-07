@@ -16,12 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include <QObject>
 #include <QFlags>
 
 #ifndef POSEOPTIONS_H
 #define POSEOPTIONS_H
 
 class PoseOption {
+    Q_GADGET
+
   public:
     enum Option {
       NoOptions = 0x0,
@@ -30,6 +33,7 @@ class PoseOption {
       CalculateWithoutTiling = 0x4
     };
     Q_DECLARE_FLAGS( Options, Option )
+    Q_FLAG( Options )
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( PoseOption::Options )
