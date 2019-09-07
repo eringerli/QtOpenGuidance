@@ -62,7 +62,6 @@ HEADERS += \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
     src/gui/VectorBlockModel.h \
-    src/kinematic/Field.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/Tile.h \
