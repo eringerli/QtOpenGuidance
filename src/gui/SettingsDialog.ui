@@ -482,26 +482,6 @@
             <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="3" column="3">
-             <widget class="QPushButton" name="btnSectionMoveUp">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Move Up</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QPushButton" name="btnSectionMoveDown">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Move Down</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="3">
              <widget class="QPushButton" name="btnSectionAdd">
               <property name="focusPolicy">
@@ -513,7 +493,7 @@
              </widget>
             </item>
             <item row="2" column="3">
-             <spacer name="verticalSpacer_4">
+             <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -535,7 +515,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="6" column="0">
              <widget class="QPushButton" name="pbSetSelectedCellsToNumber">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
@@ -545,8 +525,14 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="1" colspan="2">
+            <item row="6" column="1">
              <widget class="QDoubleSpinBox" name="dsbSectionsNumber">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="suffix">
                <string> m</string>
               </property>
@@ -558,13 +544,49 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" rowspan="4" colspan="3">
+            <item row="0" column="0" rowspan="6" colspan="3">
              <widget class="QTableView" name="twSections">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>1</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QPushButton" name="btnSectionMoveUp">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move Up</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QPushButton" name="btnSectionMoveDown">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move Down</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="2">
+             <widget class="QLabel" name="label_7">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Negative Overlap adds Space</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>

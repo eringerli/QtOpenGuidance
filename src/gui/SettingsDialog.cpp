@@ -538,6 +538,8 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
     }
   }
 
+  allModelsReset();
+
   // rescale the tableview
   ui->twValues->resizeColumnsToContents();
 }
@@ -551,6 +553,8 @@ void SettingsDialog::on_pbAddBlock_clicked() {
     QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
     block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
   }
+
+  allModelsReset();
 }
 
 void SettingsDialog::on_pbZoomOut_clicked() {
@@ -784,20 +788,16 @@ void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
 }
 
 void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
-  if( index != -1 ) {
     QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
     QVariant data = ui->cbImplements->model()->data( idx );
     QNEBlock* block = qvariant_cast<QNEBlock*>( data );
 
-    if( block ) {
       implementSectionModel->setDatasource( block );
       ui->twSections->resizeColumnsToContents();
-    }
-  }
 }
 
 void SettingsDialog::implementModelReset() {
-  if( ui->cbImplements->currentIndex() == -1 && ui->cbImplements->model()->rowCount() ) {
+  if( ui->cbImplements->currentIndex() == -1 ||ui->cbImplements->currentIndex()>= ui->cbImplements->model()->rowCount() ) {
     ui->cbImplements->setCurrentIndex( 0 );
   }
 
