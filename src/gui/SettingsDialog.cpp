@@ -811,9 +811,80 @@ void SettingsDialog::allModelsReset() {
 }
 
 void SettingsDialog::on_btnSectionAdd_clicked() {
-  ui->twSections->model()->insertRow( ui->twSections->model()->rowCount() );
+  if( ui->twSections->selectionModel()->selection().indexes().count() ) {
+    ui->twSections->model()->insertRow( ui->twSections->selectionModel()->selection().indexes().first().row() );
+  } else {
+    ui->twSections->model()->insertRow( ui->twSections->model()->rowCount() );
+  }
 }
 
 void SettingsDialog::on_btnSectionRemove_clicked() {
-  ui->twSections->model()->removeRow( ui->twSections->currentIndex().row() );
+  QItemSelection selection( ui->twSections->selectionModel()->selection() );
+
+  QList<int> rows;
+
+  foreach( const QModelIndex& index, selection.indexes() ) {
+    rows.append( index.row() );
+  }
+
+  // sort to reverse order
+  std::sort( rows.begin(), rows.end(), std::greater<int>() );
+
+  foreach( const int& i, rows ) {
+    ui->twSections->model()->removeRows( i, 1 );
+  }
+}
+
+void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
+  QItemSelection selection( ui->twSections->selectionModel()->selection() );
+
+  foreach( const QModelIndex& index, selection.indexes() ) {
+    ui->twSections->model()->setData( index, ui->dsbSectionsNumber->value() );
+  }
+}
+
+void SettingsDialog::on_btnSectionMoveUp_clicked() {
+  QItemSelection selection( ui->twSections->selectionModel()->selection() );
+
+  QList<int> rows;
+
+  foreach( const QModelIndex& index, selection.indexes() ) {
+    rows.append( index.row() );
+  }
+
+  // forward sort
+  std::sort( rows.begin(), rows.end(), std::less<int>() );
+
+  ImplementSectionModel* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+
+  if( implementModel ) {
+    if( rows[0] > 0 ) {
+      foreach( const int& i, rows ) {
+        implementModel->swapElements( i, i - 1 );
+      }
+    }
+  }
+}
+
+void SettingsDialog::on_btnSectionMoveDown_clicked() {
+  QItemSelection selection( ui->twSections->selectionModel()->selection() );
+
+  QList<int> rows;
+
+  foreach( const QModelIndex& index, selection.indexes() ) {
+    rows.append( index.row() );
+  }
+
+  // reverse sort
+  std::sort( rows.begin(), rows.end(), std::greater<int>() );
+
+  ImplementSectionModel* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+
+  if( implementModel ) {
+    if( ( rows[0] + 1 ) < implementModel->rowCount() ) {
+      foreach( const int& i, rows ) {
+        implementModel->swapElements( i, i + 1 );
+      }
+    }
+  }
 }

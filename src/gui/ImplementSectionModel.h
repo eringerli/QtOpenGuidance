@@ -54,6 +54,7 @@ class ImplementSectionModel : public QAbstractTableModel {
 
     bool insertRows( int row, int count, const QModelIndex& parent = QModelIndex() ) override;
     bool removeRows( int row, int count, const QModelIndex& parent = QModelIndex() ) override;
+    bool swapElements( int first, int second );
 
     Qt::ItemFlags flags( const QModelIndex& index ) const override;
 

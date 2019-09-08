@@ -21,6 +21,8 @@
 
 #include <QObject>
 
+#include "../block/Implement.h"
+
 #include "../gui/SectionControlToolbar.h"
 
 #include "BlockBase.h"
@@ -49,8 +51,10 @@ class SectionControlModel : public BlockBase {
         sectionControlToolbar->setName( name );
       }
     }
-    void setNumberOfSections( float number ) {
-      sectionControlToolbar->setNumberOfSections( number );
+
+    void setSections( QVector<QSharedPointer<ImplementSection>> sections ) {
+      this->sections = sections;
+      sectionControlToolbar->setNumberOfSections( sections.count() );
     }
 
   signals:
@@ -58,6 +62,8 @@ class SectionControlModel : public BlockBase {
 
   public:
     SectionControlToolbar* sectionControlToolbar = nullptr;
+
+    QVector<QSharedPointer<ImplementSection>> sections;
 };
 
 class SectionControlModelFactory : public BlockFactory {
@@ -87,7 +93,7 @@ class SectionControlModelFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Number Of Sections", SLOT( setNumberOfSections( float ) ) );
+      b->addInputPort( "Section Controll Data", SLOT( setSections( QVector<QSharedPointer<ImplementSection>> ) ) );
 
       return b;
     }

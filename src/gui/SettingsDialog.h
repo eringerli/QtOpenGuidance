@@ -116,6 +116,12 @@ class SettingsDialog : public QDialog {
 
     void on_btnSectionRemove_clicked();
 
+    void on_pbSetSelectedCellsToNumber_clicked();
+
+    void on_btnSectionMoveUp_clicked();
+
+    void on_btnSectionMoveDown_clicked();
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();

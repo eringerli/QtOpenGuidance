@@ -117,7 +117,7 @@ class ImplementFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addOutputPort( "String", SIGNAL( stringChanged( QString ) ) );
+      b->addOutputPort( "Section Controll Data", SIGNAL( sectionsChanged( QVector<QSharedPointer<ImplementSection>> )) );
 
       model->resetModel();
 

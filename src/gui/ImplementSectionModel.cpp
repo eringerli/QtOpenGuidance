@@ -154,6 +154,8 @@ bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& p
       }
 
       endInsertRows();
+
+      block->emitConfigSignals();
       return true;
     }
   }
@@ -171,6 +173,8 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
       beginRemoveRows( parent, row, row + ( count - 1 ) );
       implement->sections.remove( row, count );
       endRemoveRows();
+
+      block->emitConfigSignals();
       return true;
     }
   }
@@ -178,6 +182,31 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
   return false;
 
 }
+
+bool ImplementSectionModel::swapElements( int first, int second ) {
+
+  if( block ) {
+    Implement* implement = qobject_cast<Implement*>( block->object );
+
+    if( implement ) {
+      if( first < second ) {
+        std::swap( first, second );
+      }
+
+      beginMoveRows( QModelIndex(), first, first, QModelIndex(), second );
+
+      std::swap( implement->sections[first], implement->sections[second] );
+
+      endMoveRows();
+
+      block->emitConfigSignals();
+      return true;
+    }
+  }
+
+  return false;
+}
+
 
 Qt::ItemFlags ImplementSectionModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {

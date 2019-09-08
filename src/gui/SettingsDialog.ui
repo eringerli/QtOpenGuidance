@@ -481,17 +481,7 @@
            <property name="checkable">
             <bool>false</bool>
            </property>
-           <layout class="QGridLayout" name="_2">
-            <item row="0" column="3">
-             <widget class="QPushButton" name="btnSectionAdd">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Add Section</string>
-              </property>
-             </widget>
-            </item>
+           <layout class="QGridLayout" name="gridLayout_4">
             <item row="3" column="3">
              <widget class="QPushButton" name="btnSectionMoveUp">
               <property name="focusPolicy">
@@ -512,23 +502,13 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
-             <widget class="QPushButton" name="btnSectionRemove">
+            <item row="0" column="3">
+             <widget class="QPushButton" name="btnSectionAdd">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
               <property name="text">
-               <string>Remove</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" rowspan="6">
-             <widget class="QTableView" name="twSections">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+               <string>Insert Section</string>
               </property>
              </widget>
             </item>
@@ -544,6 +524,49 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="1" column="3">
+             <widget class="QPushButton" name="btnSectionRemove">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Remove</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QPushButton" name="pbSetSelectedCellsToNumber">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Set Selected Cells to Number</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1" colspan="2">
+             <widget class="QDoubleSpinBox" name="dsbSectionsNumber">
+              <property name="suffix">
+               <string> m</string>
+              </property>
+              <property name="minimum">
+               <double>-99.989999999999995</double>
+              </property>
+              <property name="singleStep">
+               <double>0.010000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" rowspan="4" colspan="3">
+             <widget class="QTableView" name="twSections">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
