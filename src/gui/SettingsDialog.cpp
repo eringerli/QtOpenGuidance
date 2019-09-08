@@ -548,7 +548,8 @@ void SettingsDialog::on_pbAddBlock_clicked() {
 
   if( factory ) {
     BlockBase* obj = factory->createNewObject();
-    factory->createBlock( ui->gvNodeEditor->scene(), obj );
+    QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
+    block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
   }
 }
 
