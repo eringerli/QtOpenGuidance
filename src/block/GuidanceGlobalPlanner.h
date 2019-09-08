@@ -144,6 +144,22 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
+    void setPoseLeftEdge( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
+          options.testFlag( PoseOption::CalculateWithoutTiling ) &&
+          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+        positionLeftEdgeOfImplement = position;
+      }
+    }
+
+    void setPoseRightEdge( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
+          options.testFlag( PoseOption::CalculateWithoutTiling ) &&
+          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+        positionRightEdgeOfImplement = position;
+      }
+    }
+
     void a_clicked() {
       aPointEntity->setParent( tile->tileEntity );
       aPointTransform->setTranslation( position );
@@ -231,6 +247,9 @@ class GlobalPlanner : public BlockBase {
     double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
     double headingOfABLine = 0;
 
+    QVector3D positionLeftEdgeOfImplement = QVector3D();
+    QVector3D positionRightEdgeOfImplement = QVector3D();
+
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
 
@@ -284,6 +303,8 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Left Edge", SLOT( setPoseLeftEdge( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Right Edge", SLOT( setPoseRightEdge( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "A clicked", SLOT( a_clicked() ) );
       b->addInputPort( "B clicked", SLOT( b_clicked() ) );
       b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
@@ -296,8 +317,8 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
   private:
-    Tile* tile;
-    Qt3DCore::QEntity* rootEntity;
+    Tile* tile = nullptr;
+    Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
 #endif // GLOBALPLANNER_H

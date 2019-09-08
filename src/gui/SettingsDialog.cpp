@@ -187,7 +187,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   fileStreamFactory = new FileStreamFactory();
   nmeaParserFactory = new NmeaParserFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
-  implementFactory = new ImplementFactory( implementBlockModel );
+  implementFactory = new ImplementFactory( tile, implementBlockModel );
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );

@@ -56,9 +56,10 @@ class FixedKinematic : public BlockBase {
         orientation = QQuaternion();
       }
 
-      QVector3D positionPivotPoint = position + orientation * -m_offsetHookPoint;
+      QVector3D positionPivotPoint = position + ( options.testFlag( PoseOption::CalculateFromPivotPoint ) ? QVector3D() : orientation * -m_offsetHookPoint );
       QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
 
+      options.setFlag( PoseOption::CalculateFromPivotPoint, false );
       emit poseHookPointChanged( tile, position, orientation, options );
 
       Tile* currentTile;

@@ -23,6 +23,11 @@
 
 #include <QObject>
 
+#include <QQuaternion>
+#include <QVector3D>
+#include "../kinematic/Tile.h"
+#include "../kinematic/PoseOptions.h"
+
 #include "BlockBase.h"
 
 class ImplementSection {
@@ -41,11 +46,26 @@ class Implement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit Implement()
-      : BlockBase() {}
+    explicit Implement( Tile* tile )
+      : BlockBase() {
+      this->tile00 = tile->getTileForOffset( 0, 0 );
+    }
 
     void emitConfigSignals() override {
+      double width = 0;
+
+      foreach( const QSharedPointer<ImplementSection> section, sections ) {
+        width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
+      }
+
+      emit leftEdgeChanged( QVector3D( 0, float( -width / 2 ), 0 ) );
+      emit rightEdgeChanged( QVector3D( 0, float( width / 2 ), 0 ) );
       emit sectionsChanged( sections );
+      emit triggerLocalPose( tile00, QVector3D(), QQuaternion(),
+                             PoseOption::CalculateLocalOffsets |
+                             PoseOption::CalculateWithoutTiling |
+                             PoseOption::CalculateWithoutOrientation |
+                             PoseOption::CalculateFromPivotPoint );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -84,18 +104,23 @@ class Implement : public BlockBase {
     }
 
   signals:
+    void triggerLocalPose( Tile*, QVector3D, QQuaternion, PoseOption::Options );
     void sectionsChanged( QVector<QSharedPointer<ImplementSection>> );
+    void leftEdgeChanged( QVector3D );
+    void rightEdgeChanged( QVector3D );
 
   public:
     QVector<QSharedPointer<ImplementSection>> sections;
+    Tile* tile00 = nullptr;
 };
 
 class ImplementFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ImplementFactory( ImplementBlockModel* model )
+    ImplementFactory( Tile* tile, ImplementBlockModel* model )
       : BlockFactory(),
+        tile( tile ),
         model( model ) {}
 
     QString getNameOfFactory() override {
@@ -107,7 +132,7 @@ class ImplementFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new Implement();
+      return new Implement( tile );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -117,7 +142,10 @@ class ImplementFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addOutputPort( "Section Controll Data", SIGNAL( sectionsChanged( QVector<QSharedPointer<ImplementSection>> )) );
+      b->addOutputPort( "Trigger Calculation of Local Pose", SIGNAL( triggerLocalPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( "Section Controll Data", SIGNAL( sectionsChanged( QVector<QSharedPointer<ImplementSection>> ) ) );
+      b->addOutputPort( "Position Left Edge", SIGNAL( leftEdgeChanged( QVector3D ) ) );
+      b->addOutputPort( "Position Right Edge", SIGNAL( rightEdgeChanged( QVector3D ) ) );
 
       model->resetModel();
 
@@ -125,6 +153,7 @@ class ImplementFactory : public BlockFactory {
     }
 
   private:
+    Tile* tile = nullptr;
     ImplementBlockModel* model = nullptr;
 };
 

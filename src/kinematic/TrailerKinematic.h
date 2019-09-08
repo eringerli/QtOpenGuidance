@@ -90,7 +90,9 @@ class TrailerKinematic : public BlockBase {
 
       emit poseHookPointChanged( tile, position, orientation, options );
 
-      QVector3D positionPivotPoint = position + ( orientation * -m_offsetHookPoint );
+      QVector3D positionPivotPoint = position + ( options.testFlag( PoseOption::CalculateFromPivotPoint ) ? QVector3D() : orientation * -m_offsetHookPoint );
+      options.setFlag( PoseOption::CalculateFromPivotPoint, false );
+
       Tile* tilePivotPoint;
 
       if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
