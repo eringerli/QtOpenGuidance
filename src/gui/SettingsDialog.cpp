@@ -572,6 +572,7 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
     if( block != nullptr ) {
       if( !block->systemBlock ) {
         delete block;
+        allModelsReset();
       }
     }
   }
@@ -701,7 +702,6 @@ void SettingsDialog::on_pbSetStringToFilename_clicked() {
 
   if( index.isValid() ) {
     QString dir = ui->twValues->model()->data( index, Qt::DisplayRole ).toString();
-    qDebug() << dir;
     QString fileName = QFileDialog::getOpenFileName( this,
                        tr( "Set Filename to String" ),
                        dir );
@@ -784,9 +784,14 @@ void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
 }
 
 void SettingsDialog::implementModelReset() {
-  qDebug() << ui->cbImplements->currentIndex();
-
   if( ui->cbImplements->currentIndex() == -1 ) {
     ui->cbImplements->setCurrentIndex( 0 );
   }
+}
+
+void SettingsDialog::allModelsReset() {
+  vectorBlockModel->resetModel();
+  numberBlockModel->resetModel();
+  stringBlockModel->resetModel();
+  implementBlockModel->resetModel();
 }

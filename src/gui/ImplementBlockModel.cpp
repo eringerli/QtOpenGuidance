@@ -79,6 +79,7 @@ QVariant ImplementBlockModel::data( const QModelIndex& index, int role ) const {
           switch( index.column() ) {
             case 0:
               return block->getName();
+
             case 1:
               return QVariant::fromValue( block->object );
           }

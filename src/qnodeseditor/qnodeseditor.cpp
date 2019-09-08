@@ -42,6 +42,8 @@
 #include "qneconnection.h"
 #include "qneblock.h"
 
+#include "../gui/SettingsDialog.h"
+
 #include "../block/BlockBase.h"
 
 QNodesEditor::QNodesEditor( QObject* parent ) :
@@ -118,6 +120,12 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               if( block != nullptr ) {
                 if( !block->systemBlock ) {
                   delete block;
+
+                  SettingsDialog* dialog = qobject_cast<SettingsDialog*>( parent() );
+
+                  if( dialog ) {
+                    dialog->allModelsReset();
+                  }
                 }
               }
             }
@@ -208,6 +216,12 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               if( block ) {
                 if( !block->systemBlock ) {
                   delete block;
+
+                  SettingsDialog* dialog = qobject_cast<SettingsDialog*>( parent() );
+
+                  if( dialog ) {
+                    dialog->allModelsReset();
+                  }
                 }
               } else {
                 QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );

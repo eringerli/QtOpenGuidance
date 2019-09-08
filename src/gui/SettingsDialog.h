@@ -65,6 +65,8 @@ class SettingsDialog : public QDialog {
     void loadDefaultConfig();
     void saveDefaultConfig();
 
+    void allModelsReset();
+
   private slots:
     void on_cbValues_currentIndexChanged( int index );
     void on_pbSetStringToFilename_clicked();
