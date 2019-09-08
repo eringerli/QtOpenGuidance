@@ -25,6 +25,18 @@
 
 #include "BlockBase.h"
 
+class ImplementSection {
+  public:
+    ImplementSection() {}
+    ImplementSection( double overlapLeft, double widthOfSection, double overlapRight )
+      : overlapLeft( overlapLeft ), widthOfSection( widthOfSection ), overlapRight( overlapRight ) {}
+
+  public:
+    double overlapLeft = 0;
+    double widthOfSection = 0;
+    double overlapRight = 0;
+};
+
 class Implement : public BlockBase {
     Q_OBJECT
 
@@ -33,12 +45,22 @@ class Implement : public BlockBase {
       : BlockBase() {}
 
     void emitConfigSignals() override {
-      emit stringChanged( string );
+      emit sectionsChanged( sections );
     }
 
     void toJSON( QJsonObject& json ) override {
+      QJsonArray array;
+
+      foreach( const QSharedPointer<ImplementSection> section, sections ) {
+        QJsonObject sectionObject;
+        sectionObject["overlapLeft"] = section->overlapLeft;
+        sectionObject["widthOfSection"] = section->widthOfSection;
+        sectionObject["overlapRight"] = section->overlapRight;
+        array.append( sectionObject );
+      }
+
       QJsonObject valuesObject;
-      valuesObject["String"] = string;
+      valuesObject["Sections"] = array;
       json["values"] = valuesObject;
     }
 
@@ -46,17 +68,26 @@ class Implement : public BlockBase {
       if( json["values"].isObject() ) {
         QJsonObject valuesObject = json["values"].toObject();
 
-        if( valuesObject["String"].isString() ) {
-          string = valuesObject["String"].toString();
+        if( valuesObject["Sections"].isArray() ) {
+          QJsonArray sectionArray = valuesObject["Sections"].toArray();
+
+          for( int sectionIndex = 0; sectionIndex < sectionArray.size(); ++sectionIndex ) {
+            QJsonObject sectionObject = sectionArray[sectionIndex].toObject();
+            sections.append(
+              QSharedPointer<ImplementSection>(
+                new ImplementSection( sectionObject["overlapLeft"].toDouble( 0 ),
+                                      sectionObject["widthOfSection"].toDouble( 0 ),
+                                      sectionObject["overlapRight"].toDouble( 0 ) ) ) );
+          }
         }
       }
     }
 
   signals:
-    void stringChanged( QString );
+    void sectionsChanged( QVector<QSharedPointer<ImplementSection>> );
 
   public:
-    QString string;
+    QVector<QSharedPointer<ImplementSection>> sections;
 };
 
 class ImplementFactory : public BlockFactory {

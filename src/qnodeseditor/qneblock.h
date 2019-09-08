@@ -33,6 +33,8 @@
 class QNEPort;
 
 class QNEBlock : public QGraphicsPathItem {
+    Q_GADGET
+
   public:
     enum { Type = QGraphicsItem::UserType + 3 };
 

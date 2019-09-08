@@ -129,10 +129,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   filterModelImplements->setSourceModel( implementBlockModel );
   filterModelImplements->sort( 0, Qt::AscendingOrder );
   ui->cbImplements->setModel( filterModelImplements );
-  ui->twSections->setModel( filterModelImplements );
   ui->cbImplements->setCurrentIndex( 0 );
   QObject::connect( implementBlockModel, &QAbstractItemModel::modelReset,
                     this, &SettingsDialog::implementModelReset );
+
+  implementSectionModel = new ImplementSectionModel();
+  ui->twSections->setModel( implementSectionModel );
 
   // initialise tiling
   Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
@@ -250,6 +252,7 @@ SettingsDialog::~SettingsDialog() {
   stringBlockModel->deleteLater();
 
   implementBlockModel->deleteLater();
+  implementSectionModel->deleteLater();
 
   poseSimulationFactory->deleteLater();
   gridModelFactory->deleteLater();
@@ -780,13 +783,24 @@ void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
 }
 
 void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
+  if( index != -1 ) {
+    QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
+    QVariant data = ui->cbImplements->model()->data( idx );
+    QNEBlock* block = qvariant_cast<QNEBlock*>( data );
 
+    if( block ) {
+      implementSectionModel->setDatasource( block );
+      ui->twSections->resizeColumnsToContents();
+    }
+  }
 }
 
 void SettingsDialog::implementModelReset() {
-  if( ui->cbImplements->currentIndex() == -1 ) {
+  if( ui->cbImplements->currentIndex() == -1 && ui->cbImplements->model()->rowCount() ) {
     ui->cbImplements->setCurrentIndex( 0 );
   }
+
+  on_cbImplements_currentIndexChanged( ui->cbImplements->currentIndex() );
 }
 
 void SettingsDialog::allModelsReset() {
@@ -794,4 +808,12 @@ void SettingsDialog::allModelsReset() {
   numberBlockModel->resetModel();
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();
+}
+
+void SettingsDialog::on_btnSectionAdd_clicked() {
+  ui->twSections->model()->insertRow( ui->twSections->model()->rowCount() );
+}
+
+void SettingsDialog::on_btnSectionRemove_clicked() {
+  ui->twSections->model()->removeRow( ui->twSections->currentIndex().row() );
 }

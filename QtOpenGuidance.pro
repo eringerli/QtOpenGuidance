@@ -14,6 +14,7 @@ SOURCES += src/main.cpp \
     src/gui/GuidanceToolbarTop.cpp \
     src/gui/GuidanceXteBar.cpp \
     src/gui/ImplementBlockModel.cpp \
+    src/gui/ImplementSectionModel.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     src/gui/GuidanceToolbarTop.h \
     src/gui/GuidanceXteBar.h \
     src/gui/ImplementBlockModel.h \
+    src/gui/ImplementSectionModel.h \
     src/gui/MainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/SectionControlToolbar.h \

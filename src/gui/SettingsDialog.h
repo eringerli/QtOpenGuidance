@@ -34,6 +34,7 @@
 #include "NumberBlockModel.h"
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
+#include "ImplementSectionModel.h"
 
 #include "../kinematic/Tile.h"
 
@@ -111,6 +112,10 @@ class SettingsDialog : public QDialog {
 
     void implementModelReset();
 
+    void on_btnSectionAdd_clicked();
+
+    void on_btnSectionRemove_clicked();
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -172,6 +177,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* implementFactory;
     QSortFilterProxyModel* filterModelImplements;
     ImplementBlockModel* implementBlockModel;
+    ImplementSectionModel* implementSectionModel;
 
   private:
     QNEBlock* getBlockWithId( int id );
