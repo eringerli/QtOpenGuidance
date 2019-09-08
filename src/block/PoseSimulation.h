@@ -192,8 +192,8 @@ class PoseSimulationFactory : public BlockFactory {
       b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
       b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
       b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
-      b->addOutputPort( "Velocity", SIGNAL( velocityChanged( float ) ) );
       b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
+      b->addOutputPort( "Velocity", SIGNAL( velocityChanged( float ) ) );
 
       b->addInputPort( "Autosteer Enabled", SLOT( autosteerEnabled( bool ) ) );
       b->addInputPort( "Autosteer Steering Angle", SLOT( setSteerAngleFromAutosteer( float ) ) );
