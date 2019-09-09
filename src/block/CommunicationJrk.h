@@ -16,19 +16,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef COMMUNICATIONPGN7FFE_H
-#define COMMUNICATIONPGN7FFE_H
+#ifndef COMMUNICATIONJRK_H
+#define COMMUNICATIONJRK_H
 
 #include <QObject>
 #include <QByteArray>
 
 #include "BlockBase.h"
 
-class CommunicationPgn7ffe : public BlockBase {
+class CommunicationJrk : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit CommunicationPgn7ffe()
+    explicit CommunicationJrk()
       : BlockBase() {
     }
 
@@ -37,52 +37,40 @@ class CommunicationPgn7ffe : public BlockBase {
 
   public slots:
     void setSteeringAngle( float steeringAngle ) {
+
+
       QByteArray data;
-      data.resize( 8 );
-      data[0] = char(0x7f);
-      data[1] = char(0xfe);
+      data.resize( 2 );
 
-      // relais
-      data[2] = 0;
-
-      // velocity in km/4h
-      data[3] = char(velocity * 3.6f * 4.0f);
-
-      // XTE in mm
-      int16_t xte = int16_t( distance * 1000 );
-      data[4] = char( xte >> 8 );
-      data[5] = char( xte & 0xff );
-
-      // steerangle in °/100
-      int16_t steerangle = int16_t( steeringAngle * 100 );
-      data[6] = char( steerangle >> 8 );
-      data[7] = char( steerangle & 0xff );
+      int16_t target = int16_t( steeringAngle * countsPerDegree ) + int16_t( steerZero );
+      data[0] = char( 0xc0 | ( target & 0x1f ) );
+      data[1] = char( ( target >> 5 ) & 0x7f );
 
       emit dataReceived( data );
     }
 
-    void setXte( float distance ) {
-      this->distance = distance;
+    void setSteerZero( float steerZero ) {
+      this->steerZero = steerZero;
     }
 
-    void setVelocity( float velocity ) {
-      this->velocity = velocity;
+    void setSteerCountPerDegree( float countsPerDegree ) {
+      this->countsPerDegree = countsPerDegree;
     }
 
   private:
-    float distance = 0;
-    float velocity = 0;
+    float steerZero = 2047;
+    float countsPerDegree = 45;
 };
 
-class CommunicationPgn7ffeFactory : public BlockFactory {
+class CommunicationJrkFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    CommunicationPgn7ffeFactory()
+    CommunicationJrkFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Communication PGN 7FFE" );
+      return QStringLiteral( "Communication JRK" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -90,7 +78,7 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new CommunicationPgn7ffe();
+      return new CommunicationJrk();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -101,13 +89,13 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
 
+      b->addInputPort( "Steerzero", SLOT( setSteerZero( float ) ) );
+      b->addInputPort( "Steering count/°", SLOT( setSteerCountPerDegree( float ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-      b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
-      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
       b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
 
       return b;
     }
 };
 
-#endif // COMMUNICATIONPGN7FFE_H
+#endif // COMMUNICATIONJRK_H

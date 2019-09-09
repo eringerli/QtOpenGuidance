@@ -166,6 +166,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* ackermannSteeringFactory;
     BlockFactory* nmeaParserFactory;
     BlockFactory* communicationPgn7ffeFactory;
+    BlockFactory* communicationJrkFactory;
 
     BlockFactory* plannerGuiFactory;
     BlockFactory* globalPlannerFactory;

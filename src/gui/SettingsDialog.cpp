@@ -68,6 +68,7 @@
 #include "../block/SerialPort.h"
 #include "../block/FileStream.h"
 #include "../block/CommunicationPgn7FFE.h"
+#include "../block/CommunicationJrk.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -187,6 +188,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   serialPortFactory = new SerialPortFactory();
   fileStreamFactory = new FileStreamFactory();
   communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
+  communicationJrkFactory = new CommunicationJrkFactory();
   nmeaParserFactory = new NmeaParserFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
   implementFactory = new ImplementFactory( tile, implementBlockModel );
@@ -211,6 +213,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   serialPortFactory->addToCombobox( ui->cbNodeType );
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   communicationPgn7ffeFactory->addToCombobox( ui->cbNodeType );
+  communicationJrkFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
@@ -247,6 +250,7 @@ SettingsDialog::~SettingsDialog() {
   serialPortFactory->deleteLater();
   fileStreamFactory->deleteLater();
   communicationPgn7ffeFactory->deleteLater();
+  communicationJrkFactory->deleteLater();
   nmeaParserFactory->deleteLater();
   ackermannSteeringFactory->deleteLater();
   implementFactory->deleteLater();
