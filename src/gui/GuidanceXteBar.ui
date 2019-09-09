@@ -60,7 +60,7 @@ QProgressBar::chunk {
       <number>3000</number>
      </property>
      <property name="value">
-      <number>33</number>
+      <number>0</number>
      </property>
      <property name="textVisible">
       <bool>false</bool>
@@ -96,7 +96,7 @@ QProgressBar::chunk {
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>9999</string>
+      <string>0</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -132,7 +132,7 @@ QProgressBar::chunk {
       <number>3000</number>
      </property>
      <property name="value">
-      <number>215</number>
+      <number>0</number>
      </property>
      <property name="textVisible">
       <bool>false</bool>
