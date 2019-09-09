@@ -67,6 +67,7 @@
 #include "../block/UdpSocket.h"
 #include "../block/SerialPort.h"
 #include "../block/FileStream.h"
+#include "../block/CommunicationPgn7FFE.h"
 
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -185,6 +186,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   udpSocketFactory = new UdpSocketFactory();
   serialPortFactory = new SerialPortFactory();
   fileStreamFactory = new FileStreamFactory();
+  communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
   nmeaParserFactory = new NmeaParserFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
   implementFactory = new ImplementFactory( tile, implementBlockModel );
@@ -208,6 +210,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   udpSocketFactory->addToCombobox( ui->cbNodeType );
   serialPortFactory->addToCombobox( ui->cbNodeType );
   fileStreamFactory->addToCombobox( ui->cbNodeType );
+  communicationPgn7ffeFactory->addToCombobox( ui->cbNodeType );
   printLatencyFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
@@ -243,6 +246,7 @@ SettingsDialog::~SettingsDialog() {
   udpSocketFactory->deleteLater();
   serialPortFactory->deleteLater();
   fileStreamFactory->deleteLater();
+  communicationPgn7ffeFactory->deleteLater();
   nmeaParserFactory->deleteLater();
   ackermannSteeringFactory->deleteLater();
   implementFactory->deleteLater();
@@ -788,16 +792,16 @@ void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
 }
 
 void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
-    QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
-    QVariant data = ui->cbImplements->model()->data( idx );
-    QNEBlock* block = qvariant_cast<QNEBlock*>( data );
+  QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
+  QVariant data = ui->cbImplements->model()->data( idx );
+  QNEBlock* block = qvariant_cast<QNEBlock*>( data );
 
-      implementSectionModel->setDatasource( block );
-      ui->twSections->resizeColumnsToContents();
+  implementSectionModel->setDatasource( block );
+  ui->twSections->resizeColumnsToContents();
 }
 
 void SettingsDialog::implementModelReset() {
-  if( ui->cbImplements->currentIndex() == -1 ||ui->cbImplements->currentIndex()>= ui->cbImplements->model()->rowCount() ) {
+  if( ui->cbImplements->currentIndex() == -1 || ui->cbImplements->currentIndex() >= ui->cbImplements->model()->rowCount() ) {
     ui->cbImplements->setCurrentIndex( 0 );
   }
 

@@ -30,6 +30,7 @@ HEADERS += \
     src/block/AckermannSteering.h \
     src/block/BlockBase.h \
     src/block/CameraController.h \
+    src/block/CommunicationPgn7FFE.h \
     src/block/DebugSink.h \
     src/block/FileStream.h \
     src/block/GridModel.h \

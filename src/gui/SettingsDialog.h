@@ -163,8 +163,9 @@ class SettingsDialog : public QDialog {
     BlockFactory* udpSocketFactory;
     BlockFactory* serialPortFactory;
     BlockFactory* fileStreamFactory;
-    BlockFactory* nmeaParserFactory;
     BlockFactory* ackermannSteeringFactory;
+    BlockFactory* nmeaParserFactory;
+    BlockFactory* communicationPgn7ffeFactory;
 
     BlockFactory* plannerGuiFactory;
     BlockFactory* globalPlannerFactory;

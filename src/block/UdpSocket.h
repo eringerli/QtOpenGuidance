@@ -31,8 +31,8 @@ class UdpSocket : public BlockBase {
     explicit UdpSocket()
       : BlockBase() {
       udpSocket = new QUdpSocket( this );
-      connect( udpSocket, SIGNAL( readyRead() ),
-               this, SLOT( processPendingDatagrams() ) );
+      connect( udpSocket, &QIODevice::readyRead,
+               this, &UdpSocket::processPendingDatagrams );
     }
 
     ~UdpSocket() {

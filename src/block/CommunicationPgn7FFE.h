@@ -16,30 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SERIALPORT_H
-#define SERIALPORT_H
+#ifndef CommunicationPgn7ffe_H
+#define CommunicationPgn7ffe_H
 
 #include <QObject>
 #include <QByteArray>
-#include <QSerialPort>
 
 #include "BlockBase.h"
 
-class SerialPort : public BlockBase {
+class CommunicationPgn7ffe : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit SerialPort()
+    explicit CommunicationPgn7ffe()
       : BlockBase() {
-      serialPort = new QSerialPort( this );
-      connect( serialPort, &QIODevice::readyRead,
-               this, &SerialPort::processPendingData );
     }
 
-    ~SerialPort() {
-      if( serialPort ) {
-        serialPort->deleteLater();
-      }
+    ~CommunicationPgn7ffe() {
     }
 
     void emitConfigSignals() override {
@@ -49,50 +42,55 @@ class SerialPort : public BlockBase {
     void dataReceived( QByteArray );
 
   public slots:
-    void setPort( QString port ) {
-      this->port = port;
-      serialPort->close();
-      serialPort->setPortName( port );
-      serialPort->open( QIODevice::ReadWrite );
+    void setSteeringAngle( float steeringAngle ) {
+      QByteArray data;
+      data.resize( 8 );
+      data[0] = 0x7f;
+      data[1] = 0xfe;
+
+      // relais
+      data[2] = 0;
+
+      // velocity in km/4h
+      data[3] = velocity * 3.6 * 4;
+
+      // XTE in mm
+      int16_t xte = int16_t( distance * 1000 );
+      data[4] = char( xte >> 8 );
+      data[5] = char( xte & 0xff );
+
+      // steerangle in °/100
+      int16_t steerangle = int16_t( steeringAngle * 100 );
+      data[6] = char( steerangle >> 8 );
+      data[7] = char( steerangle & 0xff );
+
+      emit dataReceived( data );
     }
 
-    void setBaudrate( float baudrate ) {
-      this->baudrate = baudrate;
-      serialPort->setBaudRate( qint32( baudrate ) );
+    void setXte( float distance ) {
+      this->distance = distance;
     }
 
-    void sendData( QByteArray data ) {
-      serialPort->write( data );
-    }
-
-  protected slots:
-    void processPendingData() {
-      QByteArray datagram;
-
-      while( serialPort->bytesAvailable() ) {
-        datagram.resize( int( serialPort->bytesAvailable() ) );
-        serialPort->read( datagram.data(), datagram.size() );
-        emit dataReceived( datagram );
-      }
+    void setVelocity( float velocity ) {
+      this->velocity = velocity;
     }
 
   public:
-    QString port;
-    float baudrate = 0;
 
   private:
-    QSerialPort* serialPort = nullptr;
+    float distance = 0;
+    float velocity = 0;
 };
 
-class SerialPortFactory : public BlockFactory {
+class CommunicationPgn7ffeFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    SerialPortFactory()
+    CommunicationPgn7ffeFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Serial Port" );
+      return QStringLiteral( "Communication PGN 7FFE" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -100,7 +98,7 @@ class SerialPortFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new SerialPort();
+      return new CommunicationPgn7ffe();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -110,14 +108,14 @@ class SerialPortFactory : public BlockFactory {
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
       b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
-      b->addInputPort( "Port", SLOT( setPort( QString ) ) );
-      b->addInputPort( "Baudrate", SLOT( setBaudrate( float ) ) );
-      b->addInputPort( "Data", SLOT( sendData( QByteArray ) ) );
 
+      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
+      b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
+      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
       b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
 
       return b;
     }
 };
 
-#endif // SERIALPORT_H
+#endif // CommunicationPgn7ffe_H
