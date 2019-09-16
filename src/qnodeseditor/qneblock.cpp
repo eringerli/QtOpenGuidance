@@ -130,11 +130,23 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
 
   if( isSelected() ) {
     painter->setPen( QPen( Qt::darkYellow ) );
-    painter->setBrush( Qt::yellow );
+
+    if( systemBlock ) {
+      painter->setBrush( Qt::darkGray );
+    } else {
+      painter->setBrush( Qt::yellow );
+    }
+
     setZValue( 1 );
   } else {
     painter->setPen( QPen( Qt::darkGreen ) );
-    painter->setBrush( Qt::green );
+
+    if( systemBlock ) {
+      painter->setBrush( Qt::lightGray );
+    } else {
+      painter->setBrush( Qt::green );
+    }
+
     setZValue( 0.5 );
   }
 
