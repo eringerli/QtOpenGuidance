@@ -38,7 +38,6 @@ class CommunicationJrk : public BlockBase {
   public slots:
     void setSteeringAngle( float steeringAngle ) {
 
-
       QByteArray data;
       data.resize( 2 );
 

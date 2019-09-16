@@ -39,14 +39,14 @@ class CommunicationPgn7ffe : public BlockBase {
     void setSteeringAngle( float steeringAngle ) {
       QByteArray data;
       data.resize( 8 );
-      data[0] = char(0x7f);
-      data[1] = char(0xfe);
+      data[0] = char( 0x7f );
+      data[1] = char( 0xfe );
 
       // relais
       data[2] = 0;
 
       // velocity in km/4h
-      data[3] = char(velocity * 3.6f * 4.0f);
+      data[3] = char( velocity * 3.6f * 4.0f );
 
       // XTE in mm
       int16_t xte = int16_t( distance * 1000 );
