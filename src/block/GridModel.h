@@ -90,7 +90,7 @@ class GridModel : public BlockBase {
 
       // Lines in X direction
       {
-        QVector3D start( -size / 2, 0, 0 ), end( size / 2, 0, 0 );
+        QVector3D start( -size / 2, 0, -0.1f ), end( size / 2, 0, -0.001f );
 
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
           start.setY( lineDistance );
@@ -107,7 +107,7 @@ class GridModel : public BlockBase {
 
       // Lines in Y direction
       {
-        QVector3D start( 0, -size / 2, 0 ), end( 0, size / 2, 0 );
+        QVector3D start( 0, -size / 2, -0.1f ), end( 0, size / 2, -0.001f );
 
         for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
           start.setX( lineDistance );

@@ -28,6 +28,7 @@
 #include <Qt3DCore/QTransform>
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QText2DEntity>
 
 #include <QDebug>
@@ -117,18 +118,56 @@ class GlobalPlanner : public BlockBase {
 
       // line marker
       {
-        lineEntity = new Qt3DCore::QEntity( tile00->tileEntity );
-        lineEntity->setEnabled( false );
+        pathEntity = new Qt3DCore::QEntity( tile00->tileEntity );
+        pathEntity->setEnabled( false );
 
-        lineTransform = new Qt3DCore::QTransform();
-        lineEntity->addComponent( lineTransform );
+        pathTransform = new Qt3DCore::QTransform();
+        pathEntity->addComponent( pathTransform );
 
-        lineMesh = new LineMesh();
-        lineEntity->addComponent( lineMesh );
+        pathMesh = new LineMesh();
+        pathEntity->addComponent( pathMesh );
 
-        lineMaterial = new Qt3DExtras::QPhongMaterial( lineEntity );
-        lineMaterial->setAmbient( Qt::red );
-        lineEntity->addComponent( lineMaterial );
+        pathMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( pathEntity );
+        pathMaterial->setAmbient( Qt::red );
+        pathEntity->addComponent( pathMaterial );
+      }
+
+      // arrows for passes
+      {
+        arrowsEntity = new Qt3DCore::QEntity( tile->tileEntity );
+        arrowsTransform = new Qt3DCore::QTransform();
+        arrowsEntity->addComponent( arrowsTransform );
+
+        activeArrowsEntity = new Qt3DCore::QEntity( arrowsEntity );
+        activeArrowsMesh = new LineMesh();
+        activeArrowsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
+        activeArrowsEntity->addComponent( activeArrowsMesh );
+        activeArrowsMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( activeArrowsEntity );
+        activeArrowsMaterial->setAlphaBlendingEnabled( true );
+        activeArrowsEntity->addComponent( activeArrowsMaterial );
+
+        activeArrowsBackgroundEntity = new Qt3DCore::QEntity( arrowsEntity );
+        activeArrowsBackgroundMesh = new LineMesh();
+        activeArrowsBackgroundMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
+        activeArrowsBackgroundEntity->addComponent( activeArrowsBackgroundMesh );
+        activeArrowsBackgroundMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( activeArrowsBackgroundEntity );
+        activeArrowsBackgroundEntity->addComponent( activeArrowsBackgroundMaterial );
+
+        otherArrowsEntity = new Qt3DCore::QEntity( arrowsEntity );
+        otherArrowsMesh = new LineMesh();
+        otherArrowsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
+        otherArrowsEntity->addComponent( otherArrowsMesh );
+        otherArrowsMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( otherArrowsEntity );
+        otherArrowsEntity->addComponent( otherArrowsMaterial );
+
+        otherArrowsBackgroundEntity = new Qt3DCore::QEntity( arrowsEntity );
+        otherArrowsBackgroundMesh = new LineMesh();
+        otherArrowsBackgroundMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
+        otherArrowsBackgroundEntity->addComponent( otherArrowsBackgroundMesh );
+        otherArrowsBackgroundMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( otherArrowsBackgroundEntity );
+        otherArrowsBackgroundEntity->addComponent( otherArrowsBackgroundMaterial );
+
+        setPassColors();
       }
     }
 
@@ -144,7 +183,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseLeftEdge( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseLeftEdge( Tile*, QVector3D position, QQuaternion, PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
@@ -152,7 +191,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseRightEdge( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseRightEdge( Tile*, QVector3D position, QQuaternion, PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
@@ -166,7 +205,7 @@ class GlobalPlanner : public BlockBase {
 
       aPointEntity->setEnabled( true );
       bPointEntity->setEnabled( false );
-      lineEntity->setEnabled( false );
+      pathEntity->setEnabled( false );
 
       x1 = double( position.x() ) + tile->x;
       y1 = double( position.y() ) + tile->y;
@@ -193,9 +232,44 @@ class GlobalPlanner : public BlockBase {
       linePoints.append( QVector3D( x1 + ( ac * ( x2 - x1 ) / ab ), y1 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
       ac = 200;
       linePoints.append( QVector3D( x2 + ( ac * ( x2 - x1 ) / ab ), y2 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
-      lineMesh->posUpdate( linePoints );
+      pathMesh->posUpdate( linePoints );
 
-      lineEntity->setEnabled( true );
+      pathEntity->setEnabled( true );
+
+
+      // arrows/pass
+      {
+        QVector<QVector3D> arrowPoints;
+        float implementWidth = positionLeftEdgeOfImplement.y() - positionRightEdgeOfImplement.y();
+
+        uint16_t arrows = uint16_t( passAreaX / ( arrowSize + distanceBetweenArrows ) );
+        QVector3D middlepoint = position - QVector3D( ( passAreaX / 2 ), 0, 0 );
+
+        qDebug() << arrows << middlepoint << passAreaX << arrowSize << distanceBetweenArrows << implementWidth;
+
+        for( uint16_t i = 0; i < arrows; ++i ) {
+          QVector3D pointOfArrow = middlepoint + QVector3D( arrowSize, 0, 0 );
+          QVector3D backPointOfArrow = middlepoint + QVector3D( arrowSize / 2, 0, 0 );
+          QVector3D leftPointOfArrow = middlepoint + QVector3D( 0, implementWidth / 2, 0 );
+          QVector3D rightPointOfArrow = middlepoint + QVector3D( 0, -implementWidth / 2, 0 );
+
+          arrowPoints.append( backPointOfArrow );
+          arrowPoints.append( pointOfArrow );
+          arrowPoints.append( leftPointOfArrow );
+          arrowPoints.append( rightPointOfArrow );
+          arrowPoints.append( pointOfArrow );
+          arrowPoints.append( backPointOfArrow );
+
+          middlepoint += QVector3D( arrowSize + distanceBetweenArrows, 0, 0 );
+        }
+
+//        for( auto point : arrowPoints ) {
+//          qDebug() << point;
+//        }
+
+        activeArrowsMesh->posUpdate( arrowPoints );
+      }
+
 
       QVector<QSharedPointer<PathPrimitive>> plan;
 //      ac = -200;
@@ -235,6 +309,45 @@ class GlobalPlanner : public BlockBase {
       qDebug() << "turnRight_clicked()";
     }
 
+    void setPassEnabled( bool passEnabled ) {
+      this->passEnabled = passEnabled;
+      arrowsEntity->setEnabled( passEnabled );
+    }
+
+    void setPassSizes( float passAreaX, float passAreaY, float arrowSize, float distanceBetweenArrows ) {
+      this->passAreaX = passAreaX;
+      this->passAreaY = passAreaY;
+      this->arrowSize = arrowSize;
+      this->distanceBetweenArrows = distanceBetweenArrows;
+    }
+
+    void setPassColors( QColor passActiveArrowColor, QColor passActiveBackgroundColor, QColor passOtherArrowColor, QColor passOtherBackgroundColor ) {
+      this->passActiveArrowColor = passActiveArrowColor;
+      this->passActiveBackgroundColor = passActiveBackgroundColor;
+      this->passOtherArrowColor = passOtherArrowColor;
+      this->passOtherBackgroundColor = passOtherBackgroundColor;
+      setPassColors();
+    }
+
+  private:
+    void setPassColors() {
+      activeArrowsMaterial->setAmbient( passActiveArrowColor );
+      activeArrowsMaterial->setDiffuse( passActiveArrowColor );
+      activeArrowsMaterial->setSpecular( passActiveArrowColor );
+
+      activeArrowsBackgroundMaterial->setAmbient( passActiveBackgroundColor );
+      activeArrowsBackgroundMaterial->setDiffuse( passActiveBackgroundColor );
+      activeArrowsBackgroundMaterial->setSpecular( passActiveBackgroundColor );
+
+      otherArrowsMaterial->setAmbient( passOtherArrowColor );
+      otherArrowsMaterial->setDiffuse( passOtherArrowColor );
+      otherArrowsMaterial->setSpecular( passOtherArrowColor );
+
+      otherArrowsBackgroundMaterial->setAmbient( passOtherBackgroundColor );
+      otherArrowsBackgroundMaterial->setDiffuse( passOtherBackgroundColor );
+      otherArrowsBackgroundMaterial->setSpecular( passOtherBackgroundColor );
+    }
+
   signals:
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
@@ -253,25 +366,56 @@ class GlobalPlanner : public BlockBase {
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
 
+    // text
     Qt3DExtras::QText2DEntity* aTextEntity = nullptr;
-    Qt3DExtras::QText2DEntity* bTextEntity = nullptr;
-
-    Qt3DCore::QEntity* aPointEntity = nullptr;
-    Qt3DCore::QEntity* bPointEntity = nullptr;
-    Qt3DCore::QEntity* lineEntity = nullptr;
-
-    Qt3DExtras::QSphereMesh* aPointMesh = nullptr;
-    Qt3DExtras::QSphereMesh* bPointMesh = nullptr;
-
-    LineMesh* lineMesh = nullptr;
-
-    Qt3DCore::QTransform* aPointTransform = nullptr;
-    Qt3DCore::QTransform* bPointTransform = nullptr;
     Qt3DCore::QTransform* aTextTransform = nullptr;
-    Qt3DCore::QTransform* bTextTransform = nullptr;
-    Qt3DCore::QTransform* lineTransform = nullptr;
 
-    Qt3DExtras::QPhongMaterial* lineMaterial = nullptr;
+    Qt3DExtras::QText2DEntity* bTextEntity = nullptr;
+    Qt3DCore::QTransform* bTextTransform = nullptr;
+
+    // markers
+    Qt3DCore::QEntity* aPointEntity = nullptr;
+    Qt3DExtras::QSphereMesh* aPointMesh = nullptr;
+    Qt3DCore::QTransform* aPointTransform = nullptr;
+
+    Qt3DCore::QEntity* bPointEntity = nullptr;
+    Qt3DExtras::QSphereMesh* bPointMesh = nullptr;
+    Qt3DCore::QTransform* bPointTransform = nullptr;
+
+    // path
+    Qt3DCore::QEntity* pathEntity = nullptr;
+    LineMesh* pathMesh = nullptr;
+    Qt3DCore::QTransform* pathTransform = nullptr;
+    Qt3DExtras::QDiffuseSpecularMaterial* pathMaterial = nullptr;
+
+    // arrows
+    Qt3DCore::QEntity* arrowsEntity = nullptr;
+    Qt3DCore::QTransform* arrowsTransform = nullptr;
+
+    Qt3DCore::QEntity* activeArrowsEntity = nullptr;
+    LineMesh* activeArrowsMesh = nullptr;
+    Qt3DExtras::QDiffuseSpecularMaterial* activeArrowsMaterial = nullptr;
+
+    Qt3DCore::QEntity* activeArrowsBackgroundEntity = nullptr;
+    LineMesh* activeArrowsBackgroundMesh = nullptr;
+    Qt3DExtras::QDiffuseSpecularMaterial* activeArrowsBackgroundMaterial = nullptr;
+
+    Qt3DCore::QEntity* otherArrowsEntity = nullptr;
+    LineMesh* otherArrowsMesh = nullptr;
+    Qt3DExtras::QDiffuseSpecularMaterial* otherArrowsMaterial = nullptr;
+
+    Qt3DCore::QEntity* otherArrowsBackgroundEntity = nullptr;
+    LineMesh* otherArrowsBackgroundMesh = nullptr;
+    Qt3DExtras::QDiffuseSpecularMaterial* otherArrowsBackgroundMaterial = nullptr;
+
+    // values of the arrows
+    bool passEnabled = true;
+    float passAreaX = 250, passAreaY = 250, arrowSize = 3, distanceBetweenArrows = 3;
+    QColor passActiveArrowColor = QColor( 0xff, 0xff, 0, 200 );
+    QColor passActiveBackgroundColor = QColor( 0xf5, 0x9f, 0xbd );
+    QColor passOtherArrowColor = QColor( 0x90, 0x90, 0 );
+    QColor passOtherBackgroundColor = QColor( 0x9a, 0x64, 0x77 );
+
 };
 
 class GlobalPlannerFactory : public BlockFactory {

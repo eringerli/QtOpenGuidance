@@ -86,20 +86,46 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    ui->cbSaveConfigOnExit->setCheckState( settings.value( "SaveConfigOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-    ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-    ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-    ui->cbShowCameraToolbarOnStart->setCheckState( settings.value( "ShowCameraToolbarOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-    ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    // checkboxes
+    {
+      ui->cbSaveConfigOnExit->setCheckState( settings.value( "SaveConfigOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbShowCameraToolbarOnStart->setCheckState( settings.value( "ShowCameraToolbarOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+    }
 
-    ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
-    ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 10 ).toDouble() );
-    ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 10 ).toDouble() );
-    ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
-    gridColor = settings.value( "Grid/Color", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+    // grid
+    {
+      ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
+      ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 10 ).toDouble() );
+      ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 10 ).toDouble() );
+      ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
+      gridColor = settings.value( "Grid/Color", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+    }
 
-    ui->gbShowTiles->setChecked( settings.value( "Tile/Enabled", true ).toBool() );
-    tileColor = settings.value( "Tile/Color", QColor( 0xff, 0xda, 0x21 ) ).value<QColor>();
+    // tiles
+    {
+      ui->gbShowTiles->setChecked( settings.value( "Tile/Enabled", true ).toBool() );
+      tileColor = settings.value( "Tile/Color", QColor( 0xff, 0xda, 0x21 ) ).value<QColor>();
+    }
+
+    // pass
+    {
+      ui->gbPass->setChecked( settings.value( "Pass/Enabled", true ).toBool() );
+
+      ui->dsbPassAreaX->setValue( settings.value( "Pass/VisibleAreaX", 250 ).toDouble() );
+      ui->dsbPassAreaY->setValue( settings.value( "Pass/VisibleAreaY", 250 ).toDouble() );
+      ui->dsbPassSizeOfArrow->setValue( settings.value( "Pass/SizeOfArrow", 3 ).toDouble() );
+      ui->dsbPassDistanceBetweenArrows->setValue( settings.value( "Pass/DistanceBetweenArrows", 3 ).toDouble() );
+
+      passActiveArrowColor = settings.value( "Pass/ActiveArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
+      passActiveBackgroundColor = settings.value( "Pass/ActiveBackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
+      ui->slPassActiveTransparency->setValue( settings.value( "Pass/ActiveTransparency", 20 ).toInt() );
+      passOtherArrowColor = settings.value( "Pass/OtherArrowColor", QColor( 0x90, 0x90, 0 ) ).value<QColor>();
+      passOtherBackgroundColor = settings.value( "Pass/OtherBackgroundColor", QColor( 0x9a, 0x64, 0x77 ) ).value<QColor>();
+      ui->slPassOtherTransparency->setValue( settings.value( "Pass/OtherTransparency", 20 ).toInt() );
+    }
   }
 
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
@@ -168,6 +194,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
+  QObject::connect( this, SIGNAL( setPassEnabled( bool ) ),
+                    globalPlanner, SLOT( setPassEnabled( bool ) ) );
+  QObject::connect( this, SIGNAL( setPassSizes( float, float, float, float ) ),
+                    globalPlanner, SLOT( setPassSizes( float, float, float, float ) ) );
+  QObject::connect( this, SIGNAL( setPassColors( QColor, QColor, QColor, QColor ) ),
+                    globalPlanner, SLOT( setPassColors( QColor, QColor, QColor, QColor ) ) );
+
   localPlannerFactory = new LocalPlannerFactory( tile );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
   xteGuidanceFactory = new XteGuidanceFactory( tile );
@@ -227,6 +260,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   ui->lbTileColor->setAutoFillBackground( true );
   tileRoot.setShowColor( tileColor );
   tileRoot.setShowEnable( ui->gbShowTiles->isChecked() );
+
+  setPassColorLabels();
 
   this->on_pbBaudrateRefresh_clicked();
   this->on_pbComPortRefresh_clicked();
@@ -649,8 +684,62 @@ void SettingsDialog::saveTileValuesInSettings() {
   settings.sync();
 }
 
+void SettingsDialog::savePassValuesInSettings() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "Pass/Enabled", bool( ui->gbPass->isChecked() ) );
+
+  settings.setValue( "Pass/VisibleAreaX", ui->dsbPassAreaX->value() );
+  settings.setValue( "Pass/VisibleAreaY", ui->dsbPassAreaY->value() );
+  settings.setValue( "Pass/SizeOfArrow", ui->dsbPassSizeOfArrow->value() );
+  settings.setValue( "Pass/DistanceBetweenArrows", ui->dsbPassDistanceBetweenArrows->value() );
+
+  settings.setValue( "Pass/ActiveArrowColor", passActiveArrowColor );
+  settings.setValue( "Pass/ActiveBackgroundColor", passActiveBackgroundColor );
+  settings.setValue( "Pass/ActiveTransparency",  ui->slPassActiveTransparency->value() );
+  settings.setValue( "Pass/OtherArrowColor", passOtherArrowColor );
+  settings.setValue( "Pass/OtherBackgroundColor", passOtherBackgroundColor );
+  settings.setValue( "Pass/OtherTransparency",  ui->slPassOtherTransparency->value() );
+
+  settings.sync();
+}
+
+void SettingsDialog::setPassColorLabels() {
+  QColor buffer = passActiveArrowColor;
+  buffer.setAlphaF( 1 );
+  ui->lbPassColorActiveArrow->setText( buffer.name() );
+  ui->lbPassColorActiveArrow->setPalette( QPalette( buffer ) );
+  ui->lbPassColorActiveArrow->setAutoFillBackground( true );
+
+  buffer = passActiveBackgroundColor;
+  buffer.setAlphaF( 1 );
+  ui->lbPassColorActiveBackground->setText( buffer.name() );
+  ui->lbPassColorActiveBackground->setPalette( QPalette( buffer ) );
+  ui->lbPassColorActiveBackground->setAutoFillBackground( true );
+
+  buffer = passOtherArrowColor;
+  buffer.setAlphaF( 1 );
+  ui->lbPassColorOtherArrow->setText( buffer.name() );
+  ui->lbPassColorOtherArrow->setPalette( QPalette( buffer ) );
+  ui->lbPassColorOtherArrow->setAutoFillBackground( true );
+
+  buffer = passOtherBackgroundColor;
+  buffer.setAlphaF( 1 );
+  ui->lbPassColorOtherBackground->setText( buffer.name() );
+  ui->lbPassColorOtherBackground->setPalette( QPalette( buffer ) );
+  ui->lbPassColorOtherBackground->setAutoFillBackground( true );
+}
+
 void SettingsDialog::emitAllConfigSignals() {
+  emit setGrid( ui->gbGrid->isChecked() );
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ), float( ui->dsbGridSize->value() ), gridColor );
+  emit setPassEnabled( ui->gbPass->isChecked() );
+  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
+                     float( ui->dsbPassAreaY->value() ),
+                     float( ui->dsbPassSizeOfArrow->value() ),
+                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
+  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -896,4 +985,110 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
       }
     }
   }
+}
+
+void SettingsDialog::on_dsbPassAreaX_valueChanged( double ) {
+  savePassValuesInSettings();
+  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
+                     float( ui->dsbPassAreaY->value() ),
+                     float( ui->dsbPassSizeOfArrow->value() ),
+                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
+}
+
+void SettingsDialog::on_dsbPassAreaY_valueChanged( double ) {
+  savePassValuesInSettings();
+  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
+                     float( ui->dsbPassAreaY->value() ),
+                     float( ui->dsbPassSizeOfArrow->value() ),
+                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
+}
+
+void SettingsDialog::on_dsbPassSizeOfArrow_valueChanged( double ) {
+  savePassValuesInSettings();
+  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
+                     float( ui->dsbPassAreaY->value() ),
+                     float( ui->dsbPassSizeOfArrow->value() ),
+                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
+}
+
+void SettingsDialog::on_dsbPassDistanceBetweenArrows_valueChanged( double ) {
+  savePassValuesInSettings();
+  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
+                     float( ui->dsbPassAreaY->value() ),
+                     float( ui->dsbPassSizeOfArrow->value() ),
+                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
+}
+
+void SettingsDialog::on_pbPassColorActiveArrow_clicked() {
+  const QColor color = QColorDialog::getColor( passActiveArrowColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    passActiveArrowColor = color;
+    passActiveArrowColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
+
+    setPassColorLabels();
+    savePassValuesInSettings();
+
+    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
+  }
+}
+
+void SettingsDialog::on_pbPassColorActiveBackground_clicked() {
+  const QColor color = QColorDialog::getColor( passActiveBackgroundColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    passActiveBackgroundColor = color;
+    passActiveBackgroundColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
+
+    setPassColorLabels();
+    savePassValuesInSettings();
+    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
+  }
+}
+
+void SettingsDialog::on_pbPassColorOtherArrow_clicked() {
+  const QColor color = QColorDialog::getColor( passOtherArrowColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    passOtherArrowColor = color;
+    passOtherArrowColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
+
+    setPassColorLabels();
+    savePassValuesInSettings();
+    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
+  }
+}
+
+void SettingsDialog::on_pbPassColorOtherBackground_clicked() {
+  const QColor color = QColorDialog::getColor( passOtherBackgroundColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    passOtherBackgroundColor = color;
+    passOtherBackgroundColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
+
+    setPassColorLabels();
+    savePassValuesInSettings();
+    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
+  }
+}
+
+void SettingsDialog::on_gbPass_toggled( bool enabled ) {
+  savePassValuesInSettings();
+  emit setPassEnabled( enabled );
+}
+
+void SettingsDialog::on_slPassActiveTransparency_valueChanged( int ) {
+  passActiveArrowColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
+  passActiveBackgroundColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
+  savePassValuesInSettings();
+  setPassColorLabels();
+  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
+}
+
+void SettingsDialog::on_slPassOtherTransparency_valueChanged( int ) {
+  passOtherArrowColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
+  passOtherBackgroundColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
+  savePassValuesInSettings();
+  setPassColorLabels();
+  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
 }

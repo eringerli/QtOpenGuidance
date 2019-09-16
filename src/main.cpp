@@ -52,6 +52,7 @@
 #include <Qt3DRender/QRenderPass>
 #include <Qt3DRender/QSceneLoader>
 #include <Qt3DRender/QPointLight>
+#include <Qt3DRender/QSortPolicy>
 
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QAspectEngine>
@@ -183,6 +184,15 @@ int main( int argc, char** argv ) {
 
   // Set root object of the scene
   view->setRootEntity( rootEntity );
+
+  // sort the object, so transparity works
+  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
+  Qt3DRender::QSortPolicy* sortPolicy = new Qt3DRender::QSortPolicy( rootEntity );
+  framegraph->setParent( sortPolicy );
+  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes =
+    QVector<Qt3DRender::QSortPolicy::SortType>() << Qt3DRender::QSortPolicy::FrontToBack;
+  sortPolicy->setSortTypes( sortTypes );
+  view->setActiveFrameGraph( framegraph );
 
   SimulatorToolbar* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
