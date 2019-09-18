@@ -10,6 +10,7 @@ SOURCES += src/main.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
     src/gui/CameraToolbar.cpp \
+    src/gui/GuidanceMeterBar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceToolbarTop.cpp \
     src/gui/GuidanceXteBar.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     src/block/GuidanceStanley.h \
     src/block/GuidanceXte.h \
     src/block/Implement.h \
+    src/block/MeterBarModel.h \
     src/block/NmeaParser.h \
     src/block/NumberObject.h \
     src/block/PathPrimitive.h \
@@ -57,6 +59,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteBarModel.h \
     src/gui/CameraToolbar.h \
+    src/gui/GuidanceMeterBar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceToolbarTop.h \
     src/gui/GuidanceXteBar.h \
@@ -76,6 +79,7 @@ HEADERS += \
 
 FORMS += \
     src/gui/CameraToolbar.ui \
+    src/gui/GuidanceMeterBar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceToolbarTop.ui \
     src/gui/GuidanceXteBar.ui \

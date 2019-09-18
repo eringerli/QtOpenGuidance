@@ -77,6 +77,7 @@
 #include "block/GridModel.h"
 #include "block/SectionControlModel.h"
 #include "block/XteBarModel.h"
+#include "block/MeterBarModel.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -244,9 +245,11 @@ int main( int argc, char** argv ) {
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
-  // Guidance
+  // Guidance Bar
   BlockFactory* xteBarModelFactory = new XteBarModelFactory( widget, guidaceToolbarTop->getCenterLayout() );
   xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
+  BlockFactory* meterBarModelFactory = new MeterBarModelFactory( widget, guidaceToolbarTop->getCenterLayout() );
+  meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
                     settingDialog->plannerGui, SIGNAL( a_clicked() ) );
