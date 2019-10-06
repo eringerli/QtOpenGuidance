@@ -217,6 +217,8 @@ int main( int argc, char** argv ) {
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
   BlockBase* cameraController = cameraControllerFactory->createNewObject();
   cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), cameraController );
+  // CameraController also acts an EventFilter to receive the wheel-events of the mouse
+  view->installEventFilter(cameraController);
 
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
                     cameraController, SLOT( zoomIn() ) );

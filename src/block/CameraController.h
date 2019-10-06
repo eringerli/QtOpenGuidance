@@ -24,6 +24,8 @@
 #include <Qt3DRender/QCamera>
 #include <Qt3DRender/QPointLight>
 
+#include <QtMath>
+
 #include "BlockBase.h"
 
 #include "../kinematic/Tile.h"
@@ -59,6 +61,22 @@ class CameraController : public BlockBase {
 
       loadValuesFromConfig();
       calculateOffset();
+    }
+
+  protected:
+    // CameraController also acts an EventFilter to receive the wheel-events of the mouse
+    bool eventFilter( QObject*, QEvent* event ) override {
+
+      if( event->type() == QEvent::Wheel ) {
+        QWheelEvent* wheelEvent = static_cast<QWheelEvent*>( event );
+        if( wheelEvent->angleDelta().y() < 0 ) {
+          zoomOut();
+        } else {
+          zoomIn();
+        }
+      }
+
+      return false;
     }
 
   public slots:
