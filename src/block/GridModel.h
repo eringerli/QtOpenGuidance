@@ -26,6 +26,7 @@
 
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
+#include <Qt3DRender/QLevelOfDetail>
 
 #include <Qt3DExtras/QTorusMesh>
 #include <Qt3DExtras/QConeMesh>
@@ -49,31 +50,59 @@ class GridModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GridModel( Qt3DCore::QEntity* rootEntity ) {
+    explicit GridModel( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity ) {
+      m_distanceMeasurementEntity = new Qt3DCore::QEntity( rootEntity );
+      m_distanceMeasurementTransform = new Qt3DCore::QTransform();
+      m_distanceMeasurementEntity->addComponent( m_distanceMeasurementTransform );
+      m_lod = new Qt3DRender::QLevelOfDetail( m_distanceMeasurementEntity );
+      m_lod->setCamera( cameraEntity );
+      m_distanceMeasurementEntity->addComponent( m_lod );
+
       m_baseEntity = new Qt3DCore::QEntity( rootEntity );
 
       m_baseTransform = new Qt3DCore::QTransform();
       m_baseEntity->addComponent( m_baseTransform );
 
-      m_lineMesh = new LineMesh();
-      m_baseEntity->addComponent( m_lineMesh );
+      m_fineGridEntity = new Qt3DCore::QEntity( m_baseEntity );
+      m_coarseGridEntity = new Qt3DCore::QEntity( m_baseEntity );
+
+      m_fineLinesMesh = new LineMesh();
+      m_fineGridEntity->addComponent( m_fineLinesMesh );
+
+      m_coarseLinesMesh = new LineMesh();
+      m_coarseGridEntity->addComponent( m_coarseLinesMesh );
 
       m_material = new Qt3DExtras::QPhongMaterial( m_baseEntity );
-      m_baseEntity->addComponent( m_material );
+      m_fineGridEntity->addComponent( m_material );
+      m_coarseGridEntity->addComponent( m_material );
+
+      QObject::connect( m_lod, &Qt3DRender::QLevelOfDetail::currentIndexChanged, this, &GridModel::currentIndexChanged );
     }
 
     ~GridModel() {
-      m_lineMesh->deleteLater();
+      m_fineLinesMesh->deleteLater();
+      m_coarseLinesMesh->deleteLater();
       m_material->deleteLater();
+      m_fineGridEntity->deleteLater();
+      m_coarseGridEntity->deleteLater();
       m_baseTransform->deleteLater();
       m_baseEntity->deleteLater();
+      m_lod->deleteLater();
+      m_distanceMeasurementTransform->deleteLater();
+      m_distanceMeasurementEntity->deleteLater();
     }
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options ) {
+      m_distanceMeasurementEntity->setParent( tile->tileEntity );
+      m_distanceMeasurementTransform->setTranslation( position );
+
       m_baseEntity->setParent( tile->tileEntity );
-      QVector3D positionModulo( ( std::floor( ( tile->x + position.x() ) / xStep )*xStep ) - tile->x,
-                                ( std::floor( ( tile->y + position.y() ) / yStep )*yStep ) - tile->y,
+
+      float stepX = qMax( xStep, xStepCoarse );
+      float stepY = qMax( yStep, yStepCoarse );
+      QVector3D positionModulo( ( std::floor( ( tile->x + position.x() ) / stepX ) * stepX ) - tile->x,
+                                ( std::floor( ( tile->y + position.y() ) / stepY ) * stepY ) - tile->y,
                                 position.z() );
       m_baseTransform->setTranslation( positionModulo );
     }
@@ -82,70 +111,151 @@ class GridModel : public BlockBase {
       m_baseEntity->setEnabled( enabled );
     }
 
-    void setGridValues( float xStep, float yStep, float size, QColor color ) {
+    void setGridValues( float xStep, float yStep, float xStepCoarse, float yStepCoarse, float size, float cameraThreshold, float cameraThresholdCoarse, QColor color ) {
       this->xStep = xStep;
       this->yStep = yStep;
+      this->xStepCoarse = xStepCoarse;
+      this->yStepCoarse = yStepCoarse;
 
-      QVector<QVector3D> linesPoints;
+      QVector<qreal> thresholds = {qreal( cameraThreshold ), qreal( cameraThresholdCoarse ), 10000};
+      m_lod->setThresholds( thresholds );
 
-      // Lines in X direction
+      // fine
       {
-        QVector3D start( -size / 2, 0, -0.1f ), end( size / 2, 0, -0.001f );
+        QVector<QVector3D> linesPoints;
 
-        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
-          start.setY( lineDistance );
-          end.setY( lineDistance );
-          linesPoints.append( start );
-          linesPoints.append( end );
+        // Lines in X direction
+        {
+          QVector3D start( -size / 2, 0, -0.1f ), end( size / 2, 0, -0.001f );
 
-          start.setY( -lineDistance );
-          end.setY( -lineDistance );
-          linesPoints.append( start );
-          linesPoints.append( end );
+          for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
+            start.setY( lineDistance );
+            end.setY( lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+
+            start.setY( -lineDistance );
+            end.setY( -lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+          }
         }
+
+        // Lines in Y direction
+        {
+          QVector3D start( 0, -size / 2, -0.1f ), end( 0, size / 2, -0.001f );
+
+          for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
+            start.setX( lineDistance );
+            end.setX( lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+
+            start.setX( -lineDistance );
+            end.setX( -lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+          }
+        }
+
+        m_fineLinesMesh->posUpdate( linesPoints );
       }
 
-      // Lines in Y direction
+      // coarse
       {
-        QVector3D start( 0, -size / 2, -0.1f ), end( 0, size / 2, -0.001f );
+        QVector<QVector3D> linesPoints;
 
-        for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
-          start.setX( lineDistance );
-          end.setX( lineDistance );
-          linesPoints.append( start );
-          linesPoints.append( end );
+        // Lines in X direction
+        {
+          QVector3D start( -size / 2, 0, -0.1f ), end( size / 2, 0, -0.001f );
 
-          start.setX( -lineDistance );
-          end.setX( -lineDistance );
-          linesPoints.append( start );
-          linesPoints.append( end );
+          for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStepCoarse ) {
+            start.setY( lineDistance );
+            end.setY( lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+
+            start.setY( -lineDistance );
+            end.setY( -lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+          }
         }
+
+        // Lines in Y direction
+        {
+          QVector3D start( 0, -size / 2, -0.1f ), end( 0, size / 2, -0.001f );
+
+          for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStepCoarse ) {
+            start.setX( lineDistance );
+            end.setX( lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+
+            start.setX( -lineDistance );
+            end.setX( -lineDistance );
+            linesPoints.append( start );
+            linesPoints.append( end );
+          }
+        }
+
+        m_coarseLinesMesh->posUpdate( linesPoints );
       }
 
       m_material->setAmbient( color );
+    }
 
-      m_lineMesh->posUpdate( linesPoints );
+    void 	currentIndexChanged( int currentIndex ) {
+      switch( currentIndex ) {
+        case 0: {
+            m_fineGridEntity->setEnabled( true );
+            m_coarseGridEntity->setEnabled( false );
+          }
+          break;
+
+        case 1: {
+            m_fineGridEntity->setEnabled( false );
+            m_coarseGridEntity->setEnabled( true );
+          }
+          break;
+
+        default: {
+            m_fineGridEntity->setEnabled( false );
+            m_coarseGridEntity->setEnabled( false );
+          }
+      }
+
     }
 
   signals:
 
   private:
+    Qt3DCore::QEntity* m_distanceMeasurementEntity = nullptr;
+    Qt3DCore::QTransform* m_distanceMeasurementTransform = nullptr;
+    Qt3DRender::QLevelOfDetail* m_lod = nullptr;
+
     Qt3DCore::QEntity* m_baseEntity = nullptr;
     Qt3DCore::QTransform* m_baseTransform = nullptr;
-    LineMesh* m_lineMesh = nullptr;
+
+    Qt3DCore::QEntity* m_fineGridEntity = nullptr;
+    Qt3DCore::QEntity* m_coarseGridEntity = nullptr;
+    LineMesh* m_fineLinesMesh = nullptr;
+    LineMesh* m_coarseLinesMesh = nullptr;
     Qt3DExtras::QPhongMaterial* m_material = nullptr;
 
-    float xStep = 10;
-    float yStep = 10;
+    float xStep = 1;
+    float yStep = 1;
+    float xStepCoarse = 10;
+    float yStepCoarse = 10;
 };
 
 class GridModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GridModelFactory( Qt3DCore::QEntity* rootEntity )
+    GridModelFactory( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
       : BlockFactory(),
-        rootEntity( rootEntity ) {}
+        rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Grid Model" );
@@ -155,7 +265,7 @@ class GridModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new GridModel( rootEntity );
+      return new GridModel( rootEntity, m_cameraEntity );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -172,6 +282,7 @@ class GridModelFactory : public BlockFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };
 
 #endif // GRIDMODEL_H

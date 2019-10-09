@@ -55,7 +55,7 @@ class SettingsDialog : public QDialog {
 
   signals:
     void setGrid( bool );
-    void setGridValues( float, float, float, QColor );
+    void setGridValues( float, float, float, float, float, float, float, QColor );
 
     void setPassEnabled( bool );
     void setPassSizes( float, float, float, float );
@@ -143,6 +143,14 @@ class SettingsDialog : public QDialog {
 
     void on_slPassOtherTransparency_valueChanged( int value );
 
+    void on_dsbGridXStepCoarse_valueChanged( double arg1 );
+
+    void on_dsbGridYStepCoarse_valueChanged( double arg1 );
+
+    void on_dsbGridCameraThreshold_valueChanged( double arg1 );
+
+    void on_dsbGridCameraThresholdCoarse_valueChanged( double arg1 );
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -160,7 +168,6 @@ class SettingsDialog : public QDialog {
 
   public:
     BlockBase* poseSimulation;
-    BlockBase* gridModel;
 
     BlockBase* plannerGui;
     BlockBase* globalPlanner;
@@ -174,7 +181,6 @@ class SettingsDialog : public QDialog {
     Qt3DCore::QEntity* rootEntity;
 
     BlockFactory* poseSimulationFactory;
-    BlockFactory* gridModelFactory;
 
     BlockFactory* transverseMercatorConverterFactory;
     BlockFactory* poseSynchroniserFactory;

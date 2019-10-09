@@ -218,7 +218,7 @@ int main( int argc, char** argv ) {
   BlockBase* cameraController = cameraControllerFactory->createNewObject();
   cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), cameraController );
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
-  view->installEventFilter(cameraController);
+  view->installEventFilter( cameraController );
 
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
                     cameraController, SLOT( zoomIn() ) );
@@ -236,6 +236,16 @@ int main( int argc, char** argv ) {
                     cameraController, SLOT( resetCamera() ) );
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
                     cameraController, SLOT( setMode( int ) ) );
+
+  // grid
+  BlockFactory* gridModelFactory = new GridModelFactory( rootEntity, cameraEntity );
+  BlockBase* gridModel = gridModelFactory->createNewObject();
+  gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
+
+  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
+                    gridModel, SLOT( setGrid( bool ) ) );
+  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor ) ),
+                    gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor ) ) );
 
   // the processer of Pose etc
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
