@@ -195,6 +195,7 @@ int main( int argc, char** argv ) {
   sortPolicy->setSortTypes( sortTypes );
   view->setActiveFrameGraph( framegraph );
 
+
   auto* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
   vLayout->addWidget( simulatorToolbar );
@@ -244,8 +245,8 @@ int main( int argc, char** argv ) {
 
   QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
                     gridModel, SLOT( setGrid( bool ) ) );
-  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor ) ),
-                    gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor ) ) );
+  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
+                    gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
 
   // the processer of Pose etc
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),

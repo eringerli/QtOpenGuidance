@@ -103,9 +103,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       ui->dsbGridXStepCoarse->setValue( settings.value( "Grid/XStepCoarse", 10 ).toDouble() );
       ui->dsbGridYStepCoarse->setValue( settings.value( "Grid/YStepCoarse", 10 ).toDouble() );
       ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
-      ui->dsbGridCameraThreshold->setValue( settings.value( "Grid/CameraThreshold", 30 ).toDouble() );
+      ui->dsbGridCameraThreshold->setValue( settings.value( "Grid/CameraThreshold", 75 ).toDouble() );
       ui->dsbGridCameraThresholdCoarse->setValue( settings.value( "Grid/CameraThresholdCoarse", 250 ).toDouble() );
-      gridColor = settings.value( "Grid/Color", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+      gridColor = settings.value( "Grid/Color", QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
+      gridColorCoarse = settings.value( "Grid/ColorCoarse", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
     }
 
     // tiles
@@ -247,6 +248,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   ui->lbColor->setText( gridColor.name() );
   ui->lbColor->setPalette( QPalette( gridColor ) );
   ui->lbColor->setAutoFillBackground( true );
+  ui->lbColorCoarse->setText( gridColorCoarse.name() );
+  ui->lbColorCoarse->setPalette( QPalette( gridColorCoarse ) );
+  ui->lbColorCoarse->setAutoFillBackground( true );
 
   // tile color picker
   ui->lbTileColor->setText( tileColor.name() );
@@ -628,7 +632,7 @@ void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
@@ -636,7 +640,7 @@ void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
@@ -644,7 +648,7 @@ void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_pbColor_clicked() {
@@ -660,7 +664,7 @@ void SettingsDialog::on_pbColor_clicked() {
     emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                         float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                         float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor );
+                        gridColor, gridColorCoarse );
   }
 }
 
@@ -741,7 +745,7 @@ void SettingsDialog::emitAllConfigSignals() {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
   emit setPassEnabled( ui->gbPass->isChecked() );
   emit setPassSizes( float( ui->dsbPassAreaX->value() ),
                      float( ui->dsbPassAreaY->value() ),
@@ -1106,7 +1110,7 @@ void SettingsDialog::on_dsbGridXStepCoarse_valueChanged( double ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridYStepCoarse_valueChanged( double ) {
@@ -1114,7 +1118,7 @@ void SettingsDialog::on_dsbGridYStepCoarse_valueChanged( double ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridCameraThreshold_valueChanged( double ) {
@@ -1122,7 +1126,7 @@ void SettingsDialog::on_dsbGridCameraThreshold_valueChanged( double ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
@@ -1130,5 +1134,23 @@ void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor );
+                      gridColor, gridColorCoarse );
+}
+
+void SettingsDialog::on_pbColorCoarse_clicked() {
+
+  const QColor color = QColorDialog::getColor( gridColor, this, "Select Grid Color" );
+
+  if( color.isValid() ) {
+    gridColorCoarse = color;
+    ui->lbColorCoarse->setText( gridColor.name() );
+    ui->lbColorCoarse->setPalette( QPalette( gridColor ) );
+    ui->lbColorCoarse->setAutoFillBackground( true );
+
+    saveGridValuesInSettings();
+    emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor, gridColorCoarse );
+  }
 }

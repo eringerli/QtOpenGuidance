@@ -72,9 +72,10 @@ class GridModel : public BlockBase {
       m_coarseLinesMesh = new LineMesh();
       m_coarseGridEntity->addComponent( m_coarseLinesMesh );
 
-      m_material = new Qt3DExtras::QPhongMaterial( m_baseEntity );
+      m_material = new Qt3DExtras::QPhongMaterial( m_fineGridEntity );
+      m_materialCoarse = new Qt3DExtras::QPhongMaterial( m_coarseGridEntity );
       m_fineGridEntity->addComponent( m_material );
-      m_coarseGridEntity->addComponent( m_material );
+      m_coarseGridEntity->addComponent( m_materialCoarse );
 
       QObject::connect( m_lod, &Qt3DRender::QLevelOfDetail::currentIndexChanged, this, &GridModel::currentIndexChanged );
     }
@@ -111,7 +112,7 @@ class GridModel : public BlockBase {
       m_baseEntity->setEnabled( enabled );
     }
 
-    void setGridValues( float xStep, float yStep, float xStepCoarse, float yStepCoarse, float size, float cameraThreshold, float cameraThresholdCoarse, QColor color ) {
+    void setGridValues( float xStep, float yStep, float xStepCoarse, float yStepCoarse, float size, float cameraThreshold, float cameraThresholdCoarse, QColor color, QColor colorCoarse ) {
       this->xStep = xStep;
       this->yStep = yStep;
       this->xStepCoarse = xStepCoarse;
@@ -126,8 +127,8 @@ class GridModel : public BlockBase {
 
         // Lines in X direction
         {
-          QVector3D start( -size / 2, 0, -0.1f );
-          QVector3D end( size / 2, 0, -0.001f );
+          QVector3D start( -size / 2, 0, -0.05f );
+          QVector3D end( size / 2, 0, -0.05f );
 
           for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStep ) {
             start.setY( lineDistance );
@@ -144,8 +145,8 @@ class GridModel : public BlockBase {
 
         // Lines in Y direction
         {
-          QVector3D start( 0, -size / 2, -0.1f );
-          QVector3D end( 0, size / 2, -0.001f );
+          QVector3D start( 0, -size / 2, -0.05f );
+          QVector3D end( 0, size / 2, -0.05f );
 
           for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStep ) {
             start.setX( lineDistance );
@@ -169,7 +170,7 @@ class GridModel : public BlockBase {
 
         // Lines in X direction
         {
-          QVector3D start( -size / 2, 0, -0.1f );
+          QVector3D start( -size / 2, 0, -0.001f );
           QVector3D end( size / 2, 0, -0.001f );
 
           for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += yStepCoarse ) {
@@ -187,7 +188,7 @@ class GridModel : public BlockBase {
 
         // Lines in Y direction
         {
-          QVector3D start( 0, -size / 2, -0.1f );
+          QVector3D start( 0, -size / 2, -0.001f );
           QVector3D end( 0, size / 2, -0.001f );
 
           for( float lineDistance = 0; lineDistance < ( size / 2 ); lineDistance += xStepCoarse ) {
@@ -207,13 +208,14 @@ class GridModel : public BlockBase {
       }
 
       m_material->setAmbient( color );
+      m_materialCoarse->setAmbient( colorCoarse );
     }
 
     void 	currentIndexChanged( int currentIndex ) {
       switch( currentIndex ) {
         case 0: {
             m_fineGridEntity->setEnabled( true );
-            m_coarseGridEntity->setEnabled( false );
+            m_coarseGridEntity->setEnabled( true );
           }
           break;
 
@@ -246,6 +248,7 @@ class GridModel : public BlockBase {
     LineMesh* m_fineLinesMesh = nullptr;
     LineMesh* m_coarseLinesMesh = nullptr;
     Qt3DExtras::QPhongMaterial* m_material = nullptr;
+    Qt3DExtras::QPhongMaterial* m_materialCoarse = nullptr;
 
     float xStep = 1;
     float yStep = 1;

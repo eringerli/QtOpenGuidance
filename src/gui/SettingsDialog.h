@@ -55,7 +55,7 @@ class SettingsDialog : public QDialog {
 
   signals:
     void setGrid( bool );
-    void setGridValues( float, float, float, float, float, float, float, QColor );
+    void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
 
     void setPassEnabled( bool );
     void setPassSizes( float, float, float, float );
@@ -88,8 +88,12 @@ class SettingsDialog : public QDialog {
     void on_dsbGridXStep_valueChanged( double arg1 );
     void on_dsbGridYStep_valueChanged( double arg1 );
     void on_dsbGridSize_valueChanged( double arg1 );
-
+    void on_dsbGridXStepCoarse_valueChanged( double arg1 );
+    void on_dsbGridYStepCoarse_valueChanged( double arg1 );
+    void on_dsbGridCameraThreshold_valueChanged( double arg1 );
+    void on_dsbGridCameraThresholdCoarse_valueChanged( double arg1 );
     void on_pbColor_clicked();
+    void on_pbColorCoarse_clicked();
 
     void on_cbSaveConfigOnExit_stateChanged( int arg1 );
     void on_cbLoadConfigOnStart_stateChanged( int arg1 );
@@ -143,13 +147,6 @@ class SettingsDialog : public QDialog {
 
     void on_slPassOtherTransparency_valueChanged( int value );
 
-    void on_dsbGridXStepCoarse_valueChanged( double arg1 );
-
-    void on_dsbGridYStepCoarse_valueChanged( double arg1 );
-
-    void on_dsbGridCameraThreshold_valueChanged( double arg1 );
-
-    void on_dsbGridCameraThresholdCoarse_valueChanged( double arg1 );
 
   private:
     void saveGridValuesInSettings();
@@ -221,7 +218,8 @@ class SettingsDialog : public QDialog {
     QNEBlock* getBlockWithId( int id );
     QNEBlock* getBlockWithName( const QString& name );
 
-    QColor gridColor = QColor( 0xa2, 0xe3, 0xff );
+    QColor gridColor = QColor( 0x6b, 0x96, 0xa8 );
+    QColor gridColorCoarse = QColor( 0xa2, 0xe3, 0xff );
     QColor tileColor = QColor( 0xff, 0x00, 0x00 );
 
     QColor passActiveArrowColor = QColor( 0xff, 0xff, 0 );
