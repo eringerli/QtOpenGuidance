@@ -97,7 +97,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
     // grid
     {
-      ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
+      ui->cbGridVisible->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
       ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 1 ).toDouble() );
       ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 1 ).toDouble() );
       ui->dsbGridXStepCoarse->setValue( settings.value( "Grid/XStepCoarse", 10 ).toDouble() );
@@ -115,21 +115,23 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       tileColor = settings.value( "Tile/Color", QColor( 0xff, 0xda, 0x21 ) ).value<QColor>();
     }
 
-    // pass
+    // global/local planner
     {
-      ui->gbPass->setChecked( settings.value( "Pass/Enabled", true ).toBool() );
+      ui->cbGlobalPlanner->setChecked( settings.value( "GlobalPlanner/Enabled", true ).toBool() );
+      ui->dsbGlobalPlannerVisibleAreaX->setValue( settings.value( "GlobalPlanner/VisibleAreaX", 250 ).toDouble() );
+      ui->dsbGlobalPlannerVisibleAreaY->setValue( settings.value( "GlobalPlanner/VisibleAreaY", 250 ).toDouble() );
+      ui->dsbGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlanner/ArrowSize", 3 ).toDouble() );
+      ui->dsbGlobalPlannerArrowDistance->setValue( settings.value( "GlobalPlanner/ArrowDistance", 3 ).toDouble() );
+      globalPlannerArrowColor = settings.value( "GlobalPlanner/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
+      ui->cbGlobalPlannerBackground->setChecked( settings.value( "GlobalPlanner/BackgroundEnabled", true ).toBool() );
+      globalPlannerBackgroundColor = settings.value( "GlobalPlanner/BackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
 
-      ui->dsbPassAreaX->setValue( settings.value( "Pass/VisibleAreaX", 250 ).toDouble() );
-      ui->dsbPassAreaY->setValue( settings.value( "Pass/VisibleAreaY", 250 ).toDouble() );
-      ui->dsbPassSizeOfArrow->setValue( settings.value( "Pass/SizeOfArrow", 3 ).toDouble() );
-      ui->dsbPassDistanceBetweenArrows->setValue( settings.value( "Pass/DistanceBetweenArrows", 3 ).toDouble() );
-
-      passActiveArrowColor = settings.value( "Pass/ActiveArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
-      passActiveBackgroundColor = settings.value( "Pass/ActiveBackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
-      ui->slPassActiveTransparency->setValue( settings.value( "Pass/ActiveTransparency", 20 ).toInt() );
-      passOtherArrowColor = settings.value( "Pass/OtherArrowColor", QColor( 0x90, 0x90, 0 ) ).value<QColor>();
-      passOtherBackgroundColor = settings.value( "Pass/OtherBackgroundColor", QColor( 0x9a, 0x64, 0x77 ) ).value<QColor>();
-      ui->slPassOtherTransparency->setValue( settings.value( "Pass/OtherTransparency", 20 ).toInt() );
+      ui->cbLocalPlannerVisible->setChecked( settings.value( "LocalPlanner/Enabled", true ).toBool() );
+      ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlanner/ArrowSize", 1 ).toDouble() );
+      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( "LocalPlanner/ArrowDistance", 3 ).toDouble() );
+      ui->dsbLocalPlannerLineWidth->setValue( settings.value( "LocalPlanner/LineWidth", 0.1 ).toDouble() );
+      localPlannerArrowColor = settings.value( "LocalPlanner/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
+      localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
     }
   }
 
@@ -622,9 +624,9 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
   }
 }
 
-void SettingsDialog::on_gbGrid_toggled( bool arg1 ) {
+void SettingsDialog::on_cbGridVisible_stateChanged( int arg1 ) {
   saveGridValuesInSettings();
-  emit setGrid( arg1 );
+  emit setGrid( bool( arg1 ) );
 }
 
 void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
@@ -672,7 +674,7 @@ void SettingsDialog::saveGridValuesInSettings() {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "Grid/Enabled", bool( ui->gbGrid->isChecked() ) );
+  settings.setValue( "Grid/Enabled", bool( ui->cbGridVisible->isChecked() ) );
   settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
   settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
   settings.setValue( "Grid/XStepCoarse", ui->dsbGridXStepCoarse->value() );
@@ -693,65 +695,61 @@ void SettingsDialog::saveTileValuesInSettings() {
   settings.sync();
 }
 
-void SettingsDialog::savePassValuesInSettings() {
+void SettingsDialog::savePlannerValuesInSettings() {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "Pass/Enabled", bool( ui->gbPass->isChecked() ) );
+  settings.setValue( "GlobalPlanner/Enabled", ui->cbGlobalPlanner->isChecked() );
+  settings.setValue( "GlobalPlanner/VisibleAreaX", ui->dsbGlobalPlannerVisibleAreaX->value() );
+  settings.setValue( "GlobalPlanner/VisibleAreaY", ui->dsbGlobalPlannerVisibleAreaY->value() );
+  settings.setValue( "GlobalPlanner/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
+  settings.setValue( "GlobalPlanner/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
+  settings.setValue( "GlobalPlanner/ArrowColor", globalPlannerArrowColor );
+  settings.setValue( "GlobalPlanner/BackgroundColor", globalPlannerBackgroundColor );
+  settings.setValue( "GlobalPlanner/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
 
-  settings.setValue( "Pass/VisibleAreaX", ui->dsbPassAreaX->value() );
-  settings.setValue( "Pass/VisibleAreaY", ui->dsbPassAreaY->value() );
-  settings.setValue( "Pass/SizeOfArrow", ui->dsbPassSizeOfArrow->value() );
-  settings.setValue( "Pass/DistanceBetweenArrows", ui->dsbPassDistanceBetweenArrows->value() );
-
-  settings.setValue( "Pass/ActiveArrowColor", passActiveArrowColor );
-  settings.setValue( "Pass/ActiveBackgroundColor", passActiveBackgroundColor );
-  settings.setValue( "Pass/ActiveTransparency",  ui->slPassActiveTransparency->value() );
-  settings.setValue( "Pass/OtherArrowColor", passOtherArrowColor );
-  settings.setValue( "Pass/OtherBackgroundColor", passOtherBackgroundColor );
-  settings.setValue( "Pass/OtherTransparency",  ui->slPassOtherTransparency->value() );
+  settings.setValue( "LocalPlanner/Enabled", ui->cbLocalPlannerVisible->isChecked() );
+  settings.setValue( "LocalPlanner/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
+  settings.setValue( "LocalPlanner/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
+  settings.setValue( "LocalPlanner/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
+  settings.setValue( "LocalPlanner/ArrowColor", localPlannerArrowColor );
+  settings.setValue( "LocalPlanner/LineColor", localPlannerLineColor );
 
   settings.sync();
 }
 
 void SettingsDialog::setPassColorLabels() {
-  QColor buffer = passActiveArrowColor;
+  QColor buffer = globalPlannerArrowColor;
   buffer.setAlphaF( 1 );
-  ui->lbPassColorActiveArrow->setText( buffer.name() );
-  ui->lbPassColorActiveArrow->setPalette( QPalette( buffer ) );
-  ui->lbPassColorActiveArrow->setAutoFillBackground( true );
+  ui->lbGlobalPlannerArrowColor->setText( buffer.name() );
+  ui->lbGlobalPlannerArrowColor->setPalette( QPalette( buffer ) );
+  ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
 
-  buffer = passActiveBackgroundColor;
+  buffer = globalPlannerBackgroundColor;
   buffer.setAlphaF( 1 );
-  ui->lbPassColorActiveBackground->setText( buffer.name() );
-  ui->lbPassColorActiveBackground->setPalette( QPalette( buffer ) );
-  ui->lbPassColorActiveBackground->setAutoFillBackground( true );
+  ui->lbGlobalPlannerBackgroundColor->setText( buffer.name() );
+  ui->lbGlobalPlannerBackgroundColor->setPalette( QPalette( buffer ) );
+  ui->lbGlobalPlannerBackgroundColor->setAutoFillBackground( true );
 
-  buffer = passOtherArrowColor;
+  buffer = localPlannerLineColor;
   buffer.setAlphaF( 1 );
-  ui->lbPassColorOtherArrow->setText( buffer.name() );
-  ui->lbPassColorOtherArrow->setPalette( QPalette( buffer ) );
-  ui->lbPassColorOtherArrow->setAutoFillBackground( true );
+  ui->lbLocalPlannerLineColor->setText( buffer.name() );
+  ui->lbLocalPlannerLineColor->setPalette( QPalette( buffer ) );
+  ui->lbLocalPlannerLineColor->setAutoFillBackground( true );
 
-  buffer = passOtherBackgroundColor;
+  buffer = localPlannerArrowColor;
   buffer.setAlphaF( 1 );
-  ui->lbPassColorOtherBackground->setText( buffer.name() );
-  ui->lbPassColorOtherBackground->setPalette( QPalette( buffer ) );
-  ui->lbPassColorOtherBackground->setAutoFillBackground( true );
+  ui->lbLocalPlannerArrowColor->setText( buffer.name() );
+  ui->lbLocalPlannerArrowColor->setPalette( QPalette( buffer ) );
+  ui->lbLocalPlannerArrowColor->setAutoFillBackground( true );
 }
 
 void SettingsDialog::emitAllConfigSignals() {
-  emit setGrid( ui->gbGrid->isChecked() );
+  emit setGrid( ui->cbGridVisible->isChecked() );
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
-  emit setPassEnabled( ui->gbPass->isChecked() );
-  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
-                     float( ui->dsbPassAreaY->value() ),
-                     float( ui->dsbPassSizeOfArrow->value() ),
-                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
-  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -999,112 +997,6 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
   }
 }
 
-void SettingsDialog::on_dsbPassAreaX_valueChanged( double ) {
-  savePassValuesInSettings();
-  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
-                     float( ui->dsbPassAreaY->value() ),
-                     float( ui->dsbPassSizeOfArrow->value() ),
-                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
-}
-
-void SettingsDialog::on_dsbPassAreaY_valueChanged( double ) {
-  savePassValuesInSettings();
-  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
-                     float( ui->dsbPassAreaY->value() ),
-                     float( ui->dsbPassSizeOfArrow->value() ),
-                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
-}
-
-void SettingsDialog::on_dsbPassSizeOfArrow_valueChanged( double ) {
-  savePassValuesInSettings();
-  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
-                     float( ui->dsbPassAreaY->value() ),
-                     float( ui->dsbPassSizeOfArrow->value() ),
-                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
-}
-
-void SettingsDialog::on_dsbPassDistanceBetweenArrows_valueChanged( double ) {
-  savePassValuesInSettings();
-  emit setPassSizes( float( ui->dsbPassAreaX->value() ),
-                     float( ui->dsbPassAreaY->value() ),
-                     float( ui->dsbPassSizeOfArrow->value() ),
-                     float( ui->dsbPassDistanceBetweenArrows->value() ) );
-}
-
-void SettingsDialog::on_pbPassColorActiveArrow_clicked() {
-  const QColor color = QColorDialog::getColor( passActiveArrowColor, this, "Select Grid Color" );
-
-  if( color.isValid() ) {
-    passActiveArrowColor = color;
-    passActiveArrowColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
-
-    setPassColorLabels();
-    savePassValuesInSettings();
-
-    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-  }
-}
-
-void SettingsDialog::on_pbPassColorActiveBackground_clicked() {
-  const QColor color = QColorDialog::getColor( passActiveBackgroundColor, this, "Select Grid Color" );
-
-  if( color.isValid() ) {
-    passActiveBackgroundColor = color;
-    passActiveBackgroundColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
-
-    setPassColorLabels();
-    savePassValuesInSettings();
-    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-  }
-}
-
-void SettingsDialog::on_pbPassColorOtherArrow_clicked() {
-  const QColor color = QColorDialog::getColor( passOtherArrowColor, this, "Select Grid Color" );
-
-  if( color.isValid() ) {
-    passOtherArrowColor = color;
-    passOtherArrowColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
-
-    setPassColorLabels();
-    savePassValuesInSettings();
-    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-  }
-}
-
-void SettingsDialog::on_pbPassColorOtherBackground_clicked() {
-  const QColor color = QColorDialog::getColor( passOtherBackgroundColor, this, "Select Grid Color" );
-
-  if( color.isValid() ) {
-    passOtherBackgroundColor = color;
-    passOtherBackgroundColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
-
-    setPassColorLabels();
-    savePassValuesInSettings();
-    emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-  }
-}
-
-void SettingsDialog::on_gbPass_toggled( bool enabled ) {
-  savePassValuesInSettings();
-  emit setPassEnabled( enabled );
-}
-
-void SettingsDialog::on_slPassActiveTransparency_valueChanged( int ) {
-  passActiveArrowColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
-  passActiveBackgroundColor.setAlphaF( qreal( ui->slPassActiveTransparency->value() / 100.0f ) );
-  savePassValuesInSettings();
-  setPassColorLabels();
-  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-}
-
-void SettingsDialog::on_slPassOtherTransparency_valueChanged( int ) {
-  passOtherArrowColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
-  passOtherBackgroundColor.setAlphaF( qreal( ui->slPassOtherTransparency->value() / 100.0f ) );
-  savePassValuesInSettings();
-  setPassColorLabels();
-  emit setPassColors( passActiveArrowColor, passActiveBackgroundColor, passOtherArrowColor, passOtherBackgroundColor );
-}
-
 void SettingsDialog::on_dsbGridXStepCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
@@ -1138,7 +1030,6 @@ void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
 }
 
 void SettingsDialog::on_pbColorCoarse_clicked() {
-
   const QColor color = QColorDialog::getColor( gridColor, this, "Select Grid Color" );
 
   if( color.isValid() ) {
@@ -1153,4 +1044,61 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
                         float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                         gridColor, gridColorCoarse );
   }
+}
+
+void SettingsDialog::on_cbGlobalPlanner_stateChanged( int arg1 ) {
+
+}
+
+void SettingsDialog::on_dsbGlobalPlannerVisibleAreaX_valueChanged( double arg1 ) {
+
+}
+
+void SettingsDialog::on_dsbGlobalPlannerVisibleAreaY_valueChanged( double arg1 ) {
+
+}
+
+void SettingsDialog::on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 ) {
+
+
+}
+
+void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 ) {
+
+}
+
+void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
+
+}
+
+void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
+
+}
+
+void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int value ) {
+
+}
+
+void SettingsDialog::on_cbLocalPlannerVisible_stateChanged( int arg1 ) {
+
+}
+
+void SettingsDialog::on_dsbLocalPlannerArrowSize_valueChanged( double arg1 ) {
+
+}
+
+void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double arg1 ) {
+
+}
+
+void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
+
+}
+
+void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
+
+}
+
+void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int value ) {
+
 }

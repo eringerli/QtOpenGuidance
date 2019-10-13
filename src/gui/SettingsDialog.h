@@ -57,10 +57,6 @@ class SettingsDialog : public QDialog {
     void setGrid( bool );
     void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
 
-    void setPassEnabled( bool );
-    void setPassSizes( float, float, float, float );
-    void setPassColors( QColor, QColor, QColor, QColor );
-
   public slots:
     void toggleVisibility();
 
@@ -84,7 +80,8 @@ class SettingsDialog : public QDialog {
     void on_pbZoomIn_clicked();
     void on_pbDeleteSelected_clicked();
 
-    void on_gbGrid_toggled( bool arg1 );
+
+    void on_cbGridVisible_stateChanged( int arg1 );
     void on_dsbGridXStep_valueChanged( double arg1 );
     void on_dsbGridYStep_valueChanged( double arg1 );
     void on_dsbGridSize_valueChanged( double arg1 );
@@ -130,28 +127,27 @@ class SettingsDialog : public QDialog {
 
     void on_btnSectionMoveDown_clicked();
 
-    void on_dsbPassAreaX_valueChanged( double arg1 );
-    void on_dsbPassAreaY_valueChanged( double arg1 );
-    void on_dsbPassSizeOfArrow_valueChanged( double arg1 );
-    void on_dsbPassDistanceBetweenArrows_valueChanged( double arg1 );
 
-    void on_pbPassColorActiveArrow_clicked();
-    void on_pbPassColorActiveBackground_clicked();
-    void on_pbPassColorOtherArrow_clicked();
-    void on_pbPassColorOtherBackground_clicked();
+    void on_cbGlobalPlanner_stateChanged( int arg1 );
+    void on_dsbGlobalPlannerVisibleAreaX_valueChanged( double arg1 );
+    void on_dsbGlobalPlannerVisibleAreaY_valueChanged( double arg1 );
+    void on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 );
+    void on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 );
+    void on_pbGlobalPlannerArrowColor_clicked();
+    void on_pbGlobalPlannerBackgroundColor_clicked();
+    void on_slGlobalPlannerTransparency_valueChanged( int value );
 
-
-    void on_gbPass_toggled( bool enabled );
-
-    void on_slPassActiveTransparency_valueChanged( int value );
-
-    void on_slPassOtherTransparency_valueChanged( int value );
-
+    void on_cbLocalPlannerVisible_stateChanged( int arg1 );
+    void on_dsbLocalPlannerArrowSize_valueChanged( double arg1 );
+    void on_dsbLocalPlannerLineWidth_valueChanged( double arg1 );
+    void on_pbLocalPlannerArrowColor_clicked();
+    void on_pbLocalPlannerLineColor_clicked();
+    void on_slLocalPlannerTransparency_valueChanged( int value );
 
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
-    void savePassValuesInSettings();
+    void savePlannerValuesInSettings();
 
     void setPassColorLabels();
 
@@ -222,10 +218,10 @@ class SettingsDialog : public QDialog {
     QColor gridColorCoarse = QColor( 0xa2, 0xe3, 0xff );
     QColor tileColor = QColor( 0xff, 0x00, 0x00 );
 
-    QColor passActiveArrowColor = QColor( 0xff, 0xff, 0 );
-    QColor passActiveBackgroundColor = QColor( 0xf5, 0x9f, 0xbd );
-    QColor passOtherArrowColor = QColor( 0x90, 0x90, 0 );
-    QColor passOtherBackgroundColor = QColor( 0x9a, 0x64, 0x77 );
+    QColor globalPlannerArrowColor = QColor( 0xff, 0xff, 0 );
+    QColor globalPlannerBackgroundColor = QColor( 0xf5, 0x9f, 0xbd );
+    QColor localPlannerArrowColor = QColor( 0x90, 0x90, 0 );
+    QColor localPlannerLineColor = QColor( 0x9a, 0x64, 0x77 );
 };
 
 #endif // SETTINGSDIALOG_H
