@@ -175,7 +175,7 @@ class SettingsDialog : public QDialog {
   private:
     Ui::SettingsDialog* ui = nullptr;
 
-    Qt3DCore::QEntity* rootEntity = nullptr;
+//    Qt3DCore::QEntity* rootEntity = nullptr;
 
     BlockFactory* poseSimulationFactory = nullptr;
 

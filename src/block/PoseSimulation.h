@@ -179,7 +179,7 @@ class PoseSimulationFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, true );
 
       b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );

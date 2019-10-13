@@ -246,7 +246,7 @@ class CameraControllerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, true );
 
       b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 

@@ -77,8 +77,8 @@
 
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent ) :
   QDialog( parent ),
-  ui( new Ui::SettingsDialog ),
-  rootEntity( rootEntity ) {
+  ui( new Ui::SettingsDialog )/*,
+  rootEntity( rootEntity )*/ {
   ui->setupUi( this );
 
   // load states of checkboxes from global config

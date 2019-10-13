@@ -60,8 +60,8 @@ class BlockFactory : public QObject {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj ) {
-      auto* b = new QNEBlock( obj );
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, bool systemBlock = false ) {
+      auto* b = new QNEBlock( obj, systemBlock );
 
       scene->addItem( b );
 
