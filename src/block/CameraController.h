@@ -68,7 +68,7 @@ class CameraController : public BlockBase {
     bool eventFilter( QObject*, QEvent* event ) override {
 
       if( event->type() == QEvent::Wheel ) {
-        QWheelEvent* wheelEvent = static_cast<QWheelEvent*>( event );
+        auto* wheelEvent = dynamic_cast<QWheelEvent*>( event );
 
         if( wheelEvent->angleDelta().y() < 0 ) {
           zoomOut();
@@ -246,11 +246,8 @@ class CameraControllerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj, true );
-      scene->addItem( b );
+      auto* b = createBaseBlock( scene, obj );
 
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
       b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
 
       return b;

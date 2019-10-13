@@ -54,7 +54,7 @@ void SectionControlToolbar::setNumberOfSections( float number ) {
   showHideButtons();
 }
 
-void SectionControlToolbar::setName( QString name ) {
+void SectionControlToolbar::setName( const QString& name ) {
   if( !name.isEmpty() ) {
     ui->lbName->setText( name );
     ui->lbName->show();

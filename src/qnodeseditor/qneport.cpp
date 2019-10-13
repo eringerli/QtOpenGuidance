@@ -37,12 +37,14 @@
 #include <QGraphicsSceneMouseEvent>
 
 #include <QDebug>
+#include <utility>
+#include <utility>
 
 #include "qneconnection.h"
 
 QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
   QGraphicsPathItem( parent ),
-  slotSignalSignature( slotSignalSignature ) {
+  slotSignalSignature( std::move( std::move( slotSignalSignature ) ) ) {
   label = new QGraphicsTextItem( this );
 
   QPainterPath p;
@@ -135,7 +137,7 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
 }
 
 void QNEPort::contentsChanged() {
-  QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
+  auto* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
 
   if( block ) {
     block->setName( label->toPlainText(), true );

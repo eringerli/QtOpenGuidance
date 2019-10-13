@@ -28,8 +28,7 @@
 #include "pointmeshgeometry.h"
 
 PointMesh::PointMesh( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent )
-  , _pointMeshGeo( nullptr ) {
+  Qt3DRender::QGeometryRenderer( parent ) {
   setInstanceCount( 1 );
   setIndexOffset( 0 );
   setFirstInstance( 0 );

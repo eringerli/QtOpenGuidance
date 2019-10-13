@@ -121,8 +121,8 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // the format is like this: DDMM.MMMMM
-              latitude = nmeaFileIterator->left( 2 ).toDouble();
-              latitude += nmeaFileIterator->mid( 2, 2 ).toDouble() / 60;
+              latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
+              latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
               latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
               ++nmeaFileIterator;
 
@@ -133,9 +133,9 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // the format is like this: DDDMM.MMMMM
-              longitude = nmeaFileIterator->left( 3 ).toDouble();
-              longitude += nmeaFileIterator->mid( 3, 2 ).toDouble() / 60;
-              longitude += nmeaFileIterator->mid( 5 ).toDouble() / 60;
+              longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
+              longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
+              longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
               ++nmeaFileIterator;
 
               if( ( *nmeaFileIterator ) == 'W' ) {
@@ -184,9 +184,9 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // the format is like this: DDMM.MMMMM
-              latitude = nmeaFileIterator->left( 2 ).toDouble();
-              latitude += nmeaFileIterator->mid( 2, 2 ).toDouble() / 60;
-              latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
+              latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
+              latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
+              latitude += nmeaFileIterator->midRef( 4 ).toDouble() / 60;
               ++nmeaFileIterator;
 
               if( ( *nmeaFileIterator ) == 'S' ) {
@@ -196,9 +196,9 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // the format is like this: DDDMM.MMMMM
-              longitude = nmeaFileIterator->left( 3 ).toDouble();
-              longitude += nmeaFileIterator->mid( 3, 2 ).toDouble() / 60;
-              longitude += nmeaFileIterator->mid( 5 ).toDouble() / 60;
+              longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
+              longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
+              longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
               ++nmeaFileIterator;
 
               if( ( *nmeaFileIterator ) == 'W' ) {
@@ -208,8 +208,8 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // speed in kn = 463m/900s
-              velocity = nmeaFileIterator->left( 2 ).toDouble();
-              velocity += nmeaFileIterator->mid( 2 ).toDouble() / 10;
+              velocity = nmeaFileIterator->leftRef( 2 ).toDouble();
+              velocity += nmeaFileIterator->midRef( 2 ).toDouble() / 10;
               velocity *= 463;
               velocity /= 900;
 
@@ -262,11 +262,7 @@ class NmeaParserFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
       b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );

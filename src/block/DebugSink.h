@@ -130,17 +130,13 @@ class DebugSinkFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
+      auto* b = createBaseBlock( scene, obj );
+
       auto debugSink = qobject_cast<DebugSink*>( obj );
 
       if( debugSink ) {
         debugSink->block = b;
       }
-
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
       b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );

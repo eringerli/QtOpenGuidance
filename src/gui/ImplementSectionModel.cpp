@@ -42,7 +42,7 @@ QVariant ImplementSectionModel::headerData( int section, Qt::Orientation orienta
         return QStringLiteral( "Overlap Right" );
 
       default:
-        return QStringLiteral( "" );
+        return QString();
     }
   } else if( role == Qt::DisplayRole && orientation == Qt::Orientation::Vertical ) {
     return QStringLiteral( "Section " ) + QString::number( section + 1 );
@@ -64,7 +64,7 @@ bool ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientat
 
 int ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       return implement->sections.count();
@@ -84,7 +84,7 @@ QVariant ImplementSectionModel::data( const QModelIndex& index, int role ) const
   }
 
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       if( index.row() < implement->sections.count() ) {
@@ -110,7 +110,7 @@ QVariant ImplementSectionModel::data( const QModelIndex& index, int role ) const
 
 bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       if( index.row() < implement->sections.count() ) {
@@ -144,7 +144,7 @@ bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& p
   qDebug() << row << count << parent;
 
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       beginInsertRows( parent, row, row + ( count - 1 ) );
@@ -167,7 +167,7 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
   qDebug() << row << count << parent;
 
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       beginRemoveRows( parent, row, row + ( count - 1 ) );
@@ -186,7 +186,7 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
 bool ImplementSectionModel::swapElements( int first, int second ) {
 
   if( block ) {
-    Implement* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
       if( first < second ) {

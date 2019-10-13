@@ -60,6 +60,17 @@ class BlockFactory : public QObject {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
 
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj ) {
+      auto* b = new QNEBlock( obj );
+
+      scene->addItem( b );
+
+      b->addPort( getNameOfFactory(), QString(), false, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(),  QString(), false, QNEPort::TypePort );
+
+      return b;
+    }
+
 };
 
 #endif // BLOCKBASE_H

@@ -64,7 +64,7 @@ class Tile: public QObject {
     static constexpr double sizeOfTileDouble = double( sizeOfTile );
 
   public:
-    Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity, bool showTileEnabled, QColor color )
+    Tile( QObject* parent, qint64 x, qint64 y, Qt3DCore::QEntity* rootEntity, bool showTileEnabled, const QColor& color )
       : QObject( parent ),
         rootEntity( rootEntity ), x( x ), y( y ) {
       tileTransform = new Qt3DCore::QTransform();
@@ -78,7 +78,7 @@ class Tile: public QObject {
       limitsEntity = new Qt3DCore::QEntity( tileEntity );
 
       // comment in to draw lines around tile
-      LineMesh* linemesh = new LineMesh();
+      auto* linemesh = new LineMesh();
       QVector<QVector3D> lines;
       lines.append( QVector3D( 0, 0, 0 ) );
       lines.append( QVector3D( sizeOfTile, 0, 0 ) );
@@ -104,7 +104,7 @@ class Tile: public QObject {
       limitsEntity->setEnabled( enabled );
     }
 
-    void setShowColor( QColor color ) {
+    void setShowColor( const QColor& color ) {
       this->color = color;
       material->setAmbient( color );
     }
@@ -117,29 +117,28 @@ class Tile: public QObject {
     Tile* getTileForPosition( double& x, double& y ) {
       // the point is in this Tile -> return it
       if( x >= 0 &&
-          x >= 0 &&
-          y < sizeOfTileDouble &&
           y < sizeOfTileDouble ) {
         return this;
-      } else {
-        // calculate relative offset
-        qint64 relativeOffsetX = qint64( x / sizeOfTileDouble ) - ( ( x < 0 ) ? 1 : 0 );
-        qint64 relativeOffsetY = qint64( y / sizeOfTileDouble ) - ( ( y < 0 ) ? 1 : 0 );
-        relativeOffsetX *= qint64( sizeOfTileDouble );
-        relativeOffsetY *= qint64( sizeOfTileDouble );
-
-        // offset the position
-        if( relativeOffsetX ) {
-          x -= relativeOffsetX;
-        }
-
-        if( relativeOffsetY ) {
-          y -= relativeOffsetY;
-        }
-
-        // get the tile or create a new one
-        return getTileForOffset( this->x + relativeOffsetX, this->y + relativeOffsetY );
       }
+
+      // calculate relative offset
+      qint64 relativeOffsetX = qint64( x / sizeOfTileDouble ) - ( ( x < 0 ) ? 1 : 0 );
+      qint64 relativeOffsetY = qint64( y / sizeOfTileDouble ) - ( ( y < 0 ) ? 1 : 0 );
+      relativeOffsetX *= qint64( sizeOfTileDouble );
+      relativeOffsetY *= qint64( sizeOfTileDouble );
+
+      // offset the position
+      if( relativeOffsetX ) {
+        x -= relativeOffsetX;
+      }
+
+      if( relativeOffsetY ) {
+        y -= relativeOffsetY;
+      }
+
+      // get the tile or create a new one
+      return getTileForOffset( this->x + relativeOffsetX, this->y + relativeOffsetY );
+
     }
 
     // the check for locality is done here, as it is highly probable, that the point is in the current tile
@@ -150,9 +149,7 @@ class Tile: public QObject {
     Tile* getTileForPosition( QVector3D* position ) {
       // the point is in this Tile -> return it
       if( position->x() >= 0 &&
-          position->y() >= 0 &&
-          position->x() < sizeOfTile &&
-          position->y() < sizeOfTile ) {
+          position->x() < sizeOfTile ) {
         return this;
       } else {
         // calculate relative offset
@@ -178,9 +175,9 @@ class Tile: public QObject {
 
     Tile* getTileForOffset( qint64 x, qint64 y ) {
       // find a matching tile and return it
-      if( parent()->children().size() ) {
-        for( int i = 0; i < parent()->children().size(); ++i ) {
-          Tile* tile = qobject_cast<Tile*>( parent()->children().at( i ) );
+      if( !parent()->children().empty() ) {
+        for( auto i : parent()->children() ) {
+          Tile* tile = qobject_cast<Tile*>( i );
 
           if( tile ) {
             if( tile->x == x && tile->y == y ) {
@@ -210,7 +207,7 @@ class Tile: public QObject {
     QColor color = Qt::red;
     bool showTileEnabled = false;
 
-    Qt3DCore::QEntity* rootEntity;
+    Qt3DCore::QEntity* rootEntity = nullptr;
     qint64 x;
     qint64 y;
 };
@@ -223,16 +220,16 @@ class RootTile: public QObject {
       : QObject() {
     }
 
-    void setShowColor( QColor color ) {
-      for( int i = 0; i < children().size(); ++i ) {
-        Tile* tile = qobject_cast<Tile*>( children().at( i ) );
+    void setShowColor( const QColor& color ) {
+      for( auto i : children() ) {
+        Tile* tile = qobject_cast<Tile*>( i );
         tile->setShowColor( color );
       }
     }
 
     void setShowEnable( bool enabled ) {
-      for( int i = 0; i < children().size(); ++i ) {
-        Tile* tile = qobject_cast<Tile*>( children().at( i ) );
+      for( auto i : children() ) {
+        Tile* tile = qobject_cast<Tile*>( i );
         tile->setShowEnable( enabled );
       }
     }

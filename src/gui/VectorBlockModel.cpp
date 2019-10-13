@@ -46,7 +46,7 @@ QVariant VectorBlockModel::headerData( int section, Qt::Orientation orientation,
         return QStringLiteral( "Z" );
 
       default:
-        return QStringLiteral( "" );
+        return QString();
     }
   }
 
@@ -80,10 +80,10 @@ QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( VectorObject* object = qobject_cast<VectorObject*>( block->object ) ) {
+      if( auto* object = qobject_cast<VectorObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -110,10 +110,10 @@ bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value,
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( VectorObject* object = qobject_cast<VectorObject*>( block->object ) ) {
+      if( auto* object = qobject_cast<VectorObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -164,7 +164,7 @@ void VectorBlockModel::resetModel() {
   countBuffer = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
       if( qobject_cast<VectorObject*>( block->object ) ) {

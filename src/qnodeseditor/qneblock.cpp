@@ -84,7 +84,7 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
   port->setIsOutput( isOutput );
   port->setNEBlock( this );
 
-  if( systemBlock == true ) {
+  if( systemBlock ) {
     flags |= QNEPort::SystemBlock;
   }
 
@@ -157,7 +157,7 @@ QVector<QNEPort*> QNEBlock::ports() {
   QVector<QNEPort*> res;
 
   foreach( QGraphicsItem* port_, childItems() ) {
-    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
       res.append( port );
@@ -167,10 +167,10 @@ QVector<QNEPort*> QNEBlock::ports() {
   return res;
 }
 
-void QNEBlock::setName( QString name, bool setFromLabel ) {
+void QNEBlock::setName( const QString& name, bool setFromLabel ) {
   if( !setFromLabel ) {
     foreach( QGraphicsItem* port_, childItems() ) {
-      QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+      auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
       if( port && port->portFlags()&QNEPort::NamePort ) {
         port->setName( name );
@@ -180,7 +180,7 @@ void QNEBlock::setName( QString name, bool setFromLabel ) {
 
   this->name = name;
 
-  BlockBase* obj = qobject_cast<BlockBase*>( object );
+  auto* obj = qobject_cast<BlockBase*>( object );
 
   if( obj ) {
     obj->setName( name );
@@ -196,9 +196,9 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
   return value;
 }
 
-QNEPort* QNEBlock::getPortWithName( QString name, bool output ) {
+QNEPort* QNEBlock::getPortWithName( const QString& name, bool output ) {
   foreach( QGraphicsItem* port_, childItems() ) {
-    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port &&
         !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) &&
@@ -248,7 +248,7 @@ void QNEBlock::resizeBlockWidth() {
   width = 0;
 
   foreach( QGraphicsItem* port_, childItems() ) {
-    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
       if( width < port->getWidthOfLabelBoundingRect() ) {
@@ -260,7 +260,7 @@ void QNEBlock::resizeBlockWidth() {
   qreal widthSnappedToGridSpacing = ceil( width / ( gridSpacing ) ) * ( gridSpacing );
 
   foreach( QGraphicsItem* port_, childItems() ) {
-    QNEPort* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
       if( port->isOutput() ) {

@@ -3,7 +3,7 @@
 
 #include <QtMath>
 
-#include <math.h>
+#include <cmath>
 
 GuidanceMeterBar::GuidanceMeterBar( QWidget* parent ) :
   QGroupBox( parent ),
@@ -41,6 +41,6 @@ void GuidanceMeterBar::setFieldWitdh( float fieldwitdh ) {
   this->fieldwitdh = int( fieldwitdh );
 }
 
-void GuidanceMeterBar::setName( QString name ) {
+void GuidanceMeterBar::setName( const QString& name ) {
   ui->lbName->setText( name );
 }

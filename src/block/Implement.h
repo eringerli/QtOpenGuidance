@@ -91,8 +91,8 @@ class Implement : public BlockBase {
         if( valuesObject["Sections"].isArray() ) {
           QJsonArray sectionArray = valuesObject["Sections"].toArray();
 
-          for( int sectionIndex = 0; sectionIndex < sectionArray.size(); ++sectionIndex ) {
-            QJsonObject sectionObject = sectionArray[sectionIndex].toObject();
+          for( auto&& sectionIndex : sectionArray ) {
+            QJsonObject sectionObject = sectionIndex.toObject();
             sections.append(
               QSharedPointer<ImplementSection>(
                 new ImplementSection( sectionObject["overlapLeft"].toDouble( 0 ),
@@ -136,11 +136,7 @@ class ImplementFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addOutputPort( "Trigger Calculation of Local Pose", SIGNAL( triggerLocalPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addOutputPort( "Section Controll Data", SIGNAL( sectionsChanged( QVector<QSharedPointer<ImplementSection>> ) ) );

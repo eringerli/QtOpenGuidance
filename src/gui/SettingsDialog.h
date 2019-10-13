@@ -110,7 +110,7 @@ class SettingsDialog : public QDialog {
     void on_pbClear_clicked();
 
     void on_pbTileColor_clicked();
-    void on_gbShowTiles_toggled( bool arg1 );
+    void on_gbShowTiles_toggled( bool enabled );
 
     void on_cbImplements_currentIndexChanged( int index );
 
@@ -137,7 +137,7 @@ class SettingsDialog : public QDialog {
     void on_pbPassColorOtherBackground_clicked();
 
 
-    void on_gbPass_toggled( bool arg1 );
+    void on_gbPass_toggled( bool enabled );
 
     void on_slPassActiveTransparency_valueChanged( int value );
 
@@ -167,59 +167,59 @@ class SettingsDialog : public QDialog {
     RootTile tileRoot;
 
   public:
-    BlockBase* poseSimulation;
+    BlockBase* poseSimulation = nullptr;
 
-    BlockBase* plannerGui;
-    BlockBase* globalPlanner;
-    BlockBase* localPlanner;
-    BlockBase* stanleyGuidance;
-    BlockBase* xteGuidance;
+    BlockBase* plannerGui = nullptr;
+    BlockBase* globalPlanner = nullptr;
+    BlockBase* localPlanner = nullptr;
+    BlockBase* stanleyGuidance = nullptr;
+    BlockBase* xteGuidance = nullptr;
 
   private:
-    Ui::SettingsDialog* ui;
+    Ui::SettingsDialog* ui = nullptr;
 
-    Qt3DCore::QEntity* rootEntity;
+    Qt3DCore::QEntity* rootEntity = nullptr;
 
-    BlockFactory* poseSimulationFactory;
+    BlockFactory* poseSimulationFactory = nullptr;
 
-    BlockFactory* transverseMercatorConverterFactory;
-    BlockFactory* poseSynchroniserFactory;
-    BlockFactory* tractorModelFactory;
-    BlockFactory* trailerModelFactory;
-    BlockFactory* fixedKinematicFactory;
-    BlockFactory* trailerKinematicFactory;
-    BlockFactory* debugSinkFactory;
-    BlockFactory* printLatencyFactory;
-    BlockFactory* udpSocketFactory;
-    BlockFactory* serialPortFactory;
-    BlockFactory* fileStreamFactory;
-    BlockFactory* ackermannSteeringFactory;
-    BlockFactory* nmeaParserFactory;
-    BlockFactory* communicationPgn7ffeFactory;
-    BlockFactory* communicationJrkFactory;
+    BlockFactory* transverseMercatorConverterFactory = nullptr;
+    BlockFactory* poseSynchroniserFactory = nullptr;
+    BlockFactory* tractorModelFactory = nullptr;
+    BlockFactory* trailerModelFactory = nullptr;
+    BlockFactory* fixedKinematicFactory = nullptr;
+    BlockFactory* trailerKinematicFactory = nullptr;
+    BlockFactory* debugSinkFactory = nullptr;
+    BlockFactory* printLatencyFactory = nullptr;
+    BlockFactory* udpSocketFactory = nullptr;
+    BlockFactory* serialPortFactory = nullptr;
+    BlockFactory* fileStreamFactory = nullptr;
+    BlockFactory* ackermannSteeringFactory = nullptr;
+    BlockFactory* nmeaParserFactory = nullptr;
+    BlockFactory* communicationPgn7ffeFactory = nullptr;
+    BlockFactory* communicationJrkFactory = nullptr;
 
-    BlockFactory* plannerGuiFactory;
-    BlockFactory* globalPlannerFactory;
-    BlockFactory* localPlannerFactory;
-    BlockFactory* stanleyGuidanceFactory;
-    BlockFactory* xteGuidanceFactory;
+    BlockFactory* plannerGuiFactory = nullptr;
+    BlockFactory* globalPlannerFactory = nullptr;
+    BlockFactory* localPlannerFactory = nullptr;
+    BlockFactory* stanleyGuidanceFactory = nullptr;
+    BlockFactory* xteGuidanceFactory = nullptr;
 
-    BlockFactory* vectorFactory;
-    BlockFactory* numberFactory;
-    BlockFactory* stringFactory;
-    QSortFilterProxyModel* filterModelValues;
-    VectorBlockModel* vectorBlockModel;
-    NumberBlockModel* numberBlockModel;
-    StringBlockModel* stringBlockModel;
+    BlockFactory* vectorFactory = nullptr;
+    BlockFactory* numberFactory = nullptr;
+    BlockFactory* stringFactory = nullptr;
+    QSortFilterProxyModel* filterModelValues = nullptr;
+    VectorBlockModel* vectorBlockModel = nullptr;
+    NumberBlockModel* numberBlockModel = nullptr;
+    StringBlockModel* stringBlockModel = nullptr;
 
-    BlockFactory* implementFactory;
-    QSortFilterProxyModel* filterModelImplements;
-    ImplementBlockModel* implementBlockModel;
-    ImplementSectionModel* implementSectionModel;
+    BlockFactory* implementFactory = nullptr;
+    QSortFilterProxyModel* filterModelImplements = nullptr;
+    ImplementBlockModel* implementBlockModel = nullptr;
+    ImplementSectionModel* implementSectionModel = nullptr;
 
   private:
     QNEBlock* getBlockWithId( int id );
-    QNEBlock* getBlockWithName( QString name );
+    QNEBlock* getBlockWithName( const QString& name );
 
     QColor gridColor = QColor( 0xa2, 0xe3, 0xff );
     QColor tileColor = QColor( 0xff, 0x00, 0x00 );

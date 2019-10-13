@@ -40,7 +40,7 @@ class QNEConnection : public QGraphicsPathItem {
     QNEConnection( QGraphicsItem* parent = nullptr );
     ~QNEConnection();
 
-    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget );
+    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
     void setPos1( const QPointF& p );
     void setPos2( const QPointF& p );
@@ -52,7 +52,7 @@ class QNEConnection : public QGraphicsPathItem {
     QNEPort* port1() const;
     QNEPort* port2() const;
 
-    int type() const {
+    int type() const override {
       return Type;
     }
 

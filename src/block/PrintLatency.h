@@ -90,17 +90,13 @@ class PrintLatencyFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
+      auto* b = createBaseBlock( scene, obj );
+
       auto printLatency = qobject_cast<PrintLatency*>( obj );
 
       if( printLatency ) {
         printLatency->block = b;
       }
-
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
 
       b->addInputPort( "Input1", SLOT( input1() ) );
       b->addInputPort( "Input2", SLOT( input2() ) );

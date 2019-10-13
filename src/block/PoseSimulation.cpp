@@ -73,7 +73,8 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     // in global coordinates: WGS84
     {
-      double latitude = 0, longitude = 0;
+      double latitude = 0;
+      double longitude = 0;
 
       _tm.Reverse( double( m_initialWGS84Position.y() ), yWithAntennaOffset, xWithAntennaOffset, latitude, longitude );
       latitude += double( m_initialWGS84Position.x() );

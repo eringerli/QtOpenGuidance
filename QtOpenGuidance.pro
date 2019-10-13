@@ -45,7 +45,6 @@ HEADERS += \
     src/block/MeterBarModel.h \
     src/block/NmeaParser.h \
     src/block/NumberObject.h \
-    src/block/PathPrimitive.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
@@ -73,6 +72,7 @@ HEADERS += \
     src/gui/StringBlockModel.h \
     src/gui/VectorBlockModel.h \
     src/kinematic/FixedKinematic.h \
+    src/kinematic/PathPrimitive.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/Tile.h \
     src/kinematic/TrailerKinematic.h

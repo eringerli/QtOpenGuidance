@@ -19,7 +19,7 @@ class GuidanceMeterBar : public QGroupBox {
     void setPrecision( float precision );
     void setScale( float scale );
     void setFieldWitdh( float fieldwitdh );
-    void setName( QString name );
+    void setName( const QString& name );
 
   private:
     Ui::GuidanceMeterBar* ui;

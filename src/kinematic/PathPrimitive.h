@@ -32,16 +32,22 @@ class PathPrimitive : public QObject {
     Q_OBJECT
 
   public:
-    PathPrimitive() {}
+    PathPrimitive( double x1, double y1, double x2, double y2, bool anyDirection ):
+      x1( x1 ), y1( y1 ), x2( x2 ), y2( y2 ), anyDirection( anyDirection ) {}
+
+  public:
+    double x1, y1;
+    double x2, y2;
+
+    bool anyDirection;
 };
 
 class PathPrimitiveLine : public PathPrimitive {
     Q_OBJECT
 
   public:
-    PathPrimitiveLine( double x1, double y1, double x2, double y2, bool segment )
-      : PathPrimitive(),
-        x1( x1 ), y1( y1 ), x2( x2 ), y2( y2 ), segment( segment ) {
+    PathPrimitiveLine( double x1, double y1, double x2, double y2, bool segment, bool anyDirection )
+      : PathPrimitive( x1, y1, x2, y2, anyDirection ), segment( segment ) {
       qDebug() << "PathPrimitiveLine()";
     }
 
@@ -50,8 +56,6 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
-    double x1, y1;
-    double x2, y2;
     bool segment;
 };
 
@@ -59,13 +63,11 @@ class PathPrimitiveCircle : public PathPrimitive {
     Q_OBJECT
 
   public:
-    PathPrimitiveCircle( double x1, double y1, double x2, double y2, double xCenter, double yCenter )
-      : PathPrimitive(),
-        x1( x1 ), y1( y1 ), x2( x2 ), y2( y2 ), xCenter( xCenter ), yCenter( yCenter ) {}
+    PathPrimitiveCircle( double x1, double y1, double x2, double y2, double xCenter, double yCenter, bool anyDirection )
+      : PathPrimitive( x1, y1, x2, y2, anyDirection ),
+        xCenter( xCenter ), yCenter( yCenter ) {}
 
   public:
-    double x1, y1;
-    double x2, y2;
     double xCenter, yCenter;
 };
 

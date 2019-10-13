@@ -134,12 +134,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
 
-  QGraphicsScene* scene = new QGraphicsScene();
+  auto* scene = new QGraphicsScene();
   ui->gvNodeEditor->setScene( scene );
 
   ui->gvNodeEditor->setRenderHint( QPainter::Antialiasing, true );
 
-  QNodesEditor* nodesEditor = new QNodesEditor( this );
+  auto* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
 
   // Models for the tableview
@@ -172,7 +172,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
 
   // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
-  TransverseMercatorWrapper* tmw = new TransverseMercatorWrapper();
+  auto* tmw = new TransverseMercatorWrapper();
 
   // simulator
   poseSimulationFactory = new PoseSimulationFactory( tile );
@@ -357,7 +357,7 @@ void SettingsDialog::saveDefaultConfig() {
 }
 
 void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
-  QAbstractTableModel* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
+  auto* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
 
   if( model ) {
     filterModelValues->setSourceModel( model );
@@ -382,7 +382,7 @@ void SettingsDialog::on_pbSaveSelected_clicked() {
     QFile saveFile( fileName );
 
     if( !saveFile.open( QIODevice::WriteOnly ) ) {
-      qWarning( "Couldn't open save file." );
+      qWarning() << "Couldn't open save file.";
       return;
     }
 
@@ -399,7 +399,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
 
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
     {
-      QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+      auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
       if( block ) {
         block->toJSON( jsonObject );
@@ -407,7 +407,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
     }
 
     {
-      QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+      auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
       if( connection ) {
         connection->toJSON( jsonObject );
@@ -421,7 +421,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
 
 QNEBlock* SettingsDialog::getBlockWithId( int id ) {
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
       if( block->id == id ) {
@@ -433,9 +433,9 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
   return nullptr;
 }
 
-QNEBlock* SettingsDialog::getBlockWithName( QString name ) {
+QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
       if( block->getName() == name ) {
@@ -461,7 +461,7 @@ void SettingsDialog::on_pbLoad_clicked() {
 
 
     if( !loadFile.open( QIODevice::ReadOnly ) ) {
-      qWarning( "Couldn't open save file." );
+      qWarning() << "Couldn't open save file.";
       return;
     }
 
@@ -482,8 +482,8 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
     QJsonArray blocksArray = json["blocks"].toArray();
 
-    for( int blockIndex = 0; blockIndex < blocksArray.size(); ++blockIndex ) {
-      QJsonObject blockObject = blocksArray[blockIndex].toObject();
+    for( auto&& blockIndex : blocksArray ) {
+      QJsonObject blockObject = blockIndex.toObject();
       int id = blockObject["id"].toInt( 0 );
 
       // if id is a system-id -> search the block and set the values
@@ -501,7 +501,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
           // id is not a system-id -> create new blocks
         } else {
           int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
-          BlockFactory* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
+          auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
           if( factory ) {
             BlockBase* obj = factory->createNewObject();
@@ -523,8 +523,8 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   if( json.contains( "connections" ) && json["connections"].isArray() ) {
     QJsonArray connectionsArray = json["connections"].toArray();
 
-    for( int connectionsIndex = 0; connectionsIndex < connectionsArray.size(); ++connectionsIndex ) {
-      QJsonObject connectionsObject = connectionsArray[connectionsIndex].toObject();
+    for( auto&& connectionsIndex : connectionsArray ) {
+      QJsonObject connectionsObject = connectionsIndex.toObject();
 
       if( !connectionsObject["idFrom"].isUndefined() &&
           !connectionsObject["idTo"].isUndefined() &&
@@ -546,7 +546,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
             QNEPort* portTo = blockTo->getPortWithName( portToName, false );
 
             if( portFrom && portTo ) {
-              QNEConnection* conn = new QNEConnection();
+              auto* conn = new QNEConnection();
               conn->setPort1( portFrom );
 
               if( conn->setPort2( portTo ) ) {
@@ -566,7 +566,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 
   // as new values for the blocks are added above, emit all signals now, when the connections are made
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
       block->emitConfigSignals();
@@ -580,8 +580,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
-  QString currentText = ui->cbNodeType->currentText();
-  BlockFactory* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
+  auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
 
   if( factory ) {
     BlockBase* obj = factory->createNewObject();
@@ -602,15 +601,13 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
-    QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
+    auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-    if( connection != nullptr ) {
-      delete connection;
-    }
+    delete connection;
   }
 
   foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
       if( !block->systemBlock ) {
@@ -898,7 +895,7 @@ void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
 void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
   QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
   QVariant data = ui->cbImplements->model()->data( idx );
-  QNEBlock* block = qvariant_cast<QNEBlock*>( data );
+  auto* block = qvariant_cast<QNEBlock*>( data );
 
   implementSectionModel->setDatasource( block );
   ui->twSections->resizeColumnsToContents();
@@ -964,7 +961,7 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
   // forward sort
   std::sort( rows.begin(), rows.end(), std::less<int>() );
 
-  ImplementSectionModel* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+  auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
 
   if( implementModel ) {
     if( rows[0] > 0 ) {
@@ -987,7 +984,7 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
   // reverse sort
   std::sort( rows.begin(), rows.end(), std::greater<int>() );
 
-  ImplementSectionModel* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+  auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
 
   if( implementModel ) {
     if( ( rows[0] + 1 ) < implementModel->rowCount() ) {

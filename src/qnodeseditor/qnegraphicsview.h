@@ -48,7 +48,7 @@ class QNEGraphicsView : public QGraphicsView {
     }
 
   protected:
-    void wheelEvent( QWheelEvent* event ) {
+    void wheelEvent( QWheelEvent* event ) override {
 
       // zoom
       const ViewportAnchor anchor = transformationAnchor();

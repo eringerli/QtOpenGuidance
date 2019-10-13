@@ -28,8 +28,7 @@
 #include "linemeshgeometry.h"
 
 LineMesh::LineMesh( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent )
-  , _lineMeshGeo( nullptr ) {
+  Qt3DRender::QGeometryRenderer( parent ) {
   setInstanceCount( 1 );
   setIndexOffset( 0 );
   setFirstInstance( 0 );

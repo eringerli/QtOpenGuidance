@@ -47,7 +47,7 @@ class SectionControlToolbar : public QGroupBox {
 
   public slots:
     void setNumberOfSections( float );
-    void setName( QString );
+    void setName( const QString& );
 
   private slots:
     void on_pbAll_clicked();

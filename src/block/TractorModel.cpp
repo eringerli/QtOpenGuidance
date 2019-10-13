@@ -113,7 +113,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
 
       m_towHookTransform = new Qt3DCore::QTransform();
 
-      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      auto* material = new Qt3DExtras::QPhongMaterial();
       material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
 
       m_towHookEntity = new Qt3DCore::QEntity( rootEntity );
@@ -131,7 +131,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
 
       m_pivotPointTransform = new Qt3DCore::QTransform();
 
-      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      auto* material = new Qt3DExtras::QPhongMaterial();
       material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
 
       m_pivotPointEntity = new Qt3DCore::QEntity( rootEntity );
@@ -149,7 +149,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
 
       m_towPointTransform = new Qt3DCore::QTransform();
 
-      Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+      auto* material = new Qt3DExtras::QPhongMaterial();
       material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
 
       m_towPointEntity = new Qt3DCore::QEntity( rootEntity );

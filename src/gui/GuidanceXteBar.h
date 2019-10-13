@@ -16,7 +16,7 @@ class GuidanceXteBar : public QGroupBox {
 
   public slots:
     void setXte( float xte );
-    void setName( QString name );
+    void setName( const QString& name );
 
   private:
     Ui::GuidanceXteBar* ui;

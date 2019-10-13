@@ -52,7 +52,7 @@ class SectionControlModel : public BlockBase {
       }
     }
 
-    void setSections( QVector<QSharedPointer<ImplementSection>> sections ) {
+    void setSections( const QVector<QSharedPointer<ImplementSection>>& sections ) {
       this->sections = sections;
       sectionControlToolbar->setNumberOfSections( sections.count() );
     }
@@ -87,11 +87,7 @@ class SectionControlModelFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Section Controll Data", SLOT( setSections( QVector<QSharedPointer<ImplementSection>> ) ) );
 

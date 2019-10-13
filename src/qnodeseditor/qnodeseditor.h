@@ -41,11 +41,11 @@ class QNodesEditor : public QObject {
     Q_OBJECT
 
   public:
-    explicit QNodesEditor( QObject* parent = 0 );
+    explicit QNodesEditor( QObject* parent = nullptr );
 
     void install( QGraphicsScene* scene );
 
-    bool eventFilter( QObject*, QEvent* );
+    bool eventFilter( QObject*, QEvent* ) override;
 
     void save( QDataStream& ds );
     void load( QDataStream& ds );

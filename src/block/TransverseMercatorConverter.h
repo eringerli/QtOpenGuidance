@@ -57,14 +57,16 @@ class TransverseMercatorWrapper {
       latitude -= lat0;
       height -= height0;
 
-      double convergence, scale;
+      double convergence;
+      double scale;
       _tm.Forward( lon0, latitude, longitude, y, x, convergence, scale );
 //      qDebug() << "lat0, lon0, isLatLonOffsetSet" << lat0 << lon0 << isLatLonOffsetSet;
 //      qDebug() << x << y << convergence << scale;
     }
 
     void Reverse( double x, double y, double& latitude, double& longitude, double& height ) {
-      double convergence, scale;
+      double convergence;
+      double scale;
       _tm.Reverse( lon0, y, x, latitude, longitude, convergence, scale );
 
       latitude += lat0;
@@ -95,7 +97,8 @@ class TransverseMercatorConverter : public BlockBase {
   public slots:
     void setWGS84Position( double latitude, double longitude, double height ) {
 
-      double x, y;
+      double x;
+      double y;
       tmw->Forward( latitude, longitude, height, x, y );
 
       Tile* tile = rootTile->getTileForPosition( x, y );
@@ -140,11 +143,7 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
 

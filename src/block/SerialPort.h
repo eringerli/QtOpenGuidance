@@ -49,7 +49,7 @@ class SerialPort : public BlockBase {
     void dataReceived( QByteArray );
 
   public slots:
-    void setPort( QString port ) {
+    void setPort( const QString& port ) {
       this->port = port;
       serialPort->close();
       serialPort->setPortName( port );
@@ -61,7 +61,7 @@ class SerialPort : public BlockBase {
       serialPort->setBaudRate( qint32( baudrate ) );
     }
 
-    void sendData( QByteArray data ) {
+    void sendData( const QByteArray& data ) {
       serialPort->write( data );
     }
 
@@ -104,11 +104,7 @@ class SerialPortFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Port", SLOT( setPort( QString ) ) );
       b->addInputPort( "Baudrate", SLOT( setBaudrate( float ) ) );

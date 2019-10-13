@@ -49,12 +49,12 @@ class CommunicationPgn7ffe : public BlockBase {
       data[3] = char( velocity * 3.6f * 4.0f );
 
       // XTE in mm
-      int16_t xte = int16_t( distance * 1000 );
+      auto xte = int16_t( distance * 1000 );
       data[4] = char( xte >> 8 );
       data[5] = char( xte & 0xff );
 
       // steerangle in °/100
-      int16_t steerangle = int16_t( steeringAngle * 100 );
+      auto steerangle = int16_t( steeringAngle * 100 );
       data[6] = char( steerangle >> 8 );
       data[7] = char( steerangle & 0xff );
 
@@ -94,12 +94,7 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
-
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
       b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );

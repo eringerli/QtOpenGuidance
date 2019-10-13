@@ -31,10 +31,11 @@
 
 #include "../kinematic/Tile.h"
 #include "../kinematic/PoseOptions.h"
+#include "../kinematic/PathPrimitive.h"
 
 #include <QVector>
 #include <QSharedPointer>
-#include "PathPrimitive.h"
+#include <utility>
 
 // http://ai.stanford.edu/~gabeh/papers/hoffmann_stanley_control07.pdf
 // https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/stanley_controller/stanley_controller.py
@@ -55,8 +56,8 @@ class XteGuidance : public BlockBase {
         double distance = qInf();
         double headingOfABLine = 0;
 
-        for( auto primitive : plan ) {
-          PathPrimitiveLine* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+        for( const auto& primitive : plan ) {
+          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
             double distanceTmp = lineToPointDistance2D(
@@ -84,7 +85,7 @@ class XteGuidance : public BlockBase {
     }
 
     void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
-      this->plan = plan;
+      this->plan = std::move( plan );
     }
 
     void emitConfigSignals() override {
@@ -191,11 +192,7 @@ class XteGuidanceFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );

@@ -62,7 +62,7 @@ class QNEPort : public QGraphicsPathItem {
       return m_portFlags;
     }
 
-    int type() const {
+    int type() const override {
       return Type;
     }
 
@@ -86,7 +86,7 @@ class QNEPort : public QGraphicsPathItem {
     QGraphicsTextItem* label = nullptr;
 
   protected:
-    QVariant itemChange( GraphicsItemChange change, const QVariant& value );
+    QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
 
   private:
     QNEBlock* m_block = nullptr;

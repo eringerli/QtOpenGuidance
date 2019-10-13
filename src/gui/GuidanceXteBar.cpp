@@ -1,7 +1,7 @@
 #include "GuidanceXteBar.h"
 #include "ui_GuidanceXteBar.h"
 
-#include <math.h>
+#include <cmath>
 
 GuidanceXteBar::GuidanceXteBar( QWidget* parent ) :
   QGroupBox( parent ),
@@ -45,14 +45,14 @@ void GuidanceXteBar::setXte( float xte ) {
     ui->pbXteLeft->setValue( 0 );
     ui->pbXteRight->setValue( 0 );
   } else if( xte > 0 ) {
-    ui->pbXteLeft->setValue( int( log10( xteAbsInCm ) * 700 ) );
+    ui->pbXteLeft->setValue( int( std::log10( xteAbsInCm ) * 700 ) );
     ui->pbXteRight->setValue( 0 );
   } else {
     ui->pbXteLeft->setValue( 0 );
-    ui->pbXteRight->setValue( int( log10( xteAbsInCm ) * 700 ) );
+    ui->pbXteRight->setValue( int( std::log10( xteAbsInCm ) * 700 ) );
   }
 }
 
-void GuidanceXteBar::setName( QString name ) {
+void GuidanceXteBar::setName( const QString& name ) {
   ui->lbName->setText( name );
 }

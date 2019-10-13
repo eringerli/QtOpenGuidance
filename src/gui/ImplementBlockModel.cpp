@@ -37,7 +37,7 @@ QVariant ImplementBlockModel::headerData( int section, Qt::Orientation orientati
         return QStringLiteral( "Name" );
 
       default:
-        return QStringLiteral( "" );
+        return QString();
     }
   }
 
@@ -71,10 +71,10 @@ QVariant ImplementBlockModel::data( const QModelIndex& index, int role ) const {
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( Implement* object = qobject_cast<Implement*>( block->object ) ) {
+      if( auto* object = qobject_cast<Implement*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -95,10 +95,10 @@ bool ImplementBlockModel::setData( const QModelIndex& index, const QVariant& val
   int countRow = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( Implement* object = qobject_cast<Implement*>( block->object ) ) {
+      if( auto* object = qobject_cast<Implement*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -131,7 +131,7 @@ void ImplementBlockModel::resetModel() {
   countBuffer = 0;
 
   foreach( QGraphicsItem* item, scene->items() ) {
-    QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
       if( qobject_cast<Implement*>( block->object ) ) {

@@ -39,9 +39,7 @@ class FileStream : public BlockBase {
         file->deleteLater();
       }
 
-      if( fileStream ) {
-        delete fileStream;
-      }
+      delete fileStream;
     }
 
     void emitConfigSignals() override {
@@ -133,11 +131,7 @@ class FileStreamFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "File", SLOT( setFilename( QString ) ) );
       b->addInputPort( "Linerate", SLOT( setLinerate( float ) ) );

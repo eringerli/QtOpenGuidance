@@ -40,10 +40,11 @@
 
 #include "../kinematic/Tile.h"
 #include "../kinematic/PoseOptions.h"
+#include "../kinematic/PathPrimitive.h"
 
 #include <QVector>
 #include <QSharedPointer>
-#include "PathPrimitive.h"
+#include <utility>
 
 
 class GlobalPlanner : public BlockBase {
@@ -65,7 +66,7 @@ class GlobalPlanner : public BlockBase {
 
         aPointTransform = new Qt3DCore::QTransform();
 
-        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+        auto* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "orange" ) );
 
         aPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
@@ -95,7 +96,7 @@ class GlobalPlanner : public BlockBase {
 
         bPointTransform = new Qt3DCore::QTransform();
 
-        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+        auto* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "purple" ) );
 
         bPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
@@ -279,7 +280,7 @@ class GlobalPlanner : public BlockBase {
 //      double x2tmp = x1 + (ac * (x2 - x1) / ab);
 //      double y2tmp = y1 + (ac * (y2 - y1) / ab);
 
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1, x2, y2, false ) ) );
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1, x2, y2, false, false ) ) );
       emit planChanged( plan );
 
       qDebug() << "b_clicked()" << x1 << y1 << x2 << y2 << x1 - x2 << y1 - y2 << qRadiansToDegrees( headingOfABLine );
@@ -296,8 +297,8 @@ class GlobalPlanner : public BlockBase {
 //      double x2tmp = x1 + (ac * (x2 - x1) / ab);
 //      double y2tmp = y1 + (ac * (y2 - y1) / ab);
 
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x(), position.y(), position.x(), position.y() + 20, true ) ) );
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x() + 20, position.y(), position.x() + 20, position.y() + 20, false ) ) );
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x(), position.y(), position.x(), position.y() + 20, true, false ) ) );
+      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x() + 20, position.y(), position.x() + 20, position.y() + 20, false, false ) ) );
 
       emit planChanged( plan );
     }
@@ -322,10 +323,10 @@ class GlobalPlanner : public BlockBase {
     }
 
     void setPassColors( QColor passActiveArrowColor, QColor passActiveBackgroundColor, QColor passOtherArrowColor, QColor passOtherBackgroundColor ) {
-      this->passActiveArrowColor = passActiveArrowColor;
-      this->passActiveBackgroundColor = passActiveBackgroundColor;
-      this->passOtherArrowColor = passOtherArrowColor;
-      this->passOtherBackgroundColor = passOtherBackgroundColor;
+      this->passActiveArrowColor = std::move( passActiveArrowColor );
+      this->passActiveBackgroundColor = std::move( passActiveBackgroundColor );
+      this->passOtherArrowColor = std::move( passOtherArrowColor );
+      this->passOtherBackgroundColor = std::move( passOtherBackgroundColor );
       setPassColors();
     }
 
@@ -440,11 +441,7 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      QNEBlock* b = new QNEBlock( obj, true );
-      scene->addItem( b );
-
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(), QStringLiteral( "" ), 0, QNEPort::TypePort );
+      auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Pose Left Edge", SLOT( setPoseLeftEdge( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
