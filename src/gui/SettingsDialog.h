@@ -127,7 +127,6 @@ class SettingsDialog : public QDialog {
 
     void on_btnSectionMoveDown_clicked();
 
-
     void on_cbGlobalPlanner_stateChanged( int arg1 );
     void on_dsbGlobalPlannerVisibleAreaX_valueChanged( double arg1 );
     void on_dsbGlobalPlannerVisibleAreaY_valueChanged( double arg1 );
@@ -149,7 +148,7 @@ class SettingsDialog : public QDialog {
     void saveTileValuesInSettings();
     void savePlannerValuesInSettings();
 
-    void setPassColorLabels();
+    void setPlannerColorLabels();
 
     void saveConfigToFile( QFile& file );
     void loadConfigFromFile( QFile& file );

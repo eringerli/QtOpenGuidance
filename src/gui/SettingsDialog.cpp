@@ -132,8 +132,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlanner/ArrowSize", 1 ).toDouble() );
       ui->dsbLocalPlannerArrowDistance->setValue( settings.value( "LocalPlanner/ArrowDistance", 3 ).toDouble() );
       ui->dsbLocalPlannerLineWidth->setValue( settings.value( "LocalPlanner/LineWidth", 0.1 ).toDouble() );
-      localPlannerArrowColor = settings.value( "LocalPlanner/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
-      localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
+      localPlannerArrowColor = settings.value( "LocalPlanner/ArrowColor", QColor( 0xff, 0x80, 0 ) ).value<QColor>();
+      localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
     }
   }
 
@@ -271,7 +271,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   tileRoot.setShowColor( tileColor );
   tileRoot.setShowEnable( ui->gbShowTiles->isChecked() );
 
-  setPassColorLabels();
+  setPlannerColorLabels();
 
   this->on_pbBaudrateRefresh_clicked();
   this->on_pbComPortRefresh_clicked();
@@ -740,7 +740,7 @@ void SettingsDialog::savePlannerValuesInSettings() {
   settings.sync();
 }
 
-void SettingsDialog::setPassColorLabels() {
+void SettingsDialog::setPlannerColorLabels() {
   QColor buffer = globalPlannerArrowColor;
   buffer.setAlphaF( 1 );
   ui->lbGlobalPlannerArrowColor->setText( buffer.name() );
@@ -1096,11 +1096,29 @@ void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 
 }
 
 void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
+  const QColor color = QColorDialog::getColor( globalPlannerArrowColor, this, "Select Arrow Color" );
 
+  if( color.isValid() ) {
+    globalPlannerArrowColor = color;
+    ui->lbGlobalPlannerArrowColor->setText( globalPlannerArrowColor.name() );
+    ui->lbGlobalPlannerArrowColor->setPalette( QPalette( globalPlannerArrowColor ) );
+    ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
+
+    savePlannerValuesInSettings();
+  }
 }
 
 void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
+  const QColor color = QColorDialog::getColor( globalPlannerBackgroundColor, this, "Select Background Color" );
 
+  if( color.isValid() ) {
+    globalPlannerBackgroundColor = color;
+    ui->lbGlobalPlannerBackgroundColor->setText( globalPlannerBackgroundColor.name() );
+    ui->lbGlobalPlannerBackgroundColor->setPalette( QPalette( globalPlannerBackgroundColor ) );
+    ui->lbGlobalPlannerBackgroundColor->setAutoFillBackground( true );
+
+    savePlannerValuesInSettings();
+  }
 }
 
 void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int value ) {
@@ -1120,10 +1138,30 @@ void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double arg1 ) {
 }
 
 void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
+  const QColor color = QColorDialog::getColor( localPlannerArrowColor, this, "Select Arrow Color" );
+
+  if( color.isValid() ) {
+    localPlannerArrowColor = color;
+    ui->lbLocalPlannerArrowColor->setText( localPlannerArrowColor.name() );
+    ui->lbLocalPlannerArrowColor->setPalette( QPalette( localPlannerArrowColor ) );
+    ui->lbLocalPlannerArrowColor->setAutoFillBackground( true );
+
+    savePlannerValuesInSettings();
+  }
 
 }
 
 void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
+  const QColor color = QColorDialog::getColor( localPlannerLineColor, this, "Select Line Color" );
+
+  if( color.isValid() ) {
+    localPlannerLineColor = color;
+    ui->lbLocalPlannerLineColor->setText( localPlannerLineColor.name() );
+    ui->lbLocalPlannerLineColor->setPalette( QPalette( localPlannerLineColor ) );
+    ui->lbLocalPlannerLineColor->setAutoFillBackground( true );
+
+    savePlannerValuesInSettings();
+  }
 
 }
 
