@@ -64,7 +64,7 @@ class XteGuidance : public BlockBase {
                                    line->x1, line->y1,
                                    line->x2, line->y2,
                                    tile->x + double( position.x() ), tile->y + double( position.y() ),
-                                   line->segment
+                                   line->isSegment
                                  );
 
             if( distanceTmp < distance ) {

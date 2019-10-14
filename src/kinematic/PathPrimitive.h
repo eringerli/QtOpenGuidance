@@ -46,8 +46,8 @@ class PathPrimitiveLine : public PathPrimitive {
     Q_OBJECT
 
   public:
-    PathPrimitiveLine( double x1, double y1, double x2, double y2, bool segment, bool anyDirection )
-      : PathPrimitive( x1, y1, x2, y2, anyDirection ), segment( segment ) {
+    PathPrimitiveLine( double x1, double y1, double x2, double y2, bool isSegment, bool anyDirection )
+      : PathPrimitive( x1, y1, x2, y2, anyDirection ), isSegment( isSegment ) {
       qDebug() << "PathPrimitiveLine()";
     }
 
@@ -56,7 +56,7 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
-    bool segment;
+    bool isSegment;
 };
 
 class PathPrimitiveCircle : public PathPrimitive {
