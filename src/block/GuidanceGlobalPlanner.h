@@ -29,7 +29,7 @@
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QText2DEntity>
+#include <Qt3DExtras/QExtrudedTextMesh>
 
 #include <QDebug>
 
@@ -59,6 +59,8 @@ class GlobalPlanner : public BlockBase {
 
       // a point marker -> orange
       {
+        aPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
+
         aPointMesh = new Qt3DExtras::QSphereMesh();
         aPointMesh->setRadius( .2f );
         aPointMesh->setSlices( 20 );
@@ -66,25 +68,27 @@ class GlobalPlanner : public BlockBase {
 
         aPointTransform = new Qt3DCore::QTransform();
 
-        auto* material = new Qt3DExtras::QPhongMaterial();
+        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "orange" ) );
 
-        aPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
         aPointEntity->addComponent( aPointMesh );
         aPointEntity->addComponent( material );
         aPointEntity->addComponent( aPointTransform );
         aPointEntity->setEnabled( false );
 
-        aTextEntity = new Qt3DExtras::QText2DEntity( aPointEntity );
-        aTextEntity->setText( "A" );
-        aTextEntity->setHeight( 10 );
-        aTextEntity->setWidth( 10 );
-        aTextEntity->setColor( Qt::green );
-        aTextEntity->setFont( QFont( "Arial Narrow", 10 ) );
+        aTextEntity = new Qt3DCore::QEntity( aPointEntity );
+        Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+        aTextMesh->setText( "A" );
+        aTextMesh->setDepth( 0.05f );
+
+        aTextEntity->setEnabled( true );
         aTextTransform = new Qt3DCore::QTransform();
         aTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-        aTextTransform->setScale( 0.2f );
+        aTextTransform->setScale( 2.0f );
+        aTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
         aTextEntity->addComponent( aTextTransform );
+        aTextEntity->addComponent( aTextMesh );
+        aTextEntity->addComponent( material );
       }
 
       // b point marker -> purple
@@ -96,7 +100,7 @@ class GlobalPlanner : public BlockBase {
 
         bPointTransform = new Qt3DCore::QTransform();
 
-        auto* material = new Qt3DExtras::QPhongMaterial();
+        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "purple" ) );
 
         bPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
@@ -105,16 +109,19 @@ class GlobalPlanner : public BlockBase {
         bPointEntity->addComponent( bPointTransform );
         bPointEntity->setEnabled( false );
 
-        bTextEntity = new Qt3DExtras::QText2DEntity( bPointEntity );
-        bTextEntity->setText( "B" );
-        bTextEntity->setHeight( 10 );
-        bTextEntity->setWidth( 10 );
-        bTextEntity->setColor( Qt::green );
-        bTextEntity->setFont( QFont( "Arial Narrow", 10 ) );
+        bTextEntity = new Qt3DCore::QEntity( bPointEntity );
+        Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+        bTextMesh->setText( "B" );
+        bTextMesh->setDepth( 0.05f );
+
+        bTextEntity->setEnabled( true );
         bTextTransform = new Qt3DCore::QTransform();
         bTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-        bTextTransform->setScale( 0.2f );
+        bTextTransform->setScale( 2.0f );
+        bTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
         bTextEntity->addComponent( bTextTransform );
+        bTextEntity->addComponent( bTextMesh );
+        bTextEntity->addComponent( material );
       }
 
       // line marker
@@ -131,44 +138,6 @@ class GlobalPlanner : public BlockBase {
         pathMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( pathEntity );
         pathMaterial->setAmbient( Qt::red );
         pathEntity->addComponent( pathMaterial );
-      }
-
-      // arrows for passes
-      {
-        arrowsEntity = new Qt3DCore::QEntity( tile->tileEntity );
-        arrowsTransform = new Qt3DCore::QTransform();
-        arrowsEntity->addComponent( arrowsTransform );
-
-        activeArrowsEntity = new Qt3DCore::QEntity( arrowsEntity );
-        activeArrowsMesh = new LineMesh();
-        activeArrowsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
-        activeArrowsEntity->addComponent( activeArrowsMesh );
-        activeArrowsMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( activeArrowsEntity );
-        activeArrowsMaterial->setAlphaBlendingEnabled( true );
-        activeArrowsEntity->addComponent( activeArrowsMaterial );
-
-        activeArrowsBackgroundEntity = new Qt3DCore::QEntity( arrowsEntity );
-        activeArrowsBackgroundMesh = new LineMesh();
-        activeArrowsBackgroundMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
-        activeArrowsBackgroundEntity->addComponent( activeArrowsBackgroundMesh );
-        activeArrowsBackgroundMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( activeArrowsBackgroundEntity );
-        activeArrowsBackgroundEntity->addComponent( activeArrowsBackgroundMaterial );
-
-        otherArrowsEntity = new Qt3DCore::QEntity( arrowsEntity );
-        otherArrowsMesh = new LineMesh();
-        otherArrowsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
-        otherArrowsEntity->addComponent( otherArrowsMesh );
-        otherArrowsMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( otherArrowsEntity );
-        otherArrowsEntity->addComponent( otherArrowsMaterial );
-
-        otherArrowsBackgroundEntity = new Qt3DCore::QEntity( arrowsEntity );
-        otherArrowsBackgroundMesh = new LineMesh();
-        otherArrowsBackgroundMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
-        otherArrowsBackgroundEntity->addComponent( otherArrowsBackgroundMesh );
-        otherArrowsBackgroundMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( otherArrowsBackgroundEntity );
-        otherArrowsBackgroundEntity->addComponent( otherArrowsBackgroundMaterial );
-
-        setPassColors();
       }
     }
 
@@ -237,41 +206,6 @@ class GlobalPlanner : public BlockBase {
 
       pathEntity->setEnabled( true );
 
-
-      // arrows/pass
-      {
-        QVector<QVector3D> arrowPoints;
-        float implementWidth = positionLeftEdgeOfImplement.y() - positionRightEdgeOfImplement.y();
-
-        uint16_t arrows = uint16_t( passAreaX / ( arrowSize + distanceBetweenArrows ) );
-        QVector3D middlepoint = position - QVector3D( ( passAreaX / 2 ), 0, 0 );
-
-        qDebug() << arrows << middlepoint << passAreaX << arrowSize << distanceBetweenArrows << implementWidth;
-
-        for( uint16_t i = 0; i < arrows; ++i ) {
-          QVector3D pointOfArrow = middlepoint + QVector3D( arrowSize, 0, 0 );
-          QVector3D backPointOfArrow = middlepoint + QVector3D( arrowSize / 2, 0, 0 );
-          QVector3D leftPointOfArrow = middlepoint + QVector3D( 0, implementWidth / 2, 0 );
-          QVector3D rightPointOfArrow = middlepoint + QVector3D( 0, -implementWidth / 2, 0 );
-
-          arrowPoints.append( backPointOfArrow );
-          arrowPoints.append( pointOfArrow );
-          arrowPoints.append( leftPointOfArrow );
-          arrowPoints.append( rightPointOfArrow );
-          arrowPoints.append( pointOfArrow );
-          arrowPoints.append( backPointOfArrow );
-
-          middlepoint += QVector3D( arrowSize + distanceBetweenArrows, 0, 0 );
-        }
-
-//        for( auto point : arrowPoints ) {
-//          qDebug() << point;
-//        }
-
-        activeArrowsMesh->posUpdate( arrowPoints );
-      }
-
-
       QVector<QSharedPointer<PathPrimitive>> plan;
 //      ac = -200;
 //      double x1tmp = x1 + (ac * (x2 - x1) / ab);
@@ -310,45 +244,6 @@ class GlobalPlanner : public BlockBase {
       qDebug() << "turnRight_clicked()";
     }
 
-    void setPassEnabled( bool passEnabled ) {
-      this->passEnabled = passEnabled;
-      arrowsEntity->setEnabled( passEnabled );
-    }
-
-    void setPassSizes( float passAreaX, float passAreaY, float arrowSize, float distanceBetweenArrows ) {
-      this->passAreaX = passAreaX;
-      this->passAreaY = passAreaY;
-      this->arrowSize = arrowSize;
-      this->distanceBetweenArrows = distanceBetweenArrows;
-    }
-
-    void setPassColors( QColor passActiveArrowColor, QColor passActiveBackgroundColor, QColor passOtherArrowColor, QColor passOtherBackgroundColor ) {
-      this->passActiveArrowColor = std::move( passActiveArrowColor );
-      this->passActiveBackgroundColor = std::move( passActiveBackgroundColor );
-      this->passOtherArrowColor = std::move( passOtherArrowColor );
-      this->passOtherBackgroundColor = std::move( passOtherBackgroundColor );
-      setPassColors();
-    }
-
-  private:
-    void setPassColors() {
-      activeArrowsMaterial->setAmbient( passActiveArrowColor );
-      activeArrowsMaterial->setDiffuse( passActiveArrowColor );
-      activeArrowsMaterial->setSpecular( passActiveArrowColor );
-
-      activeArrowsBackgroundMaterial->setAmbient( passActiveBackgroundColor );
-      activeArrowsBackgroundMaterial->setDiffuse( passActiveBackgroundColor );
-      activeArrowsBackgroundMaterial->setSpecular( passActiveBackgroundColor );
-
-      otherArrowsMaterial->setAmbient( passOtherArrowColor );
-      otherArrowsMaterial->setDiffuse( passOtherArrowColor );
-      otherArrowsMaterial->setSpecular( passOtherArrowColor );
-
-      otherArrowsBackgroundMaterial->setAmbient( passOtherBackgroundColor );
-      otherArrowsBackgroundMaterial->setDiffuse( passOtherBackgroundColor );
-      otherArrowsBackgroundMaterial->setSpecular( passOtherBackgroundColor );
-    }
-
   signals:
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
@@ -368,10 +263,10 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QEntity* rootEntity = nullptr;
 
     // text
-    Qt3DExtras::QText2DEntity* aTextEntity = nullptr;
+    Qt3DCore::QEntity* aTextEntity = nullptr;
     Qt3DCore::QTransform* aTextTransform = nullptr;
 
-    Qt3DExtras::QText2DEntity* bTextEntity = nullptr;
+    Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
 
     // markers
@@ -388,35 +283,6 @@ class GlobalPlanner : public BlockBase {
     LineMesh* pathMesh = nullptr;
     Qt3DCore::QTransform* pathTransform = nullptr;
     Qt3DExtras::QDiffuseSpecularMaterial* pathMaterial = nullptr;
-
-    // arrows
-    Qt3DCore::QEntity* arrowsEntity = nullptr;
-    Qt3DCore::QTransform* arrowsTransform = nullptr;
-
-    Qt3DCore::QEntity* activeArrowsEntity = nullptr;
-    LineMesh* activeArrowsMesh = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* activeArrowsMaterial = nullptr;
-
-    Qt3DCore::QEntity* activeArrowsBackgroundEntity = nullptr;
-    LineMesh* activeArrowsBackgroundMesh = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* activeArrowsBackgroundMaterial = nullptr;
-
-    Qt3DCore::QEntity* otherArrowsEntity = nullptr;
-    LineMesh* otherArrowsMesh = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* otherArrowsMaterial = nullptr;
-
-    Qt3DCore::QEntity* otherArrowsBackgroundEntity = nullptr;
-    LineMesh* otherArrowsBackgroundMesh = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* otherArrowsBackgroundMaterial = nullptr;
-
-    // values of the arrows
-    bool passEnabled = true;
-    float passAreaX = 250, passAreaY = 250, arrowSize = 3, distanceBetweenArrows = 3;
-    QColor passActiveArrowColor = QColor( 0xff, 0xff, 0, 200 );
-    QColor passActiveBackgroundColor = QColor( 0xf5, 0x9f, 0xbd );
-    QColor passOtherArrowColor = QColor( 0x90, 0x90, 0 );
-    QColor passOtherBackgroundColor = QColor( 0x9a, 0x64, 0x77 );
-
 };
 
 class GlobalPlannerFactory : public BlockFactory {
