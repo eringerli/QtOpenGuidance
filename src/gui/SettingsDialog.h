@@ -184,7 +184,11 @@ class SettingsDialog : public QDialog {
     BlockFactory* debugSinkFactory = nullptr;
     BlockFactory* printLatencyFactory = nullptr;
     BlockFactory* udpSocketFactory = nullptr;
+
+#ifdef SERIALPORT_ENABLED
     BlockFactory* serialPortFactory = nullptr;
+#endif
+
     BlockFactory* fileStreamFactory = nullptr;
     BlockFactory* ackermannSteeringFactory = nullptr;
     BlockFactory* nmeaParserFactory = nullptr;

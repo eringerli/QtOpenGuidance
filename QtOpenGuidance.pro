@@ -1,5 +1,15 @@
-QT += 3dcore 3drender 3dinput 3dextras serialport
+QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
+
+!android {
+    QT += serialport
+    DEFINES += SERIALPORT_ENABLED
+    HEADERS += src/block/SerialPort.h
+}
+
+android {
+    DEFINES += ANDROID_ENABLED
+}
 
 SOURCES += src/main.cpp \
     src/3d/linemesh.cpp \
@@ -37,6 +47,7 @@ HEADERS += \
     src/block/FileStream.h \
     src/block/GridModel.h \
     src/block/GuidanceGlobalPlanner.h \
+    src/block/GuidanceGlobalPlannerModel.h \
     src/block/GuidanceLocalPlanner.h \
     src/block/GuidancePlannerGui.h \
     src/block/GuidanceStanley.h \
@@ -49,7 +60,6 @@ HEADERS += \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
     src/block/SectionControlModel.h \
-    src/block/SerialPort.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
@@ -97,4 +107,18 @@ RESOURCES += \
 
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
+
+contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
 

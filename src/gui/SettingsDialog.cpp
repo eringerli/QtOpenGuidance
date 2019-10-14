@@ -23,7 +23,10 @@
 
 #include <QFileDialog>
 
+#ifdef SERIALPORT_ENABLED
 #include <QSerialPortInfo>
+#include "../block/SerialPort.h"
+#endif
 
 #include <QDebug>
 
@@ -65,7 +68,6 @@
 #include "../block/PrintLatency.h"
 
 #include "../block/UdpSocket.h"
-#include "../block/SerialPort.h"
 #include "../block/FileStream.h"
 #include "../block/CommunicationPgn7FFE.h"
 #include "../block/CommunicationJrk.h"
@@ -215,7 +217,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   debugSinkFactory = new DebugSinkFactory();
   printLatencyFactory = new PrintLatencyFactory();
   udpSocketFactory = new UdpSocketFactory();
+
+#ifdef SERIALPORT_ENABLED
   serialPortFactory = new SerialPortFactory();
+#endif
+
   fileStreamFactory = new FileStreamFactory();
   communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
   communicationJrkFactory = new CommunicationJrkFactory();
@@ -240,7 +246,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   nmeaParserFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   udpSocketFactory->addToCombobox( ui->cbNodeType );
+
+#ifdef SERIALPORT_ENABLED
   serialPortFactory->addToCombobox( ui->cbNodeType );
+#endif
+
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   communicationPgn7ffeFactory->addToCombobox( ui->cbNodeType );
   communicationJrkFactory->addToCombobox( ui->cbNodeType );
@@ -282,7 +292,11 @@ SettingsDialog::~SettingsDialog() {
   debugSinkFactory->deleteLater();
   printLatencyFactory->deleteLater();
   udpSocketFactory->deleteLater();
+
+#ifdef SERIALPORT_ENABLED
   serialPortFactory->deleteLater();
+#endif
+
   fileStreamFactory->deleteLater();
   communicationPgn7ffeFactory->deleteLater();
   communicationJrkFactory->deleteLater();
@@ -318,7 +332,15 @@ QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
 }
 
 void SettingsDialog::toggleVisibility() {
-  setVisible( ! isVisible() );
+  if( isVisible() ) {
+    setVisible( false );
+  } else {
+#ifdef ANDROID_ENABLED
+    showMaximized();
+#else
+    show();
+#endif
+  }
 }
 
 void SettingsDialog::loadConfigOnStart() {
@@ -833,21 +855,27 @@ void SettingsDialog::on_pbSetStringToFilename_clicked() {
 void SettingsDialog::on_pbComPortRefresh_clicked() {
   ui->cbComPorts->clear();
 
+#ifdef SERIALPORT_ENABLED
   const auto infos = QSerialPortInfo::availablePorts();
 
   for( const QSerialPortInfo& info : infos ) {
     ui->cbComPorts->addItem( info.portName() );
   }
+
+#endif
 }
 
 void SettingsDialog::on_pbBaudrateRefresh_clicked() {
   ui->cbBaudrate->clear();
 
+#ifdef SERIALPORT_ENABLED
   const auto baudrates = QSerialPortInfo::standardBaudRates();
 
   for( const qint32& baudrate : baudrates ) {
     ui->cbBaudrate->addItem( QString::number( baudrate ) );
   }
+
+#endif
 }
 
 void SettingsDialog::on_pbComPortSet_clicked() {

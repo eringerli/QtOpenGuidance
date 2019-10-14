@@ -94,14 +94,14 @@ int main( int argc, char** argv ) {
   QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
   QApplication::setApplicationName( "QtOpenGuidance" );
 
-  auto* view = new Qt3DExtras::Qt3DWindow();
+  Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
   QWidget* container = QWidget::createWindowContainer( view );
   QSize screenSize = view->screen()->size();
   container->setMinimumSize( QSize( 500, 400 ) );
   container->setMaximumSize( screenSize );
 
-  MainWindow* widget = new MainWindow;
+  QWidget* widget = new MainWindow;
   auto* hLayout = new QHBoxLayout( widget );
   auto* vLayout = new QVBoxLayout( widget );
 
@@ -121,6 +121,15 @@ int main( int argc, char** argv ) {
 
   auto* input = new Qt3DInput::QInputAspect;
   view->registerAspect( input );
+
+  // Show window
+#ifdef ANDROID_ENABLED
+  widget->showMaximized();
+#else
+  widget->show();
+  widget->resize( 1200, 800 );
+#endif
+
 
   // Root entity
   auto* rootEntity = new Qt3DCore::QEntity();
@@ -283,9 +292,6 @@ int main( int argc, char** argv ) {
 
   settingDialog->emitAllConfigSignals();
 
-  // Show window
-  widget->show();
-  widget->resize( 1200, 800 );
 
   // load states of checkboxes from global config
   {
