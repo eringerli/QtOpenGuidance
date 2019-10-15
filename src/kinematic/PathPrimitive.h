@@ -21,33 +21,31 @@
 
 #include <QObject>
 
-#include <QtWidgets>
-#include <QComboBox>
-
-#include <QJsonObject>
-
-#include <Qt3DCore/QEntity>
+#include <QLineF>
+#include <QDebug>
 
 class PathPrimitive : public QObject {
     Q_OBJECT
 
   public:
-    PathPrimitive( double x1, double y1, double x2, double y2, bool anyDirection ):
-      x1( x1 ), y1( y1 ), x2( x2 ), y2( y2 ), anyDirection( anyDirection ) {}
+    PathPrimitive() {}
+
+    PathPrimitive( bool anyDirection )
+      : anyDirection( anyDirection ) {}
 
   public:
-    double x1, y1;
-    double x2, y2;
-
-    bool anyDirection;
+    bool anyDirection = false;
 };
 
 class PathPrimitiveLine : public PathPrimitive {
     Q_OBJECT
 
   public:
-    PathPrimitiveLine( double x1, double y1, double x2, double y2, bool isSegment, bool anyDirection )
-      : PathPrimitive( x1, y1, x2, y2, anyDirection ), isSegment( isSegment ) {
+    PathPrimitiveLine()
+      : PathPrimitive() {}
+
+    PathPrimitiveLine( QLineF line, bool isSegment, bool anyDirection )
+      : PathPrimitive( anyDirection ), line( line ), isSegment( isSegment ) {
       qDebug() << "PathPrimitiveLine()";
     }
 
@@ -56,19 +54,24 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
-    bool isSegment;
+    QLineF line;
+    bool isSegment = false;
 };
 
 class PathPrimitiveCircle : public PathPrimitive {
     Q_OBJECT
 
   public:
-    PathPrimitiveCircle( double x1, double y1, double x2, double y2, double xCenter, double yCenter, bool anyDirection )
-      : PathPrimitive( x1, y1, x2, y2, anyDirection ),
-        xCenter( xCenter ), yCenter( yCenter ) {}
+    PathPrimitiveCircle() : PathPrimitive() {}
+
+    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection )
+      : PathPrimitive( anyDirection ),
+        center( center ), start( start ), end( end ) {}
 
   public:
-    double xCenter, yCenter;
+    QPointF center;
+    QPointF start;
+    QPointF end;
 };
 
 #endif // PATHPRIMITIVE_H

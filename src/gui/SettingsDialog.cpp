@@ -20,6 +20,7 @@
 
 #include <QtWidgets>
 #include <QObject>
+#include <QSignalBlocker>
 
 #include <QFileDialog>
 
@@ -137,6 +138,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
     }
 
+    // path planner
+    {
+      ui->sbPathsToGenerate->setValue( settings.value( "PathPlanner/PathsToGenerate", 5 ).toInt() );
+      ui->sbPathsInReserve->setValue( settings.value( "PathPlanner/PathsInReserve", 3 ).toInt() );
+    }
+
     blockSettingsSaving = false;
   }
 
@@ -196,12 +203,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
-  QObject::connect( this, SIGNAL( setPassEnabled( bool ) ),
-                    globalPlanner, SLOT( setPassEnabled( bool ) ) );
-  QObject::connect( this, SIGNAL( setPassSizes( float, float, float, float ) ),
-                    globalPlanner, SLOT( setPassSizes( float, float, float, float ) ) );
-  QObject::connect( this, SIGNAL( setPassColors( QColor, QColor, QColor, QColor ) ),
-                    globalPlanner, SLOT( setPassColors( QColor, QColor, QColor, QColor ) ) );
+  QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
+                    globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
 
   localPlannerFactory = new LocalPlannerFactory( tile );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
@@ -713,6 +716,17 @@ void SettingsDialog::saveGridValuesInSettings() {
   }
 }
 
+void SettingsDialog::savePathPlannerValuesInSettings() {
+  if( !blockSettingsSaving ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
+
+    settings.setValue( "PathPlanner/PathsToGenerate", ui->sbPathsToGenerate->value() );
+    settings.setValue( "PathPlanner/PathsInReserve", ui->sbPathsInReserve->value() );
+    settings.sync();
+  }
+}
+
 void SettingsDialog::saveTileValuesInSettings() {
   if( !blockSettingsSaving ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
@@ -781,6 +795,7 @@ void SettingsDialog::emitAllConfigSignals() {
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
+  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -1176,4 +1191,14 @@ void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
 
 void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int value ) {
 
+}
+
+void SettingsDialog::on_sbPathsToGenerate_valueChanged( int ) {
+  savePathPlannerValuesInSettings();
+  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
+}
+
+void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
+  savePathPlannerValuesInSettings();
+  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
 }

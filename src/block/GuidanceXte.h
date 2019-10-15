@@ -61,21 +61,26 @@ class XteGuidance : public BlockBase {
 
           if( line ) {
             double distanceTmp = lineToPointDistance2D(
-                                   line->x1, line->y1,
-                                   line->x2, line->y2,
-                                   tile->x + double( position.x() ), tile->y + double( position.y() ),
-                                   line->isSegment
+                                         line->line.x1(), line->line.y1(),
+                                         line->line.x2(), line->line.y2(),
+                                         tile->x + double( position.x() ), tile->y + double( position.y() ),
+                                         line->isSegment
                                  );
 
-            if( distanceTmp < distance ) {
-              headingOfABLine = qAtan2( line->y1 - line->y2, line->x1 - line->x2 ) - M_PI;
+            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
+              headingOfABLine = line->line.angle();
               distance = distanceTmp;
             }
+
+//            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
           }
         }
 
         if( !qIsInf( distance ) ) {
-          emit headingOfPathChanged( float( headingOfABLine ) );
+          headingOfABLine *= -1;
+          headingOfABLine = normalizeAngleDegrees( headingOfABLine );
+
+          emit headingOfPathChanged( float( qDegreesToRadians( headingOfABLine ) ) );
           emit xteChanged( float( distance ) );
         } else {
           emit headingOfPathChanged( qInf() );
@@ -147,8 +152,6 @@ class XteGuidance : public BlockBase {
     // if isSegment is true, AB is a segment, not a line.
     // if <0: left side of line
     double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
-
       if( isSegment ) {
         if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
           return distance( bX, bY, cX, cY );
@@ -159,7 +162,7 @@ class XteGuidance : public BlockBase {
         }
       }
 
-      return dist;
+      return crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
     }
 
   public:

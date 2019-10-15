@@ -56,6 +56,7 @@ class SettingsDialog : public QDialog {
   signals:
     void setGrid( bool );
     void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
+    void plannerSettingsChanged( int, int );
 
   public slots:
     void toggleVisibility();
@@ -143,10 +144,15 @@ class SettingsDialog : public QDialog {
     void on_pbLocalPlannerLineColor_clicked();
     void on_slLocalPlannerTransparency_valueChanged( int value );
 
+    void on_sbPathsToGenerate_valueChanged( int arg1 );
+
+    void on_sbPathsInReserve_valueChanged( int arg1 );
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
     void savePlannerValuesInSettings();
+    void savePathPlannerValuesInSettings();
 
     void setPlannerColorLabels();
 

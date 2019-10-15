@@ -23,6 +23,9 @@
 
 #include <QQuaternion>
 #include <QVector3D>
+#include <QPointF>
+#include <QPolygonF>
+#include <QLineF>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
@@ -158,6 +161,7 @@ class GlobalPlanner : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
+        implementLine.setP1( QPointF( double( position.x() ), double( position.y() ) ) );
       }
     }
 
@@ -166,6 +170,7 @@ class GlobalPlanner : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
+        implementLine.setP2( QPointF( double( position.x() ), double( position.y() ) ) );
       }
     }
 
@@ -177,10 +182,9 @@ class GlobalPlanner : public BlockBase {
       bPointEntity->setEnabled( false );
       pathEntity->setEnabled( false );
 
-      x1 = double( position.x() ) + tile->x;
-      y1 = double( position.y() ) + tile->y;
+      aPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
 
-      qDebug() << "a_clicked()" << x1 << y1;
+      qDebug() << "a_clicked()" << aPoint;
     }
 
     void b_clicked() {
@@ -188,53 +192,68 @@ class GlobalPlanner : public BlockBase {
       bPointTransform->setTranslation( position );
       bPointEntity->setEnabled( true );
 
-      x2 = double( position.x() ) + tile->x;
-      y2 = double( position.y() ) + tile->y;
+      bPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
 
-      headingOfABLine = atan2( y1 - y2, x1 - x2 ) - M_PI;
+      abLine.setPoints( aPoint, bPoint );
 
       QVector<QVector3D> linePoints;
 
       // extend the points 200m in either direction
 
-      double ab = qSqrt( qPow( ( x2 - x1 ), 2 ) + qPow( ( y2 - y1 ), 2 ) );
-      double ac = -200;
-      linePoints.append( QVector3D( x1 + ( ac * ( x2 - x1 ) / ab ), y1 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
-      ac = 200;
-      linePoints.append( QVector3D( x2 + ( ac * ( x2 - x1 ) / ab ), y2 + ( ac * ( y2 - y1 ) / ab ), position.z() ) );
-      pathMesh->posUpdate( linePoints );
+      qreal headingOfABLine = abLine.angle();
 
-      pathEntity->setEnabled( true );
+      QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
+      lineExtensionFromA.translate( aPoint );
+
+      QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
+      lineExtensionFromB.translate( bPoint );
+
+      QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
+
+//      pathLine = abLine;
 
       QVector<QSharedPointer<PathPrimitive>> plan;
-//      ac = -200;
-//      double x1tmp = x1 + (ac * (x2 - x1) / ab);
-//      double y1tmp = y1 + (ac * (y2 - y1) / ab);
-//      ac = 200;
-//      double x2tmp = x1 + (ac * (x2 - x1) / ab);
-//      double y2tmp = y1 + (ac * (y2 - y1) / ab);
 
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( x1, y1, x2, y2, false, false ) ) );
+      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
+        plan.append( QSharedPointer<PathPrimitive>(
+                             new PathPrimitiveLine(
+                                     pathLine.translated(
+                                             QLineF::fromPolar( i * implementLine.dy() +
+                                                 implementLine.center().y(),
+                                                 headingOfABLine - 90 ).p2() ), false, true ) ) );
+      }
+
+      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
+        plan.append( QSharedPointer<PathPrimitive>(
+                             new PathPrimitiveLine(
+                                     pathLine.translated(
+                                             QLineF::fromPolar( i * implementLine.dy() +
+                                                 implementLine.center().y(),
+                                                 headingOfABLine - 270 ).p2() ), false, true ) ) );
+      }
+
+      // display paths
+      {
+        for( const auto& primitive : plan ) {
+          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+
+          if( line ) {
+            linePoints.append( QVector3D( float( line->line.x1() ), float( line->line.y1() ), position.z() ) );
+            linePoints.append( QVector3D( float( line->line.x2() ), float( line->line.y2() ), position.z() ) );
+          }
+        }
+
+        pathMesh->posUpdate( linePoints );
+        pathEntity->setEnabled( true );
+      }
+
+      qDebug() << "b_clicked()" << "abLine" << abLine << "pathLine" << pathLine << "heading" << headingOfABLine;
+
       emit planChanged( plan );
-
-      qDebug() << "b_clicked()" << x1 << y1 << x2 << y2 << x1 - x2 << y1 - y2 << qRadiansToDegrees( headingOfABLine );
     }
 
     void snap_clicked() {
       qDebug() << "snap_clicked()";
-
-      QVector<QSharedPointer<PathPrimitive>> plan;
-//      ac = -200;
-//      double x1tmp = x1 + (ac * (x2 - x1) / ab);
-//      double y1tmp = y1 + (ac * (y2 - y1) / ab);
-//      ac = 200;
-//      double x2tmp = x1 + (ac * (x2 - x1) / ab);
-//      double y2tmp = y1 + (ac * (y2 - y1) / ab);
-
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x(), position.y(), position.x(), position.y() + 20, true, false ) ) );
-      plan.append( QSharedPointer<PathPrimitive>( new PathPrimitiveLine( position.x() + 20, position.y(), position.x() + 20, position.y() + 20, false, false ) ) );
-
-      emit planChanged( plan );
     }
 
     void turnLeft_clicked() {
@@ -242,6 +261,11 @@ class GlobalPlanner : public BlockBase {
     }
     void turnRight_clicked() {
       qDebug() << "turnRight_clicked()";
+    }
+
+    void setPlannerSettings( int pathsToGenerate, int pathsInReserve ) {
+      this->pathsToGenerate = pathsToGenerate;
+      this->pathsInReserve = pathsInReserve;
     }
 
   signals:
@@ -253,8 +277,14 @@ class GlobalPlanner : public BlockBase {
     QVector3D position = QVector3D();
     QQuaternion orientation = QQuaternion();
 
-    double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-    double headingOfABLine = 0;
+    int pathsToGenerate = 5;
+    int pathsInReserve = 3;
+
+    QPointF aPoint = QPointF();
+    QPointF bPoint = QPointF();
+    QLineF abLine = QLineF();
+
+    QLineF implementLine = QLineF();
 
     QVector3D positionLeftEdgeOfImplement = QVector3D();
     QVector3D positionRightEdgeOfImplement = QVector3D();
@@ -262,21 +292,18 @@ class GlobalPlanner : public BlockBase {
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
 
-    // text
-    Qt3DCore::QEntity* aTextEntity = nullptr;
-    Qt3DCore::QTransform* aTextTransform = nullptr;
-
-    Qt3DCore::QEntity* bTextEntity = nullptr;
-    Qt3DCore::QTransform* bTextTransform = nullptr;
-
     // markers
     Qt3DCore::QEntity* aPointEntity = nullptr;
     Qt3DExtras::QSphereMesh* aPointMesh = nullptr;
     Qt3DCore::QTransform* aPointTransform = nullptr;
+    Qt3DCore::QEntity* aTextEntity = nullptr;
+    Qt3DCore::QTransform* aTextTransform = nullptr;
 
     Qt3DCore::QEntity* bPointEntity = nullptr;
     Qt3DExtras::QSphereMesh* bPointMesh = nullptr;
     Qt3DCore::QTransform* bPointTransform = nullptr;
+    Qt3DCore::QEntity* bTextEntity = nullptr;
+    Qt3DCore::QTransform* bTextTransform = nullptr;
 
     // path
     Qt3DCore::QEntity* pathEntity = nullptr;
