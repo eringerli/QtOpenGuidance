@@ -217,6 +217,8 @@ class SettingsDialog : public QDialog {
     QNEBlock* getBlockWithId( int id );
     QNEBlock* getBlockWithName( const QString& name );
 
+    bool blockSettingsSaving = false;
+
     QColor gridColor = QColor( 0x6b, 0x96, 0xa8 );
     QColor gridColorCoarse = QColor( 0xa2, 0xe3, 0xff );
     QColor tileColor = QColor( 0xff, 0x00, 0x00 );

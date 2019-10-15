@@ -79,12 +79,13 @@
 
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent ) :
   QDialog( parent ),
-  ui( new Ui::SettingsDialog )/*,
-  rootEntity( rootEntity )*/ {
+  ui( new Ui::SettingsDialog ) {
   ui->setupUi( this );
 
   // load states of checkboxes from global config
   {
+    blockSettingsSaving = true;
+
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
@@ -135,6 +136,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       localPlannerArrowColor = settings.value( "LocalPlanner/ArrowColor", QColor( 0xff, 0x80, 0 ) ).value<QColor>();
       localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
     }
+
+    blockSettingsSaving = false;
   }
 
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
@@ -693,51 +696,57 @@ void SettingsDialog::on_pbColor_clicked() {
 }
 
 void SettingsDialog::saveGridValuesInSettings() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+  if( !blockSettingsSaving ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
 
-  settings.setValue( "Grid/Enabled", bool( ui->cbGridVisible->isChecked() ) );
-  settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
-  settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
-  settings.setValue( "Grid/XStepCoarse", ui->dsbGridXStepCoarse->value() );
-  settings.setValue( "Grid/YStepCoarse", ui->dsbGridYStepCoarse->value() );
-  settings.setValue( "Grid/Size", ui->dsbGridSize->value() );
-  settings.setValue( "Grid/CameraThreshold", ui->dsbGridCameraThreshold->value() );
-  settings.setValue( "Grid/CameraThresholdCoarse", ui->dsbGridCameraThresholdCoarse->value() );
-  settings.setValue( "Grid/Color", gridColor );
-  settings.sync();
+    settings.setValue( "Grid/Enabled", bool( ui->cbGridVisible->isChecked() ) );
+    settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
+    settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
+    settings.setValue( "Grid/XStepCoarse", ui->dsbGridXStepCoarse->value() );
+    settings.setValue( "Grid/YStepCoarse", ui->dsbGridYStepCoarse->value() );
+    settings.setValue( "Grid/Size", ui->dsbGridSize->value() );
+    settings.setValue( "Grid/CameraThreshold", ui->dsbGridCameraThreshold->value() );
+    settings.setValue( "Grid/CameraThresholdCoarse", ui->dsbGridCameraThresholdCoarse->value() );
+    settings.setValue( "Grid/Color", gridColor );
+    settings.sync();
+  }
 }
 
 void SettingsDialog::saveTileValuesInSettings() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+  if( !blockSettingsSaving ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
 
-  settings.setValue( "Tile/Enabled", bool( ui->gbShowTiles->isChecked() ) );
-  settings.setValue( "Tile/Color", tileColor );
-  settings.sync();
+    settings.setValue( "Tile/Enabled", bool( ui->gbShowTiles->isChecked() ) );
+    settings.setValue( "Tile/Color", tileColor );
+    settings.sync();
+  }
 }
 
 void SettingsDialog::savePlannerValuesInSettings() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+  if( !blockSettingsSaving ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
 
-  settings.setValue( "GlobalPlanner/Enabled", ui->cbGlobalPlanner->isChecked() );
-  settings.setValue( "GlobalPlanner/VisibleAreaX", ui->dsbGlobalPlannerVisibleAreaX->value() );
-  settings.setValue( "GlobalPlanner/VisibleAreaY", ui->dsbGlobalPlannerVisibleAreaY->value() );
-  settings.setValue( "GlobalPlanner/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
-  settings.setValue( "GlobalPlanner/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
-  settings.setValue( "GlobalPlanner/ArrowColor", globalPlannerArrowColor );
-  settings.setValue( "GlobalPlanner/BackgroundColor", globalPlannerBackgroundColor );
-  settings.setValue( "GlobalPlanner/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
+    settings.setValue( "GlobalPlanner/Enabled", ui->cbGlobalPlanner->isChecked() );
+    settings.setValue( "GlobalPlanner/VisibleAreaX", ui->dsbGlobalPlannerVisibleAreaX->value() );
+    settings.setValue( "GlobalPlanner/VisibleAreaY", ui->dsbGlobalPlannerVisibleAreaY->value() );
+    settings.setValue( "GlobalPlanner/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
+    settings.setValue( "GlobalPlanner/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
+    settings.setValue( "GlobalPlanner/ArrowColor", globalPlannerArrowColor );
+    settings.setValue( "GlobalPlanner/BackgroundColor", globalPlannerBackgroundColor );
+    settings.setValue( "GlobalPlanner/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
 
-  settings.setValue( "LocalPlanner/Enabled", ui->cbLocalPlannerVisible->isChecked() );
-  settings.setValue( "LocalPlanner/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
-  settings.setValue( "LocalPlanner/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
-  settings.setValue( "LocalPlanner/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
-  settings.setValue( "LocalPlanner/ArrowColor", localPlannerArrowColor );
-  settings.setValue( "LocalPlanner/LineColor", localPlannerLineColor );
+    settings.setValue( "LocalPlanner/Enabled", ui->cbLocalPlannerVisible->isChecked() );
+    settings.setValue( "LocalPlanner/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
+    settings.setValue( "LocalPlanner/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
+    settings.setValue( "LocalPlanner/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
+    settings.setValue( "LocalPlanner/ArrowColor", localPlannerArrowColor );
+    settings.setValue( "LocalPlanner/LineColor", localPlannerLineColor );
 
-  settings.sync();
+    settings.sync();
+  }
 }
 
 void SettingsDialog::setPlannerColorLabels() {
