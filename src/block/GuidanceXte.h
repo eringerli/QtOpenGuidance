@@ -60,12 +60,8 @@ class XteGuidance : public BlockBase {
           auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
-            double distanceTmp = lineToPointDistance2D(
-                                         line->line.x1(), line->line.y1(),
-                                         line->line.x2(), line->line.y2(),
-                                         tile->x + double( position.x() ), tile->y + double( position.y() ),
-                                         line->isSegment
-                                 );
+            double distanceTmp = line->distanceToPoint( QPointF( tile->x + double( position.x() ),
+                                 tile->y + double( position.y() ) ) );
 
             if( qAbs( distanceTmp ) < qAbs( distance ) ) {
               headingOfABLine = line->line.angle();
@@ -103,7 +99,6 @@ class XteGuidance : public BlockBase {
     void headingOfPathChanged( float );
 
   private:
-
     double normalizeAngleRadians( double angle ) {
       while( angle > M_PI ) {
         angle -= M_PI * 2;
@@ -128,42 +123,6 @@ class XteGuidance : public BlockBase {
       return angle;
     }
 
-    // https://stackoverflow.com/a/4448097
-
-    // Compute the dot product AB . BC
-    double dotProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cX - bX ) + ( bY - aY ) * ( cY - bY );
-    }
-
-    // Compute the cross product AB x AC
-    double crossProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cY - aY ) - ( bY - aY ) * ( cX - aX );
-    }
-
-    // Compute the distance from A to B
-    double distance( double aX, double aY, double bX, double bY ) {
-      double d1 = aX - bX;
-      double d2 = aY - bY;
-
-      return qSqrt( d1 * d1 + d2 * d2 );
-    }
-
-    // Compute the distance from AB to C
-    // if isSegment is true, AB is a segment, not a line.
-    // if <0: left side of line
-    double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      if( isSegment ) {
-        if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
-          return distance( bX, bY, cX, cY );
-        }
-
-        if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
-          return distance( aX, aY, cX, cY );
-        }
-      }
-
-      return crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
-    }
 
   public:
     Tile* tile = nullptr;

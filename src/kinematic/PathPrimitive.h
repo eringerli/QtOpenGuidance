@@ -22,6 +22,9 @@
 #include <QObject>
 
 #include <QLineF>
+#include <QPointF>
+#include <QtMath>
+
 #include <QDebug>
 
 class PathPrimitive : public QObject {
@@ -32,6 +35,9 @@ class PathPrimitive : public QObject {
 
     PathPrimitive( bool anyDirection )
       : anyDirection( anyDirection ) {}
+
+  public:
+    virtual qreal distanceToPoint( const QPointF point ) = 0;
 
   public:
     bool anyDirection = false;
@@ -54,8 +60,58 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
+    virtual qreal distanceToPoint( const QPointF point ) override {
+      return lineToPointDistance2D(
+                     line.x1(), line.y1(),
+                     line.x2(), line.y2(),
+                     point.x(), point.y(),
+                     isSegment
+             );
+    }
+
+  public:
     QLineF line;
     bool isSegment = false;
+
+  private:
+
+    // https://stackoverflow.com/a/4448097
+
+    // Compute the dot product AB . BC
+    double dotProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
+      return ( bX - aX ) * ( cX - bX ) + ( bY - aY ) * ( cY - bY );
+    }
+
+    // Compute the cross product AB x AC
+    double crossProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
+      return ( bX - aX ) * ( cY - aY ) - ( bY - aY ) * ( cX - aX );
+    }
+
+    // Compute the distance from A to B
+    double distance( double aX, double aY, double bX, double bY ) {
+      double d1 = aX - bX;
+      double d2 = aY - bY;
+
+      return qSqrt( d1 * d1 + d2 * d2 );
+    }
+
+    // Compute the distance from AB to C
+    // if isSegment is true, AB is a segment, not a line.
+    // if <0: left side of line
+    double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
+      if( isSegment ) {
+        if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
+          return distance( bX, bY, cX, cY );
+        }
+
+        if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
+          return distance( aX, aY, cX, cY );
+        }
+      }
+
+      return crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
+    }
+
 };
 
 class PathPrimitiveCircle : public PathPrimitive {
@@ -67,6 +123,11 @@ class PathPrimitiveCircle : public PathPrimitive {
     PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection )
       : PathPrimitive( anyDirection ),
         center( center ), start( start ), end( end ) {}
+
+  public:
+    virtual qreal distanceToPoint( const QPointF ) override {
+      return 0;
+    }
 
   public:
     QPointF center;
