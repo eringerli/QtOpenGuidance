@@ -94,10 +94,10 @@ class Implement : public BlockBase {
           for( auto&& sectionIndex : sectionArray ) {
             QJsonObject sectionObject = sectionIndex.toObject();
             sections.append(
-              QSharedPointer<ImplementSection>(
-                new ImplementSection( sectionObject["overlapLeft"].toDouble( 0 ),
-                                      sectionObject["widthOfSection"].toDouble( 0 ),
-                                      sectionObject["overlapRight"].toDouble( 0 ) ) ) );
+                    QSharedPointer<ImplementSection>(
+                            new ImplementSection( sectionObject["overlapLeft"].toDouble( 0 ),
+                                                  sectionObject["widthOfSection"].toDouble( 0 ),
+                                                  sectionObject["overlapRight"].toDouble( 0 ) ) ) );
           }
         }
       }

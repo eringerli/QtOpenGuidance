@@ -68,10 +68,10 @@ class TrailerKinematic : public BlockBase {
         orientation = QQuaternion();
       } else {
         orientationTrailer = QQuaternion::fromAxisAndAngle(
-                               QVector3D( 0.0f, 0.0f, 1.0f ),
-                               qRadiansToDegrees( qAtan2(
-                                     position.y() - m_positionPivotPoint.y() + ( tile->y - m_tilePivotPoint->y ),
-                                     position.x() - m_positionPivotPoint.x() + ( tile->x - m_tilePivotPoint->x ) ) )
+                                     QVector3D( 0.0f, 0.0f, 1.0f ),
+                                     qRadiansToDegrees( qAtan2(
+                                         position.y() - m_positionPivotPoint.y() + ( tile->y - m_tilePivotPoint->y ),
+                                         position.x() - m_positionPivotPoint.x() + ( tile->x - m_tilePivotPoint->x ) ) )
                              );
 
         // the angle between tractor and trailer >m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor

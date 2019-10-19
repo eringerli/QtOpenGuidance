@@ -211,24 +211,24 @@ class GridModel : public BlockBase {
       m_materialCoarse->setAmbient( colorCoarse );
     }
 
-    void 	currentIndexChanged( int currentIndex ) {
+    void  currentIndexChanged( int currentIndex ) {
       switch( currentIndex ) {
         case 0: {
-            m_fineGridEntity->setEnabled( true );
-            m_coarseGridEntity->setEnabled( true );
-          }
-          break;
+          m_fineGridEntity->setEnabled( true );
+          m_coarseGridEntity->setEnabled( true );
+        }
+        break;
 
         case 1: {
-            m_fineGridEntity->setEnabled( false );
-            m_coarseGridEntity->setEnabled( true );
-          }
-          break;
+          m_fineGridEntity->setEnabled( false );
+          m_coarseGridEntity->setEnabled( true );
+        }
+        break;
 
         default: {
-            m_fineGridEntity->setEnabled( false );
-            m_coarseGridEntity->setEnabled( false );
-          }
+          m_fineGridEntity->setEnabled( false );
+          m_coarseGridEntity->setEnabled( false );
+        }
       }
 
     }

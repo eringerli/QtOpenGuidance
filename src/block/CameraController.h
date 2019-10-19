@@ -184,9 +184,9 @@ class CameraController : public BlockBase {
 
     void calculateOffset() {
       m_offset =
-        QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
-        QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) *
-        QVector3D( -lenghtToViewCenter, 0, 0 );
+              QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
+              QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) *
+              QVector3D( -lenghtToViewCenter, 0, 0 );
     }
 
     void saveValuesToConfig() {
