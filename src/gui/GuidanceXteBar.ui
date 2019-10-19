@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>569</width>
+    <width>317</width>
     <height>70</height>
    </rect>
   </property>
@@ -40,6 +40,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>5</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -60,7 +66,7 @@ QProgressBar::chunk {
       <number>3000</number>
      </property>
      <property name="value">
-      <number>0</number>
+      <number>1500</number>
      </property>
      <property name="textVisible">
       <bool>false</bool>
@@ -111,6 +117,12 @@ QProgressBar::chunk {
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>5</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -132,7 +144,7 @@ QProgressBar::chunk {
       <number>3000</number>
      </property>
      <property name="value">
-      <number>0</number>
+      <number>1500</number>
      </property>
      <property name="textVisible">
       <bool>false</bool>
