@@ -70,6 +70,7 @@
 #include "gui/GuidanceToolbarTop.h"
 #include "gui/SimulatorToolbar.h"
 #include "gui/CameraToolbar.h"
+#include "gui/PassToolbar.h"
 
 #include "block/CameraController.h"
 #include "block/TractorModel.h"
@@ -102,8 +103,11 @@ int main( int argc, char** argv ) {
   container->setMaximumSize( screenSize );
 
   QWidget* widget = new MainWindow;
+  widget->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
+
   auto* hLayout = new QHBoxLayout( widget );
   auto* vLayout = new QVBoxLayout( widget );
+  auto* hLayout2 = new QHBoxLayout( widget );
 
   auto* guidaceToolbarTop = new GuidanceToolbarTop( widget );
   vLayout->addWidget( guidaceToolbarTop );
@@ -113,11 +117,15 @@ int main( int argc, char** argv ) {
   cameraToolbar->setVisible( false );
   hLayout->addWidget( cameraToolbar );
 
-  // add the qt3d-widget to the hLayout
-  vLayout->addWidget( container, 1 );
-  hLayout->addLayout( vLayout, 1 );
+  // passes toolbar
+  auto* passesToolbar = new PassToolbar( widget );
+  passesToolbar->setVisible( false );
+  hLayout2->addWidget( passesToolbar );
 
-  widget->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
+  // add the qt3d-widget to the hLayout
+  hLayout2->addWidget( container, 1 );
+  vLayout->addLayout( hLayout2, 1 );
+  hLayout->addLayout( vLayout, 1 );
 
   auto* input = new Qt3DInput::QInputAspect;
   view->registerAspect( input );
@@ -129,7 +137,6 @@ int main( int argc, char** argv ) {
   widget->show();
   widget->resize( 1200, 800 );
 #endif
-
 
   // Root entity
   auto* rootEntity = new Qt3DCore::QEntity();
@@ -205,10 +212,12 @@ int main( int argc, char** argv ) {
   view->setActiveFrameGraph( framegraph );
 
 
+  // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
   vLayout->addWidget( simulatorToolbar );
 
+  // guidance toolbar
   auto* guidaceToolbar = new GuidanceToolbar( widget );
   hLayout->addWidget( guidaceToolbar );
 
@@ -220,6 +229,8 @@ int main( int argc, char** argv ) {
                     simulatorToolbar, SLOT( setVisible( bool ) ) );
   QObject::connect( guidaceToolbar, SIGNAL( cameraChanged( bool ) ),
                     cameraToolbar, SLOT( setVisible( bool ) ) );
+  QObject::connect( guidaceToolbar, SIGNAL( passesChanged( bool ) ),
+                    passesToolbar, SLOT( setVisible( bool ) ) );
   QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
                     settingDialog, SLOT( toggleVisibility() ) );
 
@@ -300,6 +311,7 @@ int main( int argc, char** argv ) {
 
     guidaceToolbar->cbSimulatorSetChecked( settings.value( "RunSimulatorOnStart", false ).toBool() );
     guidaceToolbar->cbCameraSetChecked( settings.value( "ShowCameraToolbarOnStart", false ).toBool() );
+    guidaceToolbar->cbPassesSetChecked( settings.value( "ShowPassesToolbarOnStart", false ).toBool() );
 
     if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
       settingDialog->show();

@@ -1202,3 +1202,11 @@ void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
   emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
 }
+
+void SettingsDialog::on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "ShowPassesToolbarOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.sync();
+}

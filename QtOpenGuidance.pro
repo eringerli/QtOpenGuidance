@@ -27,6 +27,7 @@ SOURCES += src/main.cpp \
     src/gui/ImplementBlockModel.cpp \
     src/gui/ImplementSectionModel.cpp \
     src/gui/NumberBlockModel.cpp \
+    src/gui/PassToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
     src/gui/SimulatorToolbar.cpp \
@@ -76,6 +77,7 @@ HEADERS += \
     src/gui/ImplementSectionModel.h \
     src/gui/MainWindow.h \
     src/gui/NumberBlockModel.h \
+    src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
@@ -93,6 +95,7 @@ FORMS += \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceToolbarTop.ui \
     src/gui/GuidanceXteBar.ui \
+    src/gui/PassToolbar.ui \
     src/gui/SectionControlToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \

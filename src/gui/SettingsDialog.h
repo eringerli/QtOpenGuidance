@@ -148,6 +148,8 @@ class SettingsDialog : public QDialog {
 
     void on_sbPathsInReserve_valueChanged( int arg1 );
 
+    void on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 );
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();

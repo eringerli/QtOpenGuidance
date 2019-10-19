@@ -76,6 +76,20 @@ void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
   ui->cbSimulator->setChecked( enabled );
 }
 
+void GuidanceToolbar::cbPassesSetChecked( bool enabled ) {
+  ui->cbPasses->setChecked( enabled );
+}
+
 void GuidanceToolbar::on_btn_autosteer_clicked( bool checked ) {
   emit autosteerEnabled( checked );
+}
+
+void GuidanceToolbar::on_cbPasses_stateChanged( int arg1 ) {
+  bool enabled = false;
+
+  if( arg1 == Qt::Checked ) {
+    enabled = true;
+  }
+
+  emit passesChanged( enabled );
 }

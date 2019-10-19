@@ -1631,6 +1631,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="cbShowCameraToolbarOnStart_2">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Show passes toolbar on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="cbRunSimulatorOnStart">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>

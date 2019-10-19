@@ -282,6 +282,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="cbPasses">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>Passes Ctlr</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="btn_settings">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>

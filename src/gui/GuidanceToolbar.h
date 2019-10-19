@@ -36,6 +36,7 @@ class GuidanceToolbar : public QGroupBox {
 
     void cbCameraSetChecked( bool enabled );
     void cbSimulatorSetChecked( bool enabled );
+    void cbPassesSetChecked( bool enabled );
 
   private slots:
     void on_cbSimulator_stateChanged( int arg1 );
@@ -51,10 +52,13 @@ class GuidanceToolbar : public QGroupBox {
 
     void on_btn_autosteer_clicked( bool checked );
 
+    void on_cbPasses_stateChanged( int arg1 );
+
   signals:
-    void simulatorChanged( bool );
     void toggleSettings();
+    void simulatorChanged( bool );
     void cameraChanged( bool );
+    void passesChanged( bool );
 
     void a_clicked();
     void b_clicked();
