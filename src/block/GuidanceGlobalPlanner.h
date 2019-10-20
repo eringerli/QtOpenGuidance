@@ -183,7 +183,7 @@ class GlobalPlanner : public BlockBase {
     }
 
     void createPlanAB() {
-      if( abLine.length() != 0 ) {
+      if( !qIsNull( abLine.length() ) ) {
 
         QVector<QVector3D> linePoints;
 
@@ -221,76 +221,186 @@ class GlobalPlanner : public BlockBase {
                                                      implementLine.center().y(),
                                                      headingOfABLine - 270 ).p2() ), implementLine.dy(), false, true, -i ) ) );
           }
+
+          // these lines are to follow in the generated direction
         } else {
           // add center line
           auto linePrimitive = new PathPrimitiveLine(
                   pathLine.translated(
                           QLineF::fromPolar( implementLine.center().y(),
-                                             headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, 0 );
+                                             headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, 0 );
           plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
 
+          enum class PathGenerationStates : uint8_t {
+            Forward = 0,
+            Reverse,
+            ForwardMirrored,
+            ReverseMirrored
+          } pathGenerationStates = PathGenerationStates::Forward;
 
-          bool isForward = startRight;
-          int passCounter = 1;
+          uint16_t passCounter = 1;
 
           // left side
+          if( !startRight ) {
+            if( forwardPasses == 1 ) {
+              pathGenerationStates = PathGenerationStates::Reverse;
+            } else {
+              pathGenerationStates = PathGenerationStates::Forward;
+            }
+          } else {
+            if( mirror ) {
+              pathGenerationStates = PathGenerationStates::ForwardMirrored;
+            } else {
+              pathGenerationStates = PathGenerationStates::Reverse;
+              passCounter = 0;
+            }
+
+          }
+
           for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
 
             auto linePrimitive = new PathPrimitiveLine(
                     pathLine.translated(
                             QLineF::fromPolar( i * implementLine.dy() +
                                                implementLine.center().y(),
-                                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i );
+                                               headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, i );
 
             ++passCounter;
 
-            if( isForward ) {
-              if( passCounter >= forwardPasses ) {
-                passCounter = 0;
-                isForward = false;
-              }
-            } else {
-              if( passCounter >= reversePasses ) {
-                passCounter = 0;
-                isForward = true;
-              }
+            // state machine to generate the directions of the lines
+            switch( pathGenerationStates ) {
+              case PathGenerationStates::Forward:
+                if( passCounter >= forwardPasses ) {
+                  pathGenerationStates = PathGenerationStates::Reverse;
+                  passCounter = 0;
+                }
 
-              linePrimitive->reverse();
+                break;
+
+              case PathGenerationStates::Reverse:
+                linePrimitive->reverse();
+
+                if( passCounter >= reversePasses ) {
+                  if( mirror ) {
+                    pathGenerationStates = PathGenerationStates::ReverseMirrored;
+                  } else {
+                    pathGenerationStates = PathGenerationStates::Forward;
+                  }
+
+                  passCounter = 0;
+                }
+
+                break;
+
+              case PathGenerationStates::ForwardMirrored:
+                linePrimitive->reverse();
+
+                if( passCounter >= forwardPasses ) {
+                  pathGenerationStates = PathGenerationStates::Forward;
+                  passCounter = 0;
+                }
+
+                break;
+
+              case PathGenerationStates::ReverseMirrored:
+                if( passCounter >= reversePasses ) {
+                  if( mirror ) {
+                    pathGenerationStates = PathGenerationStates::ForwardMirrored;
+                  } else {
+                    pathGenerationStates = PathGenerationStates::Forward;
+                  }
+
+                  passCounter = 0;
+                }
+
+                break;
             }
 
             plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
           }
 
-          passCounter = 1;
-          isForward = !startRight;
 
           // right side
+          passCounter = 1;
+
+          if( startRight ) {
+            if( forwardPasses == 1 ) {
+              pathGenerationStates = PathGenerationStates::Reverse;
+            } else {
+              pathGenerationStates = PathGenerationStates::Forward;
+            }
+          } else {
+            if( mirror ) {
+              pathGenerationStates = PathGenerationStates::ForwardMirrored;
+            } else {
+              pathGenerationStates = PathGenerationStates::Reverse;
+            }
+
+            passCounter = 0;
+          }
+
           for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
 
             auto linePrimitive = new PathPrimitiveLine(
                     pathLine.translated(
                             QLineF::fromPolar( i * implementLine.dy() +
                                                implementLine.center().y(),
-                                               headingOfABLine - 270 ).p2() ), implementLine.length(), false, true, i );
+                                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, false, i );
 
             ++passCounter;
 
-            if( isForward ) {
-              if( passCounter >= forwardPasses ) {
-                passCounter = 0;
-                isForward = false;
-              }
-            } else {
-              if( passCounter >= reversePasses ) {
-                passCounter = 0;
-                isForward = true;
-              }
+            // state machine to generate the directions of the lines
+            switch( pathGenerationStates ) {
+              case PathGenerationStates::Forward:
+                if( passCounter >= forwardPasses ) {
+                  pathGenerationStates = PathGenerationStates::Reverse;
+                  passCounter = 0;
+                }
 
-              linePrimitive->reverse();
+                break;
+
+              case PathGenerationStates::Reverse:
+                linePrimitive->reverse();
+
+                if( passCounter >= reversePasses ) {
+                  if( mirror ) {
+                    pathGenerationStates = PathGenerationStates::ReverseMirrored;
+                  } else {
+                    pathGenerationStates = PathGenerationStates::Forward;
+                  }
+
+                  passCounter = 0;
+                }
+
+                break;
+
+              case PathGenerationStates::ForwardMirrored:
+                linePrimitive->reverse();
+
+                if( passCounter >= forwardPasses ) {
+                  pathGenerationStates = PathGenerationStates::Forward;
+                  passCounter = 0;
+                }
+
+                break;
+
+              case PathGenerationStates::ReverseMirrored:
+                if( passCounter >= reversePasses ) {
+                  if( mirror ) {
+                    pathGenerationStates = PathGenerationStates::ForwardMirrored;
+                  } else {
+                    pathGenerationStates = PathGenerationStates::Forward;
+                  }
+
+                  passCounter = 0;
+                }
+
+                break;
             }
 
             plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
           }
+
         }
 
         emit planChanged( plan );
@@ -327,14 +437,17 @@ class GlobalPlanner : public BlockBase {
       createPlanAB();
     }
 
-    void setPassSettings( int forwardPasses, int reversePasses, bool startRight ) {
-      if( ( forwardPasses == 0 && reversePasses == 0 ) ||
-          ( forwardPasses >  0 && reversePasses >  0 ) ) {
+    void setPassSettings( int forwardPasses, int reversePasses, bool startRight, bool mirror ) {
+      if( ( forwardPasses == 0 || reversePasses == 0 ) ) {
+        this->forwardPasses = 0;
+        this->reversePasses = 0;
+      } else {
         this->forwardPasses = forwardPasses;
         this->reversePasses = reversePasses;
       }
 
       this->startRight = startRight;
+      this->mirror = mirror;
 
       createPlanAB();
     }
@@ -355,6 +468,7 @@ class GlobalPlanner : public BlockBase {
     int forwardPasses = 0;
     int reversePasses = 0;
     bool startRight = false;
+    bool mirror = false;
 
     QPointF aPoint = QPointF();
     QPointF bPoint = QPointF();

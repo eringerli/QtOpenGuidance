@@ -11,20 +11,28 @@ PassToolbar::~PassToolbar() {
   delete ui;
 }
 
+void PassToolbar::emitPassSettings() {
+  emit passSettingsChanged(
+    ui->sbForwardPasses->value(),
+    ui->sbReversePasses->value(),
+    ui->rbStartRight->isChecked(),
+    ui->cbMirror->isChecked() );
+}
+
 void PassToolbar::on_sbForwardPasses_valueChanged( int ) {
-  emit passSettingsChanged( ui->sbForwardPasses->value(), ui->sbReversePasses->value(), ui->rbStartRight->isChecked() );
+  emitPassSettings();
 }
 
 void PassToolbar::on_sbReversePasses_valueChanged( int ) {
-  emit passSettingsChanged( ui->sbForwardPasses->value(), ui->sbReversePasses->value(), ui->rbStartRight->isChecked() );
+  emitPassSettings();
 }
 
 void PassToolbar::on_rbStartRight_toggled( bool ) {
-  emit passSettingsChanged( ui->sbForwardPasses->value(), ui->sbReversePasses->value(), ui->rbStartRight->isChecked() );
+  emitPassSettings();
 }
 
 void PassToolbar::on_rbStartLeft_toggled( bool ) {
-  emit passSettingsChanged( ui->sbForwardPasses->value(), ui->sbReversePasses->value(), ui->rbStartRight->isChecked() );
+  emitPassSettings();
 }
 
 void PassToolbar::on_pbResetForwardPasses_clicked() {
@@ -45,4 +53,8 @@ void PassToolbar::on_pbResetPassNumber_clicked() {
 
 void PassToolbar::on_pbSetPassNumber_clicked() {
   emit passNumberChanged( ui->sbPassNumber->value() );
+}
+
+void PassToolbar::on_cbMirror_stateChanged( int ) {
+  emitPassSettings();
 }

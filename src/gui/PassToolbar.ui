@@ -20,6 +20,29 @@
    <string>GroupBox</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="6" column="0" colspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>366</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="9" column="0" colspan="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Forward Passes</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QPushButton" name="pbSetPassNumber">
      <property name="focusPolicy">
@@ -30,23 +53,46 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QPushButton" name="pbResetPassNumber">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
+   <item row="5" column="0" colspan="2">
+    <widget class="QSpinBox" name="sbMinimalSkip"/>
+   </item>
+   <item row="15" column="0" colspan="2">
+    <widget class="QRadioButton" name="rbStartLeft">
      <property name="text">
-      <string>Reset Pass #</string>
+      <string>Start Left</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="0">
-    <widget class="QSpinBox" name="sbReversePasses">
+   <item row="4" column="0" colspan="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Minimal Skip</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QSpinBox" name="sbPassNumber">
+     <property name="minimum">
+      <number>-999</number>
+     </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QSpinBox" name="sbForwardPasses">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="value">
+      <number>0</number>
      </property>
     </widget>
    </item>
@@ -62,6 +108,26 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="13" column="1">
+    <widget class="QToolButton" name="pbResetReversePasses">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0" colspan="2">
+    <widget class="QRadioButton" name="rbStartRight">
+     <property name="text">
+      <string>Start Right</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="12" column="0" colspan="2">
     <widget class="QLabel" name="label_3">
@@ -95,59 +161,23 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>366</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="13" column="1">
-    <widget class="QToolButton" name="pbResetReversePasses">
+   <item row="0" column="0" colspan="2">
+    <widget class="QPushButton" name="pbResetPassNumber">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>0</string>
+      <string>Reset Pass #</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Minimal Skip</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QSpinBox" name="sbForwardPasses">
+   <item row="13" column="0">
+    <widget class="QSpinBox" name="sbReversePasses">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="value">
-      <number>0</number>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0" colspan="2">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Forward Passes</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -161,33 +191,10 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QSpinBox" name="sbMinimalSkip"/>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QSpinBox" name="sbPassNumber">
-     <property name="minimum">
-      <number>-999</number>
-     </property>
-     <property name="maximum">
-      <number>999</number>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="0" colspan="2">
-    <widget class="QRadioButton" name="rbStartRight">
+   <item row="16" column="0" colspan="2">
+    <widget class="QCheckBox" name="cbMirror">
      <property name="text">
-      <string>Start Right</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="0" colspan="2">
-    <widget class="QRadioButton" name="rbStartLeft">
-     <property name="text">
-      <string>Start Left</string>
+      <string>Mirror</string>
      </property>
     </widget>
    </item>

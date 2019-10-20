@@ -299,8 +299,8 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
 
   // Global planner
-  QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool ) ),
-                    settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool ) ) );
+  QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
+                    settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool, bool ) ) );
   QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),
                     settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 

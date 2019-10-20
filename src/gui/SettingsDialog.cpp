@@ -1095,12 +1095,14 @@ void SettingsDialog::emitGlobalPlannerModelSettings() {
     ui->cbGlobalPlannerBackground->isChecked() ? ui->slGlobalPlannerTransparency->value() / 100.0 : 0 );
   globalPlannerArrowColor.setAlphaF( ui->slGlobalPlannerTransparency->value() / 100.0 );
 
-  emit globalPlannerModelSettingsChanged( ui->dsbGlobalPlannerArrowSize->value(), ui->dsbGlobalPlannerArrowDistance->value(),
+  emit globalPlannerModelSettingsChanged( float( ui->dsbGlobalPlannerArrowSize->value() ), float( ui->dsbGlobalPlannerArrowDistance->value() ),
                                           globalPlannerArrowColor, globalPlannerBackgroundColor );
 }
 
 void SettingsDialog::emitLocalPlannerModelSettings() {
-  emit localPlannerModelSettingsChanged( ui->dsbLocalPlannerArrowSize->value(), ui->dsbLocalPlannerArrowDistance->value(), ui->dsbLocalPlannerLineWidth->value(),
+  emit localPlannerModelSettingsChanged( float( ui->dsbLocalPlannerArrowSize->value() ),
+                                         float( ui->dsbLocalPlannerArrowDistance->value() ),
+                                         float( ui->dsbLocalPlannerLineWidth->value() ),
                                          localPlannerLineColor, localPlannerArrowColor );
 }
 
@@ -1118,17 +1120,17 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
   }
 }
 
-void SettingsDialog::on_gbGlobalPlanner_toggled( bool arg1 ) {
+void SettingsDialog::on_gbGlobalPlanner_toggled( bool ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 ) {
+void SettingsDialog::on_dsbGlobalPlannerArrowSize_valueChanged( double ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 ) {
+void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
 }
@@ -1170,7 +1172,7 @@ void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int ) {
   savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_cbGlobalPlannerBackground_stateChanged( int arg1 ) {
+void SettingsDialog::on_cbGlobalPlannerBackground_stateChanged( int ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
 }
@@ -1218,7 +1220,7 @@ void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
 
 }
 
-void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int value ) {
+void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int ) {
   savePlannerValuesInSettings();
 }
 

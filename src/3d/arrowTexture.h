@@ -47,6 +47,13 @@ class ArrowTexture : public Qt3DRender::QPaintedTextureImage {
       update();
     }
 
+    void setAnyDirectionArrows( bool anyDirection ) {
+      if( this->anyDirection != anyDirection ) {
+        this->anyDirection = anyDirection;
+        update();
+      }
+    }
+
     void paint( QPainter* painter ) override {
       painter->setCompositionMode( QPainter::CompositionMode_Source );
 
@@ -60,19 +67,29 @@ class ArrowTexture : public Qt3DRender::QPaintedTextureImage {
 
       qreal pixelPerMeter = width() / qreal( arrowSize + distanceBetweenArrows );
 
-      const QPointF points[4] = {
-        QPointF( width(), height() / 2 ),
-        QPointF( width() - ( qreal( arrowSize ) * 2 * pixelPerMeter ), height() ),
-        QPointF( width() - ( qreal( arrowSize )*pixelPerMeter ), height() / 2 ),
-        QPointF( width() - ( qreal( arrowSize ) * 2 * pixelPerMeter ), 0 )
-      };
-      painter->drawConvexPolygon( points, 4 );
-
+      if( !anyDirection ) {
+        const QPointF points[4] = {
+          QPointF( width(), height() / 2 ),
+          QPointF( width() - ( qreal( arrowSize )  * pixelPerMeter ), height() ),
+          QPointF( width() - ( qreal( arrowSize ) / 2 * pixelPerMeter ), height() / 2 ),
+          QPointF( width() - ( qreal( arrowSize )  * pixelPerMeter ), 0 )
+        };
+        painter->drawConvexPolygon( points, 4 );
+      } else {
+        const QPointF points[4] = {
+          QPointF( width(), height() / 2 ),
+          QPointF( width() - ( qreal( arrowSize ) / 2  * pixelPerMeter ), height() ),
+          QPointF( width() - ( qreal( arrowSize )*pixelPerMeter ), height() / 2 ),
+          QPointF( width() - ( qreal( arrowSize ) / 2  * pixelPerMeter ), 0 )
+        };
+        painter->drawConvexPolygon( points, 4 );
+      }
     }
 
   private:
     float arrowSize = 2;
     float distanceBetweenArrows = 3;
+    bool anyDirection = false;
     QColor arrowColor = QColor( 0xff, 0xff, 0, 200 );
     QColor backgroundColor = QColor( 0xf5, 0x9f, 0xbd, 100 );
 };

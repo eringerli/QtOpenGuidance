@@ -14,8 +14,10 @@ class PassToolbar : public QGroupBox {
     explicit PassToolbar( QWidget* parent = nullptr );
     ~PassToolbar();
 
+    void emitPassSettings();
+
   signals:
-    void passSettingsChanged( int, int, bool );
+    void passSettingsChanged( int, int, bool, bool );
     void minimalSkipChanged( int );
     void passNumberChanged( int );
 
@@ -37,6 +39,8 @@ class PassToolbar : public QGroupBox {
     void on_pbSetPassNumber_clicked();
 
     void on_rbStartLeft_toggled( bool checked );
+
+    void on_cbMirror_stateChanged( int arg1 );
 
   private:
     Ui::PassToolbar* ui;

@@ -155,7 +155,7 @@ class GlobalPlannerModel : public BlockBase {
 
         arrowsForegroundDiffuseSpecularMaterial->setDiffuse( QVariant::fromValue( arrowsForegroundTexture ) );
         arrowsForegroundDiffuseSpecularMaterial->setAlphaBlendingEnabled( true );
-        arrowsForegroundDiffuseSpecularMaterial->setAmbient( QColor( 255, 255, 255, 0 ) );
+        arrowsForegroundDiffuseSpecularMaterial->setAmbient( QColor( 255, 255, 255, 127 ) );
 
         arrowsForegroundEntity->addComponent( arrowsForegroundDiffuseSpecularMaterial );
 
@@ -195,6 +195,7 @@ class GlobalPlannerModel : public BlockBase {
       QVector<QVector3D> positions;
       QVector<quint16> indices;
       QVector<QVector2D> textureCoordinates;
+      bool anyDirection = false;
 
       for( const auto& primitive : plan ) {
         auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
@@ -207,7 +208,10 @@ class GlobalPlannerModel : public BlockBase {
 
           QLineF tmpLineLeft = line->line.translated( offsetLeft.p2() );
           QLineF tmpLineRight = line->line.translated( offsetRight.p2() );
-          qDebug() << line->line;
+
+          if( line->anyDirection ) {
+            anyDirection = true;
+          }
 
           quint16 indexOffset = quint16( positions.size() );
 
@@ -249,6 +253,8 @@ class GlobalPlannerModel : public BlockBase {
       memcpy( textureCoordinatesBufferData.data(), textureCoordinates.constData(), static_cast<size_t>( textureCoordinates.size() ) * sizeof( QVector2D ) );
       arrowsForegroundTextureCoordinatesBuffer->setData( textureCoordinatesBufferData );
       arrowsForegroundTextureCoordinatesAttribute->setCount( uint( textureCoordinates.size() ) );
+
+      arrowsForegroundArrowTexture->setAnyDirectionArrows( anyDirection );
     }
 
     void recalculateTextureCoordinates() {
