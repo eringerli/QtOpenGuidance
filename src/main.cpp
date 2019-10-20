@@ -146,6 +146,7 @@ int main( int argc, char** argv ) {
 
 //  cameraEntity->lens()->setPerspectiveProjection( 60.0f, 16.0f / 10.0f, 0.1f, 1000.0f );
   cameraEntity->lens()->setProjectionType( Qt3DRender::QCameraLens::PerspectiveProjection );
+  cameraEntity->lens()->setFarPlane( 2000 );
   cameraEntity->setPosition( QVector3D( 0, 0, 20.0f ) );
   cameraEntity->setUpVector( QVector3D( 0, 1, 0 ) );
   cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
@@ -296,6 +297,12 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
   QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
+
+  // Global planner
+  QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool ) ),
+                    settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool ) ) );
+  QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),
+                    settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
   // Section control toolbar
   BlockFactory* sectionControlFactory = new SectionControlModelFactory( widget, vLayout );

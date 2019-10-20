@@ -33,8 +33,15 @@ PointMeshGeometry::PointMeshGeometry( const QVector<QVector3D>& vertices, Qt3DCo
 
   _positionAttribute->setAttributeType( Qt3DRender::QAttribute::VertexAttribute );
   _positionAttribute->setBuffer( _vertexBuffer );
+
+#if QT_VERSION >= 0x050800
+  _positionAttribute->setVertexBaseType( Qt3DRender::QAttribute::Float );
+  _positionAttribute->setVertexSize( 3 );
+#else
   _positionAttribute->setDataType( Qt3DRender::QAttribute::Float );
   _positionAttribute->setDataSize( 3 );
+#endif
+
   _positionAttribute->setName( Qt3DRender::QAttribute::defaultPositionAttributeName() );
 
   addAttribute( _positionAttribute );

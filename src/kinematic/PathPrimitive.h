@@ -25,6 +25,8 @@
 #include <QPointF>
 #include <QtMath>
 
+#include "Tile.h"
+
 #include <QDebug>
 
 class PathPrimitive : public QObject {
@@ -33,14 +35,20 @@ class PathPrimitive : public QObject {
   public:
     PathPrimitive() {}
 
-    PathPrimitive( bool anyDirection )
-      : anyDirection( anyDirection ) {}
+    PathPrimitive( bool anyDirection, int passNumber )
+      : anyDirection( anyDirection ), passNumber( passNumber ) {}
 
   public:
     virtual qreal distanceToPoint( const QPointF point ) = 0;
 
+    static constexpr QPointF getPointFromTiledPosition( Tile* tile, QVector3D position ) {
+      return QPointF( tile->x + double( position.x() ),
+                      tile->y + double( position.y() ) );
+    }
+
   public:
     bool anyDirection = false;
+    int passNumber = 0;
 };
 
 class PathPrimitiveLine : public PathPrimitive {
@@ -50,13 +58,14 @@ class PathPrimitiveLine : public PathPrimitive {
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( QLineF line, bool isSegment, bool anyDirection )
-      : PathPrimitive( anyDirection ), line( line ), isSegment( isSegment ) {
-      qDebug() << "PathPrimitiveLine()";
+    PathPrimitiveLine( QLineF line, qreal width, bool isSegment, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, passNumber ), line( line ), width( width ), isSegment( isSegment ) {
     }
 
-    ~PathPrimitiveLine() {
-      qDebug() << "~PathPrimitiveLine()";
+  public:
+    void reverse() {
+      QLineF tmpLine = line;
+      line.setPoints( tmpLine.p2(), tmpLine.p1() );
     }
 
   public:
@@ -71,6 +80,7 @@ class PathPrimitiveLine : public PathPrimitive {
 
   public:
     QLineF line;
+    qreal width = 0;
     bool isSegment = false;
 
   private:
@@ -120,8 +130,8 @@ class PathPrimitiveCircle : public PathPrimitive {
   public:
     PathPrimitiveCircle() : PathPrimitive() {}
 
-    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection )
-      : PathPrimitive( anyDirection ),
+    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, passNumber ),
         center( center ), start( start ), end( end ) {}
 
   public:

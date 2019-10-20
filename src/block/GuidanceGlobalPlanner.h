@@ -126,22 +126,6 @@ class GlobalPlanner : public BlockBase {
         bTextEntity->addComponent( bTextMesh );
         bTextEntity->addComponent( material );
       }
-
-      // line marker
-      {
-        pathEntity = new Qt3DCore::QEntity( tile00->tileEntity );
-        pathEntity->setEnabled( false );
-
-        pathTransform = new Qt3DCore::QTransform();
-        pathEntity->addComponent( pathTransform );
-
-        pathMesh = new LineMesh();
-        pathEntity->addComponent( pathMesh );
-
-        pathMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( pathEntity );
-        pathMaterial->setAmbient( Qt::red );
-        pathEntity->addComponent( pathMaterial );
-      }
     }
 
   public slots:
@@ -161,7 +145,13 @@ class GlobalPlanner : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
-        implementLine.setP1( QPointF( double( position.x() ), double( position.y() ) ) );
+
+        QPointF point( double( position.x() ), double( position.y() ) );
+
+        if( implementLine.p1() != point ) {
+          implementLine.setP1( point );
+          createPlanAB();
+        }
       }
     }
 
@@ -170,7 +160,13 @@ class GlobalPlanner : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
-        implementLine.setP2( QPointF( double( position.x() ), double( position.y() ) ) );
+
+        QPointF point( double( position.x() ), double( position.y() ) );
+
+        if( implementLine.p2() != point ) {
+          implementLine.setP2( point );
+          createPlanAB();
+        }
       }
     }
 
@@ -180,11 +176,125 @@ class GlobalPlanner : public BlockBase {
 
       aPointEntity->setEnabled( true );
       bPointEntity->setEnabled( false );
-      pathEntity->setEnabled( false );
 
       aPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
 
       qDebug() << "a_clicked()" << aPoint;
+    }
+
+    void createPlanAB() {
+      if( abLine.length() != 0 ) {
+
+        QVector<QVector3D> linePoints;
+
+        // extend the points 200m in either direction
+        qreal headingOfABLine = abLine.angle();
+
+        QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
+        lineExtensionFromA.translate( aPoint );
+
+        QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
+        lineExtensionFromB.translate( bPoint );
+
+        QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
+
+        QVector<QSharedPointer<PathPrimitive>> plan;
+
+        // the lines are generated to follow in both directions
+        if( forwardPasses == 0 && reversePasses == 0 ) {
+          // left side
+          for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
+            plan.append( QSharedPointer<PathPrimitive>(
+                                 new PathPrimitiveLine(
+                                         pathLine.translated(
+                                                 QLineF::fromPolar( i * implementLine.dy() +
+                                                     implementLine.center().y(),
+                                                     headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i ) ) );
+          }
+
+          // right side
+          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+            plan.append( QSharedPointer<PathPrimitive>(
+                                 new PathPrimitiveLine(
+                                         pathLine.translated(
+                                                 QLineF::fromPolar( i * implementLine.dy() +
+                                                     implementLine.center().y(),
+                                                     headingOfABLine - 270 ).p2() ), implementLine.dy(), false, true, -i ) ) );
+          }
+        } else {
+          // add center line
+          auto linePrimitive = new PathPrimitiveLine(
+                  pathLine.translated(
+                          QLineF::fromPolar( implementLine.center().y(),
+                                             headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, 0 );
+          plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+
+
+          bool isForward = startRight;
+          int passCounter = 1;
+
+          // left side
+          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+
+            auto linePrimitive = new PathPrimitiveLine(
+                    pathLine.translated(
+                            QLineF::fromPolar( i * implementLine.dy() +
+                                               implementLine.center().y(),
+                                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i );
+
+            ++passCounter;
+
+            if( isForward ) {
+              if( passCounter >= forwardPasses ) {
+                passCounter = 0;
+                isForward = false;
+              }
+            } else {
+              if( passCounter >= reversePasses ) {
+                passCounter = 0;
+                isForward = true;
+              }
+
+              linePrimitive->reverse();
+            }
+
+            plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+          }
+
+          passCounter = 1;
+          isForward = !startRight;
+
+          // right side
+          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+
+            auto linePrimitive = new PathPrimitiveLine(
+                    pathLine.translated(
+                            QLineF::fromPolar( i * implementLine.dy() +
+                                               implementLine.center().y(),
+                                               headingOfABLine - 270 ).p2() ), implementLine.length(), false, true, i );
+
+            ++passCounter;
+
+            if( isForward ) {
+              if( passCounter >= forwardPasses ) {
+                passCounter = 0;
+                isForward = false;
+              }
+            } else {
+              if( passCounter >= reversePasses ) {
+                passCounter = 0;
+                isForward = true;
+              }
+
+              linePrimitive->reverse();
+            }
+
+            plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+          }
+        }
+
+        emit planChanged( plan );
+      }
     }
 
     void b_clicked() {
@@ -196,60 +306,7 @@ class GlobalPlanner : public BlockBase {
 
       abLine.setPoints( aPoint, bPoint );
 
-      QVector<QVector3D> linePoints;
-
-      // extend the points 200m in either direction
-
-      qreal headingOfABLine = abLine.angle();
-
-      QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
-      lineExtensionFromA.translate( aPoint );
-
-      QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
-      lineExtensionFromB.translate( bPoint );
-
-      QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
-
-//      pathLine = abLine;
-
-      QVector<QSharedPointer<PathPrimitive>> plan;
-
-      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
-        plan.append( QSharedPointer<PathPrimitive>(
-                             new PathPrimitiveLine(
-                                     pathLine.translated(
-                                             QLineF::fromPolar( i * implementLine.dy() +
-                                                 implementLine.center().y(),
-                                                 headingOfABLine - 90 ).p2() ), false, true ) ) );
-      }
-
-      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
-        plan.append( QSharedPointer<PathPrimitive>(
-                             new PathPrimitiveLine(
-                                     pathLine.translated(
-                                             QLineF::fromPolar( i * implementLine.dy() +
-                                                 implementLine.center().y(),
-                                                 headingOfABLine - 270 ).p2() ), false, true ) ) );
-      }
-
-      // display paths
-      {
-        for( const auto& primitive : plan ) {
-          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
-
-          if( line ) {
-            linePoints.append( QVector3D( float( line->line.x1() ), float( line->line.y1() ), position.z() ) );
-            linePoints.append( QVector3D( float( line->line.x2() ), float( line->line.y2() ), position.z() ) );
-          }
-        }
-
-        pathMesh->posUpdate( linePoints );
-        pathEntity->setEnabled( true );
-      }
-
-      qDebug() << "b_clicked()" << "abLine" << abLine << "pathLine" << pathLine << "heading" << headingOfABLine;
-
-      emit planChanged( plan );
+      createPlanAB();
     }
 
     void snap_clicked() {
@@ -266,7 +323,23 @@ class GlobalPlanner : public BlockBase {
     void setPlannerSettings( int pathsToGenerate, int pathsInReserve ) {
       this->pathsToGenerate = pathsToGenerate;
       this->pathsInReserve = pathsInReserve;
+
+      createPlanAB();
     }
+
+    void setPassSettings( int forwardPasses, int reversePasses, bool startRight ) {
+      if( ( forwardPasses == 0 && reversePasses == 0 ) ||
+          ( forwardPasses >  0 && reversePasses >  0 ) ) {
+        this->forwardPasses = forwardPasses;
+        this->reversePasses = reversePasses;
+      }
+
+      this->startRight = startRight;
+
+      createPlanAB();
+    }
+
+    void setPassNumberTo( int /*passNumber*/ ) {}
 
   signals:
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
@@ -279,6 +352,9 @@ class GlobalPlanner : public BlockBase {
 
     int pathsToGenerate = 5;
     int pathsInReserve = 3;
+    int forwardPasses = 0;
+    int reversePasses = 0;
+    bool startRight = false;
 
     QPointF aPoint = QPointF();
     QPointF bPoint = QPointF();
@@ -304,12 +380,6 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QTransform* bPointTransform = nullptr;
     Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
-
-    // path
-    Qt3DCore::QEntity* pathEntity = nullptr;
-    LineMesh* pathMesh = nullptr;
-    Qt3DCore::QTransform* pathTransform = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* pathMaterial = nullptr;
 };
 
 class GlobalPlannerFactory : public BlockFactory {

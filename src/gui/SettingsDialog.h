@@ -58,6 +58,16 @@ class SettingsDialog : public QDialog {
     void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
     void plannerSettingsChanged( int, int );
 
+    void globalPlannerModelSetVisible( bool );
+
+    void globalPlannerModelSettingsChanged( float, float,
+                                            QColor, QColor );
+
+    void localPlannerModelSetVisible( bool );
+    void localPlannerModelSettingsChanged( float, float,
+                                           float,
+                                           QColor, QColor );
+
   public slots:
     void toggleVisibility();
 
@@ -82,7 +92,7 @@ class SettingsDialog : public QDialog {
     void on_pbDeleteSelected_clicked();
 
 
-    void on_cbGridVisible_stateChanged( int arg1 );
+    void on_gbGrid_toggled( bool arg1 );
     void on_dsbGridXStep_valueChanged( double arg1 );
     void on_dsbGridYStep_valueChanged( double arg1 );
     void on_dsbGridSize_valueChanged( double arg1 );
@@ -128,16 +138,14 @@ class SettingsDialog : public QDialog {
 
     void on_btnSectionMoveDown_clicked();
 
-    void on_cbGlobalPlanner_stateChanged( int arg1 );
-    void on_dsbGlobalPlannerVisibleAreaX_valueChanged( double arg1 );
-    void on_dsbGlobalPlannerVisibleAreaY_valueChanged( double arg1 );
+    void on_gbGlobalPlanner_toggled( bool arg1 );
     void on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 );
     void on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 );
     void on_pbGlobalPlannerArrowColor_clicked();
     void on_pbGlobalPlannerBackgroundColor_clicked();
     void on_slGlobalPlannerTransparency_valueChanged( int value );
 
-    void on_cbLocalPlannerVisible_stateChanged( int arg1 );
+    void on_gbLocalPlanner_toggled( bool arg1 );
     void on_dsbLocalPlannerArrowSize_valueChanged( double arg1 );
     void on_dsbLocalPlannerLineWidth_valueChanged( double arg1 );
     void on_pbLocalPlannerArrowColor_clicked();
@@ -150,6 +158,8 @@ class SettingsDialog : public QDialog {
 
     void on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 );
 
+    void on_cbGlobalPlannerBackground_stateChanged( int arg1 );
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -160,6 +170,10 @@ class SettingsDialog : public QDialog {
 
     void saveConfigToFile( QFile& file );
     void loadConfigFromFile( QFile& file );
+
+    void emitGridSettings();
+    void emitGlobalPlannerModelSettings();
+    void emitLocalPlannerModelSettings();
 
   public:
     QComboBox* getCbNodeType();
@@ -174,6 +188,7 @@ class SettingsDialog : public QDialog {
     BlockBase* localPlanner = nullptr;
     BlockBase* stanleyGuidance = nullptr;
     BlockBase* xteGuidance = nullptr;
+    BlockBase* globalPlannerModel = nullptr;
 
   private:
     Ui::SettingsDialog* ui = nullptr;
@@ -207,6 +222,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* localPlannerFactory = nullptr;
     BlockFactory* stanleyGuidanceFactory = nullptr;
     BlockFactory* xteGuidanceFactory = nullptr;
+    BlockFactory* globalPlannerModelFactory = nullptr;
 
     BlockFactory* vectorFactory = nullptr;
     BlockFactory* numberFactory = nullptr;

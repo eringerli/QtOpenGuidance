@@ -64,6 +64,7 @@
 #include "../block/GuidanceLocalPlanner.h"
 #include "../block/GuidanceStanley.h"
 #include "../block/GuidanceXte.h"
+#include "../block/GuidanceGlobalPlannerModel.h"
 
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
@@ -101,7 +102,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
     // grid
     {
-      ui->cbGridVisible->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
+      ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
       ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 1 ).toDouble() );
       ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 1 ).toDouble() );
       ui->dsbGridXStepCoarse->setValue( settings.value( "Grid/XStepCoarse", 10 ).toDouble() );
@@ -121,21 +122,21 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
 
     // global/local planner
     {
-      ui->cbGlobalPlanner->setChecked( settings.value( "GlobalPlanner/Enabled", true ).toBool() );
-      ui->dsbGlobalPlannerVisibleAreaX->setValue( settings.value( "GlobalPlanner/VisibleAreaX", 250 ).toDouble() );
-      ui->dsbGlobalPlannerVisibleAreaY->setValue( settings.value( "GlobalPlanner/VisibleAreaY", 250 ).toDouble() );
-      ui->dsbGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlanner/ArrowSize", 3 ).toDouble() );
-      ui->dsbGlobalPlannerArrowDistance->setValue( settings.value( "GlobalPlanner/ArrowDistance", 3 ).toDouble() );
-      globalPlannerArrowColor = settings.value( "GlobalPlanner/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
-      ui->cbGlobalPlannerBackground->setChecked( settings.value( "GlobalPlanner/BackgroundEnabled", true ).toBool() );
-      globalPlannerBackgroundColor = settings.value( "GlobalPlanner/BackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
+      ui->gbGlobalPlanner->setChecked( settings.value( "GlobalPlannerGraphics/Enabled", true ).toBool() );
+      ui->dsbGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlannerGraphics/ArrowSize", 3 ).toDouble() );
+      ui->dsbGlobalPlannerArrowDistance->setValue( settings.value( "GlobalPlannerGraphics/ArrowDistance", 3 ).toDouble() );
+      globalPlannerArrowColor = settings.value( "GlobalPlannerGraphics/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
+      ui->cbGlobalPlannerBackground->setChecked( settings.value( "GlobalPlannerGraphics/BackgroundEnabled", true ).toBool() );
+      globalPlannerBackgroundColor = settings.value( "GlobalPlannerGraphics/BackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
+      ui->slGlobalPlannerTransparency->setValue( settings.value( "GlobalPlannerGraphics/Transparency", 20 ).toInt() );
 
-      ui->cbLocalPlannerVisible->setChecked( settings.value( "LocalPlanner/Enabled", true ).toBool() );
-      ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlanner/ArrowSize", 1 ).toDouble() );
-      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( "LocalPlanner/ArrowDistance", 3 ).toDouble() );
-      ui->dsbLocalPlannerLineWidth->setValue( settings.value( "LocalPlanner/LineWidth", 0.1 ).toDouble() );
-      localPlannerArrowColor = settings.value( "LocalPlanner/ArrowColor", QColor( 0xff, 0x80, 0 ) ).value<QColor>();
-      localPlannerLineColor = settings.value( "LocalPlanner/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
+      ui->gbLocalPlanner->setChecked( settings.value( "LocalPlannerGraphics/Enabled", true ).toBool() );
+      ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlannerGraphics/ArrowSize", 1 ).toDouble() );
+      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( "LocalPlannerGraphics/ArrowDistance", 3 ).toDouble() );
+      ui->dsbLocalPlannerLineWidth->setValue( settings.value( "LocalPlannerGraphics/LineWidth", 0.1 ).toDouble() );
+      localPlannerArrowColor = settings.value( "LocalPlannerGraphics/ArrowColor", QColor( 0xff, 0x80, 0 ) ).value<QColor>();
+      localPlannerLineColor = settings.value( "LocalPlannerGraphics/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
+      ui->slLocalPlannerTransparency->setValue( settings.value( "LocalPlannerGraphics/Transparency", 100 ).toInt() );
     }
 
     // path planner
@@ -209,6 +210,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   localPlannerFactory = new LocalPlannerFactory( tile );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
   xteGuidanceFactory = new XteGuidanceFactory( tile );
+
+  globalPlannerModelFactory = new GlobalPlannerModelFactory( tile, rootEntity );
+  globalPlannerModel = globalPlannerModelFactory->createNewObject();
+  globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene(), globalPlannerModel );
+
+  QObject::connect( this, SIGNAL( globalPlannerModelSettingsChanged( float, float, QColor, QColor ) ),
+                    globalPlannerModel, SLOT( setPlannerModelSettings( float, float, QColor, QColor ) ) );
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
@@ -331,6 +339,8 @@ SettingsDialog::~SettingsDialog() {
   stanleyGuidance->deleteLater();
   xteGuidanceFactory->deleteLater();
   xteGuidance->deleteLater();
+  globalPlannerModelFactory->deleteLater();
+  globalPlannerModel->deleteLater();
 }
 
 QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
@@ -652,7 +662,7 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
   }
 }
 
-void SettingsDialog::on_cbGridVisible_stateChanged( int arg1 ) {
+void SettingsDialog:: on_gbGrid_toggled( bool arg1 ) {
   saveGridValuesInSettings();
   emit setGrid( bool( arg1 ) );
 }
@@ -703,7 +713,7 @@ void SettingsDialog::saveGridValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "Grid/Enabled", bool( ui->cbGridVisible->isChecked() ) );
+    settings.setValue( "Grid/Enabled", bool( ui->gbGrid->isChecked() ) );
     settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
     settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
     settings.setValue( "Grid/XStepCoarse", ui->dsbGridXStepCoarse->value() );
@@ -743,21 +753,21 @@ void SettingsDialog::savePlannerValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "GlobalPlanner/Enabled", ui->cbGlobalPlanner->isChecked() );
-    settings.setValue( "GlobalPlanner/VisibleAreaX", ui->dsbGlobalPlannerVisibleAreaX->value() );
-    settings.setValue( "GlobalPlanner/VisibleAreaY", ui->dsbGlobalPlannerVisibleAreaY->value() );
-    settings.setValue( "GlobalPlanner/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
-    settings.setValue( "GlobalPlanner/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
-    settings.setValue( "GlobalPlanner/ArrowColor", globalPlannerArrowColor );
-    settings.setValue( "GlobalPlanner/BackgroundColor", globalPlannerBackgroundColor );
-    settings.setValue( "GlobalPlanner/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
+    settings.setValue( "GlobalPlannerGraphics/Enabled", ui->gbGlobalPlanner->isChecked() );
+    settings.setValue( "GlobalPlannerGraphics/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
+    settings.setValue( "GlobalPlannerGraphics/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
+    settings.setValue( "GlobalPlannerGraphics/ArrowColor", globalPlannerArrowColor );
+    settings.setValue( "GlobalPlannerGraphics/BackgroundColor", globalPlannerBackgroundColor );
+    settings.setValue( "GlobalPlannerGraphics/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
+    settings.setValue( "GlobalPlannerGraphics/Transparency", ui->slGlobalPlannerTransparency->value() );
 
-    settings.setValue( "LocalPlanner/Enabled", ui->cbLocalPlannerVisible->isChecked() );
-    settings.setValue( "LocalPlanner/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
-    settings.setValue( "LocalPlanner/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
-    settings.setValue( "LocalPlanner/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
-    settings.setValue( "LocalPlanner/ArrowColor", localPlannerArrowColor );
-    settings.setValue( "LocalPlanner/LineColor", localPlannerLineColor );
+    settings.setValue( "LocalPlannerGraphics/Enabled", ui->gbLocalPlanner->isChecked() );
+    settings.setValue( "LocalPlannerGraphics/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
+    settings.setValue( "LocalPlannerGraphics/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
+    settings.setValue( "LocalPlannerGraphics/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
+    settings.setValue( "LocalPlannerGraphics/ArrowColor", localPlannerArrowColor );
+    settings.setValue( "LocalPlannerGraphics/LineColor", localPlannerLineColor );
+    settings.setValue( "LocalPlannerGraphics/Transparency", ui->slLocalPlannerTransparency->value() );
 
     settings.sync();
   }
@@ -790,12 +800,16 @@ void SettingsDialog::setPlannerColorLabels() {
 }
 
 void SettingsDialog::emitAllConfigSignals() {
-  emit setGrid( ui->cbGridVisible->isChecked() );
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  emit setGrid( ui->gbGrid->isChecked() );
+  emitGridSettings();
+
   emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
+
+  emit globalPlannerModelSetVisible( ui->gbGlobalPlanner->isChecked() );
+  emitGlobalPlannerModelSettings();
+
+  emit localPlannerModelSetVisible( ui->gbLocalPlanner->isChecked() );
+  emitLocalPlannerModelSettings();
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -1051,76 +1065,78 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
 
 void SettingsDialog::on_dsbGridXStepCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  emitGridSettings();
 }
 
 void SettingsDialog::on_dsbGridYStepCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  emitGridSettings();
 }
 
 void SettingsDialog::on_dsbGridCameraThreshold_valueChanged( double ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  emitGridSettings();
 }
 
 void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
+  emitGridSettings();
+}
+
+void SettingsDialog::emitGridSettings() {
   emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
 }
 
+void SettingsDialog::emitGlobalPlannerModelSettings() {
+  globalPlannerBackgroundColor.setAlphaF(
+    ui->cbGlobalPlannerBackground->isChecked() ? ui->slGlobalPlannerTransparency->value() / 100.0 : 0 );
+  globalPlannerArrowColor.setAlphaF( ui->slGlobalPlannerTransparency->value() / 100.0 );
+
+  emit globalPlannerModelSettingsChanged( ui->dsbGlobalPlannerArrowSize->value(), ui->dsbGlobalPlannerArrowDistance->value(),
+                                          globalPlannerArrowColor, globalPlannerBackgroundColor );
+}
+
+void SettingsDialog::emitLocalPlannerModelSettings() {
+  emit localPlannerModelSettingsChanged( ui->dsbLocalPlannerArrowSize->value(), ui->dsbLocalPlannerArrowDistance->value(), ui->dsbLocalPlannerLineWidth->value(),
+                                         localPlannerLineColor, localPlannerArrowColor );
+}
+
 void SettingsDialog::on_pbColorCoarse_clicked() {
-  const QColor color = QColorDialog::getColor( gridColor, this, "Select Grid Color" );
+  const QColor color = QColorDialog::getColor( gridColorCoarse, this, "Select Grid Color" );
 
   if( color.isValid() ) {
     gridColorCoarse = color;
-    ui->lbColorCoarse->setText( gridColor.name() );
-    ui->lbColorCoarse->setPalette( QPalette( gridColor ) );
+    ui->lbColorCoarse->setText( gridColorCoarse.name() );
+    ui->lbColorCoarse->setPalette( QPalette( gridColorCoarse ) );
     ui->lbColorCoarse->setAutoFillBackground( true );
 
     saveGridValuesInSettings();
-    emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+    emitGridSettings();
   }
 }
 
-void SettingsDialog::on_cbGlobalPlanner_stateChanged( int arg1 ) {
-
-}
-
-void SettingsDialog::on_dsbGlobalPlannerVisibleAreaX_valueChanged( double arg1 ) {
-
-}
-
-void SettingsDialog::on_dsbGlobalPlannerVisibleAreaY_valueChanged( double arg1 ) {
-
+void SettingsDialog::on_gbGlobalPlanner_toggled( bool arg1 ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 ) {
-
-
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 ) {
-
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
-  const QColor color = QColorDialog::getColor( globalPlannerArrowColor, this, "Select Arrow Color" );
+  QColor tmp = globalPlannerArrowColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Arrow Color" );
 
   if( color.isValid() ) {
     globalPlannerArrowColor = color;
@@ -1128,12 +1144,15 @@ void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
     ui->lbGlobalPlannerArrowColor->setPalette( QPalette( globalPlannerArrowColor ) );
     ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
 
+    emitGlobalPlannerModelSettings();
     savePlannerValuesInSettings();
   }
 }
 
 void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
-  const QColor color = QColorDialog::getColor( globalPlannerBackgroundColor, this, "Select Background Color" );
+  QColor tmp = globalPlannerBackgroundColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
 
   if( color.isValid() ) {
     globalPlannerBackgroundColor = color;
@@ -1141,28 +1160,36 @@ void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
     ui->lbGlobalPlannerBackgroundColor->setPalette( QPalette( globalPlannerBackgroundColor ) );
     ui->lbGlobalPlannerBackgroundColor->setAutoFillBackground( true );
 
+    emitGlobalPlannerModelSettings();
     savePlannerValuesInSettings();
   }
 }
 
-void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int value ) {
-
+void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_cbLocalPlannerVisible_stateChanged( int arg1 ) {
-
+void SettingsDialog::on_cbGlobalPlannerBackground_stateChanged( int arg1 ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
+}
+void SettingsDialog::on_gbLocalPlanner_toggled( bool ) {
+  savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_dsbLocalPlannerArrowSize_valueChanged( double arg1 ) {
-
+void SettingsDialog::on_dsbLocalPlannerArrowSize_valueChanged( double ) {
+  savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double arg1 ) {
-
+void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double ) {
+  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
-  const QColor color = QColorDialog::getColor( localPlannerArrowColor, this, "Select Arrow Color" );
+  QColor tmp = localPlannerArrowColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Arrow Color" );
 
   if( color.isValid() ) {
     localPlannerArrowColor = color;
@@ -1176,7 +1203,9 @@ void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
 }
 
 void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
-  const QColor color = QColorDialog::getColor( localPlannerLineColor, this, "Select Line Color" );
+  QColor tmp = localPlannerLineColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Line Color" );
 
   if( color.isValid() ) {
     localPlannerLineColor = color;
@@ -1190,7 +1219,7 @@ void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
 }
 
 void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int value ) {
-
+  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_sbPathsToGenerate_valueChanged( int ) {
