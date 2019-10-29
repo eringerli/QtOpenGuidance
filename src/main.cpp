@@ -86,6 +86,9 @@
 #include "kinematic/FixedKinematic.h"
 #include "kinematic/TrailerKinematic.h"
 
+#include "aspect/fpsaspect.h"
+#include "aspect/fpsmonitor.h"
+
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"
@@ -96,6 +99,9 @@ int main( int argc, char** argv ) {
   QApplication::setApplicationName( "QtOpenGuidance" );
 
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
+
+  view->registerAspect( new FpsAspect );
+
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
   QWidget* container = QWidget::createWindowContainer( view );
   QSize screenSize = view->screen()->size();
@@ -140,6 +146,16 @@ int main( int argc, char** argv ) {
 
   // Root entity
   auto* rootEntity = new Qt3DCore::QEntity();
+
+  // FPS
+  auto* fpsEntity = new Qt3DCore::QEntity( rootEntity );
+  auto* fpsComponent = new FpsMonitor( fpsEntity );
+  fpsEntity->addComponent( fpsComponent );
+  fpsComponent->setRollingMeanFrameCount( 20 );
+  QObject::connect( fpsComponent,
+                    SIGNAL( framesPerSecondChanged( float ) ),
+                    widget,
+                    SLOT( setFpsToTitle( float ) ) );
 
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();

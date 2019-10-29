@@ -106,8 +106,21 @@ FORMS += \
 RESOURCES += \
     res/ressources.qrc
 
-#in your project main .pro qmake configuration file
-#include($$PWD/lib/QuickQanava/src/quickqanava.pri)
+# aspect
+SOURCES += \
+    src/aspect/fpsaspect.cpp \
+    src/aspect/fpsmonitor.cpp \
+    src/aspect/fpsmonitorbackend.cpp \
+    src/aspect/movingaverage.cpp \
+    src/aspect/updatefpsmonitorsjob.cpp
+
+HEADERS += \
+    src/aspect/fpsaspect.h \
+    src/aspect/fpsmonitor.h \
+    src/aspect/fpsmonitorbackend.h \
+    src/aspect/movingaverage.h \
+    src/aspect/updatefpsmonitorsjob.h
+
 
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)

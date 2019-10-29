@@ -43,6 +43,14 @@ class MainWindow : public QWidget {
 
   signals:
     void closed();
+
+  public slots:
+    void setFpsToTitle( float framesPerSecond ) {
+      setWindowTitle(
+              QStringLiteral( "QtOpenGuidance (FPS:" ) +
+              QString::number( int( framesPerSecond ) ) +
+              QStringLiteral( ")" ) );
+    }
 };
 
 #endif // MAINWINDOW_H
