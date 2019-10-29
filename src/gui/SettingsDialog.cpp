@@ -123,12 +123,20 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
     // global/local planner
     {
       ui->gbGlobalPlanner->setChecked( settings.value( "GlobalPlannerGraphics/Enabled", true ).toBool() );
-      ui->dsbGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlannerGraphics/ArrowSize", 3 ).toDouble() );
-      ui->dsbGlobalPlannerArrowDistance->setValue( settings.value( "GlobalPlannerGraphics/ArrowDistance", 3 ).toDouble() );
-      globalPlannerArrowColor = settings.value( "GlobalPlannerGraphics/ArrowColor", QColor( 0xff, 0xff, 0 ) ).value<QColor>();
+      ui->slGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlannerGraphics/ArrowHeight", 50 ).toInt() );
+      ui->slGlobalPlannerArrowWidth->setValue( settings.value( "GlobalPlannerGraphics/ArrowWidth", 90 ).toInt() );
+      ui->dsbGlobalPlannerTextureSize->setValue( settings.value( "GlobalPlannerGraphics/TextureSize", 3 ).toDouble() );
+      ui->slGlobalPlannerCenterLine->setValue( settings.value( "GlobalPlannerGraphics/CenterLineSize", 0 ).toInt() );
+      ui->slGlobalPlannerBorderLine->setValue( settings.value( "GlobalPlannerGraphics/BorderLineSize", 1 ).toInt() );
+
       ui->cbGlobalPlannerBackground->setChecked( settings.value( "GlobalPlannerGraphics/BackgroundEnabled", true ).toBool() );
-      globalPlannerBackgroundColor = settings.value( "GlobalPlannerGraphics/BackgroundColor", QColor( 0xf5, 0x9f, 0xbd ) ).value<QColor>();
-      ui->slGlobalPlannerTransparency->setValue( settings.value( "GlobalPlannerGraphics/Transparency", 20 ).toInt() );
+
+      globalPlannerArrowColor = settings.value( "GlobalPlannerGraphics/ArrowColor", QColor( 0xae, 0xec, 0x7f ) ).value<QColor>();
+      globalPlannerCenterLineColor = settings.value( "GlobalPlannerGraphics/CenterLineColor", QColor( 0x7b, 0x5e, 0x9f ) ).value<QColor>();
+      globalPlannerBorderLineColor = settings.value( "GlobalPlannerGraphics/BorderLineColor", QColor( 0x99, 0x99, 0 ) ).value<QColor>();
+      globalPlannerBackgroundColor = settings.value( "GlobalPlannerGraphics/BackgroundColor", QColor( 0xff, 0xff, 0x7f ) ).value<QColor>();
+      ui->slGlobalPlannerTransparency->setValue( settings.value( "GlobalPlannerGraphics/Transparency", 100 ).toInt() );
+
 
       ui->gbLocalPlanner->setChecked( settings.value( "LocalPlannerGraphics/Enabled", true ).toBool() );
       ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlannerGraphics/ArrowSize", 1 ).toDouble() );
@@ -215,8 +223,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
   globalPlannerModel = globalPlannerModelFactory->createNewObject();
   globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene(), globalPlannerModel );
 
-  QObject::connect( this, SIGNAL( globalPlannerModelSettingsChanged( float, float, QColor, QColor ) ),
-                    globalPlannerModel, SLOT( setPlannerModelSettings( float, float, QColor, QColor ) ) );
+  QObject::connect( this, SIGNAL( globalPlannerModelSettingsChanged( int, int, float, int, int, QColor, QColor, QColor, QColor ) ),
+                    globalPlannerModel, SLOT( setPlannerModelSettings( int, int, float, int, int, QColor, QColor, QColor, QColor ) ) );
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
@@ -754,11 +762,18 @@ void SettingsDialog::savePlannerValuesInSettings() {
                         QSettings::IniFormat );
 
     settings.setValue( "GlobalPlannerGraphics/Enabled", ui->gbGlobalPlanner->isChecked() );
-    settings.setValue( "GlobalPlannerGraphics/ArrowSize", ui->dsbGlobalPlannerArrowSize->value() );
-    settings.setValue( "GlobalPlannerGraphics/ArrowDistance", ui->dsbGlobalPlannerArrowDistance->value() );
-    settings.setValue( "GlobalPlannerGraphics/ArrowColor", globalPlannerArrowColor );
-    settings.setValue( "GlobalPlannerGraphics/BackgroundColor", globalPlannerBackgroundColor );
+    settings.setValue( "GlobalPlannerGraphics/ArrowHeight", ui->slGlobalPlannerArrowSize->value() );
+    settings.setValue( "GlobalPlannerGraphics/ArrowWidth", ui->slGlobalPlannerArrowWidth->value() );
+    settings.setValue( "GlobalPlannerGraphics/TextureSize", ui->dsbGlobalPlannerTextureSize->value() );
+    settings.setValue( "GlobalPlannerGraphics/CenterLineSize", ui->slGlobalPlannerCenterLine->value() );
+    settings.setValue( "GlobalPlannerGraphics/BorderLineSize", ui->slGlobalPlannerBorderLine->value() );
+
     settings.setValue( "GlobalPlannerGraphics/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
+
+    settings.setValue( "GlobalPlannerGraphics/ArrowColor", globalPlannerArrowColor );
+    settings.setValue( "GlobalPlannerGraphics/CenterLineColor", globalPlannerCenterLineColor );
+    settings.setValue( "GlobalPlannerGraphics/BorderLineColor", globalPlannerBorderLineColor );
+    settings.setValue( "GlobalPlannerGraphics/BackgroundColor", globalPlannerBackgroundColor );
     settings.setValue( "GlobalPlannerGraphics/Transparency", ui->slGlobalPlannerTransparency->value() );
 
     settings.setValue( "LocalPlannerGraphics/Enabled", ui->gbLocalPlanner->isChecked() );
@@ -779,6 +794,18 @@ void SettingsDialog::setPlannerColorLabels() {
   ui->lbGlobalPlannerArrowColor->setText( buffer.name() );
   ui->lbGlobalPlannerArrowColor->setPalette( QPalette( buffer ) );
   ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
+
+  buffer = globalPlannerCenterLineColor;
+  buffer.setAlphaF( 1 );
+  ui->lbGlobalPlannerCenterLineColor->setText( buffer.name() );
+  ui->lbGlobalPlannerCenterLineColor->setPalette( QPalette( buffer ) );
+  ui->lbGlobalPlannerCenterLineColor->setAutoFillBackground( true );
+
+  buffer = globalPlannerBorderLineColor;
+  buffer.setAlphaF( 1 );
+  ui->lbGlobalPlannerBorderLineColor->setText( buffer.name() );
+  ui->lbGlobalPlannerBorderLineColor->setPalette( QPalette( buffer ) );
+  ui->lbGlobalPlannerBorderLineColor->setAutoFillBackground( true );
 
   buffer = globalPlannerBackgroundColor;
   buffer.setAlphaF( 1 );
@@ -1091,12 +1118,21 @@ void SettingsDialog::emitGridSettings() {
 }
 
 void SettingsDialog::emitGlobalPlannerModelSettings() {
-  globalPlannerBackgroundColor.setAlphaF(
-    ui->cbGlobalPlannerBackground->isChecked() ? ui->slGlobalPlannerTransparency->value() / 100.0 : 0 );
-  globalPlannerArrowColor.setAlphaF( ui->slGlobalPlannerTransparency->value() / 100.0 );
+  qreal transparencyFactor =  ui->slGlobalPlannerTransparency->value() / 100.0;
+  globalPlannerArrowColor.setAlphaF( transparencyFactor );
+  globalPlannerCenterLineColor.setAlphaF( transparencyFactor );
+  globalPlannerBorderLineColor.setAlphaF( transparencyFactor );
+  globalPlannerBackgroundColor.setAlphaF( ui->cbGlobalPlannerBackground->isChecked() ? transparencyFactor : 0 );
 
-  emit globalPlannerModelSettingsChanged( float( ui->dsbGlobalPlannerArrowSize->value() ), float( ui->dsbGlobalPlannerArrowDistance->value() ),
-                                          globalPlannerArrowColor, globalPlannerBackgroundColor );
+  emit globalPlannerModelSettingsChanged( ui->slGlobalPlannerArrowSize->value(),
+                                          ui->slGlobalPlannerArrowWidth->value(),
+                                          float( ui->dsbGlobalPlannerTextureSize->value() ),
+                                          ui->slGlobalPlannerCenterLine->value(),
+                                          ui->slGlobalPlannerBorderLine->value(),
+                                          globalPlannerArrowColor,
+                                          globalPlannerCenterLineColor,
+                                          globalPlannerBorderLineColor,
+                                          globalPlannerBackgroundColor );
 }
 
 void SettingsDialog::emitLocalPlannerModelSettings() {
@@ -1121,16 +1157,6 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
 }
 
 void SettingsDialog::on_gbGlobalPlanner_toggled( bool ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_dsbGlobalPlannerArrowSize_valueChanged( double ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_dsbGlobalPlannerArrowDistance_valueChanged( double ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
 }
@@ -1240,4 +1266,61 @@ void SettingsDialog::on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 ) {
 
   settings.setValue( "ShowPassesToolbarOnStart", bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
+}
+
+void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {
+  QColor tmp = globalPlannerCenterLineColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
+
+  if( color.isValid() ) {
+    globalPlannerCenterLineColor = color;
+    ui->lbGlobalPlannerCenterLineColor->setText( globalPlannerCenterLineColor.name() );
+    ui->lbGlobalPlannerCenterLineColor->setPalette( QPalette( globalPlannerCenterLineColor ) );
+    ui->lbGlobalPlannerCenterLineColor->setAutoFillBackground( true );
+
+    emitGlobalPlannerModelSettings();
+    savePlannerValuesInSettings();
+  }
+}
+
+void SettingsDialog::on_pbGlobalPlannerBorderLineColor_clicked() {
+  QColor tmp = globalPlannerBorderLineColor;
+  tmp.setAlphaF( 1 );
+  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
+
+  if( color.isValid() ) {
+    globalPlannerBorderLineColor = color;
+    ui->lbGlobalPlannerBorderLineColor->setText( globalPlannerBorderLineColor.name() );
+    ui->lbGlobalPlannerBorderLineColor->setPalette( QPalette( globalPlannerBorderLineColor ) );
+    ui->lbGlobalPlannerBorderLineColor->setAutoFillBackground( true );
+
+    emitGlobalPlannerModelSettings();
+    savePlannerValuesInSettings();
+  }
+}
+
+void SettingsDialog::on_slGlobalPlannerArrowSize_valueChanged( int ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
+}
+
+void SettingsDialog::on_slGlobalPlannerCenterLine_valueChanged( int ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
+}
+
+void SettingsDialog::on_slGlobalPlannerBorderLine_valueChanged( int ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
+}
+
+void SettingsDialog::on_dsbGlobalPlannerTextureSize_valueChanged( double ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
+}
+
+void SettingsDialog::on_slGlobalPlannerArrowWidth_valueChanged( int ) {
+  emitGlobalPlannerModelSettings();
+  savePlannerValuesInSettings();
 }

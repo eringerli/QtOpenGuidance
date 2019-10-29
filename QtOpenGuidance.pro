@@ -35,7 +35,7 @@ SOURCES += src/main.cpp \
     src/gui/VectorBlockModel.cpp
     
 HEADERS += \
-    src/3d/arrowTexture.h \
+    src/3d/ArrowTexture.h \
     src/3d/linemeshgeometry.h \
     src/3d/linemesh.h \
     src/3d/pointmesh.h \

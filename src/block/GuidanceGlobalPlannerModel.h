@@ -149,9 +149,11 @@ class GlobalPlannerModel : public BlockBase {
         arrowsForegroundTexture->setWrapMode( Qt3DRender::QTextureWrapMode( Qt3DRender::QTextureWrapMode::WrapMode::Repeat,
                                               Qt3DRender::QTextureWrapMode::WrapMode::Repeat,
                                               Qt3DRender::QTextureWrapMode::WrapMode::Repeat ) );
-        arrowsForegroundTexture->setMagnificationFilter( Qt3DRender::QAbstractTexture::LinearMipMapLinear );
+        arrowsForegroundTexture->setMagnificationFilter( Qt3DRender::QAbstractTexture::Linear );
         arrowsForegroundTexture->setMinificationFilter( Qt3DRender::QAbstractTexture::LinearMipMapLinear );
         arrowsForegroundTexture->setGenerateMipMaps( true );
+        arrowsForegroundTexture->setMaximumAnisotropy( 16 );
+        qDebug() << "maximumAnisotropy" << arrowsForegroundTexture->maximumAnisotropy();
 
         arrowsForegroundDiffuseSpecularMaterial->setDiffuse( QVariant::fromValue( arrowsForegroundTexture ) );
         arrowsForegroundDiffuseSpecularMaterial->setAlphaBlendingEnabled( true );
@@ -168,12 +170,11 @@ class GlobalPlannerModel : public BlockBase {
       arrowsEntity->setEnabled( visible );
     }
 
-    void setPlannerModelSettings( float arrowSize, float distanceBetweenArrows,
-                                  QColor arrowColor, QColor backgroundColor ) {
-      this->arrowSize = arrowSize;
-      this->distanceBetweenArrows = distanceBetweenArrows;
-      this->arrowsForegroundArrowTexture->setSettings( arrowColor, backgroundColor,
-          arrowSize, distanceBetweenArrows );
+    void setPlannerModelSettings( int arrowSize, int arrowSizeWidth, float textureSize, int centerLineSize, int borderLineSize,
+                                  QColor arrowColor, QColor centerLineColor, QColor borderLineColor, QColor backgroundColor ) {
+      this->textureSize = textureSize;
+      this->arrowsForegroundArrowTexture->setSettings( arrowSize, arrowSizeWidth, centerLineSize, borderLineSize,
+          arrowColor, centerLineColor, borderLineColor, backgroundColor );
       recalculateTextureCoordinates();
     }
 
@@ -227,7 +228,8 @@ class GlobalPlannerModel : public BlockBase {
           indices << indexOffset + 3;
           indices << indexOffset + 0;
 
-          float textureCoordinateMaxY = float( line->line.length() ) / ( arrowSize + distanceBetweenArrows );
+          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
+//          arrowsForegroundArrowTexture->setDimensions();
           textureCoordinates << QVector2D( 0, 0 );
           textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
           textureCoordinates << QVector2D( 0, 1 );
@@ -264,7 +266,7 @@ class GlobalPlannerModel : public BlockBase {
         auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
         if( line ) {
-          float textureCoordinateMaxY = float( line->line.length() ) / ( arrowSize + distanceBetweenArrows );
+          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
           textureCoordinates << QVector2D( 0, 0 );
           textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
           textureCoordinates << QVector2D( 0, 1 );
@@ -312,7 +314,7 @@ class GlobalPlannerModel : public BlockBase {
     Qt3DExtras::QDiffuseSpecularMaterial* arrowsForegroundDiffuseSpecularMaterial = nullptr;
 
     // values of the arrows
-    float arrowSize = 3, distanceBetweenArrows = 3;
+    float textureSize = 3, distanceBetweenArrows = 3;
 
   private:
     QVector<QSharedPointer<PathPrimitive>> plan;

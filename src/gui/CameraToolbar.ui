@@ -14,7 +14,7 @@
    <string>GroupBox</string>
   </property>
   <property name="title">
-   <string>Camera</string>
+   <string/>
   </property>
   <property name="flat">
    <bool>false</bool>

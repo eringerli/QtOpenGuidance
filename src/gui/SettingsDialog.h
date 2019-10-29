@@ -60,8 +60,8 @@ class SettingsDialog : public QDialog {
 
     void globalPlannerModelSetVisible( bool );
 
-    void globalPlannerModelSettingsChanged( float, float,
-                                            QColor, QColor );
+    void globalPlannerModelSettingsChanged( int, int, float, int, int,
+                                            QColor, QColor, QColor, QColor );
 
     void localPlannerModelSetVisible( bool );
     void localPlannerModelSettingsChanged( float, float,
@@ -139,11 +139,17 @@ class SettingsDialog : public QDialog {
     void on_btnSectionMoveDown_clicked();
 
     void on_gbGlobalPlanner_toggled( bool arg1 );
-    void on_dsbGlobalPlannerArrowSize_valueChanged( double arg1 );
-    void on_dsbGlobalPlannerArrowDistance_valueChanged( double arg1 );
     void on_pbGlobalPlannerArrowColor_clicked();
     void on_pbGlobalPlannerBackgroundColor_clicked();
     void on_slGlobalPlannerTransparency_valueChanged( int value );
+    void on_cbGlobalPlannerBackground_stateChanged( int );
+    void on_pbGlobalPlannerCenterLineColor_clicked();
+    void on_pbGlobalPlannerBorderLineColor_clicked();
+    void on_slGlobalPlannerArrowSize_valueChanged( int );
+    void on_slGlobalPlannerCenterLine_valueChanged( int );
+    void on_slGlobalPlannerBorderLine_valueChanged( int );
+    void on_dsbGlobalPlannerTextureSize_valueChanged( double );
+    void on_slGlobalPlannerArrowWidth_valueChanged( int );
 
     void on_gbLocalPlanner_toggled( bool arg1 );
     void on_dsbLocalPlannerArrowSize_valueChanged( double arg1 );
@@ -158,7 +164,6 @@ class SettingsDialog : public QDialog {
 
     void on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 );
 
-    void on_cbGlobalPlannerBackground_stateChanged( int arg1 );
 
   private:
     void saveGridValuesInSettings();
@@ -248,7 +253,10 @@ class SettingsDialog : public QDialog {
     QColor tileColor = QColor( 0xff, 0x00, 0x00 );
 
     QColor globalPlannerArrowColor = QColor( 0xff, 0xff, 0 );
+    QColor globalPlannerCenterLineColor = QColor( 0xff, 0x00, 0 );
+    QColor globalPlannerBorderLineColor = QColor( 0x99, 0x99, 0 );
     QColor globalPlannerBackgroundColor = QColor( 0xf5, 0x9f, 0xbd );
+
     QColor localPlannerArrowColor = QColor( 0x90, 0x90, 0 );
     QColor localPlannerLineColor = QColor( 0x9a, 0x64, 0x77 );
 };
