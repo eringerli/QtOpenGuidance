@@ -125,6 +125,15 @@ HEADERS += \
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
 
+unix {
+target.path = /opt/QtOpenGuidance
+configs.path = /opt/QtOpenGuidance/config
+}
+INSTALLS += target
+
+configs.files = config/*
+INSTALLS += configs
+
 DISTFILES += \
     android/AndroidManifest.xml \
     android/build.gradle \
