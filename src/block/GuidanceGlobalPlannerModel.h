@@ -48,7 +48,7 @@
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
-#include "../3d/arrowTexture.h"
+#include "../3d/ArrowTexture.h"
 
 #include <QVector>
 #include <QSharedPointer>
