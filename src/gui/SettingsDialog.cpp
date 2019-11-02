@@ -502,23 +502,49 @@ QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
 void SettingsDialog::on_pbLoad_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
-  QString fileName = QFileDialog::getOpenFileName( this,
-                     tr( "Open Saved Config" ),
-                     dir,
-                     tr( "All Files (*);;JSON Files (*.json)" ),
-                     &selectedFilter );
 
-  if( !fileName.isEmpty() ) {
-    QFile loadFile( fileName );
+  QFileDialog* fileDialog = new QFileDialog( this,
+      tr( "Open Saved Config" ),
+      dir,
+      selectedFilter );
+  fileDialog->setFileMode( QFileDialog::ExistingFile );
+  fileDialog->setNameFilter( tr( "All Files (*);;JSON Files (*.json)" ) );
 
+  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
+  // the signals instead of using the static functions for the dialogs
 
-    if( !loadFile.open( QIODevice::ReadOnly ) ) {
-      qWarning() << "Couldn't open save file.";
-      return;
+  QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
+    qDebug() << "signal handler QUrl" << fileName << fileName.toDisplayString();
+
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+#ifdef Q_OS_ANDROID
+      QFile loadFile(
+        QUrl::fromPercentEncoding(
+          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+#else
+      QFile loadFile( fileName.toLocalFile() );
+#endif
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        loadConfigFromFile( loadFile );
+      }
     }
 
-    loadConfigFromFile( loadFile );
-  }
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+
+  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+
+  fileDialog->open();
 }
 
 void SettingsDialog::loadConfigFromFile( QFile& file ) {
@@ -534,12 +560,13 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
     QJsonArray blocksArray = json["blocks"].toArray();
 
-    for( auto&& blockIndex : blocksArray ) {
+    for( const auto& blockIndex : blocksArray ) {
       QJsonObject blockObject = blockIndex.toObject();
       int id = blockObject["id"].toInt( 0 );
 
       // if id is a system-id -> search the block and set the values
       if( id != 0 ) {
+
         // system id -> don't create new blocks
         if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
           QNEBlock* block = getBlockWithName( blockObject["type"].toString() );
@@ -571,6 +598,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
       }
     }
   }
+
 
   if( json.contains( "connections" ) && json["connections"].isArray() ) {
     QJsonArray connectionsArray = json["connections"].toArray();

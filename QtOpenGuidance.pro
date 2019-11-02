@@ -129,6 +129,13 @@ unix {
 target.path = /opt/QtOpenGuidance
 configs.path = /opt/QtOpenGuidance/config
 }
+
+android {
+QT += androidextras
+
+configs.path = $$DATADIR/configs
+}
+
 INSTALLS += target
 
 configs.files = config/*

@@ -93,16 +93,54 @@
 #include "qneconnection.h"
 #include "qneport.h"
 
+#if defined (Q_OS_ANDROID)
+#include <QtAndroid>
+const QVector<QString> permissions( {"android.permission.INTERNET",
+                                     "android.permission.WRITE_EXTERNAL_STORAGE",
+                                     "android.permission.READ_EXTERNAL_STORAGE"
+                                    } );
+#endif
+
 int main( int argc, char** argv ) {
+//  // hack to make the app apear without cropped qt3d-widget
+//  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+//  qputenv( "QT_AUTO_SCREEN_SCALE_FACTOR", "1.5" );
+//  qputenv( "QT_SCALE_FACTOR_ROUNDING_POLICY","PassThrough");
+//  qputenv( "QT_SCALE_FACTOR", "1" );
+
+  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+//QCoreApplication::setAttribute( Qt::AA_UseHighDpiPixmaps );
+  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
+
+  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
+
   QApplication app( argc, argv );
   QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
   QApplication::setApplicationName( "QtOpenGuidance" );
+
+#if defined (Q_OS_ANDROID)
+
+  //Request requiered permissions at runtime
+  for( const QString& permission : permissions ) {
+    auto result = QtAndroid::checkPermission( permission );
+
+    if( result == QtAndroid::PermissionResult::Denied ) {
+      auto resultHash = QtAndroid::requestPermissionsSync( QStringList( {permission} ) );
+
+      if( resultHash[permission] == QtAndroid::PermissionResult::Denied )
+        return 0;
+    }
+  }
+
+#endif
 
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
 
   view->registerAspect( new FpsAspect );
 
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
+
+
   QWidget* container = QWidget::createWindowContainer( view );
   QSize screenSize = view->screen()->size();
   container->setMinimumSize( QSize( 500, 400 ) );
@@ -137,7 +175,7 @@ int main( int argc, char** argv ) {
   view->registerAspect( input );
 
   // Show window
-#ifdef ANDROID_ENABLED
+#ifdef Q_OS_ANDROID
   widget->showMaximized();
 #else
   widget->show();
