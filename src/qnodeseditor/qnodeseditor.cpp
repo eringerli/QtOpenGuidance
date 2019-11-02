@@ -41,6 +41,7 @@
 #include "qneport.h"
 #include "qneconnection.h"
 #include "qneblock.h"
+#include "qnegestures.h"
 
 #include "../gui/SettingsDialog.h"
 
@@ -53,6 +54,13 @@ QNodesEditor::QNodesEditor( QObject* parent ) :
 void QNodesEditor::install( QGraphicsScene* s ) {
   s->installEventFilter( this );
   scene = s;
+
+  foreach( QGraphicsView* it, scene->views() ) {
+    new QNEGestureEventFilter( it );
+    it->grabGesture( Qt::PinchGesture );
+  }
+
+
 }
 
 QGraphicsItem* QNodesEditor::itemAt( const QPointF& pos ) {
@@ -68,13 +76,13 @@ QGraphicsItem* QNodesEditor::itemAt( const QPointF& pos ) {
 }
 
 bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
-  QGraphicsSceneMouseEvent* mouseEvent = ( QGraphicsSceneMouseEvent* ) e;
-  QKeyEvent* keyEvent = ( QKeyEvent* ) e;
+  QGraphicsSceneMouseEvent* mouseEvent = ( QGraphicsSceneMouseEvent* )( e );
+  QKeyEvent* keyEvent = ( QKeyEvent* )( e );
 
-  switch( ( int ) e->type() ) {
+  switch( int( e->type() ) ) {
     case QEvent::GraphicsSceneMousePress: {
 
-        switch( ( int ) mouseEvent->button() ) {
+        switch( int( mouseEvent->button() ) ) {
           case Qt::LeftButton: {
               QNEPort* item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 

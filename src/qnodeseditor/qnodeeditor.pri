@@ -11,6 +11,7 @@ SOURCES +=     $$PWD/qneblock.cpp \
 #    $$PWD/qnemainwindow.cpp
 
 HEADERS += $$PWD/qneblock.h \
+    $$PWD/qnegestures.h \
     $$PWD/qnegraphicsview.h \
     $$PWD/qneport.h \
     $$PWD/qneconnection.h \
