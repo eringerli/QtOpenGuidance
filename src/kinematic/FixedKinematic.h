@@ -60,21 +60,22 @@ class FixedKinematic : public BlockBase {
       QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
 
       options.setFlag( PoseOption::CalculateFromPivotPoint, false );
+
+      Tile* currentTile = tile;
+
+      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
+        currentTile = tile->getTileForPosition( &position );
+      }
+
       emit poseHookPointChanged( tile, position, orientation, options );
 
-      Tile* currentTile;
-
-      if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile;
-      } else {
+      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
         currentTile = tile->getTileForPosition( &positionTowPoint );
       }
 
       emit poseTowPointChanged( currentTile, positionTowPoint, orientation, options );
 
-      if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile;
-      } else {
+      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
         currentTile = tile->getTileForPosition( &positionPivotPoint );
       }
 
