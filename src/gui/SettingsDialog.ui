@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>QtOpenGuidance Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_11">
    <item row="1" column="0">
@@ -1725,6 +1725,27 @@
               </property>
               <property name="text">
                <string>Run Simulator on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbRestoreDockPositions">
+              <property name="text">
+               <string>Restore positions of the Docks on Start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbSaveDockPositionsOnExit">
+              <property name="text">
+               <string>Save positions of the Docks on Exit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pbSaveDockPositions">
+              <property name="text">
+               <string>Save current Positions of the Docks</string>
               </property>
              </widget>
             </item>

@@ -46,7 +46,7 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent = nullptr );
+    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* mainWindow, QWidget* parent = nullptr );
     ~SettingsDialog();
 
     QGraphicsScene* getSceneOfConfigGraphicsView();
@@ -71,8 +71,8 @@ class SettingsDialog : public QDialog {
   public slots:
     void toggleVisibility();
 
-    void loadConfigOnStart();
-    void saveConfigOnExit();
+    void onStart();
+    void onExit();
 
     void loadDefaultConfig();
     void saveDefaultConfig();
@@ -162,6 +162,10 @@ class SettingsDialog : public QDialog {
     void on_sbPathsInReserve_valueChanged( int arg1 );
 
 
+    void on_cbRestoreDockPositions_toggled( bool checked );
+    void on_cbSaveDockPositionsOnExit_toggled( bool checked );
+    void on_pbSaveDockPositions_clicked();
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -176,6 +180,9 @@ class SettingsDialog : public QDialog {
     void emitGridSettings();
     void emitGlobalPlannerModelSettings();
     void emitLocalPlannerModelSettings();
+
+  private:
+    QMainWindow* mainWindow = nullptr;
 
   public:
     QComboBox* getCbNodeType();

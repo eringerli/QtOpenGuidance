@@ -79,8 +79,9 @@
 
 #include "../kinematic/Tile.h"
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent ) :
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* mainWindow, QWidget* parent ) :
   QDialog( parent ),
+  mainWindow( mainWindow ),
   ui( new Ui::SettingsDialog ) {
   ui->setupUi( this );
 
@@ -97,6 +98,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
       ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
       ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbRestoreDockPositions->setCheckState( settings.value( "RestoreDockPositionsOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbSaveDockPositionsOnExit->setCheckState( settings.value( "SaveDockPositionsOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
     }
 
     // grid
@@ -358,7 +361,7 @@ void SettingsDialog::toggleVisibility() {
   if( isVisible() ) {
     setVisible( false );
   } else {
-#ifdef ANDROID_ENABLED
+#ifdef Q_OS_ANDROID
     showMaximized();
 #else
     show();
@@ -366,17 +369,33 @@ void SettingsDialog::toggleVisibility() {
   }
 }
 
-void SettingsDialog::loadConfigOnStart() {
+void SettingsDialog::onStart() {
   // save the current config if enabled
   if( ui->cbLoadConfigOnStart->isChecked() ) {
     loadDefaultConfig();
   }
+
+  if( ui->cbRestoreDockPositions->isChecked() ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
+    mainWindow->restoreState( settings.value( "SavedDockPositions" ).toByteArray() );
+    mainWindow->restoreGeometry( settings.value( "SavedDockGeometry" ).toByteArray() );
+  }
 }
 
-void SettingsDialog::saveConfigOnExit() {
+void SettingsDialog::onExit() {
   // save the current config if enabled
   if( ui->cbSaveConfigOnExit->isChecked() ) {
     saveDefaultConfig();
+  }
+
+  if( ui->cbSaveDockPositionsOnExit->isChecked() ) {
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                        QSettings::IniFormat );
+
+    settings.setValue( "SavedDockPositions", mainWindow->saveState() );
+    settings.setValue( "SavedDockGeometry", mainWindow->saveGeometry() );
+    settings.sync();
   }
 }
 
@@ -1334,4 +1353,29 @@ void SettingsDialog::on_dsbGlobalPlannerTextureSize_valueChanged( double ) {
 void SettingsDialog::on_slGlobalPlannerArrowWidth_valueChanged( int ) {
   emitGlobalPlannerModelSettings();
   savePlannerValuesInSettings();
+}
+
+void SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "RestoreDockPositionsOnStart", checked );
+  settings.sync();
+}
+
+void SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "SaveDockPositionsOnExit", checked );
+  settings.sync();
+}
+
+void SettingsDialog::on_pbSaveDockPositions_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( "SavedDockPositions", mainWindow->saveState() );
+  settings.setValue( "SavedDockGeometry", mainWindow->saveGeometry() );
+  settings.sync();
 }

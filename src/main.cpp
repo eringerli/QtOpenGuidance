@@ -148,23 +148,23 @@ int main( int argc, char** argv ) {
   container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
   // create MainWindow and set the parameters for the docks
-  MainWindow* mainwindow = new MainWindow;
-  QWidget* widget = new QWidget( mainwindow );
-  mainwindow->setCentralWidget( container );
-  mainwindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
-  mainwindow->setDockOptions( QMainWindow::AnimatedDocks |
+  MainWindow* mainWindow = new MainWindow;
+  QWidget* widget = new QWidget( mainWindow );
+  mainWindow->setCentralWidget( container );
+  mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
+  mainWindow->setDockOptions( QMainWindow::AnimatedDocks |
                               QMainWindow::AllowNestedDocks |
                               QMainWindow::AllowTabbedDocks |
                               QMainWindow::VerticalTabs );
-  mainwindow->setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
-  mainwindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
-  mainwindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
+  mainWindow->setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
+  mainWindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+  mainWindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
   // Root entity for Qt3D
   auto* rootEntity = new Qt3DCore::QEntity();
 
   // Create setting Window
-  auto* settingDialog = new SettingsDialog( rootEntity, widget );
+  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, widget );
 
   // FPS measuring: register the aspect
   view->registerAspect( new FpsAspect );
@@ -245,60 +245,61 @@ int main( int argc, char** argv ) {
 
   // guidance toolbar
   auto* guidanceToolbar = new GuidanceToolbar( widget );
-  QDockWidget* guidaceToolbarDock = new QDockWidget( mainwindow );
+  QDockWidget* guidaceToolbarDock = new QDockWidget( mainWindow );
   guidaceToolbarDock->setWidget( guidanceToolbar );
-  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
   guidaceToolbarDock->setWindowTitle( guidanceToolbar->windowTitle() );
+  guidaceToolbarDock->setObjectName( QStringLiteral( "GuidanceToolbar" ) );
+  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
   guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
-  mainwindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
+  mainWindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
 
   // turning Toolbar
-  auto* turningToolbar = new GuidanceTurning( mainwindow );
-  QDockWidget* turningToolbarDock = new QDockWidget( mainwindow );
+  auto* turningToolbar = new GuidanceTurning( mainWindow );
+  QDockWidget* turningToolbarDock = new QDockWidget( mainWindow );
   turningToolbarDock->setWidget( turningToolbar );
-  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbar" ) );
   turningToolbarDock->setWindowTitle( turningToolbar->windowTitle() );
+  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbar" ) );
   turningToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
-  mainwindow->addDockWidget( Qt::TopDockWidgetArea, turningToolbarDock );
+  mainWindow->addDockWidget( Qt::TopDockWidgetArea, turningToolbarDock );
   guidanceToolbar->menu->addAction( turningToolbarDock->toggleViewAction() );
 
   // camera Toolbar
   auto* cameraToolbar = new CameraToolbar( widget );
   cameraToolbar->setVisible( false );
-  QDockWidget* cameraToolbarDock = new QDockWidget( mainwindow );
+  QDockWidget* cameraToolbarDock = new QDockWidget( mainWindow );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
   cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbar" ) );
-  mainwindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
+  mainWindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
   guidanceToolbar->menu->addAction( cameraToolbarDock->toggleViewAction() );
 
   // passes toolbar
   auto* passesToolbar = new PassToolbar( widget );
   passesToolbar->setVisible( false );
-  QDockWidget* passesToolbarDock = new QDockWidget( mainwindow );
+  QDockWidget* passesToolbarDock = new QDockWidget( mainWindow );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
   passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbar" ) );
-  mainwindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
-  mainwindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
+  mainWindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
+  mainWindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
   guidanceToolbar->menu->addAction( passesToolbarDock->toggleViewAction() );
 
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
-  QDockWidget* simulatorToolbarDock = new QDockWidget( mainwindow );
+  QDockWidget* simulatorToolbarDock = new QDockWidget( mainWindow );
   simulatorToolbarDock->setWidget( simulatorToolbar );
   simulatorToolbarDock->setWindowTitle( simulatorToolbar->windowTitle() );
+  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbar" ) );
   simulatorToolbarDock->setFeatures( QDockWidget::DockWidgetMovable |
                                      QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetVerticalTitleBar );
   simulatorToolbarDock->setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
-  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbar" ) );
-  mainwindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
+  mainWindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
 
   // XTE dock
   BlockFactory* xteBarModelFactory = new XteBarModelFactory(
-    mainwindow,
+    mainWindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
@@ -307,7 +308,7 @@ int main( int argc, char** argv ) {
 
   // meter dock
   BlockFactory* meterBarModelFactory = new MeterBarModelFactory(
-    mainwindow,
+    mainWindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
@@ -316,7 +317,7 @@ int main( int argc, char** argv ) {
 
   // section controll dock
   BlockFactory* sectionControlFactory = new SectionControlModelFactory(
-    mainwindow,
+    mainWindow,
     Qt::BottomDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
@@ -422,21 +423,21 @@ int main( int argc, char** argv ) {
     }
   }
 
-  // default config
-  settingDialog->loadConfigOnStart();
-  QObject::connect( mainwindow, SIGNAL( closed() ),
-                    settingDialog, SLOT( saveConfigOnExit() ) );
+  // start all the tasks of settingDialog on start/exit
+  settingDialog->onStart();
+  QObject::connect( mainWindow, &MainWindow::closed,
+                    settingDialog, &SettingsDialog::onExit );
 
   // camera controller
-  QObject::connect( mainwindow, SIGNAL( closed() ),
+  QObject::connect( mainWindow, SIGNAL( closed() ),
                     cameraController, SLOT( saveValuesToConfig() ) );
 
   // Show window
 #ifdef Q_OS_ANDROID
   mainwindow->showMaximized();
 #else
-  mainwindow->show();
-  mainwindow->resize( 1200, 800 );
+  mainWindow->show();
+  mainWindow->resize( 1200, 800 );
 #endif
 
   return QApplication::exec();
