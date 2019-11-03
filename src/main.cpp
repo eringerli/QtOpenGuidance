@@ -108,19 +108,20 @@ int main( int argc, char** argv ) {
 //  qputenv( "QT_SCALE_FACTOR_ROUNDING_POLICY","PassThrough");
 //  qputenv( "QT_SCALE_FACTOR", "1" );
 
-  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+//  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
 //QCoreApplication::setAttribute( Qt::AA_UseHighDpiPixmaps );
-  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
+//  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
 
+  // make qDebug() more expressive
   qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
 
   QApplication app( argc, argv );
   QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
   QApplication::setApplicationName( "QtOpenGuidance" );
 
-#if defined (Q_OS_ANDROID)
 
-  //Request requiered permissions at runtime
+  //Request required permissions at runtime on android
+#ifdef Q_OS_ANDROID
   for( const QString& permission : permissions ) {
     auto result = QtAndroid::checkPermission( permission );
 
@@ -131,74 +132,55 @@ int main( int argc, char** argv ) {
         return 0;
     }
   }
-
 #endif
 
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
 
-  view->registerAspect( new FpsAspect );
-
   view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
 
-
   QWidget* container = QWidget::createWindowContainer( view );
-  QSize screenSize = view->screen()->size();
-  container->setMinimumSize( QSize( 500, 400 ) );
-  container->setMaximumSize( screenSize );
+//  QSize screenSize = view->screen()->size();
+//  container->setMinimumSize( QSize( 500, 400 ) );
+//  container->setMaximumSize( screenSize );
+  container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
-  QWidget* widget = new MainWindow;
-  widget->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
+  // create MainWindow and set the parameters for the docks
+  MainWindow* mainwindow = new MainWindow;
+  QWidget* widget = new QWidget( mainwindow );
+  mainwindow->setCentralWidget( container );
+  mainwindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
+  mainwindow->setDockOptions( QMainWindow::AnimatedDocks |
+                              QMainWindow::AllowNestedDocks |
+                              QMainWindow::AllowTabbedDocks |
+                              QMainWindow::VerticalTabs );
+  mainwindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+  mainwindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
-  auto* hLayout = new QHBoxLayout( widget );
-  auto* vLayout = new QVBoxLayout( widget );
-  auto* hLayout2 = new QHBoxLayout( widget );
-
-  auto* guidaceToolbarTop = new GuidanceToolbarTop( widget );
-  vLayout->addWidget( guidaceToolbarTop );
-
-  // Camera Toolbar
-  auto* cameraToolbar = new CameraToolbar( widget );
-  cameraToolbar->setVisible( false );
-  hLayout->addWidget( cameraToolbar );
-
-  // passes toolbar
-  auto* passesToolbar = new PassToolbar( widget );
-  passesToolbar->setVisible( false );
-  hLayout2->addWidget( passesToolbar );
-
-  // add the qt3d-widget to the hLayout
-  hLayout2->addWidget( container, 1 );
-  vLayout->addLayout( hLayout2, 1 );
-  hLayout->addLayout( vLayout, 1 );
-
-  auto* input = new Qt3DInput::QInputAspect;
-  view->registerAspect( input );
-
-  // Show window
-#ifdef Q_OS_ANDROID
-  widget->showMaximized();
-#else
-  widget->show();
-  widget->resize( 1200, 800 );
-#endif
-
-  // Root entity
+  // Root entity for Qt3D
   auto* rootEntity = new Qt3DCore::QEntity();
 
-  // FPS
+  // Create setting Window
+  auto* settingDialog = new SettingsDialog( rootEntity, widget );
+
+  // FPS measuring: aspect and component
+  view->registerAspect( new FpsAspect );
+
   auto* fpsEntity = new Qt3DCore::QEntity( rootEntity );
   auto* fpsComponent = new FpsMonitor( fpsEntity );
   fpsEntity->addComponent( fpsComponent );
   fpsComponent->setRollingMeanFrameCount( 20 );
   QObject::connect( fpsComponent,
                     SIGNAL( framesPerSecondChanged( float ) ),
-                    widget,
+                    mainwindow,
                     SLOT( setFpsToTitle( float ) ) );
+
+
+//  auto* input = new Qt3DInput::QInputAspect;
+//  view->registerAspect( input );
 
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();
 
-//  cameraEntity->lens()->setPerspectiveProjection( 60.0f, 16.0f / 10.0f, 0.1f, 1000.0f );
   cameraEntity->lens()->setProjectionType( Qt3DRender::QCameraLens::PerspectiveProjection );
   cameraEntity->lens()->setFarPlane( 2000 );
   cameraEntity->setPosition( QVector3D( 0, 0, 20.0f ) );
@@ -266,36 +248,99 @@ int main( int argc, char** argv ) {
   sortPolicy->setSortTypes( sortTypes );
   view->setActiveFrameGraph( framegraph );
 
+  // Guidance Toolbar
+  auto* guidaceToolbarTop = new GuidanceToolbarTop( mainwindow );
+  QDockWidget* guidaceToolbarTopDock = new QDockWidget( mainwindow );
+  guidaceToolbarTopDock->setWidget( guidaceToolbarTop );
+  guidaceToolbarTopDock->setWindowTitle( guidaceToolbarTop->windowTitle() );
+  mainwindow->addDockWidget( Qt::TopDockWidgetArea, guidaceToolbarTopDock );
+
+  // Camera Toolbar
+  auto* cameraToolbar = new CameraToolbar( widget );
+  cameraToolbar->setVisible( false );
+  QDockWidget* cameraToolbarDock = new QDockWidget( mainwindow );
+  cameraToolbarDock->setWidget( cameraToolbar );
+  cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
+  mainwindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
+
+  // passes toolbar
+  auto* passesToolbar = new PassToolbar( widget );
+  passesToolbar->setVisible( false );
+  QDockWidget* passesToolbarDock = new QDockWidget( mainwindow );
+  passesToolbarDock->setWidget( passesToolbar );
+  passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
+  mainwindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
+  mainwindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
 
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
-  vLayout->addWidget( simulatorToolbar );
+  QDockWidget* simulatorToolbarDock = new QDockWidget( mainwindow );
+  simulatorToolbarDock->setWidget( simulatorToolbar );
+  simulatorToolbarDock->setWindowTitle( simulatorToolbar->windowTitle() );
+  simulatorToolbarDock->setFeatures( QDockWidget::DockWidgetMovable |
+                                     QDockWidget::DockWidgetFloatable |
+                                     QDockWidget::DockWidgetVerticalTitleBar );
+  simulatorToolbarDock->setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+  mainwindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
 
   // guidance toolbar
   auto* guidaceToolbar = new GuidanceToolbar( widget );
-  hLayout->addWidget( guidaceToolbar );
+  QDockWidget* guidaceToolbarDock = new QDockWidget( mainwindow );
+  guidaceToolbarDock->setWidget( guidaceToolbar );
+  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
+  guidaceToolbarDock->setWindowTitle( guidaceToolbar->windowTitle() );
+  guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
+  mainwindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
 
-  // Create setting Window
-  auto* settingDialog = new SettingsDialog( rootEntity, widget );
+  // XTE dock
+  BlockFactory* xteBarModelFactory = new XteBarModelFactory(
+    mainwindow,
+    Qt::TopDockWidgetArea,
+    Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+  xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
-  // GUI -> GUI
-  QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
-                    simulatorToolbar, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( cameraChanged( bool ) ),
-                    cameraToolbar, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( passesChanged( bool ) ),
-                    passesToolbar, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
-                    settingDialog, SLOT( toggleVisibility() ) );
+  // meter dock
+  BlockFactory* meterBarModelFactory = new MeterBarModelFactory(
+    mainwindow,
+    Qt::TopDockWidgetArea,
+    Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+  meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
-  // camera
+  // section controll dock
+  BlockFactory* sectionControlFactory = new SectionControlModelFactory(
+    mainwindow,
+    Qt::BottomDockWidgetArea,
+    Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+  sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
   BlockBase* cameraController = cameraControllerFactory->createNewObject();
   cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), cameraController );
+
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
   view->installEventFilter( cameraController );
 
+  // grid block
+  BlockFactory* gridModelFactory = new GridModelFactory( rootEntity, cameraEntity );
+  BlockBase* gridModel = gridModelFactory->createNewObject();
+  gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
+
+  // GUI -> GUI
+  QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
+                    simulatorToolbarDock, SLOT( setVisible( bool ) ) );
+  QObject::connect( guidaceToolbar, SIGNAL( cameraChanged( bool ) ),
+                    cameraToolbarDock, SLOT( setVisible( bool ) ) );
+  QObject::connect( guidaceToolbar, SIGNAL( passesChanged( bool ) ),
+                    passesToolbarDock, SLOT( setVisible( bool ) ) );
+  QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
+                    settingDialog, SLOT( toggleVisibility() ) );
+
+  // camera dock -> camera controller
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
                     cameraController, SLOT( zoomIn() ) );
   QObject::connect( cameraToolbar, SIGNAL( zoomOut() ),
@@ -313,17 +358,13 @@ int main( int argc, char** argv ) {
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
                     cameraController, SLOT( setMode( int ) ) );
 
-  // grid
-  BlockFactory* gridModelFactory = new GridModelFactory( rootEntity, cameraEntity );
-  BlockBase* gridModel = gridModelFactory->createNewObject();
-  gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
-
+  // settings dialog -> grid model
   QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
                     gridModel, SLOT( setGrid( bool ) ) );
   QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
                     gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
 
-  // the processer of Pose etc
+  // connect the signals of the simulator
   QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
@@ -333,12 +374,7 @@ int main( int argc, char** argv ) {
   QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
-  // Guidance Bar
-  BlockFactory* xteBarModelFactory = new XteBarModelFactory( widget, guidaceToolbarTop->getCenterLayout() );
-  xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
-  BlockFactory* meterBarModelFactory = new MeterBarModelFactory( widget, guidaceToolbarTop->getCenterLayout() );
-  meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
-
+  // guidance dock -> settings dialog
   QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
                     settingDialog->plannerGui, SIGNAL( a_clicked() ) );
   QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
@@ -352,18 +388,14 @@ int main( int argc, char** argv ) {
   QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
 
-  // Global planner
+  // passes dock -> settings dialog
   QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
                     settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool, bool ) ) );
   QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),
                     settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
-  // Section control toolbar
-  BlockFactory* sectionControlFactory = new SectionControlModelFactory( widget, vLayout );
-  sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
-
+  // emit all initial signals from the settings dialog
   settingDialog->emitAllConfigSignals();
-
 
   // load states of checkboxes from global config
   {
@@ -381,12 +413,20 @@ int main( int argc, char** argv ) {
 
   // default config
   settingDialog->loadConfigOnStart();
-  QObject::connect( widget, SIGNAL( closed() ),
+  QObject::connect( mainwindow, SIGNAL( closed() ),
                     settingDialog, SLOT( saveConfigOnExit() ) );
 
   // camera controller
-  QObject::connect( widget, SIGNAL( closed() ),
+  QObject::connect( mainwindow, SIGNAL( closed() ),
                     cameraController, SLOT( saveValuesToConfig() ) );
+
+  // Show window
+#ifdef Q_OS_ANDROID
+  mainwindow->showMaximized();
+#else
+  mainwindow->show();
+  mainwindow->resize( 1200, 800 );
+#endif
 
   return QApplication::exec();
 }

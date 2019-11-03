@@ -20,7 +20,9 @@
 #define XTEBARMODEL_H
 
 #include <QObject>
+#include <QDockWidget>
 
+#include "../gui/MainWindow.h"
 #include "../gui/GuidanceXteBar.h"
 
 #include "BlockBase.h"
@@ -29,24 +31,30 @@ class XteBarModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit XteBarModel( QWidget* parent, QHBoxLayout* hLayout )
+    explicit XteBarModel( MainWindow* mainWindow,
+                          Qt::DockWidgetArea area,
+                          Qt::DockWidgetAreas allowedAreas,
+                          QDockWidget::DockWidgetFeatures features )
       : BlockBase() {
-      guidanceXteBar = new GuidanceXteBar( parent );
-      hLayout->addWidget( guidanceXteBar );
+      guidanceXteBar = new GuidanceXteBar( mainWindow );
+      dock = new QDockWidget( mainWindow );
+      dock->setWidget( guidanceXteBar );
+      dock->setFeatures( features );
+      dock->setAllowedAreas( allowedAreas );
+
+      mainWindow->addDockWidget( area, dock );
     }
 
     ~XteBarModel() {
       guidanceXteBar->deleteLater();
+      dock->deleteLater();
     }
 
 
   public slots:
     void setName( QString name ) {
-      if( name == QStringLiteral( "XteBarModel" ) ) {
-        guidanceXteBar->setName( QString() );
-      } else {
-        guidanceXteBar->setName( name );
-      }
+      dock->setWindowTitle( name );
+      guidanceXteBar->setName( name );
     }
 
     void setXte( float xte ) {
@@ -54,6 +62,7 @@ class XteBarModel : public BlockBase {
     }
 
   public:
+    QDockWidget* dock = nullptr;
     GuidanceXteBar* guidanceXteBar = nullptr;
 };
 
@@ -61,9 +70,15 @@ class XteBarModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    XteBarModelFactory( QWidget* parent, QHBoxLayout* hlayout )
+    XteBarModelFactory( MainWindow* mainWindow,
+                        Qt::DockWidgetArea area,
+                        Qt::DockWidgetAreas allowedAreas,
+                        QDockWidget::DockWidgetFeatures features )
       : BlockFactory(),
-        parent( parent ), hlayout( hlayout ) {}
+        mainWindow( mainWindow ),
+        area( area ),
+        allowedAreas( allowedAreas ),
+        features( features ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "XteBarModel" );
@@ -74,7 +89,7 @@ class XteBarModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new XteBarModel( parent, hlayout );
+      return new XteBarModel( mainWindow, area, allowedAreas, features );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -86,8 +101,10 @@ class XteBarModelFactory : public BlockFactory {
     }
 
   private:
-    QWidget* parent = nullptr;
-    QHBoxLayout* hlayout = nullptr;
+    MainWindow* mainWindow = nullptr;
+    Qt::DockWidgetArea area;
+    Qt::DockWidgetAreas allowedAreas;
+    QDockWidget::DockWidgetFeatures features;
 };
 
 #endif // XTEBARMODEL_H

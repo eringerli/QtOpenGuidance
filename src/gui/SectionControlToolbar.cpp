@@ -24,8 +24,6 @@ SectionControlToolbar::SectionControlToolbar( QWidget* parent ) :
   ui( new Ui::SectionControlToolbar ) {
   ui->setupUi( this );
 
-  ui->lbName->hide();
-
   buttonDefault = parent->palette();
 
   buttonYellow = parent->palette();
@@ -52,15 +50,6 @@ void SectionControlToolbar::setNumberOfSections( float number ) {
   numberOfSections = int8_t( number );
 
   showHideButtons();
-}
-
-void SectionControlToolbar::setName( const QString& name ) {
-  if( !name.isEmpty() ) {
-    ui->lbName->setText( name );
-    ui->lbName->show();
-  } else {
-    ui->lbName->hide();
-  }
 }
 
 void SectionControlToolbar::showHideButtons() {

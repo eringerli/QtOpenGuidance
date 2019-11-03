@@ -33,8 +33,6 @@ class GuidanceToolbarTop : public QGroupBox {
     explicit GuidanceToolbarTop( QWidget* parent = nullptr );
     ~GuidanceToolbarTop();
 
-    QHBoxLayout* getCenterLayout();
-
   private slots:
     void on_pbLeft_clicked();
     void on_pbRight_clicked();

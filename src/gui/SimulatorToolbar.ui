@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string>Simulator</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="6" colspan="3">

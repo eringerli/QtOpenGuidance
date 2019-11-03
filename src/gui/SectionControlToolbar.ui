@@ -11,25 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string>Section Controll</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <item>
-    <widget class="QLabel" name="lbName">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Name</string>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QToolButton" name="pbAll">
      <property name="sizePolicy">

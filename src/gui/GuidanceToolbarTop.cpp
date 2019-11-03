@@ -29,10 +29,6 @@ GuidanceToolbarTop::~GuidanceToolbarTop() {
   delete ui;
 }
 
-QHBoxLayout* GuidanceToolbarTop::getCenterLayout() {
-  return ui->hlCenter;
-}
-
 void GuidanceToolbarTop::on_pbLeft_clicked() {
   emit turnLeft();
 }

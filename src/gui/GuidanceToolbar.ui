@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>118</width>
-    <height>822</height>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string>Guidance</string>
+  </property>
+  <property name="title">
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -221,42 +224,6 @@
       <size>
        <width>20</width>
        <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btn_rec">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/BoundaryRecord.png</normaloff>:/icons/BoundaryRecord.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>65</width>
-       <height>65</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>38</height>
       </size>
      </property>
     </spacer>

@@ -20,7 +20,9 @@
 #define METERBARMODEL_H
 
 #include <QObject>
+#include <QDockWidget>
 
+#include "../gui/MainWindow.h"
 #include "../gui/GuidanceMeterBar.h"
 
 #include "BlockBase.h"
@@ -29,24 +31,30 @@ class MeterBarModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit MeterBarModel( QWidget* parent, QHBoxLayout* hLayout )
+    explicit MeterBarModel( MainWindow* mainWindow,
+                            Qt::DockWidgetArea area,
+                            Qt::DockWidgetAreas allowedAreas,
+                            QDockWidget::DockWidgetFeatures features )
       : BlockBase() {
-      guidanceMeterBar = new GuidanceMeterBar( parent );
-      hLayout->addWidget( guidanceMeterBar );
+      guidanceMeterBar = new GuidanceMeterBar( mainWindow );
+      dock = new QDockWidget( mainWindow );
+      dock->setWidget( guidanceMeterBar );
+      dock->setFeatures( features );
+      dock->setAllowedAreas( allowedAreas );
+
+      mainWindow->addDockWidget( area, dock );
     }
 
     ~MeterBarModel() {
       guidanceMeterBar->deleteLater();
+      dock->deleteLater();
     }
 
 
   public slots:
     void setName( QString name ) {
-      if( name == QStringLiteral( "MeterBarModel" ) ) {
-        guidanceMeterBar->setName( QString() );
-      } else {
-        guidanceMeterBar->setName( name );
-      }
+      dock->setWindowTitle( name );
+      guidanceMeterBar->setName( name );
     }
 
     void setMeter( float meter ) {
@@ -66,6 +74,7 @@ class MeterBarModel : public BlockBase {
     }
 
   public:
+    QDockWidget* dock = nullptr;
     GuidanceMeterBar* guidanceMeterBar = nullptr;
 };
 
@@ -73,9 +82,15 @@ class MeterBarModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    MeterBarModelFactory( QWidget* parent, QHBoxLayout* hlayout )
+    MeterBarModelFactory( MainWindow* mainWindow,
+                          Qt::DockWidgetArea area,
+                          Qt::DockWidgetAreas allowedAreas,
+                          QDockWidget::DockWidgetFeatures features )
       : BlockFactory(),
-        parent( parent ), hlayout( hlayout ) {}
+        mainWindow( mainWindow ),
+        area( area ),
+        allowedAreas( allowedAreas ),
+        features( features ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "MeterBarModel" );
@@ -86,7 +101,7 @@ class MeterBarModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new MeterBarModel( parent, hlayout );
+      return new MeterBarModel( mainWindow, area, allowedAreas, features );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -101,8 +116,10 @@ class MeterBarModelFactory : public BlockFactory {
     }
 
   private:
-    QWidget* parent = nullptr;
-    QHBoxLayout* hlayout = nullptr;
+    MainWindow* mainWindow = nullptr;
+    Qt::DockWidgetArea area;
+    Qt::DockWidgetAreas allowedAreas;
+    QDockWidget::DockWidgetFeatures features;
 };
 
 #endif // METERBARMODEL_H

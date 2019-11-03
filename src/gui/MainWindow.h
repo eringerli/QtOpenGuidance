@@ -20,6 +20,7 @@
 #define MAINWINDOW_H
 
 #include <QGuiApplication>
+#include <QMainWindow>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QEvent>
@@ -27,12 +28,12 @@
 #include <QObject>
 #include <QCloseEvent>
 
-class MainWindow : public QWidget {
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
     MainWindow( QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() )
-      : QWidget( parent, f ) {}
+      : QMainWindow( parent, f ) {}
 
   protected:
     void closeEvent( QCloseEvent* event ) override {
