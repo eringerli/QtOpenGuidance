@@ -47,6 +47,7 @@ HEADERS += \
     src/block/CommunicationPgn7FFE.h \
     src/block/DebugSink.h \
     src/block/FileStream.h \
+    src/block/FpsMeasurement.h \
     src/block/GridModel.h \
     src/block/GuidanceGlobalPlanner.h \
     src/block/GuidanceGlobalPlannerModel.h \

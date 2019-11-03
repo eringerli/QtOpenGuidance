@@ -73,6 +73,7 @@
 #include "gui/PassToolbar.h"
 
 #include "block/CameraController.h"
+#include "block/FpsMeasurement.h"
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
@@ -122,6 +123,7 @@ int main( int argc, char** argv ) {
 
   //Request required permissions at runtime on android
 #ifdef Q_OS_ANDROID
+
   for( const QString& permission : permissions ) {
     auto result = QtAndroid::checkPermission( permission );
 
@@ -132,6 +134,7 @@ int main( int argc, char** argv ) {
         return 0;
     }
   }
+
 #endif
 
   Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
@@ -163,18 +166,8 @@ int main( int argc, char** argv ) {
   // Create setting Window
   auto* settingDialog = new SettingsDialog( rootEntity, widget );
 
-  // FPS measuring: aspect and component
+  // FPS measuring: register the aspect
   view->registerAspect( new FpsAspect );
-
-  auto* fpsEntity = new Qt3DCore::QEntity( rootEntity );
-  auto* fpsComponent = new FpsMonitor( fpsEntity );
-  fpsEntity->addComponent( fpsComponent );
-  fpsComponent->setRollingMeanFrameCount( 20 );
-  QObject::connect( fpsComponent,
-                    SIGNAL( framesPerSecondChanged( float ) ),
-                    mainwindow,
-                    SLOT( setFpsToTitle( float ) ) );
-
 
 //  auto* input = new Qt3DInput::QInputAspect;
 //  view->registerAspect( input );
@@ -342,6 +335,11 @@ int main( int argc, char** argv ) {
   BlockFactory* gridModelFactory = new GridModelFactory( rootEntity, cameraEntity );
   BlockBase* gridModel = gridModelFactory->createNewObject();
   gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
+
+  // FPS measuremend block
+  BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( rootEntity );
+  BlockBase* fpsMeasurement = fpsMeasurementFactory->createNewObject();
+  fpsMeasurementFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), fpsMeasurement );
 
   // GUI -> GUI
   QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
