@@ -22,6 +22,7 @@
 #include <QObject>
 
 #include <QGroupBox>
+#include <QMenu>
 
 namespace Ui {
   class GuidanceToolbar;
@@ -34,37 +35,32 @@ class GuidanceToolbar : public QGroupBox {
     explicit GuidanceToolbar( QWidget* parent = nullptr );
     ~GuidanceToolbar();
 
-    void cbCameraSetChecked( bool enabled );
     void cbSimulatorSetChecked( bool enabled );
-    void cbPassesSetChecked( bool enabled );
 
   private slots:
     void on_cbSimulator_stateChanged( int arg1 );
 
     void on_btn_settings_clicked();
 
-    void on_cbCamera_stateChanged( int arg1 );
-
     void on_btn_AB_clicked( bool checked );
 
     void on_btn_snap_clicked();
 
-
     void on_btn_autosteer_clicked( bool checked );
-
-    void on_cbPasses_stateChanged( int arg1 );
+    void on_pbDocks_clicked();
 
   signals:
     void toggleSettings();
     void simulatorChanged( bool );
-    void cameraChanged( bool );
-    void passesChanged( bool );
 
     void a_clicked();
     void b_clicked();
     void snap_clicked();
 
     void autosteerEnabled( bool );
+
+  public:
+    QMenu* menu = nullptr;
 
   private:
     Ui::GuidanceToolbar* ui;

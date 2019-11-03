@@ -67,7 +67,7 @@
 #include "gui/MainWindow.h"
 #include "gui/SettingsDialog.h"
 #include "gui/GuidanceToolbar.h"
-#include "gui/GuidanceToolbarTop.h"
+#include "gui/GuidanceTurning.h"
 #include "gui/SimulatorToolbar.h"
 #include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
@@ -153,6 +153,7 @@ int main( int argc, char** argv ) {
                               QMainWindow::AllowNestedDocks |
                               QMainWindow::AllowTabbedDocks |
                               QMainWindow::VerticalTabs );
+  mainwindow->setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
   mainwindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
   mainwindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
@@ -248,20 +249,35 @@ int main( int argc, char** argv ) {
   sortPolicy->setSortTypes( sortTypes );
   view->setActiveFrameGraph( framegraph );
 
-  // Guidance Toolbar
-  auto* guidaceToolbarTop = new GuidanceToolbarTop( mainwindow );
-  QDockWidget* guidaceToolbarTopDock = new QDockWidget( mainwindow );
-  guidaceToolbarTopDock->setWidget( guidaceToolbarTop );
-  guidaceToolbarTopDock->setWindowTitle( guidaceToolbarTop->windowTitle() );
-  mainwindow->addDockWidget( Qt::TopDockWidgetArea, guidaceToolbarTopDock );
 
-  // Camera Toolbar
+  // guidance toolbar
+  auto* guidanceToolbar = new GuidanceToolbar( widget );
+  QDockWidget* guidaceToolbarDock = new QDockWidget( mainwindow );
+  guidaceToolbarDock->setWidget( guidanceToolbar );
+  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
+  guidaceToolbarDock->setWindowTitle( guidanceToolbar->windowTitle() );
+  guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
+  mainwindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
+
+  // turning Toolbar
+  auto* turningToolbar = new GuidanceTurning( mainwindow );
+  QDockWidget* turningToolbarDock = new QDockWidget( mainwindow );
+  turningToolbarDock->setWidget( turningToolbar );
+  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbar" ) );
+  turningToolbarDock->setWindowTitle( turningToolbar->windowTitle() );
+  turningToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+  mainwindow->addDockWidget( Qt::TopDockWidgetArea, turningToolbarDock );
+  guidanceToolbar->menu->addAction( turningToolbarDock->toggleViewAction() );
+
+  // camera Toolbar
   auto* cameraToolbar = new CameraToolbar( widget );
   cameraToolbar->setVisible( false );
   QDockWidget* cameraToolbarDock = new QDockWidget( mainwindow );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
+  cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbar" ) );
   mainwindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
+  guidanceToolbar->menu->addAction( cameraToolbarDock->toggleViewAction() );
 
   // passes toolbar
   auto* passesToolbar = new PassToolbar( widget );
@@ -269,8 +285,10 @@ int main( int argc, char** argv ) {
   QDockWidget* passesToolbarDock = new QDockWidget( mainwindow );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
+  passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbar" ) );
   mainwindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
   mainwindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
+  guidanceToolbar->menu->addAction( passesToolbarDock->toggleViewAction() );
 
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
@@ -282,23 +300,16 @@ int main( int argc, char** argv ) {
                                      QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetVerticalTitleBar );
   simulatorToolbarDock->setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
+  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbar" ) );
   mainwindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
-
-  // guidance toolbar
-  auto* guidaceToolbar = new GuidanceToolbar( widget );
-  QDockWidget* guidaceToolbarDock = new QDockWidget( mainwindow );
-  guidaceToolbarDock->setWidget( guidaceToolbar );
-  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
-  guidaceToolbarDock->setWindowTitle( guidaceToolbar->windowTitle() );
-  guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
-  mainwindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
 
   // XTE dock
   BlockFactory* xteBarModelFactory = new XteBarModelFactory(
     mainwindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
-    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
+    guidanceToolbar->menu );
   xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // meter dock
@@ -306,7 +317,8 @@ int main( int argc, char** argv ) {
     mainwindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
-    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
+    guidanceToolbar->menu );
   meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // section controll dock
@@ -314,14 +326,15 @@ int main( int argc, char** argv ) {
     mainwindow,
     Qt::BottomDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
-    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
+    guidanceToolbar->menu,
+    simulatorToolbarDock );
   sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
   BlockBase* cameraController = cameraControllerFactory->createNewObject();
   cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), cameraController );
-
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
   view->installEventFilter( cameraController );
 
@@ -331,13 +344,13 @@ int main( int argc, char** argv ) {
   gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), gridModel );
 
   // GUI -> GUI
-  QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
+  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     simulatorToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( cameraChanged( bool ) ),
+  QObject::connect( guidanceToolbar, SIGNAL( cameraChanged( bool ) ),
                     cameraToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( passesChanged( bool ) ),
+  QObject::connect( guidanceToolbar, SIGNAL( passesChanged( bool ) ),
                     passesToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidaceToolbar, SIGNAL( toggleSettings() ),
+  QObject::connect( guidanceToolbar, SIGNAL( toggleSettings() ),
                     settingDialog, SLOT( toggleVisibility() ) );
 
   // camera dock -> camera controller
@@ -365,7 +378,7 @@ int main( int argc, char** argv ) {
                     gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
 
   // connect the signals of the simulator
-  QObject::connect( guidaceToolbar, SIGNAL( simulatorChanged( bool ) ),
+  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
                     settingDialog->poseSimulation, SLOT( setVelocity( float ) ) );
@@ -375,17 +388,19 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
 
   // guidance dock -> settings dialog
-  QObject::connect( guidaceToolbar, SIGNAL( a_clicked() ),
+  QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),
                     settingDialog->plannerGui, SIGNAL( a_clicked() ) );
-  QObject::connect( guidaceToolbar, SIGNAL( b_clicked() ),
+  QObject::connect( guidanceToolbar, SIGNAL( b_clicked() ),
                     settingDialog->plannerGui, SIGNAL( b_clicked() ) );
-  QObject::connect( guidaceToolbar, SIGNAL( snap_clicked() ),
+  QObject::connect( guidanceToolbar, SIGNAL( snap_clicked() ),
                     settingDialog->plannerGui, SIGNAL( snap_clicked() ) );
-  QObject::connect( guidaceToolbar, SIGNAL( autosteerEnabled( bool ) ),
+  QObject::connect( guidanceToolbar, SIGNAL( autosteerEnabled( bool ) ),
                     settingDialog->plannerGui, SIGNAL( autosteerEnabled( bool ) ) );
-  QObject::connect( guidaceToolbarTop, SIGNAL( turnLeft() ),
+
+  // turning dock -> settings dialog
+  QObject::connect( turningToolbar, SIGNAL( turnLeft() ),
                     settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
-  QObject::connect( guidaceToolbarTop, SIGNAL( turnRight() ),
+  QObject::connect( turningToolbar, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
 
   // passes dock -> settings dialog
@@ -402,9 +417,7 @@ int main( int argc, char** argv ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    guidaceToolbar->cbSimulatorSetChecked( settings.value( "RunSimulatorOnStart", false ).toBool() );
-    guidaceToolbar->cbCameraSetChecked( settings.value( "ShowCameraToolbarOnStart", false ).toBool() );
-    guidaceToolbar->cbPassesSetChecked( settings.value( "ShowPassesToolbarOnStart", false ).toBool() );
+    guidanceToolbar->cbSimulatorSetChecked( settings.value( "RunSimulatorOnStart", false ).toBool() );
 
     if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
       settingDialog->show();

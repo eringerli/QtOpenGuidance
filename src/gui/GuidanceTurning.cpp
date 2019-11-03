@@ -16,23 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "GuidanceToolbarTop.h"
-#include "ui_GuidanceToolbarTop.h"
+#include "GuidanceTurning.h"
+#include "ui_GuidanceTurning.h"
 
-GuidanceToolbarTop::GuidanceToolbarTop( QWidget* parent ) :
+GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::GuidanceToolbarTop ) {
+  ui( new Ui::GuidanceTurning ) {
   ui->setupUi( this );
 }
 
-GuidanceToolbarTop::~GuidanceToolbarTop() {
+GuidanceTurning::~GuidanceTurning() {
   delete ui;
 }
 
-void GuidanceToolbarTop::on_pbLeft_clicked() {
+void GuidanceTurning::on_pbLeft_clicked() {
   emit turnLeft();
 }
 
-void GuidanceToolbarTop::on_pbRight_clicked() {
+void GuidanceTurning::on_pbRight_clicked() {
   emit turnRight();
 }

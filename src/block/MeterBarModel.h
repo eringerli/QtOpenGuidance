@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QDockWidget>
+#include <QMenu>
 
 #include "../gui/MainWindow.h"
 #include "../gui/GuidanceMeterBar.h"
@@ -31,22 +32,15 @@ class MeterBarModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit MeterBarModel( MainWindow* mainWindow,
-                            Qt::DockWidgetArea area,
-                            Qt::DockWidgetAreas allowedAreas,
-                            QDockWidget::DockWidgetFeatures features )
+    explicit MeterBarModel( MainWindow* mainWindow )
       : BlockBase() {
-      guidanceMeterBar = new GuidanceMeterBar( mainWindow );
+      widget = new GuidanceMeterBar( mainWindow );
       dock = new QDockWidget( mainWindow );
-      dock->setWidget( guidanceMeterBar );
-      dock->setFeatures( features );
-      dock->setAllowedAreas( allowedAreas );
-
-      mainWindow->addDockWidget( area, dock );
+      dock->setWidget( widget );
     }
 
     ~MeterBarModel() {
-      guidanceMeterBar->deleteLater();
+      widget->deleteLater();
       dock->deleteLater();
     }
 
@@ -54,28 +48,30 @@ class MeterBarModel : public BlockBase {
   public slots:
     void setName( QString name ) {
       dock->setWindowTitle( name );
-      guidanceMeterBar->setName( name );
+      action->setText( QStringLiteral( "Meter: " ) + name );
+      widget->setName( name );
     }
 
     void setMeter( float meter ) {
-      guidanceMeterBar->setMeter( meter );
+      widget->setMeter( meter );
     }
 
     void setPrecision( float precision ) {
-      guidanceMeterBar->setPrecision( precision );
+      widget->setPrecision( precision );
     }
 
     void setScale( float scale ) {
-      guidanceMeterBar->setScale( scale );
+      widget->setScale( scale );
     }
 
     void setFieldWitdh( float fieldWitdh ) {
-      guidanceMeterBar->setFieldWitdh( fieldWitdh );
+      widget->setFieldWitdh( fieldWitdh );
     }
 
   public:
     QDockWidget* dock = nullptr;
-    GuidanceMeterBar* guidanceMeterBar = nullptr;
+    QAction* action = nullptr;
+    GuidanceMeterBar* widget = nullptr;
 };
 
 class MeterBarModelFactory : public BlockFactory {
@@ -85,12 +81,14 @@ class MeterBarModelFactory : public BlockFactory {
     MeterBarModelFactory( MainWindow* mainWindow,
                           Qt::DockWidgetArea area,
                           Qt::DockWidgetAreas allowedAreas,
-                          QDockWidget::DockWidgetFeatures features )
+                          QDockWidget::DockWidgetFeatures features,
+                          QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
         area( area ),
         allowedAreas( allowedAreas ),
-        features( features ) {}
+        features( features ),
+        menu( menu ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "MeterBarModel" );
@@ -101,11 +99,23 @@ class MeterBarModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new MeterBarModel( mainWindow, area, allowedAreas, features );
+      return new MeterBarModel( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
+
+      MeterBarModel* object = qobject_cast<MeterBarModel*>( obj );
+
+      object->dock->setWidget( object->widget );
+      object->dock->setFeatures( features );
+      object->dock->setAllowedAreas( allowedAreas );
+      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
+
+      object->action = object->dock->toggleViewAction();
+      menu->addAction( object->action );
+
+      mainWindow->addDockWidget( area, object->dock );
 
       b->addInputPort( "Number", SLOT( setMeter( float ) ) );
       b->addInputPort( "Precision", SLOT( setPrecision( float ) ) );
@@ -120,6 +130,7 @@ class MeterBarModelFactory : public BlockFactory {
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;
+    QMenu* menu = nullptr;
 };
 
 #endif // METERBARMODEL_H

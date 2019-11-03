@@ -16,22 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GUIDANCETOOLBARTOP_H
-#define GUIDANCETOOLBARTOP_H
+#ifndef GUIDANCETURNING_H
+#define GUIDANCETURNING_H
 
 #include <QGroupBox>
 #include <QHBoxLayout>
 
 namespace Ui {
-  class GuidanceToolbarTop;
+  class GuidanceTurning;
 }
 
-class GuidanceToolbarTop : public QGroupBox {
+class GuidanceTurning : public QGroupBox {
     Q_OBJECT
 
   public:
-    explicit GuidanceToolbarTop( QWidget* parent = nullptr );
-    ~GuidanceToolbarTop();
+    explicit GuidanceTurning( QWidget* parent = nullptr );
+    ~GuidanceTurning();
 
   private slots:
     void on_pbLeft_clicked();
@@ -42,7 +42,7 @@ class GuidanceToolbarTop : public QGroupBox {
     void turnRight();
 
   private:
-    Ui::GuidanceToolbarTop* ui;
+    Ui::GuidanceTurning* ui;
 };
 
-#endif // GUIDANCETOOLBARTOP_H
+#endif // GUIDANCETURNING_H

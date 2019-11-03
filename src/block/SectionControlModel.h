@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QDockWidget>
+#include <QMenu>
 
 #include "BlockBase.h"
 
@@ -33,22 +34,14 @@ class SectionControlModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit SectionControlModel( MainWindow* mainWindow,
-                                  Qt::DockWidgetArea area,
-                                  Qt::DockWidgetAreas allowedAreas,
-                                  QDockWidget::DockWidgetFeatures features )
+    explicit SectionControlModel( MainWindow* mainWindow )
       : BlockBase() {
-      sectionControlToolbar = new SectionControlToolbar( mainWindow );
+      widget = new SectionControlToolbar( mainWindow );
       dock = new QDockWidget( mainWindow );
-      dock->setWidget( sectionControlToolbar );
-      dock->setFeatures( features );
-      dock->setAllowedAreas( allowedAreas );
-
-      mainWindow->addDockWidget( area, dock );
     }
 
     ~SectionControlModel() {
-      sectionControlToolbar->deleteLater();
+      widget->deleteLater();
       dock->deleteLater();
     }
 
@@ -56,11 +49,12 @@ class SectionControlModel : public BlockBase {
   public slots:
     void setName( QString name ) {
       dock->setWindowTitle( name );
+      action->setText( QStringLiteral( "SC: " ) + name );
     }
 
     void setSections( const QVector<QSharedPointer<ImplementSection>>& sections ) {
       this->sections = sections;
-      sectionControlToolbar->setNumberOfSections( sections.count() );
+      widget->setNumberOfSections( sections.count() );
     }
 
   signals:
@@ -68,7 +62,8 @@ class SectionControlModel : public BlockBase {
 
   public:
     QDockWidget* dock = nullptr;
-    SectionControlToolbar* sectionControlToolbar = nullptr;
+    QAction* action = nullptr;
+    SectionControlToolbar* widget = nullptr;
 
     QVector<QSharedPointer<ImplementSection>> sections;
 };
@@ -80,12 +75,16 @@ class SectionControlModelFactory : public BlockFactory {
     SectionControlModelFactory( MainWindow* mainWindow,
                                 Qt::DockWidgetArea area,
                                 Qt::DockWidgetAreas allowedAreas,
-                                QDockWidget::DockWidgetFeatures features )
+                                QDockWidget::DockWidgetFeatures features,
+                                QMenu* menu,
+                                QDockWidget* dockToSplit )
       : BlockFactory(),
         mainWindow( mainWindow ),
         area( area ),
         allowedAreas( allowedAreas ),
-        features( features ) {}
+        features( features ),
+        menu( menu ),
+        dockToSplit( dockToSplit ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "SectionControl Model" );
@@ -96,11 +95,24 @@ class SectionControlModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new SectionControlModel( mainWindow, area, allowedAreas, features );
+      return new SectionControlModel( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
+
+      SectionControlModel* object = qobject_cast<SectionControlModel*>( obj );
+
+      object->dock->setWidget( object->widget );
+      object->dock->setFeatures( features );
+      object->dock->setAllowedAreas( allowedAreas );
+      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
+
+      object->action = object->dock->toggleViewAction();
+      menu->addAction( object->action );
+
+      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->splitDockWidget( dockToSplit, object->dock, Qt::Vertical );
 
       b->addInputPort( "Section Controll Data", SLOT( setSections( QVector<QSharedPointer<ImplementSection>> ) ) );
 
@@ -112,6 +124,8 @@ class SectionControlModelFactory : public BlockFactory {
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;
+    QMenu* menu = nullptr;
+    QDockWidget* dockToSplit = nullptr;
 };
 
 #endif // SECTIONCONTROLMODEL_H

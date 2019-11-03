@@ -229,16 +229,6 @@
     </spacer>
    </item>
    <item>
-    <widget class="QCheckBox" name="cbCamera">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Camera Ctrl</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QCheckBox" name="cbSimulator">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
@@ -249,12 +239,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="cbPasses">
+    <widget class="QPushButton" name="pbDocks">
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>Passes Ctrl</string>
+      <string>Docks</string>
      </property>
     </widget>
    </item>

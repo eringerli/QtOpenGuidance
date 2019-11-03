@@ -22,7 +22,7 @@ SOURCES += src/main.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceMeterBar.cpp \
     src/gui/GuidanceToolbar.cpp \
-    src/gui/GuidanceToolbarTop.cpp \
+    src/gui/GuidanceTurning.cpp \
     src/gui/GuidanceXteBar.cpp \
     src/gui/ImplementBlockModel.cpp \
     src/gui/ImplementSectionModel.cpp \
@@ -72,7 +72,7 @@ HEADERS += \
     src/gui/CameraToolbar.h \
     src/gui/GuidanceMeterBar.h \
     src/gui/GuidanceToolbar.h \
-    src/gui/GuidanceToolbarTop.h \
+    src/gui/GuidanceTurning.h \
     src/gui/GuidanceXteBar.h \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
@@ -94,7 +94,7 @@ FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/GuidanceMeterBar.ui \
     src/gui/GuidanceToolbar.ui \
-    src/gui/GuidanceToolbarTop.ui \
+    src/gui/GuidanceTurning.ui \
     src/gui/GuidanceXteBar.ui \
     src/gui/PassToolbar.ui \
     src/gui/SectionControlToolbar.ui \

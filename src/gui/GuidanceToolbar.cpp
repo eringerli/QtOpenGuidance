@@ -26,6 +26,7 @@ GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::GuidanceToolbar ) {
   ui->setupUi( this );
+  menu = new QMenu( this );
 }
 
 GuidanceToolbar::~GuidanceToolbar() {
@@ -46,16 +47,6 @@ void GuidanceToolbar::on_btn_settings_clicked() {
   emit toggleSettings();
 }
 
-void GuidanceToolbar::on_cbCamera_stateChanged( int arg1 ) {
-  bool enabled = false;
-
-  if( arg1 == Qt::Checked ) {
-    enabled = true;
-  }
-
-  emit cameraChanged( enabled );
-}
-
 void GuidanceToolbar::on_btn_AB_clicked( bool checked ) {
   if( checked ) {
     emit a_clicked();
@@ -68,28 +59,16 @@ void GuidanceToolbar::on_btn_snap_clicked() {
   emit snap_clicked();
 }
 
-void GuidanceToolbar::cbCameraSetChecked( bool enabled ) {
-  ui->cbCamera->setChecked( enabled );
-}
-
 void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
   ui->cbSimulator->setChecked( enabled );
-}
-
-void GuidanceToolbar::cbPassesSetChecked( bool enabled ) {
-  ui->cbPasses->setChecked( enabled );
 }
 
 void GuidanceToolbar::on_btn_autosteer_clicked( bool checked ) {
   emit autosteerEnabled( checked );
 }
 
-void GuidanceToolbar::on_cbPasses_stateChanged( int arg1 ) {
-  bool enabled = false;
-
-  if( arg1 == Qt::Checked ) {
-    enabled = true;
-  }
-
-  emit passesChanged( enabled );
+void GuidanceToolbar::on_pbDocks_clicked() {
+  menu->exec( QCursor::pos() );
 }
+
+

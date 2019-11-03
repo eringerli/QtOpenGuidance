@@ -96,7 +96,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QWidget* parent )
       ui->cbSaveConfigOnExit->setCheckState( settings.value( "SaveConfigOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
       ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
       ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbShowCameraToolbarOnStart->setCheckState( settings.value( "ShowCameraToolbarOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
       ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
     }
 
@@ -895,14 +894,6 @@ void SettingsDialog::on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 ) {
   settings.sync();
 }
 
-void SettingsDialog::on_cbShowCameraToolbarOnStart_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
-
-  settings.setValue( "ShowCameraToolbarOnStart", bool( arg1 == Qt::CheckState::Checked ) );
-  settings.sync();
-}
-
 void SettingsDialog::on_cbRunSimulatorOnStart_stateChanged( int arg1 ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
@@ -1286,14 +1277,6 @@ void SettingsDialog::on_sbPathsToGenerate_valueChanged( int ) {
 void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
   emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
-}
-
-void SettingsDialog::on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
-
-  settings.setValue( "ShowPassesToolbarOnStart", bool( arg1 == Qt::CheckState::Checked ) );
-  settings.sync();
 }
 
 void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {

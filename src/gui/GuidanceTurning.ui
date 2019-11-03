@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GuidanceToolbarTop</class>
- <widget class="QGroupBox" name="GuidanceToolbarTop">
+ <class>GuidanceTurning</class>
+ <widget class="QGroupBox" name="GuidanceTurning">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,10 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Guidance Toolbar</string>
+   <string>Turning</string>
+  </property>
+  <property name="title">
+   <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="spacing">

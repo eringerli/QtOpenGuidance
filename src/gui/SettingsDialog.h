@@ -106,7 +106,6 @@ class SettingsDialog : public QDialog {
     void on_cbSaveConfigOnExit_stateChanged( int arg1 );
     void on_cbLoadConfigOnStart_stateChanged( int arg1 );
     void on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 );
-    void on_cbShowCameraToolbarOnStart_stateChanged( int arg1 );
     void on_cbRunSimulatorOnStart_stateChanged( int arg1 );
 
     void on_pbSaveAsDefault_clicked();
@@ -161,8 +160,6 @@ class SettingsDialog : public QDialog {
     void on_sbPathsToGenerate_valueChanged( int arg1 );
 
     void on_sbPathsInReserve_valueChanged( int arg1 );
-
-    void on_cbShowCameraToolbarOnStart_2_stateChanged( int arg1 );
 
 
   private:
