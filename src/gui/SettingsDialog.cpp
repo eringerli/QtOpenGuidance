@@ -531,19 +531,15 @@ void SettingsDialog::on_pbLoad_clicked() {
   // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
   // this is needed, as the file dialog on android is asynchonous, so you have to connect to
   // the signals instead of using the static functions for the dialogs
-
+#ifdef Q_OS_ANDROID
   QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-    qDebug() << "signal handler QUrl" << fileName << fileName.toDisplayString();
+    qDebug() << "QFileDialog::urlSelected QUrl" << fileName << fileName.toDisplayString() << fileName.toLocalFile();
 
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
-#ifdef Q_OS_ANDROID
       QFile loadFile(
         QUrl::fromPercentEncoding(
           fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
-#else
-      QFile loadFile( fileName.toLocalFile() );
-#endif
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
@@ -554,10 +550,32 @@ void SettingsDialog::on_pbLoad_clicked() {
     }
 
     // block all further signals, so no double opening happens
-    fileDialog->blockSignals( true );
+//    fileDialog->blockSignals( true );
 
     fileDialog->deleteLater();
   } );
+#else
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( QString fileName ) {
+    qDebug() << "QFileDialog::fileSelected QString" << fileName;
+
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile(fileName);
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        loadConfigFromFile( loadFile );
+      }
+    }
+
+    // block all further signals, so no double opening happens
+//    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+#endif
 
   // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
   QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
