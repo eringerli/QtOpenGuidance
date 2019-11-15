@@ -113,17 +113,6 @@ void QNEBlock::addOutputPort( const QString& name, const QString& signalSlotSign
   addPort( name, signalSlotSignature, true );
 }
 
-void QNEBlock::addWidget( QWidget* widget ) {
-  QGraphicsProxyWidget* const proxy = this->scene()->addWidget( widget );
-  proxy->setParentItem( this );
-  double heightBuffer = height;
-  height += proxy->geometry().height() + 5;
-  width = qMax( proxy->geometry().width() + 10, double( width ) );
-  proxy->setX( -width / 2 + ( width - proxy->geometry().width() ) / 2 );
-
-  proxy->setY( -height / 2 + heightBuffer + 10 );
-}
-
 void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
   Q_UNUSED( option )
   Q_UNUSED( widget )
@@ -244,6 +233,8 @@ void QNEBlock::resizeBlockWidth() {
 
   qreal heightSnappedToGridSpacing = round( ( height - 2 * cornerRadius ) / ( gridSpacing ) ) * ( gridSpacing ) + 2 * cornerRadius;
 
+  qDebug() << height << heightSnappedToGridSpacing;
+
   double y = -heightSnappedToGridSpacing / 2 + verticalMargin + cornerRadius;
   width = 0;
 
@@ -274,7 +265,13 @@ void QNEBlock::resizeBlockWidth() {
   }
 
   QPainterPath p;
-  p.addRoundedRect( -widthSnappedToGridSpacing / 2, -heightSnappedToGridSpacing / 2, widthSnappedToGridSpacing, heightSnappedToGridSpacing, cornerRadius, cornerRadius );
+  double offset = 0;
+
+  if( childItems().size() % 2 ) {
+    offset = gridSpacing / 4;
+  }
+
+  p.addRoundedRect( -widthSnappedToGridSpacing / 2, ( -height / 2 ) - offset, widthSnappedToGridSpacing, height, cornerRadius, cornerRadius );
   setPath( p );
 }
 

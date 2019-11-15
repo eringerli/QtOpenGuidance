@@ -52,8 +52,6 @@ class QNEBlock : public QGraphicsPathItem {
     void addInputPort( const QString& name, const QString& signalSlotSignature );
     void addOutputPort( const QString& name, const QString& signalSlotSignature );
 
-    void addWidget( QWidget* widget );
-
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
     void toJSON( QJsonObject& json );
