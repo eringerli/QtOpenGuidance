@@ -56,7 +56,9 @@
 
 #include "../block/PoseSynchroniser.h"
 
-#include "../block/NmeaParser.h"
+#include "../block/NmeaParserGGA.h"
+#include "../block/NmeaParserHDT.h"
+#include "../block/NmeaParserRMC.h"
 #include "../block/TransverseMercatorConverter.h"
 
 #include "../block/GuidancePlannerGui.h"
@@ -249,7 +251,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   fileStreamFactory = new FileStreamFactory();
   communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
   communicationJrkFactory = new CommunicationJrkFactory();
-  nmeaParserFactory = new NmeaParserFactory();
+  nmeaParserGGAFactory = new NmeaParserGGAFactory();
+  nmeaParserHDTFactory = new NmeaParserHDTFactory();
+  nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
   implementFactory = new ImplementFactory( tile, implementBlockModel );
 
@@ -267,7 +271,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
   localPlannerFactory->addToCombobox( ui->cbNodeType );
-  nmeaParserFactory->addToCombobox( ui->cbNodeType );
+  nmeaParserGGAFactory->addToCombobox( ui->cbNodeType );
+  nmeaParserHDTFactory->addToCombobox( ui->cbNodeType );
+  nmeaParserRMCFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
   udpSocketFactory->addToCombobox( ui->cbNodeType );
 
@@ -324,7 +330,9 @@ SettingsDialog::~SettingsDialog() {
   fileStreamFactory->deleteLater();
   communicationPgn7ffeFactory->deleteLater();
   communicationJrkFactory->deleteLater();
-  nmeaParserFactory->deleteLater();
+  nmeaParserGGAFactory->deleteLater();
+  nmeaParserHDTFactory->deleteLater();
+  nmeaParserRMCFactory->deleteLater();
   ackermannSteeringFactory->deleteLater();
   implementFactory->deleteLater();
 

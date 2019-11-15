@@ -16,19 +16,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef NMEAPARSER_H
-#define NMEAPARSER_H
+#ifndef NMEAPARSERRMC_H
+#define NMEAPARSERRMC_H
 
 #include <QObject>
 
 
 #include "BlockBase.h"
 
-class NmeaParser : public BlockBase {
+class NmeaParserRMC : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit NmeaParser()
+    explicit NmeaParserRMC()
       : BlockBase() {
     }
 
@@ -107,71 +107,7 @@ class NmeaParser : public BlockBase {
           // as most users will have either a M8T or F9P, the interface documentation of ublox
           // is used for the format of the NMEA sentences
           // https://www.u-blox.com/de/product/zed-f9p-module -> interface manual
-
-          // GGA and GNS are exactly the same, but GNS displays more than 12 satelites (max 99)
-          if( nmeaFields.front() == "GGA" || nmeaFields.front() == "GNS" ) {
-            if( nmeaFields.count() >= 14 ) {
-              qDebug() << nmeaFields;
-
-              QStringList::const_iterator nmeaFileIterator = nmeaFields.cbegin();
-              // skip first field
-              ++nmeaFileIterator;
-
-              utcTime = nmeaFileIterator->toDouble();
-              ++nmeaFileIterator;
-
-              // the format is like this: DDMM.MMMMM
-              latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
-              latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
-              latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
-              ++nmeaFileIterator;
-
-              if( ( *nmeaFileIterator ) == 'S' ) {
-                latitude = -latitude;
-              }
-
-              ++nmeaFileIterator;
-
-              // the format is like this: DDDMM.MMMMM
-              longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
-              longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
-              longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
-              ++nmeaFileIterator;
-
-              if( ( *nmeaFileIterator ) == 'W' ) {
-                longitude = -longitude;
-              }
-
-              ++nmeaFileIterator;
-
-              fixQuality = nmeaFileIterator->toDouble();
-              ++nmeaFileIterator;
-
-              numSatelites = nmeaFileIterator->toDouble();
-              ++nmeaFileIterator;
-
-              hdop = nmeaFileIterator->toDouble();
-              ++nmeaFileIterator;
-
-              height = nmeaFileIterator->toDouble();
-              ++nmeaFileIterator;
-
-              // skip unit of height
-              ++nmeaFileIterator;
-
-              // skip geoid seperation
-              ++nmeaFileIterator;
-
-              // skip unit of geoid seperation
-              ++nmeaFileIterator;
-
-              ageOfDifferentialData = nmeaFileIterator->toDouble();
-
-              emit globalPositionChanged( latitude, longitude, height );
-
-              qDebug() << qSetRealNumberPrecision( 12 ) << utcTime << latitude << longitude << height << fixQuality << numSatelites << hdop << ageOfDifferentialData;
-            }
-          } else if( nmeaFields.front() == "RMC" ) {
+          if( nmeaFields.front() == "RMC" ) {
 
             if( nmeaFields.count() >= 12 ) {
               qDebug() << nmeaFields;
@@ -180,11 +116,14 @@ class NmeaParser : public BlockBase {
               // skip first field
               ++nmeaFileIterator;
 
-              utcTime = nmeaFileIterator->toDouble();
+              // skip UTC time
+              ++nmeaFileIterator;
+
+              // skip status
               ++nmeaFileIterator;
 
               // the format is like this: DDMM.MMMMM
-              latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
+              double latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
               latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
               latitude += nmeaFileIterator->midRef( 4 ).toDouble() / 60;
               ++nmeaFileIterator;
@@ -196,7 +135,7 @@ class NmeaParser : public BlockBase {
               ++nmeaFileIterator;
 
               // the format is like this: DDDMM.MMMMM
-              longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
+              double longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
               longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
               longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
               ++nmeaFileIterator;
@@ -207,16 +146,15 @@ class NmeaParser : public BlockBase {
 
               ++nmeaFileIterator;
 
-              // speed in kn = 463m/900s
-              velocity = nmeaFileIterator->leftRef( 2 ).toDouble();
+              // speed in kn: 1kn = 463m/900s
+              double velocity = nmeaFileIterator->leftRef( 2 ).toDouble();
               velocity += nmeaFileIterator->midRef( 2 ).toDouble() / 10;
               velocity *= 463;
               velocity /= 900;
 
-              emit velocityChanged( velocity );
+              emit velocityChanged( float( velocity ) );
+              emit globalPositionChanged( latitude, longitude, 0 );
             }
-          } else if( nmeaFields.front() == "GSA" ) {
-
           }
         }
 
@@ -226,31 +164,21 @@ class NmeaParser : public BlockBase {
     }
 
   public:
-    double longitude = 0,
-           latitude = 0,
-           height = 0;
-
-    double utcTime = 0,
-           hdop = 0,
-           fixQuality = 0,
-           ageOfDifferentialData = 0,
-           numSatelites = 0,
-           velocity = 0;
 
 
   private:
     QByteArray dataToParse;
 };
 
-class NmeaParserFactory : public BlockFactory {
+class NmeaParserRMCFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    NmeaParserFactory()
+    NmeaParserRMCFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser" );
+      return QStringLiteral( "NMEA Parser RMC" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -258,7 +186,7 @@ class NmeaParserFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new NmeaParser();
+      return new NmeaParserRMC();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -272,4 +200,4 @@ class NmeaParserFactory : public BlockFactory {
     }
 };
 
-#endif // NMEAPARSER_H
+#endif // NMEAPARSERRMC_H

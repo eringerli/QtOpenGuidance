@@ -57,7 +57,9 @@ HEADERS += \
     src/block/GuidanceXte.h \
     src/block/Implement.h \
     src/block/MeterBarModel.h \
-    src/block/NmeaParser.h \
+    src/block/NmeaParserGGA.h \
+    src/block/NmeaParserHDT.h \
+    src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
