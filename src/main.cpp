@@ -104,12 +104,13 @@ const QVector<QString> permissions( {"android.permission.INTERNET",
 
 int main( int argc, char** argv ) {
 //  // hack to make the app apear without cropped qt3d-widget
-//  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+//    QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
+
 //  qputenv( "QT_AUTO_SCREEN_SCALE_FACTOR", "1.5" );
 //  qputenv( "QT_SCALE_FACTOR_ROUNDING_POLICY","PassThrough");
 //  qputenv( "QT_SCALE_FACTOR", "1" );
 
-//  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
 //QCoreApplication::setAttribute( Qt::AA_UseHighDpiPixmaps );
 //  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
 
@@ -235,12 +236,12 @@ int main( int argc, char** argv ) {
 
   // sort the object, so transparity works
   Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
-  auto* sortPolicy = new Qt3DRender::QSortPolicy( rootEntity );
+  auto* sortPolicy = new Qt3DRender::QSortPolicy( );
   framegraph->setParent( sortPolicy );
   QVector<Qt3DRender::QSortPolicy::SortType> sortTypes =
     QVector<Qt3DRender::QSortPolicy::SortType>() << Qt3DRender::QSortPolicy::FrontToBack;
   sortPolicy->setSortTypes( sortTypes );
-  view->setActiveFrameGraph( framegraph );
+  view->setActiveFrameGraph( sortPolicy );
 
 
   // guidance toolbar
@@ -343,14 +344,10 @@ int main( int argc, char** argv ) {
   fpsMeasurementFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView(), fpsMeasurement );
 
   // GUI -> GUI
-  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
-                    simulatorToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidanceToolbar, SIGNAL( cameraChanged( bool ) ),
-                    cameraToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidanceToolbar, SIGNAL( passesChanged( bool ) ),
-                    passesToolbarDock, SLOT( setVisible( bool ) ) );
-  QObject::connect( guidanceToolbar, SIGNAL( toggleSettings() ),
-                    settingDialog, SLOT( toggleVisibility() ) );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorToolbarDock, &QWidget::setVisible );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings,
+                    settingDialog, &SettingsDialog::toggleVisibility );
 
   // camera dock -> camera controller
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
@@ -434,7 +431,7 @@ int main( int argc, char** argv ) {
 
   // Show window
 #ifdef Q_OS_ANDROID
-  mainwindow->showMaximized();
+  mainWindow->showMaximized();
 #else
   mainWindow->show();
   mainWindow->resize( 1200, 800 );

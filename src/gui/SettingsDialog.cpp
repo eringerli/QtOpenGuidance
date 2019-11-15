@@ -568,7 +568,7 @@ void SettingsDialog::on_pbLoad_clicked() {
 
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
-      QFile loadFile(fileName);
+      QFile loadFile( fileName );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
