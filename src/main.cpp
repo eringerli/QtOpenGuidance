@@ -311,7 +311,7 @@ int main( int argc, char** argv ) {
   BlockFactory* meterBarModelFactory = new MeterBarModelFactory(
     mainWindow,
     Qt::TopDockWidgetArea,
-    Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
     guidanceToolbar->menu );
   meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
