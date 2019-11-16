@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QDockWidget>
+#include <QSizePolicy>
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
@@ -46,7 +47,7 @@ class MeterBarModel : public BlockBase {
 
 
   public slots:
-    void setName( QString name ) {
+    void setName( QString name ) override {
       dock->setWindowTitle( name );
       action->setText( QStringLiteral( "Meter: " ) + name );
       widget->setName( name );
@@ -56,19 +57,30 @@ class MeterBarModel : public BlockBase {
       widget->setMeter( meter );
     }
 
-    void setPrecision( float precision ) {
-      widget->setPrecision( precision );
-    }
-
-    void setScale( float scale ) {
-      widget->setScale( scale );
-    }
-
-    void setFieldWitdh( float fieldWitdh ) {
-      widget->setFieldWitdh( fieldWitdh );
-    }
-
   public:
+
+    void toJSON( QJsonObject& json ) override {
+      QJsonObject valuesObject;
+
+      valuesObject["Font"] = QJsonValue::fromVariant( QVariant( widget->fontOfLabel() ) );
+      valuesObject["Precision"] = widget->precision;
+      valuesObject["Scale"] = widget->scale;
+      valuesObject["FieldWitdh"] = widget->fieldWidth;
+
+      json["values"] = valuesObject;
+    }
+
+    void fromJSON( QJsonObject& json ) override {
+      if( json["values"].isObject() ) {
+        QJsonObject valuesObject = json["values"].toObject();
+
+        widget->setFontOfLabel( valuesObject["Font"].toVariant().value<QFont>() );
+        widget->precision = valuesObject["Precision"].toInt();
+        widget->scale = valuesObject["Scale"].toDouble();
+        widget->fieldWidth = valuesObject["FieldWitdh"].toInt();
+      }
+    }
+
     QDockWidget* dock = nullptr;
     QAction* action = nullptr;
     GuidanceMeterBar* widget = nullptr;
@@ -118,9 +130,6 @@ class MeterBarModelFactory : public BlockFactory {
       mainWindow->addDockWidget( area, object->dock );
 
       b->addInputPort( "Number", SLOT( setMeter( float ) ) );
-      b->addInputPort( "Precision", SLOT( setPrecision( float ) ) );
-      b->addInputPort( "Scale", SLOT( setScale( float ) ) );
-      b->addInputPort( "FieldWitdh", SLOT( setFieldWitdh( float ) ) );
 
       return b;
     }

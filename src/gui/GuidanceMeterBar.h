@@ -16,17 +16,21 @@ class GuidanceMeterBar : public QGroupBox {
 
   public slots:
     void setMeter( float meter );
-    void setPrecision( float precision );
-    void setScale( float scale );
-    void setFieldWitdh( float fieldwitdh );
     void setName( const QString& name );
+
+    void setCaptionEnabled( bool enabled );
+    void setFontOfLabel( QFont font );
 
   private:
     Ui::GuidanceMeterBar* ui;
 
-    int precision = -1;
-    int fieldwitdh = 0;
-    float scale = 1;
+  public:
+    const QFont& fontOfLabel();
+    bool captionEnabled();
+
+    int precision = 0;
+    int fieldWidth = 0;
+    double scale = 1;
 };
 
 #endif // GUIDANCEMETERBAR_H

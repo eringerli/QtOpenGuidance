@@ -196,6 +196,15 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   implementSectionModel = new ImplementSectionModel();
   ui->twSections->setModel( implementSectionModel );
 
+  meterModel = new MeterModel( scene );
+  filterModelMeter = new QSortFilterProxyModel( scene );
+  filterModelMeter->setDynamicSortFilter( true );
+  filterModelMeter->setSourceModel( meterModel );
+  filterModelMeter->sort( 0, Qt::AscendingOrder );
+  ui->tvMeter->setModel( filterModelMeter );
+  meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
+  ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
+
   // initialise tiling
   Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
 
@@ -1073,6 +1082,7 @@ void SettingsDialog::allModelsReset() {
   numberBlockModel->resetModel();
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();
+  meterModel->resetModel();
 }
 
 void SettingsDialog::on_btnSectionAdd_clicked() {
@@ -1404,4 +1414,18 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
   settings.setValue( "SavedDockPositions", mainWindow->saveState() );
   settings.setValue( "SavedDockGeometry", mainWindow->saveGeometry() );
   settings.sync();
+}
+
+void SettingsDialog::on_pbMeterDefaults_clicked() {
+  QItemSelection selection( ui->tvMeter->selectionModel()->selection() );
+
+  foreach( const QModelIndex& index, selection.indexes() ) {
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 1 ), true );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 2 ), 0 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 3 ), 1 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 4 ), 0 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), QFont( "Monospace" ) );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 30 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), true );
+  }
 }

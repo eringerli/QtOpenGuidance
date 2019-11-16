@@ -15,32 +15,38 @@ GuidanceMeterBar::~GuidanceMeterBar() {
   delete ui;
 }
 
-void GuidanceMeterBar::setMeter( float meter ) {
+void GuidanceMeterBar::setMeter( float arg ) {
+  double meter = double( arg );
   meter *= scale;
 
-  if( ( meter > 0 ) && ( ( meter ) < float( 1 / qPow( 10, precision ) ) ) ) {
+  if( ( meter > 0 ) && ( ( meter ) < ( 1 / qPow( 10, precision ) ) ) ) {
     meter = 0;
   }
 
-  if( ( meter < 0 ) && ( ( -meter ) < float( 1 / qPow( 10, precision ) ) ) ) {
+  if( ( meter < 0 ) && ( ( -meter ) < ( 1 / qPow( 10, precision ) ) ) ) {
     meter = 0;
   }
 
-  ui->lbMeter->setText( QStringLiteral( "%1" ).arg( double( meter ), fieldwitdh, 'f', precision, ' ' ) );
-}
-
-void GuidanceMeterBar::setPrecision( float precision ) {
-  this->precision = int( precision );
-}
-
-void GuidanceMeterBar::setScale( float scale ) {
-  this->scale = scale;
-}
-
-void GuidanceMeterBar::setFieldWitdh( float fieldwitdh ) {
-  this->fieldwitdh = int( fieldwitdh );
+  ui->lbMeter->setText( QStringLiteral( "%1" ).arg( meter, fieldWidth, 'f', precision, ' ' ) );
 }
 
 void GuidanceMeterBar::setName( const QString& name ) {
   ui->lbName->setText( name );
+}
+
+void GuidanceMeterBar::setCaptionEnabled( bool enabled ) {
+  ui->lbName->setVisible( enabled );
+  ui->lbName->setEnabled( enabled );
+}
+
+void GuidanceMeterBar::setFontOfLabel( QFont font ) {
+  ui->lbMeter->setFont( font );
+}
+
+const QFont& GuidanceMeterBar::fontOfLabel() {
+  return ui->lbMeter->font();
+}
+
+bool GuidanceMeterBar::captionEnabled() {
+  return ui->lbName->isVisible();
 }

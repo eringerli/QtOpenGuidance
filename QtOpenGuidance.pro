@@ -26,6 +26,7 @@ SOURCES += src/main.cpp \
     src/gui/GuidanceXteBar.cpp \
     src/gui/ImplementBlockModel.cpp \
     src/gui/ImplementSectionModel.cpp \
+    src/gui/MeterModel.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/PassToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
@@ -73,6 +74,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteBarModel.h \
     src/gui/CameraToolbar.h \
+    src/gui/FontComboboxDelegate.h \
     src/gui/GuidanceMeterBar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceTurning.h \
@@ -80,6 +82,7 @@ HEADERS += \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
     src/gui/MainWindow.h \
+    src/gui/MeterModel.h \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \

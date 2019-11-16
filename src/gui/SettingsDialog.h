@@ -35,6 +35,8 @@
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
 #include "ImplementSectionModel.h"
+#include "MeterModel.h"
+#include "FontComboboxDelegate.h"
 
 #include "../kinematic/Tile.h"
 
@@ -166,6 +168,8 @@ class SettingsDialog : public QDialog {
     void on_cbSaveDockPositionsOnExit_toggled( bool checked );
     void on_pbSaveDockPositions_clicked();
 
+    void on_pbMeterDefaults_clicked();
+
   private:
     void saveGridValuesInSettings();
     void saveTileValuesInSettings();
@@ -247,6 +251,10 @@ class SettingsDialog : public QDialog {
     QSortFilterProxyModel* filterModelImplements = nullptr;
     ImplementBlockModel* implementBlockModel = nullptr;
     ImplementSectionModel* implementSectionModel = nullptr;
+
+    MeterModel* meterModel = nullptr;
+    QSortFilterProxyModel* filterModelMeter = nullptr;
+    FontComboboxDelegate* meterModelFontDelegate = nullptr;
 
   private:
     QNEBlock* getBlockWithId( int id );
