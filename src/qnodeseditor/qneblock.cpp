@@ -233,8 +233,6 @@ void QNEBlock::resizeBlockWidth() {
 
   qreal heightSnappedToGridSpacing = round( ( height - 2 * cornerRadius ) / ( gridSpacing ) ) * ( gridSpacing ) + 2 * cornerRadius;
 
-  qDebug() << height << heightSnappedToGridSpacing;
-
   double y = -heightSnappedToGridSpacing / 2 + verticalMargin + cornerRadius;
   width = 0;
 
