@@ -1,3 +1,8 @@
+load(configure)
+
+# enable to recheck all compile tests/find the libraries
+# CONFIG += recheck
+
 QT += 3dcore 3drender 3dinput 3dextras
 QT += widgets core
 
@@ -7,8 +12,10 @@ QT += widgets core
     HEADERS += src/block/SerialPort.h
 }
 
-android {
-    DEFINES += ANDROID_ENABLED
+qtCompileTest(spnav) {
+    DEFINES += SPNAV_ENABLED
+    HEADERS += src/gui/SpaceNavigatorPollingThread.h
+    LIBS += -lspnav
 }
 
 SOURCES += src/main.cpp \

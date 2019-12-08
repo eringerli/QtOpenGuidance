@@ -54,6 +54,10 @@
 
 #include "../block/PoseSimulation.h"
 
+#ifdef SPNAV_ENABLED
+#include "SpaceNavigatorPollingThread.h"
+#endif
+
 #include "../block/PoseSynchroniser.h"
 
 #include "../block/NmeaParserGGA.h"
@@ -216,6 +220,16 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   poseSimulation = poseSimulationFactory->createNewObject();
   poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
 
+  // SPNAV
+#ifdef SPNAV_ENABLED
+  qDebug() << "SPNAV_ENABLED";
+  spaceNavigatorPollingThread = new SpaceNavigatorPollingThread( this );
+  spaceNavigatorPollingThread->start();
+
+  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( float ) ), poseSimulation, SLOT( setSteerAngle( float ) ) );
+  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( float ) ), poseSimulation, SLOT( setVelocity( float ) ) );
+#endif
+
   // guidance
   plannerGuiFactory = new PlannerGuiFactory( tile, rootEntity );
   plannerGui = plannerGuiFactory->createNewObject();
@@ -353,8 +367,17 @@ SettingsDialog::~SettingsDialog() {
   implementSectionModel->deleteLater();
 
   poseSimulationFactory->deleteLater();
-
   poseSimulation->deleteLater();
+
+#ifdef SPNAV_ENABLED
+  spaceNavigatorPollingThread->stop();
+
+  if( ! spaceNavigatorPollingThread->wait( 500 ) ) {
+    spaceNavigatorPollingThread->terminate();
+  }
+
+  spnav_close();
+#endif
 
   plannerGuiFactory->deleteLater();
   plannerGui->deleteLater();

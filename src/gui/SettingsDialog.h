@@ -40,6 +40,8 @@
 
 #include "../kinematic/Tile.h"
 
+class SpaceNavigatorPollingThread;
+
 namespace Ui {
   class SettingsDialog;
 }
@@ -192,7 +194,6 @@ class SettingsDialog : public QDialog {
     QComboBox* getCbNodeType();
 
     RootTile tileRoot;
-
   public:
     BlockBase* poseSimulation = nullptr;
 
@@ -209,6 +210,10 @@ class SettingsDialog : public QDialog {
 //    Qt3DCore::QEntity* rootEntity = nullptr;
 
     BlockFactory* poseSimulationFactory = nullptr;
+
+#ifdef SPNAV_ENABLED
+    SpaceNavigatorPollingThread* spaceNavigatorPollingThread = nullptr;
+#endif
 
     BlockFactory* transverseMercatorConverterFactory = nullptr;
     BlockFactory* poseSynchroniserFactory = nullptr;
