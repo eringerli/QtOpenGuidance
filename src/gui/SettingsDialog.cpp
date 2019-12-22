@@ -590,7 +590,7 @@ void SettingsDialog::on_pbLoad_clicked() {
     }
 
     // block all further signals, so no double opening happens
-//    fileDialog->blockSignals( true );
+    fileDialog->blockSignals( true );
 
     fileDialog->deleteLater();
   } );
@@ -611,7 +611,7 @@ void SettingsDialog::on_pbLoad_clicked() {
     }
 
     // block all further signals, so no double opening happens
-//    fileDialog->blockSignals( true );
+    fileDialog->blockSignals( true );
 
     fileDialog->deleteLater();
   } );
