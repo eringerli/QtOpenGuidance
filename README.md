@@ -44,6 +44,14 @@ You can use qtcreator: go to welcome, the to project and hit "New Project". Choo
 
 For the diehards out there who use git bash (like me), you have to ```git submodule init``` and then ```git submodule update```.
 
+## Dependecies
+
+### CGAL
+Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases
+
+### Android
+You have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
+
 ## Compiling
 Open the project in qtcreator, change the buildtype to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). If the buttons are grayed out, do as suggested by qtcreator.
 

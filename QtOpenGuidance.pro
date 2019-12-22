@@ -1,5 +1,7 @@
 load(configure)
 
+CONFIG += c++14
+
 # enable to recheck all compile tests/find the libraries
 # CONFIG += recheck
 
@@ -10,6 +12,14 @@ QT += widgets core
     QT += serialport
     DEFINES += SERIALPORT_ENABLED
     HEADERS += src/block/SerialPort.h
+    CONFIG += precompile_header
+}
+
+android {
+    INCLUDEPATH += android/arm64-v8a//include/boost-1_70/
+    LIBS += -Landroid/arm64-v8a/lib/
+QMAKE_CXXFLAGS += -fexceptions
+QMAKE_CXXFLAGS += -frtti
 }
 
 qtCompileTest(spnav) {
@@ -103,6 +113,15 @@ HEADERS += \
     src/kinematic/Tile.h \
     src/kinematic/TrailerKinematic.h
 
+android {
+    HEADER += \
+        src/cgal.h
+}
+!android {
+    PRECOMPILED_HEADER += \
+        src/cgal.h
+}
+
 FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/GuidanceMeterBar.ui \
@@ -142,6 +161,7 @@ HEADERS += \
 
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
+include($$PWD/lib/cgal.pri)
 
 unix {
 target.path = /opt/QtOpenGuidance
