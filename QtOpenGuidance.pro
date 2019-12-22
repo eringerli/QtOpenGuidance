@@ -28,7 +28,10 @@ qtCompileTest(spnav) {
     LIBS += -lspnav
 }
 
-SOURCES += src/main.cpp \
+SOURCES += \
+    src/gui/FieldsOptimitionToolbar.cpp \
+    src/gui/FieldsToolbar.cpp \
+    src/main.cpp \
     src/3d/linemesh.cpp \
     src/3d/linemeshgeometry.cpp \
     src/3d/pointmesh.cpp \
@@ -91,6 +94,8 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteBarModel.h \
     src/gui/CameraToolbar.h \
+    src/gui/FieldsOptimitionToolbar.h \
+    src/gui/FieldsToolbar.h \
     src/gui/FontComboboxDelegate.h \
     src/gui/GuidanceMeterBar.h \
     src/gui/GuidanceToolbar.h \
@@ -124,6 +129,8 @@ android {
 
 FORMS += \
     src/gui/CameraToolbar.ui \
+    src/gui/FieldsOptimitionToolbar.ui \
+    src/gui/FieldsToolbar.ui \
     src/gui/GuidanceMeterBar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \

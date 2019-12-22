@@ -71,6 +71,8 @@
 #include "gui/SimulatorToolbar.h"
 #include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
+#include "gui/FieldsToolbar.h"
+#include "gui/FieldsOptimitionToolbar.h"
 
 #include "block/CameraController.h"
 #include "block/FpsMeasurement.h"
@@ -291,6 +293,33 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
   mainWindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
   guidanceToolbar->menu->addAction( passesToolbarDock->toggleViewAction() );
+
+  // fields toolbar
+  auto* fieldsToolbar = new FieldsToolbar( widget );
+  fieldsToolbar->setVisible( false );
+  QDockWidget* fieldsToolbarDock = new QDockWidget( mainWindow );
+  fieldsToolbarDock->setWidget( fieldsToolbar );
+  fieldsToolbarDock->setWindowTitle( fieldsToolbar->windowTitle() );
+  fieldsToolbarDock->setObjectName( QStringLiteral( "FieldsToolbar" ) );
+  fieldsToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+//  fieldsToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+  QObject::connect( fieldsToolbarDock, &QDockWidget::dockLocationChanged, fieldsToolbar, &FieldsToolbar::setDockLocation );
+  mainWindow->addDockWidget( Qt::LeftDockWidgetArea, fieldsToolbarDock );
+  mainWindow->tabifyDockWidget( cameraToolbarDock, fieldsToolbarDock );
+  guidanceToolbar->menu->addAction( fieldsToolbarDock->toggleViewAction() );
+
+  // fields optimition toolbar
+  auto* fieldsOptimitionToolbar = new FieldsOptimitionToolbar( widget );
+  fieldsOptimitionToolbar->setVisible( false );
+  QDockWidget* fieldsOptimitionToolbarDock = new QDockWidget( mainWindow );
+  fieldsOptimitionToolbarDock->setWidget( fieldsOptimitionToolbar );
+  fieldsOptimitionToolbarDock->setWindowTitle( fieldsOptimitionToolbar->windowTitle() );
+  fieldsOptimitionToolbarDock->setObjectName( QStringLiteral( "FieldOptimitionsToolbar" ) );
+  fieldsOptimitionToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
+  fieldsOptimitionToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
+  mainWindow->addDockWidget( Qt::LeftDockWidgetArea, fieldsOptimitionToolbarDock );
+  mainWindow->tabifyDockWidget( fieldsToolbarDock, fieldsOptimitionToolbarDock );
+  guidanceToolbar->menu->addAction( fieldsOptimitionToolbarDock->toggleViewAction() );
 
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
