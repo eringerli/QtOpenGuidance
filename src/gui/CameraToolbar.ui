@@ -52,8 +52,8 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ResetTrip.png</normaloff>:/icons/ResetTrip.png</iconset>
+      <iconset resource="../../lib/oxygen-icons-png/oxygen.qrc">
+       <normaloff>:/themes/oxygen/48x48/actions/view-restore.png</normaloff>:/themes/oxygen/48x48/actions/view-restore.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -91,8 +91,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/UpArrow64.png</normaloff>:/icons/UpArrow64.png</iconset>
+      <iconset theme="go-up"/>
      </property>
      <property name="iconSize">
       <size>
@@ -117,8 +116,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/DnArrow64.png</normaloff>:/icons/DnArrow64.png</iconset>
+      <iconset theme="go-down"/>
      </property>
      <property name="iconSize">
       <size>
@@ -156,8 +154,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ArrowLeft.png</normaloff>:/icons/ArrowLeft.png</iconset>
+      <iconset theme="object-rotate-left"/>
      </property>
      <property name="iconSize">
       <size>
@@ -182,8 +179,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ArrowRight.png</normaloff>:/icons/ArrowRight.png</iconset>
+      <iconset theme="object-rotate-right"/>
      </property>
      <property name="iconSize">
       <size>
@@ -224,8 +220,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ZoomIn48.png</normaloff>:/icons/ZoomIn48.png</iconset>
+      <iconset theme="zoom-in"/>
      </property>
      <property name="iconSize">
       <size>
@@ -250,8 +245,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ZoomOut48.png</normaloff>:/icons/ZoomOut48.png</iconset>
+      <iconset theme="zoom-out"/>
      </property>
      <property name="iconSize">
       <size>
@@ -270,7 +264,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../res/ressources.qrc"/>
+  <include location="../../lib/oxygen-icons-png/oxygen.qrc"/>
  </resources>
  <connections/>
 </ui>

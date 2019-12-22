@@ -119,6 +119,11 @@ FORMS += \
 RESOURCES += \
     res/ressources.qrc
 
+!linux | android {
+    RESOURCES += \
+        lib/oxygen-icons-png/oxygen.qrc
+}
+
 # aspect
 SOURCES += \
     src/aspect/fpsaspect.cpp \

@@ -101,8 +101,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>65</width>
-       <height>65</height>
+       <width>64</width>
+       <height>64</height>
       </size>
      </property>
      <property name="checkable">
@@ -122,13 +122,12 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/Snap2.png</normaloff>:/icons/Snap2.png</iconset>
+      <iconset theme="align-horizontal-center"/>
      </property>
      <property name="iconSize">
       <size>
-       <width>65</width>
-       <height>65</height>
+       <width>64</width>
+       <height>64</height>
       </size>
      </property>
     </widget>
@@ -158,14 +157,12 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/AutoSteerConf.png</normaloff>
-       <activeon>:/icons/AutoSteerConf.png</activeon>:/icons/AutoSteerConf.png</iconset>
+      <iconset theme="media-playback-start"/>
      </property>
      <property name="iconSize">
       <size>
-       <width>65</width>
-       <height>65</height>
+       <width>64</width>
+       <height>64</height>
       </size>
      </property>
      <property name="checkable">
@@ -181,36 +178,6 @@
       <bool>false</bool>
      </property>
      <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btn_selfTurn">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>Auto Turn</string>
-     </property>
-     <property name="text">
-      <string comment="Auto Turn"/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/YouTurnNo.png</normaloff>
-       <activeon>:/icons/Youturn80.png</activeon>:/icons/YouTurnNo.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>65</width>
-       <height>65</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
       <bool>false</bool>
      </property>
     </widget>
@@ -239,32 +206,58 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pbDocks">
+    <widget class="QToolButton" name="pbDocks">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
       <string>Docks</string>
      </property>
+     <property name="icon">
+      <iconset theme="tab-detach"/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>64</width>
+       <height>64</height>
+      </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="btn_settings">
+    <widget class="QToolButton" name="btn_settings">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string/>
+      <string>Settings</string>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/Settings48.png</normaloff>:/icons/Settings48.png</iconset>
+      <iconset theme="configure"/>
      </property>
      <property name="iconSize">
       <size>
-       <width>65</width>
-       <height>65</height>
+       <width>64</width>
+       <height>64</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>

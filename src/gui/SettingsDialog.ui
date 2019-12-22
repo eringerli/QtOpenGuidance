@@ -93,6 +93,9 @@
               <property name="text">
                <string>Add</string>
               </property>
+              <property name="icon">
+               <iconset theme="list-add"/>
+              </property>
              </widget>
             </item>
            </layout>
@@ -115,6 +118,9 @@
               <property name="text">
                <string>Save</string>
               </property>
+              <property name="icon">
+               <iconset theme="document-save"/>
+              </property>
              </widget>
             </item>
             <item>
@@ -124,6 +130,9 @@
               </property>
               <property name="text">
                <string>Load</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-open"/>
               </property>
              </widget>
             </item>
@@ -178,6 +187,9 @@
               <property name="text">
                <string>Zoom Out</string>
               </property>
+              <property name="icon">
+               <iconset theme="zoom-out"/>
+              </property>
               <property name="autoRepeat">
                <bool>true</bool>
               </property>
@@ -193,6 +205,9 @@
               </property>
               <property name="text">
                <string>Zoom In</string>
+              </property>
+              <property name="icon">
+               <iconset theme="zoom-in"/>
               </property>
               <property name="autoRepeat">
                <bool>true</bool>
@@ -210,6 +225,9 @@
               <property name="text">
                <string>Delete Selected</string>
               </property>
+              <property name="icon">
+               <iconset theme="edit-delete"/>
+              </property>
              </widget>
             </item>
             <item>
@@ -219,6 +237,9 @@
               </property>
               <property name="text">
                <string>Clear All</string>
+              </property>
+              <property name="icon">
+               <iconset theme="edit-clear"/>
               </property>
              </widget>
             </item>
@@ -335,8 +356,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="../../res/ressources.qrc">
-                   <normaloff>:/icons/Batman48.png</normaloff>:/icons/Batman48.png</iconset>
+                  <iconset theme="view-refresh"/>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -409,8 +429,7 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset resource="../../res/ressources.qrc">
-                   <normaloff>:/icons/Batman48.png</normaloff>:/icons/Batman48.png</iconset>
+                  <iconset theme="view-refresh"/>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -503,6 +522,9 @@
               <property name="text">
                <string>Insert Section</string>
               </property>
+              <property name="icon">
+               <iconset theme="list-add"/>
+              </property>
              </widget>
             </item>
             <item row="2" column="3">
@@ -525,6 +547,9 @@
               </property>
               <property name="text">
                <string>Remove</string>
+              </property>
+              <property name="icon">
+               <iconset theme="list-remove"/>
               </property>
              </widget>
             </item>
@@ -567,26 +592,6 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="3">
-             <widget class="QPushButton" name="btnSectionMoveUp">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Move Up</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="3">
-             <widget class="QPushButton" name="btnSectionMoveDown">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Move Down</string>
-              </property>
-             </widget>
-            </item>
             <item row="6" column="2">
              <widget class="QLabel" name="label_7">
               <property name="sizePolicy">
@@ -600,6 +605,32 @@
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="3">
+             <widget class="QPushButton" name="btnSectionMoveDown">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move Down</string>
+              </property>
+              <property name="icon">
+               <iconset theme="arrow-down"/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="3">
+             <widget class="QPushButton" name="btnSectionMoveUp">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move Up</string>
+              </property>
+              <property name="icon">
+               <iconset theme="arrow-up"/>
               </property>
              </widget>
             </item>
@@ -751,6 +782,9 @@
                   <property name="text">
                    <string>Choose Color</string>
                   </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
+                  </property>
                  </widget>
                 </item>
                 <item row="2" column="3">
@@ -795,6 +829,9 @@
                   </property>
                   <property name="text">
                    <string>Choose Color</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
                   </property>
                  </widget>
                 </item>
@@ -1126,6 +1163,9 @@
                   <property name="text">
                    <string>Choose Color</string>
                   </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
+                  </property>
                  </widget>
                 </item>
                 <item row="0" column="0">
@@ -1167,6 +1207,9 @@
                   </property>
                   <property name="text">
                    <string>Choose Color</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
                   </property>
                  </widget>
                 </item>
@@ -1299,6 +1342,9 @@
                   <property name="text">
                    <string>Choose Color</string>
                   </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
+                  </property>
                  </widget>
                 </item>
                 <item row="8" column="2">
@@ -1314,6 +1360,9 @@
                   </property>
                   <property name="text">
                    <string>Choose Color</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
                   </property>
                  </widget>
                 </item>
@@ -1526,6 +1575,9 @@
                   <property name="text">
                    <string>Choose Color</string>
                   </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
+                  </property>
                  </widget>
                 </item>
                 <item row="4" column="0">
@@ -1570,6 +1622,9 @@
                   </property>
                   <property name="text">
                    <string>Choose Color</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="color-management"/>
                   </property>
                  </widget>
                 </item>
@@ -1695,6 +1750,9 @@
               <property name="text">
                <string>Save current config as default</string>
               </property>
+              <property name="icon">
+               <iconset theme="document-save"/>
+              </property>
              </widget>
             </item>
             <item row="0" column="0">
@@ -1714,6 +1772,9 @@
               </property>
               <property name="text">
                <string>Load saved default config</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-revert"/>
               </property>
              </widget>
             </item>
@@ -1767,6 +1828,9 @@
              <widget class="QPushButton" name="pbSaveDockPositions">
               <property name="text">
                <string>Save current Positions of the Docks</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-save"/>
               </property>
              </widget>
             </item>
@@ -1851,6 +1915,9 @@
            <property name="text">
             <string>Delete Settings</string>
            </property>
+           <property name="icon">
+            <iconset theme="edit-clear"/>
+           </property>
           </widget>
          </item>
          <item>
@@ -1933,6 +2000,9 @@
               </property>
               <property name="text">
                <string>Choose Color</string>
+              </property>
+              <property name="icon">
+               <iconset theme="color-management"/>
               </property>
              </widget>
             </item>

@@ -54,7 +54,7 @@
    <item row="0" column="3">
     <widget class="QLabel" name="label_2">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -78,6 +78,12 @@
    </item>
    <item row="0" column="4">
     <widget class="QDoubleSpinBox" name="dsb_steerangle">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -141,7 +147,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -166,7 +172,7 @@
    <item row="0" column="6">
     <widget class="QLabel" name="label_3">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -190,6 +196,12 @@
    </item>
    <item row="0" column="7">
     <widget class="QDoubleSpinBox" name="dsb_frequency">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -240,6 +252,12 @@
    </item>
    <item row="0" column="1">
     <widget class="QDoubleSpinBox" name="dsb_velocity">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -263,7 +281,7 @@
    <item row="0" column="2">
     <widget class="QToolButton" name="pb_velocityReset">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -277,15 +295,15 @@
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
-     <property name="text">
-      <string>Reset</string>
+     <property name="icon">
+      <iconset theme="edit-clear"/>
      </property>
     </widget>
    </item>
    <item row="0" column="5">
     <widget class="QToolButton" name="pb_steerangleReset">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -299,15 +317,15 @@
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
-     <property name="text">
-      <string>Reset</string>
+     <property name="icon">
+      <iconset theme="edit-clear"/>
      </property>
     </widget>
    </item>
    <item row="0" column="8">
     <widget class="QToolButton" name="pb_frequencyReset">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Ignored">
+      <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -321,8 +339,8 @@
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
-     <property name="text">
-      <string>Reset</string>
+     <property name="icon">
+      <iconset theme="edit-clear"/>
      </property>
     </widget>
    </item>

@@ -37,12 +37,14 @@
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
+     <property name="styleSheet">
+      <string notr="true">image: url(:/themes/oxygen/48x48/actions/edit-redo.png);</string>
+     </property>
      <property name="text">
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ArrowTurnRight.png</normaloff>:/icons/ArrowTurnRight.png</iconset>
+      <iconset theme="go-next"/>
      </property>
      <property name="iconSize">
       <size>
@@ -67,8 +69,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/ArrowTurnLeft.png</normaloff>:/icons/ArrowTurnLeft.png</iconset>
+      <iconset theme="go-previous"/>
      </property>
      <property name="iconSize">
       <size>
@@ -80,8 +81,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../res/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

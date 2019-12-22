@@ -1,3 +1,6 @@
 [submodule "lib/geographiclib"]
 	path = lib/geographiclib
 	url = git://git.code.sourceforge.net/p/geographiclib/code
+[submodule "lib/oxygen-icons-png"]
+	path = lib/oxygen-icons-png
+	url = https://github.com/rogovsky/oxygen-icons-png.git

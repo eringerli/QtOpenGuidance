@@ -121,6 +121,10 @@ int main( int argc, char** argv ) {
   QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
   QApplication::setApplicationName( "QtOpenGuidance" );
 
+#if !defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
+  QIcon::setThemeSearchPaths( QIcon::themeSearchPaths() << QStringLiteral( ":themes/" ) );
+  QIcon::setThemeName( QStringLiteral( "oxygen" ) );
+#endif
 
   //Request required permissions at runtime on android
 #ifdef Q_OS_ANDROID
@@ -158,6 +162,7 @@ int main( int argc, char** argv ) {
                               QMainWindow::AllowTabbedDocks |
                               QMainWindow::VerticalTabs );
   mainWindow->setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
+  mainWindow->setCorner( Qt::BottomLeftCorner, Qt::BottomDockWidgetArea );
   mainWindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
   mainWindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
@@ -271,6 +276,7 @@ int main( int argc, char** argv ) {
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
   cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbar" ) );
+  cameraToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
   guidanceToolbar->menu->addAction( cameraToolbarDock->toggleViewAction() );
 
@@ -281,6 +287,7 @@ int main( int argc, char** argv ) {
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
   passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbar" ) );
+  passesToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
   mainWindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
   guidanceToolbar->menu->addAction( passesToolbarDock->toggleViewAction() );
