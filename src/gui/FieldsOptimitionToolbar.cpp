@@ -16,6 +16,11 @@ void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha )
   this->solidAlpha = solidAlpha;
 }
 
+void FieldsOptimitionToolbar::setFieldStatistics( size_t pointsRecorded, size_t pointsInPolygon ) {
+  ui->lbPointsInPolygon->setNum( double( pointsInPolygon ) );
+  ui->lbPointsRecorded->setNum( double( pointsRecorded ) );
+}
+
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
   emit recalculate( AlphaType( ui->cbAlphaShape->currentIndex() ), ui->dsbAlpha->value(), ui->dsbMaxDeviation->value() );
 }

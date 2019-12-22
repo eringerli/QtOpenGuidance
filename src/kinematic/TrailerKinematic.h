@@ -74,7 +74,7 @@ class TrailerKinematic : public BlockBase {
                                          position.x() - m_positionPivotPoint.x() + ( tile->x - m_tilePivotPoint->x ) ) )
                              );
 
-        // the angle between tractor and trailer >m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor
+        // the angle between tractor and trailer > m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor
         float angle = ( orientation.inverted() * orientationTrailer ).toEulerAngles().z();
 
         if( qAbs( angle ) < m_maxJackknifeAngle ) {
@@ -101,23 +101,24 @@ class TrailerKinematic : public BlockBase {
         tilePivotPoint = tile->getTileForPosition( &positionPivotPoint );
       }
 
-      QVector3D positionTowPoint = positionPivotPoint + ( orientation * m_offsetTowPoint );
+      emit posePivotPointChanged( tilePivotPoint, positionPivotPoint, orientation, options );
 
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         m_positionPivotPoint = positionPivotPoint;
         m_tilePivotPoint = tilePivotPoint;
       }
 
-      Tile* currentTile;
+      QVector3D positionTowPoint = positionPivotPoint + ( orientation * m_offsetTowPoint );
+
+      Tile* tileTowPoint;
 
       if( options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile;
+        tileTowPoint = tile;
       } else {
-        currentTile = tile->getTileForPosition( &positionTowPoint );
+        tileTowPoint = tilePivotPoint->getTileForPosition( &positionTowPoint );
       }
 
-      emit poseTowPointChanged( currentTile, positionTowPoint, orientation, options );
-      emit posePivotPointChanged( tilePivotPoint, positionPivotPoint, orientation, options );
+      emit poseTowPointChanged( tileTowPoint, positionTowPoint, orientation, options );
     }
 
   signals:

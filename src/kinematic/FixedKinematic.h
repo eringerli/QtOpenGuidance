@@ -57,29 +57,28 @@ class FixedKinematic : public BlockBase {
       }
 
       QVector3D positionPivotPoint = position + ( options.testFlag( PoseOption::CalculateFromPivotPoint ) ? QVector3D() : orientation * -m_offsetHookPoint );
-      QVector3D positionTowPoint = positionPivotPoint + orientation * m_offsetTowPoint;
-
       options.setFlag( PoseOption::CalculateFromPivotPoint, false );
-
-      Tile* currentTile = tile;
-
-      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile->getTileForPosition( &position );
-      }
 
       emit poseHookPointChanged( tile, position, orientation, options );
 
-      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile->getTileForPosition( &positionTowPoint );
-      }
-
-      emit poseTowPointChanged( currentTile, positionTowPoint, orientation, options );
+      Tile* tilePivotPoint = tile;
 
       if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
-        currentTile = tile->getTileForPosition( &positionPivotPoint );
+        tilePivotPoint = tilePivotPoint->getTileForPosition( &positionPivotPoint );
       }
 
-      emit posePivotPointChanged( currentTile, positionPivotPoint, orientation, options );
+      emit posePivotPointChanged( tilePivotPoint, positionPivotPoint, orientation, options );
+
+
+      QVector3D positionTowPoint = positionPivotPoint + ( orientation * m_offsetTowPoint );
+
+      Tile* tileTowPoint = tile;
+
+      if( !options.testFlag( PoseOption::CalculateWithoutTiling ) ) {
+        tileTowPoint = tilePivotPoint->getTileForPosition( &positionTowPoint );
+      }
+
+      emit poseTowPointChanged( tileTowPoint, positionTowPoint, orientation, options );
     }
 
   signals:

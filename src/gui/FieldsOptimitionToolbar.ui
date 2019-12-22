@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>126</width>
+    <width>132</width>
     <height>584</height>
    </rect>
   </property>
@@ -29,7 +29,8 @@
       <string>Recalculate</string>
      </property>
      <property name="icon">
-      <iconset theme="view-refresh"/>
+      <iconset theme="view-refresh">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -101,7 +102,7 @@
       <bool>false</bool>
      </property>
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::WheelFocus</enum>
      </property>
      <property name="decimals">
       <number>3</number>
@@ -144,7 +145,7 @@ max. Deviation</string>
    <item>
     <widget class="QDoubleSpinBox" name="dsbMaxDeviation">
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::WheelFocus</enum>
      </property>
      <property name="suffix">
       <string> m</string>
@@ -207,7 +208,7 @@ max. Deviation</string>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="lbPointInPolygon">
+    <widget class="QLabel" name="lbPointsInPolygon">
      <property name="text">
       <string>TextLabel</string>
      </property>

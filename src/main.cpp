@@ -441,6 +441,26 @@ int main( int argc, char** argv ) {
   QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),
                     settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
+  // field docks -> global planner block
+  QObject::connect( fieldsToolbar, SIGNAL( openField() ),
+                    settingDialog->globalPlanner, SLOT( openField() ) );
+  QObject::connect( fieldsToolbar, SIGNAL( newField() ),
+                    settingDialog->globalPlanner, SLOT( newField() ) );
+  QObject::connect( fieldsToolbar, SIGNAL( saveField() ),
+                    settingDialog->globalPlanner, SLOT( saveField() ) );
+  QObject::connect( fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ),
+                    settingDialog->globalPlanner, SLOT( setContinousRecord( bool ) ) );
+  QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ),
+                    settingDialog->globalPlanner, SLOT( recordPoint() ) );
+  QObject::connect( fieldsToolbar, SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
+                    settingDialog->globalPlanner, SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
+  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculate( FieldsOptimitionToolbar::AlphaType, double, double ) ),
+                    settingDialog->globalPlanner, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double ) ) );
+  QObject::connect( settingDialog->globalPlanner, SIGNAL( alphaChanged( double, double ) ),
+                    fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
+  QObject::connect( settingDialog->globalPlanner, SIGNAL( fieldStatisticsChanged( size_t, size_t ) ),
+                    fieldsOptimitionToolbar, SLOT( setFieldStatistics( size_t, size_t ) ) );
+
   // emit all initial signals from the settings dialog
   settingDialog->emitAllConfigSignals();
 

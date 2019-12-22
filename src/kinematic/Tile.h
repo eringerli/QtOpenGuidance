@@ -117,6 +117,8 @@ class Tile: public QObject {
     Tile* getTileForPosition( double& x, double& y ) {
       // the point is in this Tile -> return it
       if( x >= 0 &&
+          y >= 0 &&
+          x < sizeOfTileDouble &&
           y < sizeOfTileDouble ) {
         return this;
       }
@@ -149,7 +151,9 @@ class Tile: public QObject {
     Tile* getTileForPosition( QVector3D* position ) {
       // the point is in this Tile -> return it
       if( position->x() >= 0 &&
-          position->x() < sizeOfTile ) {
+          position->y() >= 0 &&
+          position->x() < sizeOfTile &&
+          position->y() < sizeOfTile ) {
         return this;
       } else {
         // calculate relative offset
@@ -175,7 +179,7 @@ class Tile: public QObject {
 
     Tile* getTileForOffset( qint64 x, qint64 y ) {
       // find a matching tile and return it
-      if( !parent()->children().empty() ) {
+      if( !( parent()->children().empty() ) ) {
         for( auto i : parent()->children() ) {
           Tile* tile = qobject_cast<Tile*>( i );
 

@@ -36,6 +36,7 @@ SOURCES += \
     src/3d/linemeshgeometry.cpp \
     src/3d/pointmesh.cpp \
     src/3d/pointmeshgeometry.cpp \
+    src/block/GuidanceGlobalPlanner.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \

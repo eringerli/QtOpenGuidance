@@ -41,6 +41,8 @@
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "../gui/FieldsOptimitionToolbar.h"
+
 #include "../kinematic/Tile.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
@@ -126,7 +128,57 @@ class GlobalPlanner : public BlockBase {
         bTextEntity->addComponent( bTextMesh );
         bTextEntity->addComponent( material );
       }
+
+      // test for recording
+      {
+
+        m_baseEntity = new Qt3DCore::QEntity( rootEntity );
+        m_baseTransform = new Qt3DCore::QTransform();
+        m_baseEntity->addComponent( m_baseTransform );
+
+        m_pointsEntity = new Qt3DCore::QEntity( m_baseEntity );
+        m_segmentsEntity = new Qt3DCore::QEntity( m_baseEntity );
+        m_segmentsEntity2 = new Qt3DCore::QEntity( m_baseEntity );
+        m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
+        m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
+
+        m_pointsMesh = new LineMesh();
+        m_pointsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
+        m_pointsEntity->addComponent( m_pointsMesh );
+
+        m_segmentsMesh = new LineMesh();
+        m_segmentsEntity->addComponent( m_segmentsMesh );
+
+        m_segmentsMesh2 = new LineMesh();
+        m_segmentsEntity2->addComponent( m_segmentsMesh2 );
+
+        m_segmentsMesh3 = new LineMesh();
+        m_segmentsEntity3->addComponent( m_segmentsMesh3 );
+
+        m_segmentsMesh4 = new LineMesh();
+        m_segmentsEntity4->addComponent( m_segmentsMesh4 );
+
+        m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
+        m_segmentsMaterial = new Qt3DExtras::QPhongMaterial( m_segmentsEntity );
+        m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity2 );
+        m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
+        m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
+
+        m_pointsMaterial->setAmbient( Qt::yellow );
+        m_segmentsMaterial->setAmbient( Qt::white );
+        m_segmentsMaterial2->setAmbient( Qt::green );
+        m_segmentsMaterial3->setAmbient( Qt::blue );
+        m_segmentsMaterial4->setAmbient( Qt::red );
+
+        m_pointsEntity->addComponent( m_pointsMaterial );
+        m_segmentsEntity->addComponent( m_segmentsMaterial );
+        m_segmentsEntity2->addComponent( m_segmentsMaterial2 );
+        m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
+        m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
+      }
     }
+
+    void alphaShape();
 
   public slots:
     void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
@@ -150,7 +202,19 @@ class GlobalPlanner : public BlockBase {
 
         if( implementLine.p1() != point ) {
           implementLine.setP1( point );
-          createPlanAB();
+//          createPlanAB();
+        }
+      } else {
+        if( recordOnRightEdgeOfImplement == false ) {
+          if( recordContinous ) {
+            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            recordNextPoint = false;
+          }
+
+          if( recordNextPoint ) {
+            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            recordNextPoint = false;
+          }
         }
       }
     }
@@ -165,9 +229,53 @@ class GlobalPlanner : public BlockBase {
 
         if( implementLine.p2() != point ) {
           implementLine.setP2( point );
-          createPlanAB();
+//          createPlanAB();
+        }
+      } else {
+        if( recordOnRightEdgeOfImplement == true ) {
+          if( recordContinous ) {
+            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            recordNextPoint = false;
+          }
+
+          if( recordNextPoint ) {
+            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            recordNextPoint = false;
+          }
         }
       }
+    }
+
+    void openField() {}
+    void newField() {
+      points.clear();
+    }
+    void saveField() {}
+
+    void setContinousRecord( bool enabled ) {
+      if( recordContinous == true && enabled == false ) {
+        recalculateField();
+      }
+
+      recordContinous = enabled;
+    }
+    void recordPoint() {
+      recordNextPoint = true;
+    }
+
+    void recordOnEdgeOfImplementChanged( bool right ) {
+      recordOnRightEdgeOfImplement = right;
+    }
+
+    void recalculateField() {
+      alphaShape();
+    }
+
+    void setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation ) {
+      this->alphaType = alphaType;
+      this->customAlpha = customAlpha;
+      this->maxDeviation = maxDeviation;
+      recalculateField();
     }
 
     void a_clicked() {
@@ -179,233 +287,17 @@ class GlobalPlanner : public BlockBase {
 
       aPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
 
+      points.clear();
+
       qDebug() << "a_clicked()" << aPoint;
     }
 
-    void createPlanAB() {
-      if( !qIsNull( abLine.length() ) ) {
+    void createPlanAB();
 
-        QVector<QVector3D> linePoints;
+    // form polygons from alpha shape
+    void alphaToPolygon( const Alpha_shape_2& A,
+                         Polygon_with_holes_2& out_poly );
 
-        // extend the points 200m in either direction
-        qreal headingOfABLine = abLine.angle();
-
-        QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
-        lineExtensionFromA.translate( aPoint );
-
-        QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
-        lineExtensionFromB.translate( bPoint );
-
-        QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
-
-        QVector<QSharedPointer<PathPrimitive>> plan;
-
-        // the lines are generated to follow in both directions
-        if( forwardPasses == 0 && reversePasses == 0 ) {
-          // left side
-          for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
-            plan.append( QSharedPointer<PathPrimitive>(
-                                 new PathPrimitiveLine(
-                                         pathLine.translated(
-                                                 QLineF::fromPolar( i * implementLine.dy() +
-                                                     implementLine.center().y(),
-                                                     headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i ) ) );
-          }
-
-          // right side
-          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
-            plan.append( QSharedPointer<PathPrimitive>(
-                                 new PathPrimitiveLine(
-                                         pathLine.translated(
-                                                 QLineF::fromPolar( i * implementLine.dy() +
-                                                     implementLine.center().y(),
-                                                     headingOfABLine - 270 ).p2() ), implementLine.dy(), false, true, -i ) ) );
-          }
-
-          // these lines are to follow in the generated direction
-        } else {
-          // add center line
-          auto linePrimitive = new PathPrimitiveLine(
-                  pathLine.translated(
-                          QLineF::fromPolar( implementLine.center().y(),
-                                             headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, 0 );
-          plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
-
-          enum class PathGenerationStates : uint8_t {
-            Forward = 0,
-            Reverse,
-            ForwardMirrored,
-            ReverseMirrored
-          } pathGenerationStates = PathGenerationStates::Forward;
-
-          uint16_t passCounter = 1;
-
-          // left side
-          if( !startRight ) {
-            if( forwardPasses == 1 ) {
-              pathGenerationStates = PathGenerationStates::Reverse;
-            } else {
-              pathGenerationStates = PathGenerationStates::Forward;
-            }
-          } else {
-            if( mirror ) {
-              pathGenerationStates = PathGenerationStates::ForwardMirrored;
-            } else {
-              pathGenerationStates = PathGenerationStates::Reverse;
-              passCounter = 0;
-            }
-
-          }
-
-          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
-
-            auto linePrimitive = new PathPrimitiveLine(
-                    pathLine.translated(
-                            QLineF::fromPolar( i * implementLine.dy() +
-                                               implementLine.center().y(),
-                                               headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, i );
-
-            ++passCounter;
-
-            // state machine to generate the directions of the lines
-            switch( pathGenerationStates ) {
-              case PathGenerationStates::Forward:
-                if( passCounter >= forwardPasses ) {
-                  pathGenerationStates = PathGenerationStates::Reverse;
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::Reverse:
-                linePrimitive->reverse();
-
-                if( passCounter >= reversePasses ) {
-                  if( mirror ) {
-                    pathGenerationStates = PathGenerationStates::ReverseMirrored;
-                  } else {
-                    pathGenerationStates = PathGenerationStates::Forward;
-                  }
-
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::ForwardMirrored:
-                linePrimitive->reverse();
-
-                if( passCounter >= forwardPasses ) {
-                  pathGenerationStates = PathGenerationStates::Forward;
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::ReverseMirrored:
-                if( passCounter >= reversePasses ) {
-                  if( mirror ) {
-                    pathGenerationStates = PathGenerationStates::ForwardMirrored;
-                  } else {
-                    pathGenerationStates = PathGenerationStates::Forward;
-                  }
-
-                  passCounter = 0;
-                }
-
-                break;
-            }
-
-            plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
-          }
-
-
-          // right side
-          passCounter = 1;
-
-          if( startRight ) {
-            if( forwardPasses == 1 ) {
-              pathGenerationStates = PathGenerationStates::Reverse;
-            } else {
-              pathGenerationStates = PathGenerationStates::Forward;
-            }
-          } else {
-            if( mirror ) {
-              pathGenerationStates = PathGenerationStates::ForwardMirrored;
-            } else {
-              pathGenerationStates = PathGenerationStates::Reverse;
-            }
-
-            passCounter = 0;
-          }
-
-          for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
-
-            auto linePrimitive = new PathPrimitiveLine(
-                    pathLine.translated(
-                            QLineF::fromPolar( i * implementLine.dy() +
-                                               implementLine.center().y(),
-                                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, false, i );
-
-            ++passCounter;
-
-            // state machine to generate the directions of the lines
-            switch( pathGenerationStates ) {
-              case PathGenerationStates::Forward:
-                if( passCounter >= forwardPasses ) {
-                  pathGenerationStates = PathGenerationStates::Reverse;
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::Reverse:
-                linePrimitive->reverse();
-
-                if( passCounter >= reversePasses ) {
-                  if( mirror ) {
-                    pathGenerationStates = PathGenerationStates::ReverseMirrored;
-                  } else {
-                    pathGenerationStates = PathGenerationStates::Forward;
-                  }
-
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::ForwardMirrored:
-                linePrimitive->reverse();
-
-                if( passCounter >= forwardPasses ) {
-                  pathGenerationStates = PathGenerationStates::Forward;
-                  passCounter = 0;
-                }
-
-                break;
-
-              case PathGenerationStates::ReverseMirrored:
-                if( passCounter >= reversePasses ) {
-                  if( mirror ) {
-                    pathGenerationStates = PathGenerationStates::ForwardMirrored;
-                  } else {
-                    pathGenerationStates = PathGenerationStates::Forward;
-                  }
-
-                  passCounter = 0;
-                }
-
-                break;
-            }
-
-            plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
-          }
-
-        }
-
-        emit planChanged( plan );
-      }
-    }
 
     void b_clicked() {
       bPointEntity->setParent( tile->tileEntity );
@@ -416,10 +308,16 @@ class GlobalPlanner : public BlockBase {
 
       abLine.setPoints( aPoint, bPoint );
 
-      createPlanAB();
+//      createPlanAB();
+
+//      optimalTransportationReconstruction();
+//      alphaShape();
     }
 
     void snap_clicked() {
+//      optimalTransportationReconstruction();
+      alphaShape();
+
       qDebug() << "snap_clicked()";
     }
 
@@ -455,6 +353,8 @@ class GlobalPlanner : public BlockBase {
     void setPassNumberTo( int /*passNumber*/ ) {}
 
   signals:
+    void alphaChanged( double optimal, double solid );
+    void fieldStatisticsChanged( size_t pointsRecorded, size_t pointsInPolygon );
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
   public:
@@ -494,6 +394,34 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QTransform* bPointTransform = nullptr;
     Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
+
+    std::vector<K::Point_2> points;
+    bool recordContinous = false;
+    bool recordNextPoint = false;
+    bool recordOnRightEdgeOfImplement = false;
+
+    FieldsOptimitionToolbar::AlphaType alphaType = FieldsOptimitionToolbar::AlphaType::Optimal;
+    double customAlpha = 10;
+    double maxDeviation = 0.01;
+
+    Qt3DCore::QEntity* m_baseEntity = nullptr;
+    Qt3DCore::QTransform* m_baseTransform = nullptr;
+
+    Qt3DCore::QEntity* m_pointsEntity = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity2 = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity3 = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity4 = nullptr;
+    LineMesh* m_pointsMesh = nullptr;
+    LineMesh* m_segmentsMesh = nullptr;
+    LineMesh* m_segmentsMesh2 = nullptr;
+    LineMesh* m_segmentsMesh3 = nullptr;
+    LineMesh* m_segmentsMesh4 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_pointsMaterial = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class GlobalPlannerFactory : public BlockFactory {

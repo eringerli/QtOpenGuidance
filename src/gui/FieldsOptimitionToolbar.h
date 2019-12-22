@@ -14,7 +14,7 @@ class FieldsOptimitionToolbar : public QGroupBox {
     explicit FieldsOptimitionToolbar( QWidget* parent = nullptr );
     ~FieldsOptimitionToolbar();
 
-    enum class AlphaType : uint8_t {
+    enum class AlphaType : uint_fast8_t {
       None = 0,
       Optimal,
       Solid,
@@ -22,10 +22,11 @@ class FieldsOptimitionToolbar : public QGroupBox {
     };
 
   signals:
-    void recalculate( FieldsOptimitionToolbar::AlphaType alphaType, double alpha, double maxDeviation );
+    void recalculate( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation );
 
   public slots:
     void setAlpha( double optimal, double solid );
+    void setFieldStatistics( size_t pointsRecorded, size_t pointsInPolygon );
 
 
   private slots:

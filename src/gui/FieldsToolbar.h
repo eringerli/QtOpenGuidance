@@ -24,7 +24,7 @@ class FieldsToolbar : public QGroupBox {
     void continousRecordToggled( bool );
     void recordPoint();
 
-    void setEdgeOfImplement( bool right );
+    void recordOnEdgeOfImplementChanged( bool right );
 
   public slots:
     void setDockLocation( Qt::DockWidgetArea area );
