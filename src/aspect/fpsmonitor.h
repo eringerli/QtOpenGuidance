@@ -29,8 +29,8 @@ class FpsMonitor : public Qt3DCore::QComponent {
   private:
     Qt3DCore::QNodeCreatedChangeBasePtr createNodeCreationChange() const override;
 
-    float m_framesPerSecond;
-    int m_rollingMeanFrameCount;
+    float m_framesPerSecond = 0;
+    int m_rollingMeanFrameCount = 5;
 };
 
 struct FpsMonitorData {

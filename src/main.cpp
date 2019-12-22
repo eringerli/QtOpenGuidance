@@ -400,13 +400,13 @@ int main( int argc, char** argv ) {
   QObject::connect( guidanceToolbar, SIGNAL( autosteerEnabled( bool ) ),
                     settingDialog->plannerGui, SIGNAL( autosteerEnabled( bool ) ) );
 
-  // turning dock -> settings dialog
+  // turning dock -> planner gui block
   QObject::connect( turningToolbar, SIGNAL( turnLeft() ),
                     settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
   QObject::connect( turningToolbar, SIGNAL( turnRight() ),
                     settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
 
-  // passes dock -> settings dialog
+  // passes dock -> global planner block
   QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
                     settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool, bool ) ) );
   QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),

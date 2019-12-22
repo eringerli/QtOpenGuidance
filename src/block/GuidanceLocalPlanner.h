@@ -55,7 +55,7 @@ class LocalPlanner : public BlockBase {
 
         // get nearest line/segment
         double distance = qInf();
-        double headingOfABLine = 0;
+//        double headingOfABLine = 0;
 
         QSharedPointer<PathPrimitive> lineBuffer;
 
@@ -68,7 +68,7 @@ class LocalPlanner : public BlockBase {
 
             if( qAbs( distanceTmp ) < qAbs( distance ) ) {
               lineBuffer = primitive;
-              headingOfABLine = line->line.angle();
+//              headingOfABLine = line->line.angle();
               distance = distanceTmp;
             }
 
@@ -78,14 +78,15 @@ class LocalPlanner : public BlockBase {
 
         // make a new plan with the nearest line, reverse lines that have anyDirection==true
         auto* line = qobject_cast<PathPrimitiveLine*>( lineBuffer.data() );
+
         if( line ) {
           QVector<QSharedPointer<PathPrimitive>> planTmp;
 
           if( line->anyDirection ) {
             qreal angleToHeading = line->line.angleTo( QLineF::fromPolar( 100, -qreal( orientation.toEulerAngles().z() ) ) );
 
-            if( !((angleToHeading < 80)||(angleToHeading>(360-80))) ) {
-              qDebug()<<"line->reverse()";
+            if( !( ( angleToHeading < 80 ) || ( angleToHeading > ( 360 - 80 ) ) ) ) {
+              qDebug() << "line->reverse()";
               line->reverse();
             }
           }

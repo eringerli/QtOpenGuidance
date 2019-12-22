@@ -74,7 +74,7 @@ QVariant ImplementBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( auto* object = qobject_cast<Implement*>( block->object ) ) {
+      if( /*auto* object = */qobject_cast<Implement*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -98,7 +98,7 @@ bool ImplementBlockModel::setData( const QModelIndex& index, const QVariant& val
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( auto* object = qobject_cast<Implement*>( block->object ) ) {
+      if( /*auto* object = */qobject_cast<Implement*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
