@@ -23,8 +23,6 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/Tile.h"
-
 // all the formulas are from https://www.xarg.org/book/kinematics/ackerman-steering/
 
 class AckermannSteering : public BlockBase {
@@ -135,4 +133,3 @@ class AckermannSteeringFactory : public BlockFactory {
 };
 
 #endif // ACKERMANNSTEERING_H
-

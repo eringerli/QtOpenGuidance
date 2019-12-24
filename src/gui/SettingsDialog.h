@@ -38,7 +38,7 @@
 #include "MeterModel.h"
 #include "FontComboboxDelegate.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 
 class SpaceNavigatorPollingThread;
 
@@ -95,7 +95,6 @@ class SettingsDialog : public QDialog {
     void on_pbZoomIn_clicked();
     void on_pbDeleteSelected_clicked();
 
-
     void on_gbGrid_toggled( bool arg1 );
     void on_dsbGridXStep_valueChanged( double arg1 );
     void on_dsbGridYStep_valueChanged( double arg1 );
@@ -123,9 +122,6 @@ class SettingsDialog : public QDialog {
     void on_pbBaudrateSet_clicked();
 
     void on_pbClear_clicked();
-
-    void on_pbTileColor_clicked();
-    void on_gbShowTiles_toggled( bool enabled );
 
     void on_cbImplements_currentIndexChanged( int index );
 
@@ -174,7 +170,6 @@ class SettingsDialog : public QDialog {
 
   private:
     void saveGridValuesInSettings();
-    void saveTileValuesInSettings();
     void savePlannerValuesInSettings();
     void savePathPlannerValuesInSettings();
 
@@ -193,7 +188,6 @@ class SettingsDialog : public QDialog {
   public:
     QComboBox* getCbNodeType();
 
-    RootTile tileRoot;
   public:
     BlockBase* poseSimulation = nullptr;
 
@@ -269,7 +263,6 @@ class SettingsDialog : public QDialog {
 
     QColor gridColor = QColor( 0x6b, 0x96, 0xa8 );
     QColor gridColorCoarse = QColor( 0xa2, 0xe3, 0xff );
-    QColor tileColor = QColor( 0xff, 0x00, 0x00 );
 
     QColor globalPlannerArrowColor = QColor( 0xff, 0xff, 0 );
     QColor globalPlannerCenterLineColor = QColor( 0xff, 0x00, 0 );

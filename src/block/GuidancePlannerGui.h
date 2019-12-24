@@ -31,23 +31,20 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class PlannerGui : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PlannerGui( Tile* tile, Qt3DCore::QEntity* rootEntity )
+    explicit PlannerGui( Qt3DCore::QEntity* rootEntity )
       : BlockBase(),
-        rootEntity( rootEntity ) {
-      this->tile = tile->getTileForOffset( 0, 0 );
-    }
+        rootEntity( rootEntity ) {}
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->tile = tile;
         this->position = position;
         this->orientation = orientation;
       }
@@ -63,8 +60,7 @@ class PlannerGui : public BlockBase {
     void xteChanged( float );
 
   public:
-    Tile* tile = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
@@ -75,9 +71,8 @@ class PlannerGuiFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PlannerGuiFactory( Tile* tile, Qt3DCore::QEntity* rootEntity )
+    PlannerGuiFactory( Qt3DCore::QEntity* rootEntity )
       : BlockFactory(),
-        tile( tile ),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -89,13 +84,13 @@ class PlannerGuiFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new PlannerGui( tile, rootEntity );
+      return new PlannerGui( rootEntity );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addOutputPort( "A clicked", SIGNAL( a_clicked() ) );
       b->addOutputPort( "B clicked", SIGNAL( b_clicked() ) );
       b->addOutputPort( "Snap clicked", SIGNAL( snap_clicked() ) );
@@ -108,7 +103,6 @@ class PlannerGuiFactory : public BlockFactory {
     }
 
   private:
-    Tile* tile;
     Qt3DCore::QEntity* rootEntity;
 };
 

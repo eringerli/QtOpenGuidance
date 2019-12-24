@@ -1,5 +1,27 @@
+// Copyright( C ) 2019 Christian Riggenbach
+//
+// This program is free software:
+// you can redistribute it and / or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// ( at your option ) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY;
+// without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see < https : //www.gnu.org/licenses/>.
+
+// all the other CGAL-stuff here
+
 #ifndef CGAL_H
 #define CGAL_H
+
+#include "cgalKernel.h"
 
 #include <QDebug>
 
@@ -48,15 +70,10 @@ struct PassNumber_merge_info {
   }
 };
 
-// choose the kernel
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-
 // typedefs for the geometric traits, storage traits and the algorithm
 #include <CGAL/Segment_Delaunay_graph_2.h>
 #include <CGAL/Segment_Delaunay_graph_filtered_traits_2.h>
 #include <CGAL/Segment_Delaunay_graph_storage_traits_with_info_2.h>
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Segment_Delaunay_graph_filtered_traits_2<K> Gt;
 
 // define the storage traits with info
@@ -82,9 +99,7 @@ typedef VD::Face_handle               VdFace_handle;
 typedef VD::Halfedge_handle           VdHalfedge_handle;
 typedef VD::Ccb_halfedge_circulator   VdCcb_halfedge_circulator;
 
-#include <CGAL/Optimal_transportation_reconstruction_2.h>
-typedef CGAL::Optimal_transportation_reconstruction_2<K>    Otr;
-
+#include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
@@ -95,15 +110,9 @@ typedef CGAL::Delaunay_triangulation_2<K, ATds>               ATriangulation_2;
 typedef CGAL::Alpha_shape_2<ATriangulation_2>                Alpha_shape_2;
 typedef Alpha_shape_2::Alpha_shape_edges_iterator            Alpha_shape_edges_iterator;
 
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Polygon_with_holes_2.h>
-typedef CGAL::Polygon_2<K>                                  Polygon_2;
-typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
-
 #include <CGAL/Polyline_simplification_2/simplify.h>
 namespace PS = CGAL::Polyline_simplification_2;
 
 #include <CGAL/point_generators_2.h>
-
 
 #endif // CGAL_H

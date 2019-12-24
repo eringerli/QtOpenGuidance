@@ -32,7 +32,8 @@
     <enum>Qt::NoFocus</enum>
    </property>
    <property name="icon">
-    <iconset theme="document-open"/>
+    <iconset theme="document-open">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -63,7 +64,8 @@
     <string/>
    </property>
    <property name="icon">
-    <iconset theme="document-new"/>
+    <iconset theme="document-new">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -91,7 +93,8 @@
     <enum>Qt::NoFocus</enum>
    </property>
    <property name="icon">
-    <iconset theme="document-save"/>
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -122,7 +125,8 @@
     <string>Continous</string>
    </property>
    <property name="icon">
-    <iconset theme="media-record"/>
+    <iconset theme="media-record">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -162,7 +166,8 @@
     <string>Single</string>
    </property>
    <property name="icon">
-    <iconset theme="media-record"/>
+    <iconset theme="media-record">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -203,8 +208,8 @@
    </property>
    <property name="icon">
     <iconset resource="../../res/ressources.qrc">
-     <normaloff>:/icons/BoundaryLeft.png</normaloff>
-     <normalon>:/icons/BoundaryRight.png</normalon>:/icons/BoundaryLeft.png</iconset>
+     <normaloff>:/icons/BoundaryRight.png</normaloff>
+     <normalon>:/icons/BoundaryLeft.png</normalon>:/icons/BoundaryRight.png</iconset>
    </property>
    <property name="iconSize">
     <size>

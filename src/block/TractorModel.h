@@ -37,7 +37,7 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class TractorModel : public BlockBase {
@@ -48,9 +48,9 @@ class TractorModel : public BlockBase {
     ~TractorModel();
 
   public slots:
-    void setPoseHookPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
-    void setPoseTowPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
-    void setPosePivotPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void setPoseHookPoint( Point_3, QQuaternion, PoseOption::Options );
+    void setPoseTowPoint( Point_3, QQuaternion, PoseOption::Options );
+    void setPosePivotPoint( Point_3, QQuaternion, PoseOption::Options );
 
     void setSteeringAngleLeft( float steerAngle );
     void setSteeringAngleRight( float steerAngle );
@@ -122,9 +122,9 @@ class TractorModelFactory : public BlockFactory {
       b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
       b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
 
-      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
 
       b->addInputPort( "Steering Angle Left", SLOT( setSteeringAngleLeft( float ) ) );
       b->addInputPort( "Steering Angle Right", SLOT( setSteeringAngleRight( float ) ) );

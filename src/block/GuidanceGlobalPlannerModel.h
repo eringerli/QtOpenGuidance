@@ -30,6 +30,7 @@
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QTexture>
 #include <Qt3DRender/QTextureWrapMode>
+#include <Qt3DRender/QAttribute>
 
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QPhongMaterial>
@@ -44,7 +45,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
@@ -59,15 +60,13 @@ class GlobalPlannerModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlannerModel( Tile* tile, Qt3DCore::QEntity* rootEntity )
+    explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity )
       : BlockBase(),
         rootEntity( rootEntity ) {
-      this->tile = tile->getTileForOffset( 0, 0 );
-      this->tile00 = tile->getTileForOffset( 0, 0 );
 
       // arrows for passes
       {
-        arrowsEntity = new Qt3DCore::QEntity( tile00->tileEntity );
+        arrowsEntity = new Qt3DCore::QEntity( rootEntity );
         arrowsTransform = new Qt3DCore::QTransform();
         arrowsEntity->addComponent( arrowsTransform );
 
@@ -183,12 +182,11 @@ class GlobalPlannerModel : public BlockBase {
       recalculateMeshes();
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->tile = tile;
         this->position = position;
         this->orientation = orientation;
-        arrowsTransform->setTranslation( QVector3D( 0, 0, position.z() ) );
+        arrowsTransform->setTranslation( QVector3D( 0, 0, float( position.z() ) ) );
       }
     }
 
@@ -286,9 +284,7 @@ class GlobalPlannerModel : public BlockBase {
     }
 
   public:
-    Tile* tile = nullptr;
-    Tile* tile00 = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
@@ -325,9 +321,8 @@ class GlobalPlannerModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerModelFactory( Tile* tile, Qt3DCore::QEntity* rootEntity )
+    GlobalPlannerModelFactory( Qt3DCore::QEntity* rootEntity )
       : BlockFactory(),
-        tile( tile ),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -339,20 +334,19 @@ class GlobalPlannerModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new GlobalPlannerModel( tile, rootEntity );
+      return new GlobalPlannerModel( rootEntity );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       return b;
     }
 
   private:
-    Tile* tile = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 

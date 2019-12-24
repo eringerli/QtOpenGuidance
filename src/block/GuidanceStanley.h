@@ -29,7 +29,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
@@ -43,10 +43,8 @@ class StanleyGuidance : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit StanleyGuidance( Tile* tile )
-      : BlockBase() {
-      this->tile = tile->getTileForOffset( 0, 0 );
-    }
+    explicit StanleyGuidance()
+      : BlockBase() {}
 
   public slots:
     void setSteeringAngle( float steeringAngle ) {
@@ -55,9 +53,8 @@ class StanleyGuidance : public BlockBase {
       this->steeringAngle = double( steeringAngle );
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->tile = tile;
         this->position = position;
         this->orientation1Ago = this->orientation;
         this->orientation = orientation;
@@ -65,7 +62,7 @@ class StanleyGuidance : public BlockBase {
     }
 
     void setHeadingOfPath( float headingOfPath ) {
-      this->headingOfPath = headingOfPath;
+      this->headingOfPath = double( headingOfPath );
     }
 
     void setXte( float distance ) {
@@ -187,8 +184,7 @@ class StanleyGuidance : public BlockBase {
     }
 
   public:
-    Tile* tile = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
     QQuaternion orientation1Ago = QQuaternion();
     double velocity = 0;
@@ -212,9 +208,8 @@ class StanleyGuidanceFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    StanleyGuidanceFactory( Tile* tile )
-      : BlockFactory(),
-        tile( tile ) {}
+    StanleyGuidanceFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Stanley Path Follower" );
@@ -225,13 +220,13 @@ class StanleyGuidanceFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new StanleyGuidance( tile );
+      return new StanleyGuidance();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
       b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
       b->addInputPort( "XTE", SLOT( setXte( float ) ) );
@@ -246,9 +241,6 @@ class StanleyGuidanceFactory : public BlockFactory {
 
       return b;
     }
-
-  private:
-    Tile* tile;
 };
 
 #endif // STANLEYGUIDANCE_H

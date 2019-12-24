@@ -29,7 +29,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
@@ -44,13 +44,11 @@ class XteGuidance : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit XteGuidance( Tile* tile )
-      : BlockBase() {
-      this->tile = tile->getTileForOffset( 0, 0 );
-    }
+    explicit XteGuidance()
+      : BlockBase() {}
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
 
         double distance = qInf();
@@ -60,8 +58,7 @@ class XteGuidance : public BlockBase {
           auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
-            double distanceTmp = line->distanceToPoint( QPointF( tile->x + double( position.x() ),
-                                 tile->y + double( position.y() ) ) );
+            double distanceTmp = line->distanceToPoint( QPointF( position.x(), position.y() ) );
 
             if( qAbs( distanceTmp ) < qAbs( distance ) ) {
               headingOfABLine = line->line.angle();
@@ -125,8 +122,7 @@ class XteGuidance : public BlockBase {
 
 
   public:
-    Tile* tile = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
@@ -137,9 +133,8 @@ class XteGuidanceFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    XteGuidanceFactory( Tile* tile )
-      : BlockFactory(),
-        tile( tile ) {}
+    XteGuidanceFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Cross Track Error" );
@@ -150,13 +145,13 @@ class XteGuidanceFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new XteGuidance( tile );
+      return new XteGuidance();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       b->addOutputPort( "XTE", SIGNAL( xteChanged( float ) ) );
@@ -164,9 +159,6 @@ class XteGuidanceFactory : public BlockFactory {
 
       return b;
     }
-
-  private:
-    Tile* tile;
 };
 
 #endif // XTEGUIDANCE_H

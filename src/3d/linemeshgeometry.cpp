@@ -28,7 +28,7 @@
 LineMeshGeometry::LineMeshGeometry( const QVector<QVector3D>& vertices, Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometry( parent )
   , _positionAttribute( new Qt3DRender::QAttribute( this ) )
-  , _vertexBuffer( new Qt3DRender::QBuffer( Qt3DRender::QBuffer::VertexBuffer, this ) ) {
+  , _vertexBuffer( new Qt3DRender::QBuffer( this ) ) {
   updatePoints( vertices );
 
   _positionAttribute->setAttributeType( Qt3DRender::QAttribute::VertexAttribute );

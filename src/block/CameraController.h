@@ -18,6 +18,9 @@
 
 #include <QObject>
 
+#include <QVector3D>
+#include <Qt3DCore/QTransform>
+
 #include <Qt3DExtras/qfirstpersoncameracontroller.h>
 #include <Qt3DExtras/QOrbitCameraController>
 
@@ -28,7 +31,7 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 #ifndef CAMERACONTROLLER_H
@@ -105,13 +108,10 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        m_cameraEntity->setParent( tile->tileEntity );
-        m_lightEntity->setParent( tile->tileEntity );
-
-        m_cameraEntity->setPosition( position + ( orientation * m_offset ) );
-        m_cameraEntity->setViewCenter( position );
+        m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) + ( orientation * m_offset ) );
+        m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
         m_cameraEntity->rollAboutViewCenter( 0 );
         m_cameraEntity->tiltAboutViewCenter( 0 );
@@ -248,7 +248,7 @@ class CameraControllerFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "View Center Position", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "View Center Position", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

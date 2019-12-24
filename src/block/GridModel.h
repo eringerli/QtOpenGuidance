@@ -41,7 +41,7 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../3d/linemesh.h"
@@ -94,17 +94,14 @@ class GridModel : public BlockBase {
     }
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options ) {
-      m_distanceMeasurementEntity->setParent( tile->tileEntity );
-      m_distanceMeasurementTransform->setTranslation( position );
+    void setPose( Point_3 position, QQuaternion, PoseOption::Options ) {
+      m_distanceMeasurementTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
-      m_baseEntity->setParent( tile->tileEntity );
-
-      float stepX = qMax( xStep, xStepCoarse );
-      float stepY = qMax( yStep, yStepCoarse );
-      QVector3D positionModulo( ( std::floor( ( tile->x + position.x() ) / stepX ) * stepX ) - tile->x,
-                                ( std::floor( ( tile->y + position.y() ) / stepY ) * stepY ) - tile->y,
-                                position.z() );
+      double stepX = qMax( xStep, xStepCoarse );
+      double stepY = qMax( yStep, yStepCoarse );
+      QVector3D positionModulo( float( std::floor( ( position.x() ) / stepX ) * stepX ),
+                                float( std::floor( ( position.y() ) / stepY ) * stepY ),
+                                float( position.z() ) );
       m_baseTransform->setTranslation( positionModulo );
     }
 
@@ -113,10 +110,10 @@ class GridModel : public BlockBase {
     }
 
     void setGridValues( float xStep, float yStep, float xStepCoarse, float yStepCoarse, float size, float cameraThreshold, float cameraThresholdCoarse, QColor color, QColor colorCoarse ) {
-      this->xStep = xStep;
-      this->yStep = yStep;
-      this->xStepCoarse = xStepCoarse;
-      this->yStepCoarse = yStepCoarse;
+      this->xStep = double( xStep );
+      this->yStep = double( yStep );
+      this->xStepCoarse = double( xStepCoarse );
+      this->yStepCoarse = double( yStepCoarse );
 
       QVector<qreal> thresholds = {qreal( cameraThreshold ), qreal( cameraThresholdCoarse ), 10000};
       m_lod->setThresholds( thresholds );
@@ -250,10 +247,10 @@ class GridModel : public BlockBase {
     Qt3DExtras::QPhongMaterial* m_material = nullptr;
     Qt3DExtras::QPhongMaterial* m_materialCoarse = nullptr;
 
-    float xStep = 1;
-    float yStep = 1;
-    float xStepCoarse = 10;
-    float yStepCoarse = 10;
+    double xStep = 1;
+    double yStep = 1;
+    double xStepCoarse = 10;
+    double yStepCoarse = 10;
 };
 
 class GridModelFactory : public BlockFactory {
@@ -278,7 +275,7 @@ class GridModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }

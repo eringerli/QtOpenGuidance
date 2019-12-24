@@ -18,229 +18,231 @@
 
 #include "GuidanceGlobalPlanner.h"
 
+#include "../cgal.h"
+
 void GlobalPlanner::createPlanAB() {
-  if( !qIsNull( abLine.length() ) ) {
+//  if( !qIsNull( abLine.squared_lenght() ) ) {
 
-    QVector<QVector3D> linePoints;
+//    QVector<QVector3D> linePoints;
 
-    // extend the points 200m in either direction
-    qreal headingOfABLine = abLine.angle();
+//    // extend the points 200m in either direction
+//    qreal headingOfABLine = abLine.angle();
 
-    QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
-    lineExtensionFromA.translate( aPoint );
+//    QLineF lineExtensionFromA = QLineF::fromPolar( -200, headingOfABLine );
+//    lineExtensionFromA.translate( aPoint );
 
-    QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
-    lineExtensionFromB.translate( bPoint );
+//    QLineF lineExtensionFromB = QLineF::fromPolar( 200, headingOfABLine );
+//    lineExtensionFromB.translate( bPoint );
 
-    QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
+//    QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
 
-    QVector<QSharedPointer<PathPrimitive>> plan;
+//    QVector<QSharedPointer<PathPrimitive>> plan;
 
-    // the lines are generated to follow in both directions
-    if( forwardPasses == 0 && reversePasses == 0 ) {
-      // left side
-      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
-        plan.append( QSharedPointer<PathPrimitive>(
-                       new PathPrimitiveLine(
-                         pathLine.translated(
-                           QLineF::fromPolar( i * implementLine.dy() +
-                                              implementLine.center().y(),
-                                              headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i ) ) );
-      }
+//    // the lines are generated to follow in both directions
+//    if( forwardPasses == 0 && reversePasses == 0 ) {
+//      // left side
+//      for( uint16_t i = 0; i < pathsToGenerate; ++i ) {
+//        plan.append( QSharedPointer<PathPrimitive>(
+//                       new PathPrimitiveLine(
+//                         pathLine.translated(
+//                           QLineF::fromPolar( i * implementLine.dy() +
+//                                              implementLine.center().y(),
+//                                              headingOfABLine - 90 ).p2() ), implementLine.dy(), false, true, i ) ) );
+//      }
 
-      // right side
-      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
-        plan.append( QSharedPointer<PathPrimitive>(
-                       new PathPrimitiveLine(
-                         pathLine.translated(
-                           QLineF::fromPolar( i * implementLine.dy() +
-                                              implementLine.center().y(),
-                                              headingOfABLine - 270 ).p2() ), implementLine.dy(), false, true, -i ) ) );
-      }
+//      // right side
+//      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+//        plan.append( QSharedPointer<PathPrimitive>(
+//                       new PathPrimitiveLine(
+//                         pathLine.translated(
+//                           QLineF::fromPolar( i * implementLine.dy() +
+//                                              implementLine.center().y(),
+//                                              headingOfABLine - 270 ).p2() ), implementLine.dy(), false, true, -i ) ) );
+//      }
 
-      // these lines are to follow in the generated direction
-    } else {
-      // add center line
-      auto linePrimitive = new PathPrimitiveLine(
-        pathLine.translated(
-          QLineF::fromPolar( implementLine.center().y(),
-                             headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, 0 );
-      plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+//      // these lines are to follow in the generated direction
+//    } else {
+//      // add center line
+//      auto linePrimitive = new PathPrimitiveLine(
+//        pathLine.translated(
+//          QLineF::fromPolar( implementLine.center().y(),
+//                             headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, 0 );
+//      plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
 
-      enum class PathGenerationStates : uint8_t {
-        Forward = 0,
-        Reverse,
-        ForwardMirrored,
-        ReverseMirrored
-      } pathGenerationStates = PathGenerationStates::Forward;
+//      enum class PathGenerationStates : uint8_t {
+//        Forward = 0,
+//        Reverse,
+//        ForwardMirrored,
+//        ReverseMirrored
+//      } pathGenerationStates = PathGenerationStates::Forward;
 
-      uint16_t passCounter = 1;
+//      uint16_t passCounter = 1;
 
-      // left side
-      if( !startRight ) {
-        if( forwardPasses == 1 ) {
-          pathGenerationStates = PathGenerationStates::Reverse;
-        } else {
-          pathGenerationStates = PathGenerationStates::Forward;
-        }
-      } else {
-        if( mirror ) {
-          pathGenerationStates = PathGenerationStates::ForwardMirrored;
-        } else {
-          pathGenerationStates = PathGenerationStates::Reverse;
-          passCounter = 0;
-        }
+//      // left side
+//      if( !startRight ) {
+//        if( forwardPasses == 1 ) {
+//          pathGenerationStates = PathGenerationStates::Reverse;
+//        } else {
+//          pathGenerationStates = PathGenerationStates::Forward;
+//        }
+//      } else {
+//        if( mirror ) {
+//          pathGenerationStates = PathGenerationStates::ForwardMirrored;
+//        } else {
+//          pathGenerationStates = PathGenerationStates::Reverse;
+//          passCounter = 0;
+//        }
 
-      }
+//      }
 
-      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+//      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
 
-        auto linePrimitive = new PathPrimitiveLine(
-          pathLine.translated(
-            QLineF::fromPolar( i * implementLine.dy() +
-                               implementLine.center().y(),
-                               headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, i );
+//        auto linePrimitive = new PathPrimitiveLine(
+//          pathLine.translated(
+//            QLineF::fromPolar( i * implementLine.dy() +
+//                               implementLine.center().y(),
+//                               headingOfABLine + 90 ).p2() ), implementLine.dy(), false, false, i );
 
-        ++passCounter;
+//        ++passCounter;
 
-        // state machine to generate the directions of the lines
-        switch( pathGenerationStates ) {
-          case PathGenerationStates::Forward:
-            if( passCounter >= forwardPasses ) {
-              pathGenerationStates = PathGenerationStates::Reverse;
-              passCounter = 0;
-            }
+//        // state machine to generate the directions of the lines
+//        switch( pathGenerationStates ) {
+//          case PathGenerationStates::Forward:
+//            if( passCounter >= forwardPasses ) {
+//              pathGenerationStates = PathGenerationStates::Reverse;
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::Reverse:
-            linePrimitive->reverse();
+//          case PathGenerationStates::Reverse:
+//            linePrimitive->reverse();
 
-            if( passCounter >= reversePasses ) {
-              if( mirror ) {
-                pathGenerationStates = PathGenerationStates::ReverseMirrored;
-              } else {
-                pathGenerationStates = PathGenerationStates::Forward;
-              }
+//            if( passCounter >= reversePasses ) {
+//              if( mirror ) {
+//                pathGenerationStates = PathGenerationStates::ReverseMirrored;
+//              } else {
+//                pathGenerationStates = PathGenerationStates::Forward;
+//              }
 
-              passCounter = 0;
-            }
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::ForwardMirrored:
-            linePrimitive->reverse();
+//          case PathGenerationStates::ForwardMirrored:
+//            linePrimitive->reverse();
 
-            if( passCounter >= forwardPasses ) {
-              pathGenerationStates = PathGenerationStates::Forward;
-              passCounter = 0;
-            }
+//            if( passCounter >= forwardPasses ) {
+//              pathGenerationStates = PathGenerationStates::Forward;
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::ReverseMirrored:
-            if( passCounter >= reversePasses ) {
-              if( mirror ) {
-                pathGenerationStates = PathGenerationStates::ForwardMirrored;
-              } else {
-                pathGenerationStates = PathGenerationStates::Forward;
-              }
+//          case PathGenerationStates::ReverseMirrored:
+//            if( passCounter >= reversePasses ) {
+//              if( mirror ) {
+//                pathGenerationStates = PathGenerationStates::ForwardMirrored;
+//              } else {
+//                pathGenerationStates = PathGenerationStates::Forward;
+//              }
 
-              passCounter = 0;
-            }
+//              passCounter = 0;
+//            }
 
-            break;
-        }
+//            break;
+//        }
 
-        plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
-      }
+//        plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+//      }
 
 
-      // right side
-      passCounter = 1;
+//      // right side
+//      passCounter = 1;
 
-      if( startRight ) {
-        if( forwardPasses == 1 ) {
-          pathGenerationStates = PathGenerationStates::Reverse;
-        } else {
-          pathGenerationStates = PathGenerationStates::Forward;
-        }
-      } else {
-        if( mirror ) {
-          pathGenerationStates = PathGenerationStates::ForwardMirrored;
-        } else {
-          pathGenerationStates = PathGenerationStates::Reverse;
-        }
+//      if( startRight ) {
+//        if( forwardPasses == 1 ) {
+//          pathGenerationStates = PathGenerationStates::Reverse;
+//        } else {
+//          pathGenerationStates = PathGenerationStates::Forward;
+//        }
+//      } else {
+//        if( mirror ) {
+//          pathGenerationStates = PathGenerationStates::ForwardMirrored;
+//        } else {
+//          pathGenerationStates = PathGenerationStates::Reverse;
+//        }
 
-        passCounter = 0;
-      }
+//        passCounter = 0;
+//      }
 
-      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
+//      for( uint16_t i = 1; i < pathsToGenerate; ++i ) {
 
-        auto linePrimitive = new PathPrimitiveLine(
-          pathLine.translated(
-            QLineF::fromPolar( i * implementLine.dy() +
-                               implementLine.center().y(),
-                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, false, i );
+//        auto linePrimitive = new PathPrimitiveLine(
+//          pathLine.translated(
+//            QLineF::fromPolar( i * implementLine.dy() +
+//                               implementLine.center().y(),
+//                               headingOfABLine - 90 ).p2() ), implementLine.dy(), false, false, i );
 
-        ++passCounter;
+//        ++passCounter;
 
-        // state machine to generate the directions of the lines
-        switch( pathGenerationStates ) {
-          case PathGenerationStates::Forward:
-            if( passCounter >= forwardPasses ) {
-              pathGenerationStates = PathGenerationStates::Reverse;
-              passCounter = 0;
-            }
+//        // state machine to generate the directions of the lines
+//        switch( pathGenerationStates ) {
+//          case PathGenerationStates::Forward:
+//            if( passCounter >= forwardPasses ) {
+//              pathGenerationStates = PathGenerationStates::Reverse;
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::Reverse:
-            linePrimitive->reverse();
+//          case PathGenerationStates::Reverse:
+//            linePrimitive->reverse();
 
-            if( passCounter >= reversePasses ) {
-              if( mirror ) {
-                pathGenerationStates = PathGenerationStates::ReverseMirrored;
-              } else {
-                pathGenerationStates = PathGenerationStates::Forward;
-              }
+//            if( passCounter >= reversePasses ) {
+//              if( mirror ) {
+//                pathGenerationStates = PathGenerationStates::ReverseMirrored;
+//              } else {
+//                pathGenerationStates = PathGenerationStates::Forward;
+//              }
 
-              passCounter = 0;
-            }
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::ForwardMirrored:
-            linePrimitive->reverse();
+//          case PathGenerationStates::ForwardMirrored:
+//            linePrimitive->reverse();
 
-            if( passCounter >= forwardPasses ) {
-              pathGenerationStates = PathGenerationStates::Forward;
-              passCounter = 0;
-            }
+//            if( passCounter >= forwardPasses ) {
+//              pathGenerationStates = PathGenerationStates::Forward;
+//              passCounter = 0;
+//            }
 
-            break;
+//            break;
 
-          case PathGenerationStates::ReverseMirrored:
-            if( passCounter >= reversePasses ) {
-              if( mirror ) {
-                pathGenerationStates = PathGenerationStates::ForwardMirrored;
-              } else {
-                pathGenerationStates = PathGenerationStates::Forward;
-              }
+//          case PathGenerationStates::ReverseMirrored:
+//            if( passCounter >= reversePasses ) {
+//              if( mirror ) {
+//                pathGenerationStates = PathGenerationStates::ForwardMirrored;
+//              } else {
+//                pathGenerationStates = PathGenerationStates::Forward;
+//              }
 
-              passCounter = 0;
-            }
+//              passCounter = 0;
+//            }
 
-            break;
-        }
+//            break;
+//        }
 
-        plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
-      }
+//        plan.append( QSharedPointer<PathPrimitive>( linePrimitive ) );
+//      }
 
-    }
+//    }
 
-    emit planChanged( plan );
-  }
+//    emit planChanged( plan );
+//  }
 }
 
 void GlobalPlanner::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& out_poly ) {
@@ -324,34 +326,38 @@ void GlobalPlanner::alphaShape() {
   QElapsedTimer timer;
   timer.start();
 
-  std::vector<K::Point_2> pointsCopy( points );
+  std::vector<K::Point_2> pointsCopy2D;
+
+  for( auto& point : points ) {
+    pointsCopy2D.push_back( Point_2( point.x(), point.y() ) );
+  }
 
   double distance = CGAL::squared_distance( points.front(), points.back() );
   distance = sqrt( distance );
   distance *= 10;
   std::size_t numPoints = std::size_t( distance );
-  CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( points.front(), points.back(), numPoints );
-  pointsCopy.reserve( pointsCopy.size() + numPoints );
+  CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( pointsCopy2D.front(), pointsCopy2D.back(), numPoints );
+  pointsCopy2D.reserve( pointsCopy2D.size() + numPoints );
 
   for( std::size_t i = 0; i < numPoints; ++i ) {
-    pointsCopy.push_back( *pointGenerator );
+    pointsCopy2D.push_back( *pointGenerator );
     ++pointGenerator;
   }
 
-  qDebug() << "points.size()" << points.size() << "pointsCopy.size()" << pointsCopy.size() << "distance" << distance << std::size_t( distance );
+  qDebug() << "points.size()" << points.size() << "pointsCopy.size()" << pointsCopy2D.size() << "distance" << distance << std::size_t( distance );
 
   // copy all the points to the mesh
   {
     QVector<QVector3D> meshPoints;
 
-    for( auto&& point : pointsCopy ) {
+    for( auto&& point : pointsCopy2D ) {
       meshPoints << QVector3D( float( point.x() ), float( point.y() ), 0 );
     }
 
     m_pointsMesh->posUpdate( meshPoints );
   }
 
-  Alpha_shape_2 alphaShape( pointsCopy.begin(), pointsCopy.end(),
+  Alpha_shape_2 alphaShape( pointsCopy2D.begin(), pointsCopy2D.end(),
                             K::FT( 0 ),
                             Alpha_shape_2::REGULARIZED );
 
@@ -405,7 +411,7 @@ void GlobalPlanner::alphaShape() {
 
       m_segmentsMesh2->posUpdate( meshSegmentPoints );
     }
-    qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << pointsCopy.size();
+    qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << pointsCopy2D.size();
     qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
   }
 
@@ -468,7 +474,7 @@ void GlobalPlanner::alphaShape() {
 
       m_segmentsMesh->posUpdate( meshSegmentPoints );
     }
-    qDebug() << "alpha shape edges tot: " << numSegments << "points: " << pointsCopy.size();
+    qDebug() << "alpha shape edges tot: " << numSegments << "points: " << pointsCopy2D.size();
     qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
   }
 
@@ -483,7 +489,7 @@ void GlobalPlanner::alphaShape() {
 
     for( VertexIterator vi = out_poly.outer_boundary().vertices_begin(); vi != out_poly.outer_boundary().vertices_end(); ++vi ) {
       //          std::cout << "vertex " << n++ << " = " << *vi << std::endl;
-      meshSegmentPoints << QVector3D( vi->x(), vi->y(), 0.1f );
+      meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
     }
 
     meshSegmentPoints << meshSegmentPoints.first();
@@ -514,13 +520,13 @@ void GlobalPlanner::alphaShape() {
 
     for( VertexIterator vi = out_poly.outer_boundary().vertices_begin(); vi != out_poly.outer_boundary().vertices_end(); ++vi ) {
       //          std::cout << "vertex " << n++ << " = " << *vi << std::endl;
-      meshSegmentPoints << QVector3D( vi->x(), vi->y(), 0.1f );
+      meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
     }
 
     meshSegmentPoints << meshSegmentPoints.first();
     m_segmentsMesh4->posUpdate( meshSegmentPoints );
     qDebug() << "out_poly 2:" << meshSegmentPoints.size();
-    emit fieldStatisticsChanged( points.size(), meshSegmentPoints.size() );
+    emit fieldStatisticsChanged( points.size(), size_t( meshSegmentPoints.size() ) );
     m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
 
     //        std::cout << std::endl;

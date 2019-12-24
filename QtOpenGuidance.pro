@@ -116,16 +116,17 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PoseOptions.h \
-    src/kinematic/Tile.h \
     src/kinematic/TrailerKinematic.h
 
 android {
     HEADER += \
-        src/cgal.h
+        src/cgal.h \
+        src/cgalKernel.h
 }
 !android {
     PRECOMPILED_HEADER += \
-        src/cgal.h
+        src/cgal.h \
+        src/cgalKernel.h
 }
 
 FORMS += \
@@ -200,4 +201,3 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
-

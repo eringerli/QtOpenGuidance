@@ -32,7 +32,7 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 
 #include <GeographicLib/TransverseMercator.hpp>
 
@@ -43,10 +43,9 @@ class PoseSimulation : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PoseSimulation( Tile* tile )
+    explicit PoseSimulation()
       : BlockBase(),
-        _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ),
-        tile( tile ) {
+        _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ) {
       setSimulation( false );
     }
 
@@ -155,17 +154,14 @@ class PoseSimulation : public BlockBase {
     double y = 0;
     double height = 0;
     TransverseMercator _tm;
-
-    Tile* tile;
 };
 
 class PoseSimulationFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PoseSimulationFactory( Tile* tile )
-      : BlockFactory(),
-        tile( tile ) {}
+    PoseSimulationFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Pose Simulation" );
@@ -175,7 +171,7 @@ class PoseSimulationFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new PoseSimulation( tile );
+      return new PoseSimulation();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -196,9 +192,6 @@ class PoseSimulationFactory : public BlockFactory {
 
       return b;
     }
-
-  private:
-    Tile* tile;
 };
 
 #endif // POSESIMULATION_H

@@ -57,7 +57,7 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
   // hitch
   {
     m_hitchMesh = new Qt3DExtras::QCylinderMesh();
-    m_hitchMesh->setRadius( 0.1 );
+    m_hitchMesh->setRadius( 0.1f );
 
     m_hitchTransform = new Qt3DCore::QTransform();
     m_hitchTransform->setRotation(
@@ -74,7 +74,7 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
   // axle
   {
     m_axleMesh = new Qt3DExtras::QCylinderMesh();
-    m_axleMesh->setRadius( 0.1 );
+    m_axleMesh->setRadius( 0.1f );
 
     m_axleTransform = new Qt3DCore::QTransform();
 
@@ -92,7 +92,7 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
     // tow hook marker -> red
     {
       m_towHookMesh = new Qt3DExtras::QSphereMesh();
-      m_towHookMesh->setRadius( .2 );
+      m_towHookMesh->setRadius( .2f );
       m_towHookMesh->setSlices( 20 );
       m_towHookMesh->setRings( 20 );
 
@@ -110,7 +110,7 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
     // pivot point marker -> green
     {
       m_pivotPointMesh = new Qt3DExtras::QSphereMesh();
-      m_pivotPointMesh->setRadius( .2 );
+      m_pivotPointMesh->setRadius( .2f );
       m_pivotPointMesh->setSlices( 20 );
       m_pivotPointMesh->setRings( 20 );
 
@@ -128,7 +128,7 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
     // hitch marker -> blue
     {
       m_towPointMesh = new Qt3DExtras::QSphereMesh();
-      m_towPointMesh->setRadius( .2 );
+      m_towPointMesh->setRadius( .2f );
       m_towPointMesh->setSlices( 20 );
       m_towPointMesh->setRings( 20 );
 
@@ -217,27 +217,23 @@ void TrailerModel::setTrackwidth( float trackwidth ) {
   }
 }
 
-void TrailerModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+void TrailerModel::setPoseTowPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towPointEntity->setParent( tile->tileEntity );
-    m_towPointTransform->setTranslation( position );
+    m_towPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+void TrailerModel::setPoseHookPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towHookEntity->setParent( tile->tileEntity );
-    m_towHookTransform->setTranslation( position );
+    m_towHookTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation, PoseOption::Options options ) {
+void TrailerModel::setPosePivotPoint( Point_3 position, QQuaternion rotation, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_pivotPointEntity->setParent( tile->tileEntity );
-    m_pivotPointTransform->setTranslation( position );
+    m_pivotPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
-    m_rootEntity->setParent( tile->tileEntity );
-    m_rootEntityTransform->setTranslation( position );
+    m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
     m_rootEntityTransform->setRotation( rotation );
   }
 }

@@ -287,27 +287,23 @@ void TractorModel::setProportions() {
   }
 }
 
-void TractorModel::setPoseTowPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+void TractorModel::setPoseTowPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towPointEntity->setParent( tile->tileEntity );
-    m_towPointTransform->setTranslation( position );
+    m_towPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPoseHookPoint( Tile* tile, QVector3D position, QQuaternion, PoseOption::Options options ) {
+void TractorModel::setPoseHookPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towHookEntity->setParent( tile->tileEntity );
-    m_towHookTransform->setTranslation( position );
+    m_towHookTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPosePivotPoint( Tile* tile, QVector3D position, QQuaternion rotation, PoseOption::Options options ) {
+void TractorModel::setPosePivotPoint( Point_3 position, QQuaternion rotation, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_pivotPointEntity->setParent( tile->tileEntity );
-    m_pivotPointTransform->setTranslation( position );
+    m_pivotPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
-    m_rootEntity->setParent( tile->tileEntity );
-    m_rootEntityTransform->setTranslation( position );
+    m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
     m_rootEntityTransform->setRotation( rotation );
   }
 }

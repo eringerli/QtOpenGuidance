@@ -29,7 +29,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
@@ -40,15 +40,12 @@ class LocalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit LocalPlanner( Tile* tile )
-      : BlockBase() {
-      this->tile = tile->getTileForOffset( 0, 0 );
-    }
+    explicit LocalPlanner()
+      : BlockBase() {}
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->tile = tile;
         this->position = position;
         this->orientation = orientation;
 
@@ -63,8 +60,7 @@ class LocalPlanner : public BlockBase {
           auto* line = qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
-            double distanceTmp = line->distanceToPoint( QPointF( tile->x + double( position.x() ),
-                                 tile->y + double( position.y() ) ) );
+            double distanceTmp = line->distanceToPoint( QPointF( double( position.x() ), double( position.y() ) ) );
 
             if( qAbs( distanceTmp ) < qAbs( distance ) ) {
               lineBuffer = primitive;
@@ -107,8 +103,7 @@ class LocalPlanner : public BlockBase {
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
   public:
-    Tile* tile = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
@@ -119,9 +114,8 @@ class LocalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    LocalPlannerFactory( Tile* tile )
-      : BlockFactory(),
-        tile( tile ) {}
+    LocalPlannerFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Local Planner" );
@@ -132,21 +126,18 @@ class LocalPlannerFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new LocalPlanner( tile );
+      return new LocalPlanner();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
       b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
 
       return b;
     }
-
-  private:
-    Tile* tile;
 };
 
 #endif // LOCALPLANNER_H

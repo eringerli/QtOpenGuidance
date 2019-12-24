@@ -29,7 +29,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 
 #include <QDebug>
 
@@ -88,11 +88,9 @@ class TransverseMercatorConverter : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit TransverseMercatorConverter( Tile* tile, TransverseMercatorWrapper* tmw )
+    explicit TransverseMercatorConverter( TransverseMercatorWrapper* tmw )
       : BlockBase(),
-        tmw( tmw ) {
-      rootTile = tile->getTileForOffset( 0, 0 );
-    }
+        tmw( tmw ) {}
 
   public slots:
     void setWGS84Position( double latitude, double longitude, double height ) {
@@ -101,34 +99,28 @@ class TransverseMercatorConverter : public BlockBase {
       double y;
       tmw->Forward( latitude, longitude, height, x, y );
 
-      Tile* tile = rootTile->getTileForPosition( x, y );
-
-      emit tiledPositionChanged( tile, QVector3D( float( x ), float( y ), float( height ) ) );
+      emit positionChanged( Point_3( x, y, height ) );
     }
 
   signals:
-    void tiledPositionChanged( Tile* tile, QVector3D position );
+    void positionChanged( Point_3 position );
 
   public:
     virtual void emitConfigSignals() override {
-      emit tiledPositionChanged( rootTile, position );
+      emit positionChanged( Point_3() );
     }
 
   public:
-    Tile* rootTile = nullptr;
     TransverseMercatorWrapper* tmw = nullptr;
-    QVector3D position = QVector3D();
-
-
 };
 
 class TransverseMercatorConverterFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    TransverseMercatorConverterFactory( Tile* tile, TransverseMercatorWrapper* tmw )
+    TransverseMercatorConverterFactory( TransverseMercatorWrapper* tmw )
       : BlockFactory(),
-        tile( tile ), tmw( tmw ) {}
+        tmw( tmw ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Transverse Mercator" );
@@ -139,7 +131,7 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new TransverseMercatorConverter( tile, tmw );
+      return new TransverseMercatorConverter( tmw );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -147,15 +139,13 @@ class TransverseMercatorConverterFactory : public BlockFactory {
 
       b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
 
-      b->addOutputPort( "Tiled Position", SIGNAL( tiledPositionChanged( Tile*, QVector3D ) ) );
+      b->addOutputPort( "Position", SIGNAL( positionChanged( Point_3 ) ) );
 
       return b;
     }
 
   private:
-    Tile* tile;
     TransverseMercatorWrapper* tmw;
 };
 
 #endif // TRANSVERSEMERCATORCONVERTER_H
-

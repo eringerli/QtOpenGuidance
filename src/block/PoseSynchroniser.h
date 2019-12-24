@@ -29,22 +29,20 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class PoseSynchroniser : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PoseSynchroniser( Tile* tile )
-      : BlockBase() {
-      rootTile = tile->getTileForOffset( 0, 0 );
-    }
+    explicit PoseSynchroniser()
+      : BlockBase() {}
 
   public slots:
-    void setTiledPosition( Tile* tile, QVector3D position ) {
+    void setPosition( Point_3 position ) {
       this->position = position;
-      emit poseChanged( tile, this->position, orientation, PoseOption::NoOptions );
+      emit poseChanged( this->position, orientation, PoseOption::NoOptions );
     }
 
     void setOrientation( QQuaternion value ) {
@@ -52,17 +50,15 @@ class PoseSynchroniser : public BlockBase {
     }
 
   signals:
-    void poseChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options );
+    void poseChanged( Point_3, QQuaternion, PoseOption::Options );
 
   public:
     virtual void emitConfigSignals() override {
-      rootTile = rootTile->getTileForPosition( &position );
-      emit poseChanged( rootTile, position, orientation, PoseOption::NoOptions );
+      emit poseChanged( position, orientation, PoseOption::NoOptions );
     }
 
   public:
-    Tile* rootTile = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 };
 
@@ -70,9 +66,8 @@ class PoseSynchroniserFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PoseSynchroniserFactory( Tile* tile )
-      : BlockFactory(),
-        tile( tile ) {}
+    PoseSynchroniserFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Pose Synchroniser" );
@@ -83,22 +78,19 @@ class PoseSynchroniserFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new PoseSynchroniser( tile );
+      return new PoseSynchroniser();
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Tiled Position", SLOT( setTiledPosition( Tile*, QVector3D ) ) );
+      b->addInputPort( "Position", SLOT( setPosition( Point_3 ) ) );
       b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
 
-      b->addOutputPort( "Pose", SIGNAL( poseChanged( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( "Pose", SIGNAL( poseChanged( Point_3, QQuaternion, PoseOption::Options ) ) );
 
       return b;
     }
-
-  private:
-    Tile* tile;
 };
 
 #endif // POSECACHE_H

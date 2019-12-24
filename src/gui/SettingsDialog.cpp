@@ -83,7 +83,7 @@
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* mainWindow, QWidget* parent ) :
   QDialog( parent ),
@@ -120,12 +120,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
       ui->dsbGridCameraThresholdCoarse->setValue( settings.value( "Grid/CameraThresholdCoarse", 250 ).toDouble() );
       gridColor = settings.value( "Grid/Color", QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
       gridColorCoarse = settings.value( "Grid/ColorCoarse", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
-    }
-
-    // tiles
-    {
-      ui->gbShowTiles->setChecked( settings.value( "Tile/Enabled", true ).toBool() );
-      tileColor = settings.value( "Tile/Color", QColor( 0xff, 0xda, 0x21 ) ).value<QColor>();
     }
 
     // global/local planner
@@ -209,14 +203,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
 
-  // initialise tiling
-  Tile* tile = new Tile( &tileRoot, 0, 0, rootEntity, ui->gbShowTiles->isChecked(), tileColor );
-
   // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
   auto* tmw = new TransverseMercatorWrapper();
 
   // simulator
-  poseSimulationFactory = new PoseSimulationFactory( tile );
+  poseSimulationFactory = new PoseSimulationFactory();
   poseSimulation = poseSimulationFactory->createNewObject();
   poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
 
@@ -231,22 +222,22 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 #endif
 
   // guidance
-  plannerGuiFactory = new PlannerGuiFactory( tile, rootEntity );
+  plannerGuiFactory = new PlannerGuiFactory( rootEntity );
   plannerGui = plannerGuiFactory->createNewObject();
   plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
 
-  globalPlannerFactory = new GlobalPlannerFactory( tile, rootEntity );
+  globalPlannerFactory = new GlobalPlannerFactory( rootEntity );
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
   QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
                     globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
 
-  localPlannerFactory = new LocalPlannerFactory( tile );
-  stanleyGuidanceFactory = new StanleyGuidanceFactory( tile );
-  xteGuidanceFactory = new XteGuidanceFactory( tile );
+  localPlannerFactory = new LocalPlannerFactory();
+  stanleyGuidanceFactory = new StanleyGuidanceFactory();
+  xteGuidanceFactory = new XteGuidanceFactory();
 
-  globalPlannerModelFactory = new GlobalPlannerModelFactory( tile, rootEntity );
+  globalPlannerModelFactory = new GlobalPlannerModelFactory( rootEntity );
   globalPlannerModel = globalPlannerModelFactory->createNewObject();
   globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene(), globalPlannerModel );
 
@@ -254,12 +245,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
                     globalPlannerModel, SLOT( setPlannerModelSettings( int, int, float, int, int, QColor, QColor, QColor, QColor ) ) );
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tile, tmw );
-  poseSynchroniserFactory = new PoseSynchroniserFactory( tile );
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tmw );
+  poseSynchroniserFactory = new PoseSynchroniserFactory();
   tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
-  trailerKinematicFactory = new TrailerKinematicFactory( tile );
+  trailerKinematicFactory = new TrailerKinematicFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
   numberFactory = new NumberFactory( numberBlockModel );
   stringFactory = new StringFactory( stringBlockModel );
@@ -278,7 +269,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserHDTFactory = new NmeaParserHDTFactory();
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
-  implementFactory = new ImplementFactory( tile, implementBlockModel );
+  implementFactory = new ImplementFactory( implementBlockModel );
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -316,13 +307,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   ui->lbColorCoarse->setText( gridColorCoarse.name() );
   ui->lbColorCoarse->setPalette( QPalette( gridColorCoarse ) );
   ui->lbColorCoarse->setAutoFillBackground( true );
-
-  // tile color picker
-  ui->lbTileColor->setText( tileColor.name() );
-  ui->lbTileColor->setPalette( QPalette( tileColor ) );
-  ui->lbTileColor->setAutoFillBackground( true );
-  tileRoot.setShowColor( tileColor );
-  tileRoot.setShowEnable( ui->gbShowTiles->isChecked() );
 
   setPlannerColorLabels();
 
@@ -849,17 +833,6 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
   }
 }
 
-void SettingsDialog::saveTileValuesInSettings() {
-  if( !blockSettingsSaving ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
-
-    settings.setValue( "Tile/Enabled", bool( ui->gbShowTiles->isChecked() ) );
-    settings.setValue( "Tile/Color", tileColor );
-    settings.sync();
-  }
-}
-
 void SettingsDialog::savePlannerValuesInSettings() {
   if( !blockSettingsSaving ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
@@ -1062,25 +1035,6 @@ void SettingsDialog::on_pbClear_clicked() {
   }
 
   on_pbDeleteSelected_clicked();
-}
-
-void SettingsDialog::on_pbTileColor_clicked() {
-  const QColor color = QColorDialog::getColor( tileColor, this, "Select Grid Color" );
-
-  if( color.isValid() ) {
-    tileColor = color;
-    ui->lbTileColor->setText( tileColor.name() );
-    ui->lbTileColor->setPalette( QPalette( tileColor ) );
-    ui->lbTileColor->setAutoFillBackground( true );
-
-    tileRoot.setShowColor( tileColor );
-    saveTileValuesInSettings();
-  }
-}
-
-void SettingsDialog::on_gbShowTiles_toggled( bool enabled ) {
-  tileRoot.setShowEnable( enabled );
-  saveTileValuesInSettings();
 }
 
 void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {

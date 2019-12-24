@@ -41,9 +41,11 @@
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "../3d/linemesh.h"
+
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include "../kinematic/Tile.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
@@ -56,16 +58,10 @@ class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( Tile* tile, Qt3DCore::QEntity* rootEntity )
-      : BlockBase(),
-        rootEntity( rootEntity ) {
-      this->tile = tile->getTileForOffset( 0, 0 );
-      this->tile00 = tile->getTileForOffset( 0, 0 );
-
+    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity )
+      : BlockBase() {
       // a point marker -> orange
       {
-        aPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
-
         aPointMesh = new Qt3DExtras::QSphereMesh();
         aPointMesh->setRadius( .2f );
         aPointMesh->setSlices( 20 );
@@ -76,6 +72,7 @@ class GlobalPlanner : public BlockBase {
         Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "orange" ) );
 
+        aPointEntity = new Qt3DCore::QEntity( rootEntity );
         aPointEntity->addComponent( aPointMesh );
         aPointEntity->addComponent( material );
         aPointEntity->addComponent( aPointTransform );
@@ -108,7 +105,7 @@ class GlobalPlanner : public BlockBase {
         Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
         material->setDiffuse( QColor( "purple" ) );
 
-        bPointEntity = new Qt3DCore::QEntity( tile->tileEntity );
+        bPointEntity = new Qt3DCore::QEntity( rootEntity );
         bPointEntity->addComponent( bPointMesh );
         bPointEntity->addComponent( material );
         bPointEntity->addComponent( bPointTransform );
@@ -131,7 +128,6 @@ class GlobalPlanner : public BlockBase {
 
       // test for recording
       {
-
         m_baseEntity = new Qt3DCore::QEntity( rootEntity );
         m_baseTransform = new Qt3DCore::QTransform();
         m_baseEntity->addComponent( m_baseTransform );
@@ -181,9 +177,8 @@ class GlobalPlanner : public BlockBase {
     void alphaShape();
 
   public slots:
-    void setPose( Tile* tile, QVector3D position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->tile = tile;
         this->position = position;
         this->orientation = orientation;
 
@@ -192,54 +187,52 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseLeftEdge( Tile*, QVector3D position, QQuaternion, PoseOption::Options options ) {
+    void setPoseLeftEdge( Point_3 position, QQuaternion, PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
 
-        QPointF point( double( position.x() ), double( position.y() ) );
+        Point_2 point2D( double( position.x() ), double( position.y() ) );
 
-        if( implementLine.p1() != point ) {
-          implementLine.setP1( point );
+        if( implementLine.source() != point2D ) {
+          implementLine = Segment_2( point2D, implementLine.target() );
 //          createPlanAB();
         }
       } else {
         if( recordOnRightEdgeOfImplement == false ) {
           if( recordContinous ) {
-            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            points.push_back( position );
             recordNextPoint = false;
           }
 
           if( recordNextPoint ) {
-            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            points.push_back( position );
             recordNextPoint = false;
           }
         }
       }
     }
 
-    void setPoseRightEdge( Tile*, QVector3D position, QQuaternion, PoseOption::Options options ) {
+    void setPoseRightEdge( Point_3 position, QQuaternion, PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutTiling ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
 
-        QPointF point( double( position.x() ), double( position.y() ) );
+        Point_2 point2D( double( position.x() ), double( position.y() ) );
 
-        if( implementLine.p2() != point ) {
-          implementLine.setP2( point );
+        if( implementLine.target() != point2D ) {
+          implementLine = Segment_2( implementLine.source(), point2D );
 //          createPlanAB();
         }
       } else {
         if( recordOnRightEdgeOfImplement == true ) {
           if( recordContinous ) {
-            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            points.push_back( position );
             recordNextPoint = false;
           }
 
           if( recordNextPoint ) {
-            points.push_back( PathPrimitive::getPoint2FromTiledPosition( tile, position ) );
+            points.push_back( position );
             recordNextPoint = false;
           }
         }
@@ -279,17 +272,16 @@ class GlobalPlanner : public BlockBase {
     }
 
     void a_clicked() {
-      aPointEntity->setParent( tile->tileEntity );
-      aPointTransform->setTranslation( position );
+      aPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
       aPointEntity->setEnabled( true );
       bPointEntity->setEnabled( false );
 
-      aPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
+      aPoint = position;
 
       points.clear();
 
-      qDebug() << "a_clicked()" << aPoint;
+      qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
     void createPlanAB();
@@ -300,15 +292,15 @@ class GlobalPlanner : public BlockBase {
 
 
     void b_clicked() {
-      bPointEntity->setParent( tile->tileEntity );
-      bPointTransform->setTranslation( position );
+      bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
 
-      bPoint = QPointF( double( position.x() ) + tile->x, double( position.y() ) + tile->y );
+      bPoint = position;
 
-      abLine.setPoints( aPoint, bPoint );
+      abLine = Segment_3( aPoint, bPoint );
 
-//      createPlanAB();
+      createPlanAB();
+
 
 //      optimalTransportationReconstruction();
 //      alphaShape();
@@ -358,9 +350,7 @@ class GlobalPlanner : public BlockBase {
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
   public:
-    Tile* tile = nullptr;
-    Tile* tile00 = nullptr;
-    QVector3D position = QVector3D();
+    Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
     int pathsToGenerate = 5;
@@ -370,14 +360,14 @@ class GlobalPlanner : public BlockBase {
     bool startRight = false;
     bool mirror = false;
 
-    QPointF aPoint = QPointF();
-    QPointF bPoint = QPointF();
-    QLineF abLine = QLineF();
+    Point_3 aPoint = Point_3();
+    Point_3 bPoint = Point_3();
+    Segment_3 abLine = Segment_3();
 
-    QLineF implementLine = QLineF();
+    Segment_2 implementLine = Segment_2();
 
-    QVector3D positionLeftEdgeOfImplement = QVector3D();
-    QVector3D positionRightEdgeOfImplement = QVector3D();
+    Point_3 positionLeftEdgeOfImplement = Point_3();
+    Point_3 positionRightEdgeOfImplement = Point_3();
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
@@ -395,7 +385,7 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
 
-    std::vector<K::Point_2> points;
+    std::vector<K::Point_3> points;
     bool recordContinous = false;
     bool recordNextPoint = false;
     bool recordOnRightEdgeOfImplement = false;
@@ -428,9 +418,8 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( Tile* tile, Qt3DCore::QEntity* rootEntity )
+    GlobalPlannerFactory( Qt3DCore::QEntity* rootEntity )
       : BlockFactory(),
-        tile( tile ),
         rootEntity( rootEntity ) {}
 
     QString getNameOfFactory() override {
@@ -442,15 +431,15 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new GlobalPlanner( tile, rootEntity );
+      return new GlobalPlanner( rootEntity );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Left Edge", SLOT( setPoseLeftEdge( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Right Edge", SLOT( setPoseRightEdge( Tile*, QVector3D, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Left Edge", SLOT( setPoseLeftEdge( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( "Pose Right Edge", SLOT( setPoseRightEdge( Point_3, QQuaternion, PoseOption::Options ) ) );
       b->addInputPort( "A clicked", SLOT( a_clicked() ) );
       b->addInputPort( "B clicked", SLOT( b_clicked() ) );
       b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
@@ -463,7 +452,6 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
   private:
-    Tile* tile = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 

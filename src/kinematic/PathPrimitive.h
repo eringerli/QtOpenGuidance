@@ -25,9 +25,7 @@
 #include <QPointF>
 #include <QtMath>
 
-#include "Tile.h"
-
-#include "../cgal.h"
+#include "../cgalKernel.h"
 
 #include <QDebug>
 
@@ -42,16 +40,6 @@ class PathPrimitive : public QObject {
 
   public:
     virtual qreal distanceToPoint( const QPointF point ) = 0;
-
-    static K::Point_2 getPoint2FromTiledPosition( Tile* tile, QVector3D position ) {
-      return K::Point_2( tile->x + double( position.x() ),
-                         tile->y + double( position.y() ) );
-    }
-
-    static constexpr QPointF getQPointFFromTiledPosition( Tile* tile, QVector3D position ) {
-      return QPointF( tile->x + double( position.x() ),
-                      tile->y + double( position.y() ) );
-    }
 
   public:
     bool anyDirection = false;
