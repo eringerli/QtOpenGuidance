@@ -269,7 +269,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserHDTFactory = new NmeaParserHDTFactory();
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
-  implementFactory = new ImplementFactory( implementBlockModel );
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -279,7 +278,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
-  implementFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
@@ -341,7 +339,6 @@ SettingsDialog::~SettingsDialog() {
   nmeaParserHDTFactory->deleteLater();
   nmeaParserRMCFactory->deleteLater();
   ackermannSteeringFactory->deleteLater();
-  implementFactory->deleteLater();
 
   vectorBlockModel->deleteLater();
   numberBlockModel->deleteLater();

@@ -67,7 +67,7 @@ int ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
     auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
-      return implement->sections.count();
+      return implement->sections.count() - 1;
     }
   }
 
@@ -87,16 +87,16 @@ QVariant ImplementSectionModel::data( const QModelIndex& index, int role ) const
     auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
-      if( index.row() < implement->sections.count() ) {
+      if( index.row() < ( implement->sections.count() - 1 ) ) {
         switch( index.column() ) {
           case 0:
-            return implement->sections[index.row()]->overlapLeft;
+            return implement->sections[index.row() + 1]->overlapLeft;
 
           case 1:
-            return implement->sections[index.row()]->widthOfSection;
+            return implement->sections[index.row() + 1]->widthOfSection;
 
           case 2:
-            return implement->sections[index.row()]->overlapRight;
+            return implement->sections[index.row() + 1]->overlapRight;
 
           default:
             return QVariant();
@@ -113,26 +113,28 @@ bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& v
     auto* implement = qobject_cast<Implement*>( block->object );
 
     if( implement ) {
-      if( index.row() < implement->sections.count() ) {
+      if( index.row() < ( implement->sections.count() - 1 ) ) {
         switch( index.column() ) {
           case 0:
-            implement->sections[index.row()]->overlapLeft = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->overlapLeft = qvariant_cast<double>( value );
             block->emitConfigSignals();
             emit dataChanged( index, index, QVector<int>() << role );
             return true;
 
           case 1:
-            implement->sections[index.row()]->widthOfSection = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->widthOfSection = qvariant_cast<double>( value );
             block->emitConfigSignals();
             emit dataChanged( index, index, QVector<int>() << role );
             return true;
 
           case 2:
-            implement->sections[index.row()]->overlapRight = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->overlapRight = qvariant_cast<double>( value );
             block->emitConfigSignals();
             emit dataChanged( index, index, QVector<int>() << role );
             return true;
         }
+
+        implement->emitSectionsChanged();
       }
     }
   }
@@ -150,7 +152,7 @@ bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& p
       beginInsertRows( parent, row, row + ( count - 1 ) );
 
       for( int i = 0; i < count; ++i ) {
-        implement->sections.insert( row, QSharedPointer<ImplementSection>( new ImplementSection() ) );
+        implement->sections.insert( row + 1, QSharedPointer<ImplementSection>( new ImplementSection() ) );
       }
 
       endInsertRows();
@@ -171,7 +173,7 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
 
     if( implement ) {
       beginRemoveRows( parent, row, row + ( count - 1 ) );
-      implement->sections.remove( row, count );
+      implement->sections.remove( row + 1, count );
       endRemoveRows();
 
       block->emitConfigSignals();
@@ -195,11 +197,12 @@ bool ImplementSectionModel::swapElements( int first, int second ) {
 
       beginMoveRows( QModelIndex(), first, first, QModelIndex(), second );
 
-      std::swap( implement->sections[first], implement->sections[second] );
+      std::swap( implement->sections[first + 1], implement->sections[second + 1] );
 
       endMoveRows();
 
       block->emitConfigSignals();
+      implement->emitSectionsChanged();
       return true;
     }
   }

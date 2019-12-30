@@ -18,38 +18,49 @@
 
 #include "../gui/ImplementBlockModel.h"
 
+#include "../gui/SectionControlToolbar.h"
+
 #ifndef IMPLEMENT_H
 #define IMPLEMENT_H
+
+#include "../cgalKernel.h"
 
 #include <QObject>
 
 #include <QQuaternion>
 #include <QVector3D>
-
-#include "../cgalKernel.h"
-
-#include "../kinematic/PoseOptions.h"
+#include <QDockWidget>
+#include <QMenu>
 
 #include "BlockBase.h"
 
-class ImplementSection {
-  public:
-    ImplementSection() {}
-    ImplementSection( double overlapLeft, double widthOfSection, double overlapRight )
-      : overlapLeft( overlapLeft ), widthOfSection( widthOfSection ), overlapRight( overlapRight ) {}
+#include "ImplementSection.h"
 
-  public:
-    double overlapLeft = 0;
-    double widthOfSection = 0;
-    double overlapRight = 0;
-};
+#include "../kinematic/PoseOptions.h"
+
+#include "../gui/MainWindow.h"
 
 class Implement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit Implement()
-      : BlockBase() {}
+    explicit Implement( MainWindow* mainWindow )
+      : BlockBase() {
+      widget = new SectionControlToolbar( this, mainWindow );
+      dock = new QDockWidget( mainWindow );
+
+      QObject::connect( dock, &QDockWidget::dockLocationChanged, widget, &SectionControlToolbar::setDockLocation );
+
+      // add section 0: the section to control them all
+      sections.append(
+              QSharedPointer<ImplementSection>(
+                      new ImplementSection( 0, 0, 0 ) ) );
+    }
+
+    ~Implement() override {
+      widget->deleteLater();
+      dock->deleteLater();
+    }
 
     void emitConfigSignals() override {
       double width = 0;
@@ -60,27 +71,30 @@ class Implement : public BlockBase {
 
       emit leftEdgeChanged( QVector3D( 0, float( -width / 2 ), 0 ) );
       emit rightEdgeChanged( QVector3D( 0, float( width / 2 ), 0 ) );
-      emit sectionsChanged( sections );
       emit triggerLocalPose( Point_3(), QQuaternion(),
                              PoseOption::CalculateLocalOffsets |
                              PoseOption::CalculateWithoutOrientation |
                              PoseOption::CalculateFromPivotPoint );
+      emit implementChanged();
     }
 
     void toJSON( QJsonObject& json ) override {
-      QJsonArray array;
+      if( sections.size() > 1 ) {
+        QJsonArray array;
 
-      foreach( const QSharedPointer<ImplementSection> section, sections ) {
-        QJsonObject sectionObject;
-        sectionObject["overlapLeft"] = section->overlapLeft;
-        sectionObject["widthOfSection"] = section->widthOfSection;
-        sectionObject["overlapRight"] = section->overlapRight;
-        array.append( sectionObject );
+//      foreach( const QSharedPointer<ImplementSection> section, sections ) {
+        for( int i = 1; i < sections.size(); ++i ) {
+          QJsonObject sectionObject;
+          sectionObject["overlapLeft"] = sections[i]->overlapLeft;
+          sectionObject["widthOfSection"] = sections[i]->widthOfSection;
+          sectionObject["overlapRight"] = sections[i]->overlapRight;
+          array.append( sectionObject );
+        }
+
+        QJsonObject valuesObject;
+        valuesObject["Sections"] = array;
+        json["values"] = valuesObject;
       }
-
-      QJsonObject valuesObject;
-      valuesObject["Sections"] = array;
-      json["values"] = valuesObject;
     }
 
     void fromJSON( QJsonObject& json ) override {
@@ -90,7 +104,7 @@ class Implement : public BlockBase {
         if( valuesObject["Sections"].isArray() ) {
           QJsonArray sectionArray = valuesObject["Sections"].toArray();
 
-          for( auto&& sectionIndex : sectionArray ) {
+          for( auto sectionIndex : sectionArray ) {
             QJsonObject sectionObject = sectionIndex.toObject();
             sections.append(
                     QSharedPointer<ImplementSection>(
@@ -102,13 +116,32 @@ class Implement : public BlockBase {
       }
     }
 
+    void emitImplementChanged() {
+      emit implementChanged();
+    }
+
+    void emitSectionsChanged() {
+      emit sectionsChanged();
+    }
+
   signals:
     void triggerLocalPose( Point_3, QQuaternion, PoseOption::Options );
-    void sectionsChanged( QVector<QSharedPointer<ImplementSection>> );
     void leftEdgeChanged( QVector3D );
     void rightEdgeChanged( QVector3D );
+    void implementChanged();
+    void sectionsChanged();
+
+  public slots:
+    void setName( QString name ) override {
+      dock->setWindowTitle( name );
+      action->setText( QStringLiteral( "SC: " ) + name );
+    }
 
   public:
+    QDockWidget* dock = nullptr;
+    QAction* action = nullptr;
+    SectionControlToolbar* widget = nullptr;
+
     QVector<QSharedPointer<ImplementSection>> sections;
 };
 
@@ -116,8 +149,20 @@ class ImplementFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ImplementFactory( ImplementBlockModel* model )
+    ImplementFactory( MainWindow* mainWindow,
+                      Qt::DockWidgetArea area,
+                      Qt::DockWidgetAreas allowedAreas,
+                      QDockWidget::DockWidgetFeatures features,
+                      QMenu* menu,
+                      QDockWidget* dockToSplit,
+                      ImplementBlockModel* model )
       : BlockFactory(),
+        mainWindow( mainWindow ),
+        area( area ),
+        allowedAreas( allowedAreas ),
+        features( features ),
+        menu( menu ),
+        dockToSplit( dockToSplit ),
         model( model ) {}
 
     QString getNameOfFactory() override {
@@ -129,14 +174,27 @@ class ImplementFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new Implement();
+      return new Implement( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
+      Implement* object = qobject_cast<Implement*>( obj );
+
+      object->dock->setWidget( object->widget );
+      object->dock->setFeatures( features );
+      object->dock->setAllowedAreas( allowedAreas );
+      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
+
+      object->action = object->dock->toggleViewAction();
+      menu->addAction( object->action );
+
+      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->splitDockWidget( dockToSplit, object->dock, Qt::Vertical );
+
       b->addOutputPort( "Trigger Calculation of Local Pose", SIGNAL( triggerLocalPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addOutputPort( "Section Controll Data", SIGNAL( sectionsChanged( QVector<QSharedPointer<ImplementSection>> ) ) );
+//      b->addOutputPort( "Section Control Data", SIGNAL( implementChanged( QPointer<Implement> ) ) );
       b->addOutputPort( "Position Left Edge", SIGNAL( leftEdgeChanged( QVector3D ) ) );
       b->addOutputPort( "Position Right Edge", SIGNAL( rightEdgeChanged( QVector3D ) ) );
 
@@ -146,6 +204,12 @@ class ImplementFactory : public BlockFactory {
     }
 
   private:
+    MainWindow* mainWindow = nullptr;
+    Qt::DockWidgetArea area;
+    Qt::DockWidgetAreas allowedAreas;
+    QDockWidget::DockWidgetFeatures features;
+    QMenu* menu = nullptr;
+    QDockWidget* dockToSplit = nullptr;
     ImplementBlockModel* model = nullptr;
 };
 

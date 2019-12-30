@@ -79,7 +79,6 @@
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
-#include "block/SectionControlModel.h"
 #include "block/XteBarModel.h"
 #include "block/MeterBarModel.h"
 
@@ -352,15 +351,16 @@ int main( int argc, char** argv ) {
     guidanceToolbar->menu );
   meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
-  // section controll dock
-  BlockFactory* sectionControlFactory = new SectionControlModelFactory(
+  // implements
+  ImplementFactory* implementFactory = new ImplementFactory(
     mainWindow,
     Qt::BottomDockWidgetArea,
-    Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    Qt::AllDockWidgetAreas,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
     guidanceToolbar->menu,
-    simulatorToolbarDock );
-  sectionControlFactory->addToCombobox( settingDialog->getCbNodeType() );
+    simulatorToolbarDock,
+    settingDialog->implementBlockModel );
+  implementFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );

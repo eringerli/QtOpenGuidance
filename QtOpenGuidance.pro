@@ -31,6 +31,7 @@ qtCompileTest(spnav) {
 SOURCES += \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
+    src/gui/SectionControlToolbar.cpp \
     src/main.cpp \
     src/3d/linemesh.cpp \
     src/3d/linemeshgeometry.cpp \
@@ -50,7 +51,6 @@ SOURCES += \
     src/gui/MeterModel.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/PassToolbar.cpp \
-    src/gui/SectionControlToolbar.cpp \
     src/gui/SettingsDialog.cpp \
     src/gui/SimulatorToolbar.cpp \
     src/gui/StringBlockModel.cpp \
@@ -78,6 +78,7 @@ HEADERS += \
     src/block/GuidanceStanley.h \
     src/block/GuidanceXte.h \
     src/block/Implement.h \
+    src/block/ImplementSection.h \
     src/block/MeterBarModel.h \
     src/block/NmeaParserGGA.h \
     src/block/NmeaParserHDT.h \
@@ -86,7 +87,6 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
-    src/block/SectionControlModel.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
@@ -138,7 +138,6 @@ FORMS += \
     src/gui/GuidanceTurning.ui \
     src/gui/GuidanceXteBar.ui \
     src/gui/PassToolbar.ui \
-    src/gui/SectionControlToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
     src/gui/lengthwidget.ui \

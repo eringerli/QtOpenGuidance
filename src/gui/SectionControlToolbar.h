@@ -19,75 +19,52 @@
 #ifndef SECTIONCONTROLTOOLBAR_H
 #define SECTIONCONTROLTOOLBAR_H
 
-#include <QGroupBox>
-#include <QPushButton>
-#include <QPalette>
+#include <QWidget>
 
-namespace Ui {
-  class SectionControlToolbar;
-}
+#include <QGroupBox>
+#include <QToolButton>
+#include <QLabel>
+#include <QPalette>
+#include <QGridLayout>
+#include <QDockWidget>
+
+#include <QVector>
+
+class Implement;
 
 class SectionControlToolbar : public QGroupBox {
     Q_OBJECT
 
   public:
-    explicit SectionControlToolbar( QWidget* parent = nullptr );
-    ~SectionControlToolbar();
+    explicit SectionControlToolbar( Implement* implement, QWidget* parent = nullptr );
 
-  private:
-
-    enum class ButtonState : quint8 {
-      Normal = 0,
-      ForceOn,
-      ForceOff
-    };
-
-    void showHideButtons();
-    void advanceState( QWidget* button, SectionControlToolbar::ButtonState& state );
+  signals:
 
   public slots:
-    void setNumberOfSections( float );
+    void implementChanged();
+    void sectionsChanged();
+    void setDockLocation( Qt::DockWidgetArea area );
 
   private slots:
-    void on_pbAll_clicked();
-
-    void on_pb1_clicked();
-    void on_pb2_clicked();
-    void on_pb3_clicked();
-    void on_pb4_clicked();
-    void on_pb5_clicked();
-    void on_pb6_clicked();
-    void on_pb7_clicked();
-    void on_pb8_clicked();
-    void on_pb9_clicked();
-    void on_pb10_clicked();
-    void on_pb11_clicked();
-    void on_pb12_clicked();
-    void on_pb13_clicked();
-    void on_pb14_clicked();
+    void forceOnOffToggled( bool );
+    void autoToggled( bool );
 
   private:
-    Ui::SectionControlToolbar* ui;
+    QToolButton* addButtonToVector( QString name );
+    void addSection( QString name );
 
-    int8_t numberOfSections = 0;
-
+  private:
+    Implement* implement = nullptr;
     QPalette buttonYellow, buttonRed, buttonGreen, buttonDefault;
 
-    ButtonState pbAllState = ButtonState::Normal,
-                pb1State = ButtonState::Normal,
-                pb2State = ButtonState::Normal,
-                pb3State = ButtonState::Normal,
-                pb4State = ButtonState::Normal,
-                pb5State = ButtonState::Normal,
-                pb6State = ButtonState::Normal,
-                pb7State = ButtonState::Normal,
-                pb8State = ButtonState::Normal,
-                pb9State = ButtonState::Normal,
-                pb10State = ButtonState::Normal,
-                pb11State = ButtonState::Normal,
-                pb12State = ButtonState::Normal,
-                pb13State = ButtonState::Normal,
-                pb14State = ButtonState::Normal;
+    QGridLayout* gridLayout = nullptr;
+
+    QLabel* lbOn = nullptr;
+    QLabel* lbOff = nullptr;
+    QToolButton* pbAuto = nullptr;
+    QVector<QToolButton*> buttons;
+
+    bool horizontal = true;
 };
 
 #endif // SECTIONCONTROLTOOLBAR_H

@@ -246,9 +246,10 @@ class SettingsDialog : public QDialog {
     NumberBlockModel* numberBlockModel = nullptr;
     StringBlockModel* stringBlockModel = nullptr;
 
-    BlockFactory* implementFactory = nullptr;
     QSortFilterProxyModel* filterModelImplements = nullptr;
+  public:
     ImplementBlockModel* implementBlockModel = nullptr;
+  private:
     ImplementSectionModel* implementSectionModel = nullptr;
 
     MeterModel* meterModel = nullptr;
