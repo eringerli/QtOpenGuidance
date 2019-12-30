@@ -617,7 +617,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
     QJsonArray blocksArray = json["blocks"].toArray();
 
-    for( const auto& blockIndex : blocksArray ) {
+    for( const auto blockIndex : blocksArray ) {
       QJsonObject blockObject = blockIndex.toObject();
       int id = blockObject["id"].toInt( 0 );
 
@@ -660,7 +660,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   if( json.contains( "connections" ) && json["connections"].isArray() ) {
     QJsonArray connectionsArray = json["connections"].toArray();
 
-    for( auto&& connectionsIndex : connectionsArray ) {
+    for( auto connectionsIndex : connectionsArray ) {
       QJsonObject connectionsObject = connectionsIndex.toObject();
 
       if( !connectionsObject["idFrom"].isUndefined() &&

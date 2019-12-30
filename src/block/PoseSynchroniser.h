@@ -42,6 +42,8 @@ class PoseSynchroniser : public BlockBase {
   public slots:
     void setPosition( Point_3 position ) {
       this->position = position;
+      QElapsedTimer timer;
+      timer.start();
       emit poseChanged( this->position, orientation, PoseOption::NoOptions );
     }
 

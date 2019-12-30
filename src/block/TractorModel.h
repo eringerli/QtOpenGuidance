@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef TRACTORENTITY_H
-#define TRACTORENTITY_H
+#ifndef TRACTORMODEL_H
+#define TRACTORMODEL_H
 
 #include <QObject>
 
@@ -136,5 +136,4 @@ class TractorModelFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity;
 };
 
-#endif // TRACTORENTITY_H
-
+#endif // TRACTORMODEL_H

@@ -14,6 +14,14 @@ FieldsOptimitionToolbar::~FieldsOptimitionToolbar() {
 void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha ) {
   this->optimalAlpha = optimalAlpha;
   this->solidAlpha = solidAlpha;
+
+  if( ui->cbAlphaShape->currentText() == "Optimal" ) {
+    ui->dsbAlpha->setValue( optimalAlpha );
+  }
+
+  if( ui->cbAlphaShape->currentText() == "Solid" ) {
+    ui->dsbAlpha->setValue( solidAlpha );
+  }
 }
 
 void FieldsOptimitionToolbar::setFieldStatistics( size_t pointsRecorded, size_t pointsInPolygon ) {

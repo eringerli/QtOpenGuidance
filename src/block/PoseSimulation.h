@@ -21,9 +21,9 @@
 
 #include <QObject>
 
-#include <QTime>
 #include <QEvent>
 #include <QBasicTimer>
+#include <QElapsedTimer>
 #include <QQuaternion>
 #include <QVector3D>
 
@@ -138,7 +138,7 @@ class PoseSimulation : public BlockBase {
 
     QBasicTimer m_timer;
     int m_timerId;
-    QTime m_time;
+    QElapsedTimer m_time;
 
     float m_steerAngle = 0;
     float m_steerAngleFromAutosteer = 0;

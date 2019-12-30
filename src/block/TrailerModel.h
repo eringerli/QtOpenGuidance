@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef TRAILERENTITY_H
-#define TRAILERENTITY_H
+#ifndef TRAILERMODEL_H
+#define TRAILERMODEL_H
 
 #include <QObject>
 
@@ -130,5 +130,4 @@ class TrailerModelFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity;
 };
 
-#endif // TRAILERENTITY_H
-
+#endif // TRAILERMODEL_H

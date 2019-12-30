@@ -116,7 +116,7 @@ int main( int argc, char** argv ) {
 //  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
 
   // make qDebug() more expressive
-  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
+//  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
 
   QApplication app( argc, argv );
   QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
@@ -240,7 +240,7 @@ int main( int argc, char** argv ) {
   // Set root object of the scene
   view->setRootEntity( rootEntity );
 
-  // sort the object, so transparity works
+  // sort the QT3D objects, so transparity works
   Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
   auto* sortPolicy = new Qt3DRender::QSortPolicy( );
   framegraph->setParent( sortPolicy );
