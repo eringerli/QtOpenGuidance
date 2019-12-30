@@ -30,59 +30,9 @@
 #include "qneport.h"
 
 #include "../cgalKernel.h"
+#include "../kinematic/TransverseMercatorWrapper.h"
 
 #include <QDebug>
-
-#include <GeographicLib/TransverseMercator.hpp>
-
-using namespace std;
-using namespace GeographicLib;
-
-// an instance of this class gets shared across all the blocks, so the conversions are the same everywhere
-class TransverseMercatorWrapper {
-  public:
-
-    TransverseMercatorWrapper()
-      : _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ) {
-    }
-
-    void Forward( double latitude, double longitude, double& height, double& x, double& y ) {
-      if( !isLatLonOffsetSet ) {
-        lat0 = latitude;
-        lon0 = longitude;
-        height0 = height;
-        isLatLonOffsetSet = true;
-      }
-
-      latitude -= lat0;
-      height -= height0;
-
-      double convergence;
-      double scale;
-      _tm.Forward( lon0, latitude, longitude, y, x, convergence, scale );
-//      qDebug() << "lat0, lon0, isLatLonOffsetSet" << lat0 << lon0 << isLatLonOffsetSet;
-//      qDebug() << x << y << convergence << scale;
-    }
-
-    void Reverse( double x, double y, double& latitude, double& longitude, double& height ) {
-      double convergence;
-      double scale;
-      _tm.Reverse( lon0, y, x, latitude, longitude, convergence, scale );
-
-      latitude += lat0;
-      height += height0;
-      qDebug() << lat0 << lon0;
-      qDebug() << x << y << convergence << scale;
-    }
-
-  private:
-    TransverseMercator _tm;
-
-    bool isLatLonOffsetSet = false;
-    double height0 = 0;
-    double lat0 = 0;
-    double lon0 = 0;
-};
 
 class TransverseMercatorConverter : public BlockBase {
     Q_OBJECT

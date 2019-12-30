@@ -45,21 +45,23 @@
 
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include "../cgalKernel.h"
+#include "../cgal.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
+
+#include "../kinematic/TransverseMercatorWrapper.h"
 
 #include <QVector>
 #include <QSharedPointer>
 #include <utility>
 
-
 class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity )
-      : BlockBase() {
+    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+      : BlockBase(),
+        tmw( tmw ) {
       // a point marker -> orange
       {
         aPointMesh = new Qt3DExtras::QSphereMesh();
@@ -371,6 +373,7 @@ class GlobalPlanner : public BlockBase {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    TransverseMercatorWrapper* tmw = nullptr;
 
     // markers
     Qt3DCore::QEntity* aPointEntity = nullptr;
@@ -418,9 +421,10 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( Qt3DCore::QEntity* rootEntity )
+    GlobalPlannerFactory( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
       : BlockFactory(),
-        rootEntity( rootEntity ) {}
+        rootEntity( rootEntity ),
+        tmw( tmw ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Global Planner" );
@@ -431,7 +435,7 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new GlobalPlanner( rootEntity );
+      return new GlobalPlanner( rootEntity, tmw );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -453,6 +457,7 @@ class GlobalPlannerFactory : public BlockFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    TransverseMercatorWrapper* tmw = nullptr;
 };
 
 #endif // GLOBALPLANNER_H

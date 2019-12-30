@@ -116,7 +116,8 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PoseOptions.h \
-    src/kinematic/TrailerKinematic.h
+    src/kinematic/TrailerKinematic.h \
+    src/kinematic/TransverseMercatorWrapper.h
 
 android {
     HEADER += \
