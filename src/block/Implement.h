@@ -65,7 +65,7 @@ class Implement : public BlockBase {
     void emitConfigSignals() override {
       double width = 0;
 
-      foreach( const QSharedPointer<ImplementSection> section, sections ) {
+      for( auto section : sections ) {
         width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
       }
 
@@ -75,14 +75,13 @@ class Implement : public BlockBase {
                              PoseOption::CalculateLocalOffsets |
                              PoseOption::CalculateWithoutOrientation |
                              PoseOption::CalculateFromPivotPoint );
-      emit implementChanged();
+      emit implementChanged( this );
     }
 
     void toJSON( QJsonObject& json ) override {
       if( sections.size() > 1 ) {
         QJsonArray array;
 
-//      foreach( const QSharedPointer<ImplementSection> section, sections ) {
         for( int i = 1; i < sections.size(); ++i ) {
           QJsonObject sectionObject;
           sectionObject["overlapLeft"] = sections[i]->overlapLeft;
@@ -117,19 +116,19 @@ class Implement : public BlockBase {
     }
 
     void emitImplementChanged() {
-      emit implementChanged();
+      emit implementChanged( this );
     }
 
     void emitSectionsChanged() {
-      emit sectionsChanged();
+      emit sectionsChanged( this );
     }
 
   signals:
     void triggerLocalPose( Point_3, QQuaternion, PoseOption::Options );
     void leftEdgeChanged( QVector3D );
     void rightEdgeChanged( QVector3D );
-    void implementChanged();
-    void sectionsChanged();
+    void implementChanged( QPointer<Implement> );
+    void sectionsChanged( QPointer<Implement> );
 
   public slots:
     void setName( QString name ) override {
@@ -194,7 +193,8 @@ class ImplementFactory : public BlockFactory {
       mainWindow->splitDockWidget( dockToSplit, object->dock, Qt::Vertical );
 
       b->addOutputPort( "Trigger Calculation of Local Pose", SIGNAL( triggerLocalPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-//      b->addOutputPort( "Section Control Data", SIGNAL( implementChanged( QPointer<Implement> ) ) );
+      b->addOutputPort( "Implement Data", SIGNAL( implementChanged( QPointer<Implement> ) ) );
+      b->addOutputPort( "Section Control Data", SIGNAL( sectionsChanged( QPointer<Implement> ) ) );
       b->addOutputPort( "Position Left Edge", SIGNAL( leftEdgeChanged( QVector3D ) ) );
       b->addOutputPort( "Position Right Edge", SIGNAL( rightEdgeChanged( QVector3D ) ) );
 

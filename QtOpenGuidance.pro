@@ -31,6 +31,7 @@ qtCompileTest(spnav) {
 SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
+    src/block/SprayerModel.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
+    src/block/SprayerModel.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \

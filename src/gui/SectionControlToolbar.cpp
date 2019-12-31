@@ -74,7 +74,7 @@ void SectionControlToolbar::addSection( QString name ) {
   }
 }
 
-void SectionControlToolbar::implementChanged() {
+void SectionControlToolbar::implementChanged( QPointer<Implement> ) {
   if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
     int numButtons = implement->sections.size() > 2 ?
                      implement->sections.size() * 2 :
@@ -147,7 +147,7 @@ void SectionControlToolbar::implementChanged() {
   }
 }
 
-void SectionControlToolbar::sectionsChanged() {
+void SectionControlToolbar::sectionsChanged( QPointer<Implement> ) {
   if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
 
   }
@@ -164,7 +164,7 @@ void SectionControlToolbar::setDockLocation( Qt::DockWidgetArea area ) {
     horizontal = true;
   }
 
-  implementChanged();
+  implementChanged( implement );
 }
 
 void SectionControlToolbar::forceOnOffToggled( bool checked ) {

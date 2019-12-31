@@ -41,8 +41,8 @@ class SectionControlToolbar : public QGroupBox {
   signals:
 
   public slots:
-    void implementChanged();
-    void sectionsChanged();
+    void sectionsChanged( QPointer<Implement> );
+    void implementChanged( QPointer<Implement> );
     void setDockLocation( Qt::DockWidgetArea area );
 
   private slots:

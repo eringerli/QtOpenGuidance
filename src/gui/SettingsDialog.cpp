@@ -48,6 +48,7 @@
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
 #include "../block/TrailerModel.h"
+#include "../block/SprayerModel.h"
 #include "../block/GridModel.h"
 
 #include "../block/AckermannSteering.h"
@@ -248,8 +249,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tmw );
   poseSynchroniserFactory = new PoseSynchroniserFactory();
-  tractorModelFactory = new TractorModelFactory( rootEntity );
   trailerModelFactory = new TrailerModelFactory( rootEntity );
+  tractorModelFactory = new TractorModelFactory( rootEntity );
+  sprayerModelFactory = new SprayerModelFactory( rootEntity );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
@@ -278,6 +280,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
+  sprayerModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
@@ -320,6 +323,7 @@ SettingsDialog::~SettingsDialog() {
   poseSynchroniserFactory->deleteLater();
   tractorModelFactory->deleteLater();
   trailerModelFactory->deleteLater();
+  sprayerModelFactory->deleteLater();
   fixedKinematicFactory->deleteLater();
   trailerKinematicFactory->deleteLater();
   vectorFactory->deleteLater();

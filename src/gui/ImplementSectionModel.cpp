@@ -53,7 +53,6 @@ QVariant ImplementSectionModel::headerData( int section, Qt::Orientation orienta
 
 bool ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    // FIXME: Implement me!
     emit headerDataChanged( orientation, section, section );
     return true;
   }
@@ -133,8 +132,6 @@ bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& v
             emit dataChanged( index, index, QVector<int>() << role );
             return true;
         }
-
-        implement->emitSectionsChanged();
       }
     }
   }
@@ -171,7 +168,7 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
   if( block ) {
     auto* implement = qobject_cast<Implement*>( block->object );
 
-    if( implement ) {
+    if( implement && ( row + 1 ) < implement->sections.count() ) {
       beginRemoveRows( parent, row, row + ( count - 1 ) );
       implement->sections.remove( row + 1, count );
       endRemoveRows();
@@ -202,7 +199,6 @@ bool ImplementSectionModel::swapElements( int first, int second ) {
       endMoveRows();
 
       block->emitConfigSignals();
-      implement->emitSectionsChanged();
       return true;
     }
   }
