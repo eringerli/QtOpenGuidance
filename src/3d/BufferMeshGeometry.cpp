@@ -23,37 +23,40 @@
 
 #include <QVector>
 #include <QVector3D>
-#include "pointmeshgeometry.h"
+#include "BufferMeshGeometry.h"
 
-PointMeshGeometry::PointMeshGeometry( const QVector<QVector3D>& vertices, Qt3DCore::QNode* parent ) :
+BufferMeshGeometry::BufferMeshGeometry( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometry( parent )
-  , _positionAttribute( new Qt3DRender::QAttribute( this ) )
-  , _vertexBuffer( new Qt3DRender::QBuffer( this ) ) {
-  updatePoints( vertices );
-
-  _positionAttribute->setAttributeType( Qt3DRender::QAttribute::VertexAttribute );
-  _positionAttribute->setBuffer( _vertexBuffer );
+  , m_positionAttribute( new Qt3DRender::QAttribute( this ) )
+  , m_vertexBuffer( new Qt3DRender::QBuffer( this ) ) {
+  m_positionAttribute->setAttributeType( Qt3DRender::QAttribute::VertexAttribute );
+  m_positionAttribute->setBuffer( m_vertexBuffer );
 
 #if QT_VERSION >= 0x050800
-  _positionAttribute->setVertexBaseType( Qt3DRender::QAttribute::Float );
-  _positionAttribute->setVertexSize( 3 );
+  m_positionAttribute->setVertexBaseType( Qt3DRender::QAttribute::Float );
+  m_positionAttribute->setVertexSize( 3 );
 #else
-  _positionAttribute->setDataType( Qt3DRender::QAttribute::Float );
-  _positionAttribute->setDataSize( 3 );
+  m_positionAttribute->setDataType( Qt3DRender::QAttribute::Float );
+  m_positionAttribute->setDataSize( 3 );
 #endif
 
-  _positionAttribute->setName( Qt3DRender::QAttribute::defaultPositionAttributeName() );
+  m_positionAttribute->setName( Qt3DRender::QAttribute::defaultPositionAttributeName() );
 
-  addAttribute( _positionAttribute );
+  addAttribute( m_positionAttribute );
 }
 
-int PointMeshGeometry::vertexCount() {
-  return _vertexBuffer->data().size() / static_cast<int>( sizeof( QVector3D ) );
+BufferMeshGeometry::~BufferMeshGeometry() {
+  m_positionAttribute->deleteLater();
+  m_vertexBuffer->deleteLater();
 }
 
-void PointMeshGeometry::updatePoints( const QVector<QVector3D>& vertices ) {
+int BufferMeshGeometry::vertexCount() {
+  return m_vertexBuffer->data().size() / static_cast<int>( sizeof( QVector3D ) );
+}
+
+void BufferMeshGeometry::updatePoints( const QVector<QVector3D>& vertices ) {
   QByteArray vertexBufferData;
   vertexBufferData.resize( vertices.size() * static_cast<int>( sizeof( QVector3D ) ) );
   memcpy( vertexBufferData.data(), vertices.constData(), static_cast<size_t>( vertexBufferData.size() ) );
-  _vertexBuffer->setData( vertexBufferData );
+  m_vertexBuffer->setData( vertexBufferData );
 }

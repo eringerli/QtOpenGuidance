@@ -21,27 +21,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
+#include <QVector>
+#include <QObject>
+#include <QNode>
 #include <QGeometryRenderer>
-#include <QVector3D>
-#include <QVector4D>
-#include "pointmesh.h"
-#include "pointmeshgeometry.h"
 
-PointMesh::PointMesh( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent ) {
-  setInstanceCount( 1 );
-  setIndexOffset( 0 );
-  setFirstInstance( 0 );
-  setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
-}
+class BufferMeshGeometry;
+class QString;
 
-void PointMesh::posUpdate( const QVector<QVector3D>& pos ) {
-  if( _pointMeshGeo == nullptr ) {
-    _pointMeshGeo = new PointMeshGeometry( pos, this );
-  } else {
-    _pointMeshGeo->updatePoints( pos );
-  }
+class BufferMesh : public Qt3DRender::QGeometryRenderer {
+    Q_OBJECT
 
-  setVertexCount( _pointMeshGeo->vertexCount() );
-  setGeometry( _pointMeshGeo );
-}
+  public:
+    explicit BufferMesh( Qt3DCore::QNode* parent = nullptr );
+    ~BufferMesh();
+    void bufferUpdate( const QVector<QVector3D>& pos );
+
+  private:
+    BufferMeshGeometry* m_bufferMeshGeo = nullptr;
+};

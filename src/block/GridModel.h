@@ -44,7 +44,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
-#include "../3d/linemesh.h"
+#include "../3d/BufferMesh.h"
 
 class GridModel : public BlockBase {
     Q_OBJECT
@@ -66,10 +66,10 @@ class GridModel : public BlockBase {
       m_fineGridEntity = new Qt3DCore::QEntity( m_baseEntity );
       m_coarseGridEntity = new Qt3DCore::QEntity( m_baseEntity );
 
-      m_fineLinesMesh = new LineMesh();
+      m_fineLinesMesh = new BufferMesh();
       m_fineGridEntity->addComponent( m_fineLinesMesh );
 
-      m_coarseLinesMesh = new LineMesh();
+      m_coarseLinesMesh = new BufferMesh();
       m_coarseGridEntity->addComponent( m_coarseLinesMesh );
 
       m_material = new Qt3DExtras::QPhongMaterial( m_fineGridEntity );
@@ -158,7 +158,7 @@ class GridModel : public BlockBase {
           }
         }
 
-        m_fineLinesMesh->posUpdate( linesPoints );
+        m_fineLinesMesh->bufferUpdate( linesPoints );
       }
 
       // coarse
@@ -201,7 +201,7 @@ class GridModel : public BlockBase {
           }
         }
 
-        m_coarseLinesMesh->posUpdate( linesPoints );
+        m_coarseLinesMesh->bufferUpdate( linesPoints );
       }
 
       m_material->setAmbient( color );
@@ -242,8 +242,8 @@ class GridModel : public BlockBase {
 
     Qt3DCore::QEntity* m_fineGridEntity = nullptr;
     Qt3DCore::QEntity* m_coarseGridEntity = nullptr;
-    LineMesh* m_fineLinesMesh = nullptr;
-    LineMesh* m_coarseLinesMesh = nullptr;
+    BufferMesh* m_fineLinesMesh = nullptr;
+    BufferMesh* m_coarseLinesMesh = nullptr;
     Qt3DExtras::QPhongMaterial* m_material = nullptr;
     Qt3DExtras::QPhongMaterial* m_materialCoarse = nullptr;
 

@@ -23,22 +23,21 @@
 
 #pragma once
 
-#include <QVector>
-#include <QObject>
-#include <QNode>
-#include <QGeometryRenderer>
+#include <QAttribute>
+#include <QGeometry>
+#include <Qt3DRender/QBuffer>
 
-class PointMeshGeometry;
-class QString;
-
-class PointMesh : public Qt3DRender::QGeometryRenderer {
+class BufferMeshGeometry : public Qt3DRender::QGeometry {
     Q_OBJECT
 
   public:
-    explicit PointMesh( Qt3DCore::QNode* parent = Q_NULLPTR );
-    ~PointMesh() = default;
-    void posUpdate( const QVector<QVector3D>& pos );
+    BufferMeshGeometry( Qt3DCore::QNode* parent = nullptr );
+    ~BufferMeshGeometry();
+    int vertexCount();
+
+    void updatePoints( const QVector<QVector3D>& vertices );
 
   private:
-    PointMeshGeometry* _pointMeshGeo = nullptr;
+    Qt3DRender::QAttribute* m_positionAttribute;
+    Qt3DRender::QBuffer* m_vertexBuffer;
 };

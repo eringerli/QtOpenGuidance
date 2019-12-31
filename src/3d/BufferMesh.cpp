@@ -21,23 +21,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include <QGeometryRenderer>
+#include <QVector3D>
+#include <QVector4D>
+#include "BufferMesh.h"
+#include "BufferMeshGeometry.h"
 
-#include <QAttribute>
-#include <QGeometry>
-#include <Qt3DRender/QBuffer>
+BufferMesh::BufferMesh( Qt3DCore::QNode* parent ) :
+  Qt3DRender::QGeometryRenderer( parent ),
+  m_bufferMeshGeo( new BufferMeshGeometry( this ) ) {
+  setInstanceCount( 1 );
+  setIndexOffset( 0 );
+  setFirstInstance( 0 );
+  setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
+}
 
-class LineMeshGeometry : public Qt3DRender::QGeometry {
-    Q_OBJECT
+BufferMesh::~BufferMesh() {
+  m_bufferMeshGeo->deleteLater();
+}
 
-  public:
-    LineMeshGeometry( const QVector<QVector3D>& vertices, Qt3DCore::QNode* parent = Q_NULLPTR );
-    ~LineMeshGeometry() = default;
-    int vertexCount();
+void BufferMesh::bufferUpdate( const QVector<QVector3D>& pos ) {
+  m_bufferMeshGeo->updatePoints( pos );
 
-    void updatePoints( const QVector<QVector3D>& vertices );
-
-  private:
-    Qt3DRender::QAttribute* _positionAttribute;
-    Qt3DRender::QBuffer* _vertexBuffer;
-};
+  setVertexCount( m_bufferMeshGeo->vertexCount() );
+  setGeometry( m_bufferMeshGeo );
+}

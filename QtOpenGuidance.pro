@@ -29,14 +29,12 @@ qtCompileTest(spnav) {
 }
 
 SOURCES += \
+    src/3d/BufferMesh.cpp \
+    src/3d/BufferMeshGeometry.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/main.cpp \
-    src/3d/linemesh.cpp \
-    src/3d/linemeshgeometry.cpp \
-    src/3d/pointmesh.cpp \
-    src/3d/pointmeshgeometry.cpp \
     src/block/GuidanceGlobalPlanner.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
@@ -58,10 +56,8 @@ SOURCES += \
     
 HEADERS += \
     src/3d/ArrowTexture.h \
-    src/3d/linemeshgeometry.h \
-    src/3d/linemesh.h \
-    src/3d/pointmesh.h \
-    src/3d/pointmeshgeometry.h \
+    src/3d/BufferMesh.h \
+    src/3d/BufferMeshGeometry.h \
     src/block/AckermannSteering.h \
     src/block/BlockBase.h \
     src/block/CameraController.h \
