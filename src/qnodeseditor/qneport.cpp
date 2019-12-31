@@ -58,7 +58,7 @@ QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
 }
 
 QNEPort::~QNEPort() {
-  foreach( QNEConnection* conn, m_connections ) {
+  for( auto conn : m_connections ) {
     delete conn;
   }
 
@@ -127,7 +127,7 @@ QNEBlock* QNEPort::block() const {
 
 QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
-    foreach( QNEConnection* conn, m_connections ) {
+    for( auto conn : m_connections ) {
       conn->updatePosFromPorts();
       conn->updatePath();
     }

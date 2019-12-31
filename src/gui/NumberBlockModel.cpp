@@ -76,7 +76,7 @@ QVariant NumberBlockModel::data( const QModelIndex& index, int role ) const {
 
   int countRow = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -100,7 +100,7 @@ QVariant NumberBlockModel::data( const QModelIndex& index, int role ) const {
 bool NumberBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -142,7 +142,7 @@ void NumberBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {

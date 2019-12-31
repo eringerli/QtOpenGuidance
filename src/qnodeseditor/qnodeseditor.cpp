@@ -55,7 +55,7 @@ void QNodesEditor::install( QGraphicsScene* s ) {
   s->installEventFilter( this );
   scene = s;
 
-  foreach( QGraphicsView* it, scene->views() ) {
+  for( auto it : scene->views() ) {
     new QNEGestureEventFilter( it );
     it->grabGesture( Qt::PinchGesture );
   }
@@ -66,7 +66,7 @@ void QNodesEditor::install( QGraphicsScene* s ) {
 QGraphicsItem* QNodesEditor::itemAt( const QPointF& pos ) {
   QList<QGraphicsItem*> items = scene->items( QRectF( pos - QPointF( 1, 1 ), QSize( 3, 3 ) ) );
 
-  foreach( QGraphicsItem* item, items ) {
+  for( auto item :  items ) {
     if( item->type() > QGraphicsItem::UserType ) {
       return item;
     }
@@ -87,7 +87,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               QNEPort* item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
               if( item ) {
-                foreach( QGraphicsView* it, scene->views() ) {
+                for( auto it : scene->views() ) {
                   it->setDragMode( QGraphicsView::NoDrag );
                 }
 
@@ -114,7 +114,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
       case QEvent::KeyRelease: {
           if( keyEvent->matches( QKeySequence::Delete ) ) {
-            foreach( QGraphicsItem* item, scene->selectedItems() ) {
+            for( auto item :  scene->selectedItems() ) {
               QNEConnection* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
               if( connection != nullptr ) {
@@ -122,7 +122,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               }
             }
 
-            foreach( QGraphicsItem* item, scene->selectedItems() ) {
+            for( auto item :  scene->selectedItems() ) {
               QNEBlock* block = qgraphicsitem_cast<QNEBlock*>( item );
 
               if( block != nullptr ) {
@@ -155,14 +155,14 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           if( m->buttons() & Qt::RightButton ) {
             QPointF delta = m->lastScreenPos() - m->screenPos();
 
-            foreach( QGraphicsView* view, scene->views() ) {
+            for( auto view : scene->views() ) {
               double newX = view->horizontalScrollBar()->value() + delta.x();
               double newY = view->verticalScrollBar()->value() + delta.y();
               view->horizontalScrollBar()->setValue( int( newX ) );
               view->verticalScrollBar()->setValue( int( newY ) );
             }
 
-            foreach( QGraphicsView* it, scene->views() ) {
+            for( auto it : scene->views() ) {
               it->setDragMode( QGraphicsView::ScrollHandDrag );
             }
 
@@ -241,7 +241,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             }
           }
 
-          foreach( QGraphicsView* it, scene->views() ) {
+          for( auto it : scene->views() ) {
             it->setDragMode( QGraphicsView::RubberBandDrag );
           }
         }

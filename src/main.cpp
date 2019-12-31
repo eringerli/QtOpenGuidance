@@ -242,10 +242,10 @@ int main( int argc, char** argv ) {
 
   // sort the QT3D objects, so transparity works
   Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
-  auto* sortPolicy = new Qt3DRender::QSortPolicy( );
+  auto* sortPolicy = new Qt3DRender::QSortPolicy();
   framegraph->setParent( sortPolicy );
-  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes =
-    QVector<Qt3DRender::QSortPolicy::SortType>() << Qt3DRender::QSortPolicy::FrontToBack;
+  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
+  sortTypes << Qt3DRender::QSortPolicy::FrontToBack;
   sortPolicy->setSortTypes( sortTypes );
   view->setActiveFrameGraph( sortPolicy );
 

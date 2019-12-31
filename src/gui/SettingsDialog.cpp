@@ -439,14 +439,14 @@ void SettingsDialog::saveDefaultConfig() {
   if( saveFile.open( QIODevice::WriteOnly ) ) {
 
     // select all items, so everything gets saved
-    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    for( auto item : ui->gvNodeEditor->scene()->items() ) {
       item->setSelected( true );
     }
 
     saveConfigToFile( saveFile );
 
     // deselect all items
-    foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+    for( auto item : ui->gvNodeEditor->scene()->items() ) {
       item->setSelected( false );
     }
   }
@@ -493,7 +493,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
   jsonObject["blocks"] = blocks;
   jsonObject["connections"] = connections;
 
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
     {
       auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
@@ -516,7 +516,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
 }
 
 QNEBlock* SettingsDialog::getBlockWithId( int id ) {
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+  for( auto item : ui->gvNodeEditor->scene()->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -530,7 +530,7 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
 }
 
 QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+  for( auto item : ui->gvNodeEditor->scene()->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -707,7 +707,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   }
 
   // as new values for the blocks are added above, emit all signals now, when the connections are made
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+  for( auto item : ui->gvNodeEditor->scene()->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -742,13 +742,13 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 }
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
     auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
     delete connection;
   }
 
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->selectedItems() ) {
+  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
@@ -1032,7 +1032,7 @@ void SettingsDialog::on_pbBaudrateSet_clicked() {
 
 void SettingsDialog::on_pbClear_clicked() {
   // select all items, so everything gets deleted with a call to on_pbDeleteSelected_clicked()
-  foreach( QGraphicsItem* item, ui->gvNodeEditor->scene()->items() ) {
+  for( auto item : ui->gvNodeEditor->scene()->items() ) {
     item->setSelected( true );
   }
 
@@ -1077,14 +1077,14 @@ void SettingsDialog::on_btnSectionRemove_clicked() {
 
   QList<int> rows;
 
-  foreach( const QModelIndex& index, selection.indexes() ) {
+  for( auto index : selection.indexes() ) {
     rows.append( index.row() );
   }
 
   // sort to reverse order
   std::sort( rows.begin(), rows.end(), std::greater<int>() );
 
-  foreach( const int& i, rows ) {
+  for( auto i : rows ) {
     ui->twSections->model()->removeRows( i, 1 );
   }
 }
@@ -1092,7 +1092,7 @@ void SettingsDialog::on_btnSectionRemove_clicked() {
 void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  foreach( const QModelIndex& index, selection.indexes() ) {
+  for( auto index : selection.indexes() ) {
     ui->twSections->model()->setData( index, ui->dsbSectionsNumber->value() );
   }
 }
@@ -1102,7 +1102,7 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
 
   QList<int> rows;
 
-  foreach( const QModelIndex& index, selection.indexes() ) {
+  for( auto index : selection.indexes() ) {
     rows.append( index.row() );
   }
 
@@ -1113,7 +1113,7 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
 
   if( implementModel ) {
     if( rows[0] > 0 ) {
-      foreach( const int& i, rows ) {
+      for( auto i : rows ) {
         implementModel->swapElements( i, i - 1 );
       }
     }
@@ -1125,7 +1125,7 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
 
   QList<int> rows;
 
-  foreach( const QModelIndex& index, selection.indexes() ) {
+  for( auto index : selection.indexes() ) {
     rows.append( index.row() );
   }
 
@@ -1136,7 +1136,7 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
 
   if( implementModel ) {
     if( ( rows[0] + 1 ) < implementModel->rowCount() ) {
-      foreach( const int& i, rows ) {
+      for( auto i : rows ) {
         implementModel->swapElements( i, i + 1 );
       }
     }
@@ -1398,7 +1398,7 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
 void SettingsDialog::on_pbMeterDefaults_clicked() {
   QItemSelection selection( ui->tvMeter->selectionModel()->selection() );
 
-  foreach( const QModelIndex& index, selection.indexes() ) {
+  for( auto index : selection.indexes() ) {
     ui->tvMeter->model()->setData( index.siblingAtColumn( 1 ), true );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 2 ), 0 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 3 ), 1 );

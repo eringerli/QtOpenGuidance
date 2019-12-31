@@ -18,8 +18,8 @@ QT += widgets core
 android {
     INCLUDEPATH += android/arm64-v8a//include/boost-1_70/
     LIBS += -Landroid/arm64-v8a/lib/
-QMAKE_CXXFLAGS += -fexceptions
-QMAKE_CXXFLAGS += -frtti
+    QMAKE_CXXFLAGS += -fexceptions
+    QMAKE_CXXFLAGS += -frtti
 }
 
 qtCompileTest(spnav) {

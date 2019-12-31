@@ -145,7 +145,7 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
 QVector<QNEPort*> QNEBlock::ports() {
   QVector<QNEPort*> res;
 
-  foreach( QGraphicsItem* port_, childItems() ) {
+  for( auto port_ : childItems() ) {
     auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
@@ -158,7 +158,7 @@ QVector<QNEPort*> QNEBlock::ports() {
 
 void QNEBlock::setName( const QString& name, bool setFromLabel ) {
   if( !setFromLabel ) {
-    foreach( QGraphicsItem* port_, childItems() ) {
+    for( auto port_ : childItems() ) {
       auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
       if( port && port->portFlags()&QNEPort::NamePort ) {
@@ -186,7 +186,7 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
 }
 
 QNEPort* QNEBlock::getPortWithName( const QString& name, bool output ) {
-  foreach( QGraphicsItem* port_, childItems() ) {
+  for( auto port_ : childItems() ) {
     auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port &&
@@ -236,7 +236,7 @@ void QNEBlock::resizeBlockWidth() {
   double y = -heightSnappedToGridSpacing / 2 + verticalMargin + cornerRadius;
   width = 0;
 
-  foreach( QGraphicsItem* port_, childItems() ) {
+  for( auto port_ : childItems() ) {
     auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {
@@ -248,7 +248,7 @@ void QNEBlock::resizeBlockWidth() {
 
   qreal widthSnappedToGridSpacing = ceil( width / ( gridSpacing ) ) * ( gridSpacing );
 
-  foreach( QGraphicsItem* port_, childItems() ) {
+  for( auto port_ : childItems() ) {
     auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
 
     if( port ) {

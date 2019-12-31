@@ -104,7 +104,7 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
     if( role == Qt::CheckStateRole ) {
       int countRow = 0;
 
-      foreach( QGraphicsItem* item, scene->items() ) {
+      for( auto item : scene->items() ) {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
         if( block ) {
@@ -127,7 +127,7 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
 
       int countRow = 0;
 
-      foreach( QGraphicsItem* item, scene->items() ) {
+      for( auto item : scene->items() ) {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
         if( block ) {
@@ -171,7 +171,7 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
 bool MeterModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -241,7 +241,7 @@ void MeterModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {

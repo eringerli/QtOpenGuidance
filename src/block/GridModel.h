@@ -97,10 +97,8 @@ class GridModel : public BlockBase {
     void setPose( Point_3 position, QQuaternion, PoseOption::Options ) {
       m_distanceMeasurementTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
-      double stepX = qMax( xStep, xStepCoarse );
-      double stepY = qMax( yStep, yStepCoarse );
-      QVector3D positionModulo( float( std::floor( ( position.x() ) / stepX ) * stepX ),
-                                float( std::floor( ( position.y() ) / stepY ) * stepY ),
+      QVector3D positionModulo( float( std::floor( ( position.x() ) / xStepMax ) * xStepMax ),
+                                float( std::floor( ( position.y() ) / yStepMax ) * yStepMax ),
                                 float( position.z() ) );
       m_baseTransform->setTranslation( positionModulo );
     }
@@ -114,6 +112,8 @@ class GridModel : public BlockBase {
       this->yStep = double( yStep );
       this->xStepCoarse = double( xStepCoarse );
       this->yStepCoarse = double( yStepCoarse );
+      this->xStepMax = double( std::max( xStep, xStepCoarse ) );
+      this->yStepMax = double( std::max( yStep, yStepCoarse ) );
 
       QVector<qreal> thresholds = {qreal( cameraThreshold ), qreal( cameraThresholdCoarse ), 10000};
       m_lod->setThresholds( thresholds );
@@ -251,6 +251,8 @@ class GridModel : public BlockBase {
     double yStep = 1;
     double xStepCoarse = 10;
     double yStepCoarse = 10;
+    double xStepMax = 1;
+    double yStepMax = 1;
 };
 
 class GridModelFactory : public BlockFactory {

@@ -70,11 +70,11 @@ QVariant ImplementBlockModel::data( const QModelIndex& index, int role ) const {
 
   int countRow = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
-      if( /*auto* object = */qobject_cast<Implement*>( block->object ) ) {
+      if( qobject_cast<Implement*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -94,7 +94,7 @@ QVariant ImplementBlockModel::data( const QModelIndex& index, int role ) const {
 bool ImplementBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
@@ -130,7 +130,7 @@ void ImplementBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
-  foreach( QGraphicsItem* item, scene->items() ) {
+  for( auto item : scene->items() ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block ) {
