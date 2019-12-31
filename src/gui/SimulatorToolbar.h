@@ -57,7 +57,7 @@ class SimulatorToolbar : public QGroupBox {
     void frequencyChanged( int );
 
   private:
-    Ui::SimulatorToolbar* ui;
+    Ui::SimulatorToolbar* ui = nullptr;
 };
 
 #endif // SIMULATORTOOLBAR_H

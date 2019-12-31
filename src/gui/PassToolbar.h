@@ -43,7 +43,7 @@ class PassToolbar : public QGroupBox {
     void on_cbMirror_stateChanged( int arg1 );
 
   private:
-    Ui::PassToolbar* ui;
+    Ui::PassToolbar* ui = nullptr;
 };
 
 #endif // PASSTOOLBAR_H

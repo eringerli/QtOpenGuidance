@@ -61,8 +61,8 @@ class QNEConnection : public QGraphicsPathItem {
   private:
     QPointF pos1;
     QPointF pos2;
-    QNEPort* m_port1;
-    QNEPort* m_port2;
+    QNEPort* m_port1 = nullptr;
+    QNEPort* m_port2 = nullptr;
 
     QMetaObject::Connection connection;
 };

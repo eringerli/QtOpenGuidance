@@ -30,7 +30,7 @@ class FieldsToolbar : public QGroupBox {
     void setDockLocation( Qt::DockWidgetArea area );
 
   private:
-    Ui::FieldsToolbar* ui;
+    Ui::FieldsToolbar* ui = nullptr;
     QBoxLayout* boxLayout = nullptr;
 };
 

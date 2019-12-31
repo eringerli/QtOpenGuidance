@@ -35,7 +35,7 @@ class FieldsOptimitionToolbar : public QGroupBox {
     void on_cbAlphaShape_currentTextChanged( const QString& arg1 );
 
   private:
-    Ui::FieldsOptimitionToolbar* ui;
+    Ui::FieldsOptimitionToolbar* ui = nullptr;
 
     double optimalAlpha = 20;
     double solidAlpha = 100;

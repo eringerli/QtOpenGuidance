@@ -42,7 +42,7 @@ class GuidanceTurning : public QGroupBox {
     void turnRight();
 
   private:
-    Ui::GuidanceTurning* ui;
+    Ui::GuidanceTurning* ui = nullptr;
 };
 
 #endif // GUIDANCETURNING_H

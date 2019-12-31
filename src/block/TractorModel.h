@@ -61,36 +61,36 @@ class TractorModel : public BlockBase {
   private:
     void setProportions();
 
-    Qt3DCore::QEntity* m_rootEntity;
+    Qt3DCore::QEntity* m_rootEntity = nullptr;
 
-    Qt3DCore::QEntity* m_baseEntity;
-    Qt3DCore::QEntity* m_wheelFrontLeftEntity;
-    Qt3DCore::QEntity* m_wheelFrontRightEntity;
-    Qt3DCore::QEntity* m_wheelBackLeftEntity;
-    Qt3DCore::QEntity* m_wheelBackRightEntity;
+    Qt3DCore::QEntity* m_baseEntity = nullptr;
+    Qt3DCore::QEntity* m_wheelFrontLeftEntity = nullptr;
+    Qt3DCore::QEntity* m_wheelFrontRightEntity = nullptr;
+    Qt3DCore::QEntity* m_wheelBackLeftEntity = nullptr;
+    Qt3DCore::QEntity* m_wheelBackRightEntity = nullptr;
 
-    Qt3DCore::QEntity* m_towHookEntity;
-    Qt3DCore::QEntity* m_pivotPointEntity;
-    Qt3DCore::QEntity* m_towPointEntity;
+    Qt3DCore::QEntity* m_towHookEntity = nullptr;
+    Qt3DCore::QEntity* m_pivotPointEntity = nullptr;
+    Qt3DCore::QEntity* m_towPointEntity = nullptr;
 
-    Qt3DExtras::QCuboidMesh*  m_baseMesh;
-    Qt3DExtras::QCylinderMesh* m_wheelFrontMesh;
-    Qt3DExtras::QCylinderMesh* m_wheelBackMesh;
+    Qt3DExtras::QCuboidMesh*  m_baseMesh = nullptr;
+    Qt3DExtras::QCylinderMesh* m_wheelFrontMesh = nullptr;
+    Qt3DExtras::QCylinderMesh* m_wheelBackMesh = nullptr;
 
-    Qt3DExtras::QSphereMesh*  m_towHookMesh;
-    Qt3DExtras::QSphereMesh* m_pivotPointMesh;
-    Qt3DExtras::QSphereMesh* m_towPointMesh;
+    Qt3DExtras::QSphereMesh*  m_towHookMesh = nullptr;
+    Qt3DExtras::QSphereMesh* m_pivotPointMesh = nullptr;
+    Qt3DExtras::QSphereMesh* m_towPointMesh = nullptr;
 
-    Qt3DCore::QTransform* m_rootEntityTransform;
-    Qt3DCore::QTransform* m_baseTransform;
-    Qt3DCore::QTransform* m_wheelFrontLeftTransform;
-    Qt3DCore::QTransform* m_wheelFrontRightTransform;
-    Qt3DCore::QTransform* m_wheelBackLeftTransform;
-    Qt3DCore::QTransform* m_wheelBackRightTransform;
+    Qt3DCore::QTransform* m_rootEntityTransform = nullptr;
+    Qt3DCore::QTransform* m_baseTransform = nullptr;
+    Qt3DCore::QTransform* m_wheelFrontLeftTransform = nullptr;
+    Qt3DCore::QTransform* m_wheelFrontRightTransform = nullptr;
+    Qt3DCore::QTransform* m_wheelBackLeftTransform = nullptr;
+    Qt3DCore::QTransform* m_wheelBackRightTransform = nullptr;
 
-    Qt3DCore::QTransform* m_towHookTransform;
-    Qt3DCore::QTransform* m_pivotPointTransform;
-    Qt3DCore::QTransform* m_towPointTransform;
+    Qt3DCore::QTransform* m_towHookTransform = nullptr;
+    Qt3DCore::QTransform* m_pivotPointTransform = nullptr;
+    Qt3DCore::QTransform* m_towPointTransform = nullptr;
 
     float m_wheelbase = 2.4f;
     float m_trackwidth = 2;
@@ -133,7 +133,7 @@ class TractorModelFactory : public BlockFactory {
     }
 
   private:
-    Qt3DCore::QEntity* rootEntity;
+    Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
 #endif // TRACTORMODEL_H

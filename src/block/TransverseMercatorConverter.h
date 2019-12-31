@@ -95,7 +95,7 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     }
 
   private:
-    TransverseMercatorWrapper* tmw;
+    TransverseMercatorWrapper* tmw = nullptr;
 };
 
 #endif // TRANSVERSEMERCATORCONVERTER_H

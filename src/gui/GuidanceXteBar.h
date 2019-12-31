@@ -19,7 +19,7 @@ class GuidanceXteBar : public QGroupBox {
     void setName( const QString& name );
 
   private:
-    Ui::GuidanceXteBar* ui;
+    Ui::GuidanceXteBar* ui = nullptr;
 };
 
 #endif // GUIDANCEXTEBAR_H

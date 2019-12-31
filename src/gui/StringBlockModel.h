@@ -61,7 +61,7 @@ class StringBlockModel : public QAbstractTableModel {
     void resetModel();
 
   private:
-    QGraphicsScene* scene;
+    QGraphicsScene* scene = nullptr;
 
     int countBuffer = 0;
 };

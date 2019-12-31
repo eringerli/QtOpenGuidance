@@ -108,7 +108,7 @@ class QNEBlock : public QGraphicsPathItem {
     }
 
   public:
-    QObject* object;
+    QObject* object = nullptr;
     QString typeString;
 };
 

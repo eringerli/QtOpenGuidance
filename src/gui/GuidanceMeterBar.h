@@ -22,7 +22,7 @@ class GuidanceMeterBar : public QGroupBox {
     void setFontOfLabel( QFont font );
 
   private:
-    Ui::GuidanceMeterBar* ui;
+    Ui::GuidanceMeterBar* ui = nullptr;
 
   public:
     const QFont& fontOfLabel();

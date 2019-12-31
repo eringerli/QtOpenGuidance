@@ -60,7 +60,7 @@ class PrintLatency : public BlockBase {
     }
 
   public:
-    QNEBlock* block;
+    QNEBlock* block = nullptr;
 
   private:
     QElapsedTimer timer;

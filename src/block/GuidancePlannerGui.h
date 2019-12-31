@@ -103,7 +103,7 @@ class PlannerGuiFactory : public BlockFactory {
     }
 
   private:
-    Qt3DCore::QEntity* rootEntity;
+    Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
 #endif // PLANNERGUI_H

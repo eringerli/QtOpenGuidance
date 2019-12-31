@@ -54,8 +54,8 @@ class FpsMeasurement : public BlockBase {
     void fpsChanged( float );
 
   public:
-    Qt3DCore::QEntity* fpsEntity;
-    FpsMonitor* fpsComponent;
+    Qt3DCore::QEntity* fpsEntity = nullptr;
+    FpsMonitor* fpsComponent = nullptr;
 };
 
 

@@ -62,7 +62,7 @@ class CameraToolbar : public QGroupBox {
     void setMode( int );
 
   private:
-    Ui::CameraToolbar* ui;
+    Ui::CameraToolbar* ui = nullptr;
 };
 
 #endif // CAMERACONTROL_H

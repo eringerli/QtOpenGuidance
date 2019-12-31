@@ -38,6 +38,6 @@ class PointMeshGeometry : public Qt3DRender::QGeometry {
     void updatePoints( const QVector<QVector3D>& vertices );
 
   private:
-    Qt3DRender::QAttribute* _positionAttribute;
-    Qt3DRender::QBuffer* _vertexBuffer;
+    Qt3DRender::QAttribute* _positionAttribute = nullptr;
+    Qt3DRender::QBuffer* _vertexBuffer = nullptr;
 };
