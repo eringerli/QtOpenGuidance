@@ -64,7 +64,7 @@ class SprayerModel : public BlockBase {
     QPointer<Implement> implement;
 
     float m_height = 1.0;
-    QColor sprayerColor = QColor( qRgba( 0x66, 0x88, 0x23, 127 ) );
+    QColor sprayerColor = QColor( qRgba( 0x23, 0xff, 0xed, 50 ) );
 
 };
 

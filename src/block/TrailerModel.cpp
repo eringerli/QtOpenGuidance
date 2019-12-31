@@ -36,6 +36,8 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity )
   // wheel left
   {
     m_wheelMesh = new Qt3DExtras::QCylinderMesh();
+    m_wheelMesh->setRings(5);
+    m_wheelMesh->setSlices(50);
     m_wheelLeftTransform = new Qt3DCore::QTransform();
 
     m_wheelLeftEntity = new Qt3DCore::QEntity( m_rootEntity );

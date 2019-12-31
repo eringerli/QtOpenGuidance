@@ -245,7 +245,7 @@ int main( int argc, char** argv ) {
   auto* sortPolicy = new Qt3DRender::QSortPolicy();
   framegraph->setParent( sortPolicy );
   QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
-  sortTypes << Qt3DRender::QSortPolicy::FrontToBack;
+  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
   sortPolicy->setSortTypes( sortTypes );
   view->setActiveFrameGraph( sortPolicy );
 

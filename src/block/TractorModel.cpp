@@ -45,6 +45,8 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   m_wheelFrontMesh = new Qt3DExtras::QCylinderMesh();
+  m_wheelFrontMesh->setRings(5);
+  m_wheelFrontMesh->setSlices(50);
 
   // wheel front left
   {
@@ -73,6 +75,9 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   m_wheelBackMesh = new Qt3DExtras::QCylinderMesh();
+  m_wheelBackMesh->setRings(5);
+  m_wheelBackMesh->setSlices(50);
+
   // wheel back left
   {
     m_wheelBackLeftTransform = new Qt3DCore::QTransform();
@@ -168,8 +173,8 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
     auto* cylinderMesh = new Qt3DExtras::QCylinderMesh();
     cylinderMesh->setRadius( 0.2f );
     cylinderMesh->setLength( 20 );
-    cylinderMesh->setRings( 100 );
-    cylinderMesh->setSlices( 20 );
+    cylinderMesh->setRings( 20 );
+    cylinderMesh->setSlices( 50 );
 
     auto* blueMaterial = new Qt3DExtras::QPhongMaterial();
     blueMaterial->setSpecular( Qt::white );

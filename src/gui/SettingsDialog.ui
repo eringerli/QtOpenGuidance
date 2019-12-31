@@ -585,6 +585,9 @@
               <property name="suffix">
                <string> m</string>
               </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
               <property name="minimum">
                <double>-99.989999999999995</double>
               </property>

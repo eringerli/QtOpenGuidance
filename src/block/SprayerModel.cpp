@@ -54,22 +54,19 @@ void SprayerModel::setSections( QPointer<Implement> implement ) {
     --numSections;
 
     auto childrenOfRootEntity = m_rootEntity->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
-    qDebug() << "SprayerModel::setSections" << numSections << childrenOfRootEntity.count();
-//   for(auto child:childrenOfRootEntity){
-//   qDebug()<<child;
-//   }
 
     if( numSections > 0 && childrenOfRootEntity.count() >= numSections ) {
       // go through all the sections to seth the color and visibility
       // order is retained in children() -> use that
       int sectionIndex = numSections;
+      bool globalForceOff=implement->sections.at(0)->state().testFlag( ImplementSection::State::ForceOff );
+      bool globalForceOn=implement->sections.at(0)->state().testFlag( ImplementSection::State::ForceOn );
 
       for( auto child = childrenOfRootEntity.crbegin(); child != childrenOfRootEntity.crend(); ++child ) {
         Qt3DCore::QEntity* entity = qobject_cast<Qt3DCore::QEntity*>( *child );
-        qDebug() << entity << sectionIndex << numSections;
 
         if( entity ) {
-          auto entityVector =  entity->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
+          auto entityVector = entity->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
           Qt3DCore::QEntity* boomEntity = entityVector.at( 0 );
           Qt3DCore::QEntity* sprayEntity = entityVector.at( 1 );
 
@@ -78,21 +75,24 @@ void SprayerModel::setSections( QPointer<Implement> implement ) {
 
             if( boomMaterial ) {
               // make the spray visibible if turned on
-              sprayEntity->setEnabled( implement->sections.at( sectionIndex )->isSectionOn() );
 
               // set the color according to the state
               auto state = implement->sections.at( sectionIndex )->state();
 
-              if( state.testFlag( ImplementSection::State::ForceOff ) ) {
+              if( state.testFlag( ImplementSection::State::ForceOff ) || globalForceOff ) {
                 boomMaterial->setDiffuse( QColor( Qt::red ) );
+                sprayEntity->setEnabled( false );
               } else {
-                if( state.testFlag( ImplementSection::State::ForceOn ) ) {
+                if( state.testFlag( ImplementSection::State::ForceOn ) || globalForceOn ) {
                   boomMaterial->setDiffuse( QColor( Qt::green ) );
+                  sprayEntity->setEnabled( true );
                 } else {
                   if( implement->sections.at( sectionIndex )->isSectionOn() ) {
                     boomMaterial->setDiffuse( QColor( Qt::darkGreen ) );
+                    sprayEntity->setEnabled( true );
                   } else {
                     boomMaterial->setDiffuse( QColor( Qt::darkRed ) );
+                    sprayEntity->setEnabled( false );
                   }
                 }
               }
@@ -155,6 +155,7 @@ void SprayerModel::setImplement( QPointer<Implement> implement ) {
         boomMesh->setSlices( 20.0f );
         materialBoom->setDiffuse( QColor( QRgb( 0x668823 ) ) );
         materialBoom->setAmbient( QColor( 0, 0, 0, 127 ) );
+        materialBoom->setShininess( 10 );
 //        boomMeshTransform->setRotation(
 //              QQuaternion::fromAxisAndAngle(
 //                QVector3D( 0.0f, 0.0f, 1.0f ),
@@ -174,24 +175,21 @@ void SprayerModel::setImplement( QPointer<Implement> implement ) {
         sprayMeshTransform->setTranslation( boomMeshTransform->translation() );
 
         sprayMaterial->setAlphaBlendingEnabled( true );
-        sprayMaterial->setDiffuse( /*sprayerColor*/ QColor( qRgba( 0xff, 0xff, 0xff, 20 ) ) );
-//        sprayMaterial->setAmbient( QColor(qRgba(0xff,0xff,0xff,127)) );
+        sprayMaterial->setDiffuse( sprayerColor /*QColor( qRgba( 0xff, 0xff, 0xff, 20 ) )*/ );
+        sprayMaterial->setAmbient( QColor(qRgba(127,127,127,0)) );
+        sprayMaterial->setShininess( 10 );
         sprayMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::TriangleFan );
         {
           QVector<QVector3D> sprayTrianglePoints;
           float widthOfSectionHalf = float( section->widthOfSection / 2 );
           float heightThird = m_height / 3;
           sprayTrianglePoints << QVector3D( 0, 0, 0 );
-          sprayTrianglePoints << QVector3D( -heightThird, -widthOfSectionHalf, -m_height );
           sprayTrianglePoints << QVector3D( -heightThird, widthOfSectionHalf, -m_height );
-
-          sprayTrianglePoints << QVector3D( heightThird, widthOfSectionHalf, -m_height );
-          sprayTrianglePoints << QVector3D( heightThird, -widthOfSectionHalf, -m_height );
           sprayTrianglePoints << QVector3D( -heightThird, -widthOfSectionHalf, -m_height );
 
-//          sprayTrianglePoints << QVector3D( 0, 0, 0 );
-//          sprayTrianglePoints << QVector3D( 0, -widthOfSectionHalf, -m_height );
-//          sprayTrianglePoints << QVector3D( 0, widthOfSectionHalf, -m_height );
+          sprayTrianglePoints << QVector3D( heightThird, -widthOfSectionHalf, -m_height );
+          sprayTrianglePoints << QVector3D( heightThird, widthOfSectionHalf, -m_height );
+          sprayTrianglePoints << QVector3D( -heightThird, widthOfSectionHalf, -m_height );
 
           sprayMesh->bufferUpdate( sprayTrianglePoints );
         }
