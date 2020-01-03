@@ -33,7 +33,8 @@
 #include <Qt3DExtras/QCuboidMesh>
 #include <Qt3DExtras/QPlaneMesh>
 #include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
+//#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
 #include "BlockBase.h"
 
@@ -57,6 +58,9 @@ class SprayerModel : public BlockBase {
     void setHeight( float );
 
   private:
+    void updateProprotions();
+
+  private:
     Qt3DCore::QEntity* m_rootEntity = nullptr;
 
     Qt3DCore::QTransform* m_rootEntityTransform = nullptr;
@@ -64,7 +68,7 @@ class SprayerModel : public BlockBase {
     QPointer<Implement> implement;
 
     float m_height = 1.0;
-    QColor sprayerColor = QColor( qRgba( 0x23, 0xff, 0xed, 50 ) );
+    QColor sprayerColor = QColor( qRgb/*a*/( 0x23, 0xff, 0xed/*, 255*/ ) );
 
 };
 
@@ -91,10 +95,10 @@ class SprayerModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Height", SLOT( setHeight( float ) ) );
-      b->addInputPort( "Implement Data", SLOT( setImplement( QPointer<Implement> ) ) );
-      b->addInputPort( "Section Control Data", SLOT( setSections( QPointer<Implement> ) ) );
+      b->addInputPort(QStringLiteral("Pose"),QStringLiteral(SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) )));
+      b->addInputPort(QStringLiteral("Height"),QStringLiteral(SLOT( setHeight( float ) )));
+      b->addInputPort(QStringLiteral("Implement Data"),QStringLiteral(SLOT( setImplement( QPointer<Implement> ) )));
+      b->addInputPort(QStringLiteral("Section Control Data"),QStringLiteral(SLOT( setSections( QPointer<Implement> ) )));
 
       return b;
     }
