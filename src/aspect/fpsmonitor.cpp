@@ -16,8 +16,9 @@ int FpsMonitor::rollingMeanFrameCount() const {
 }
 
 void FpsMonitor::setRollingMeanFrameCount( int rollingMeanFrameCount ) {
-  if( m_rollingMeanFrameCount == rollingMeanFrameCount )
+  if( m_rollingMeanFrameCount == rollingMeanFrameCount ) {
     return;
+  }
 
   m_rollingMeanFrameCount = rollingMeanFrameCount;
   emit rollingMeanFrameCountChanged( m_rollingMeanFrameCount );

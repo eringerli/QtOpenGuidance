@@ -27,7 +27,7 @@ class FpsAspect : public Qt3DCore::QAbstractAspect {
   private:
     QHash<Qt3DCore::QNodeId, FpsMonitorBackend*> m_fpsMonitors;
     UpdateFpsMonitorsJobPtr m_updateMonitorsJob;
-    qint64 m_lastTime;
+    qint64 m_lastTime = 0;
 };
 
 #endif // FPSASPECT_H

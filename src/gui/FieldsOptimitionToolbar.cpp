@@ -15,11 +15,11 @@ void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha )
   this->optimalAlpha = optimalAlpha;
   this->solidAlpha = solidAlpha;
 
-  if( ui->cbAlphaShape->currentText() == "Optimal" ) {
+  if( ui->cbAlphaShape->currentText() == QLatin1String( "Optimal" ) ) {
     ui->dsbAlpha->setValue( optimalAlpha );
   }
 
-  if( ui->cbAlphaShape->currentText() == "Solid" ) {
+  if( ui->cbAlphaShape->currentText() == QLatin1String( "Solid" ) ) {
     ui->dsbAlpha->setValue( solidAlpha );
   }
 }
@@ -34,13 +34,13 @@ void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
 }
 
 void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString& arg1 ) {
-  ui->dsbAlpha->setEnabled( arg1 == "Custom" );
+  ui->dsbAlpha->setEnabled( arg1 == QLatin1String( "Custom" ) );
 
-  if( arg1 == "Optimal" ) {
+  if( arg1 == QLatin1String( "Optimal" ) ) {
     ui->dsbAlpha->setValue( optimalAlpha );
   }
 
-  if( arg1 == "Solid" ) {
+  if( arg1 == QLatin1String( "Solid" ) ) {
     ui->dsbAlpha->setValue( solidAlpha );
   }
 }

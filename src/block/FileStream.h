@@ -46,10 +46,10 @@ class FileStream : public BlockBase {
     }
 
   signals:
-    void dataReceived( QByteArray );
+    void dataReceived( const QByteArray& );
 
   public slots:
-    void setFilename( QString filename ) {
+    void setFilename( QString& filename ) {
       this->filename = filename;
 
       if( file ) {
@@ -81,7 +81,7 @@ class FileStream : public BlockBase {
       }
     }
 
-    void sendData( QByteArray data ) {
+    void sendData( const QByteArray& data ) {
       *fileStream << data;
     }
 
@@ -104,8 +104,6 @@ class FileStream : public BlockBase {
 
   private:
     QBasicTimer timer;
-    int timerId;
-    QTime time;
 
     QTextStream* fileStream = nullptr;
     QFile* file = nullptr;
@@ -133,11 +131,11 @@ class FileStreamFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "File", SLOT( setFilename( QString ) ) );
-      b->addInputPort( "Linerate", SLOT( setLinerate( float ) ) );
-      b->addInputPort( "Data", SLOT( sendData( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "File" ), QLatin1String( SLOT( setFilename( const QString& ) ) ) );
+      b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
-      b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
+      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;
     }

@@ -52,9 +52,7 @@ class Implement : public BlockBase {
       QObject::connect( dock, &QDockWidget::dockLocationChanged, widget, &SectionControlToolbar::setDockLocation );
 
       // add section 0: the section to control them all
-      sections.append(
-              QSharedPointer<ImplementSection>(
-                      new ImplementSection( 0, 0, 0 ) ) );
+      sections.push_back( new ImplementSection( 0, 0, 0 ) );
     }
 
     ~Implement() override {
@@ -65,16 +63,18 @@ class Implement : public BlockBase {
     void emitConfigSignals() override {
       double width = 0;
 
-      for( auto section : sections ) {
+      for( const auto& section : qAsConst( sections ) ) {
         width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
       }
 
       emit leftEdgeChanged( QVector3D( 0, float( -width / 2 ), 0 ) );
       emit rightEdgeChanged( QVector3D( 0, float( width / 2 ), 0 ) );
-      emit triggerLocalPose( Point_3(), QQuaternion(),
-                             PoseOption::CalculateLocalOffsets |
-                             PoseOption::CalculateWithoutOrientation |
-                             PoseOption::CalculateFromPivotPoint );
+      auto dummyPoint = Point_3();
+      auto dummyQuaternion = QQuaternion();
+      auto dummyFlags = PoseOption::CalculateLocalOffsets |
+                        PoseOption::CalculateWithoutOrientation |
+                        PoseOption::CalculateFromPivotPoint;
+      emit triggerLocalPose( dummyPoint, dummyQuaternion, dummyFlags );
       emit implementChanged( this );
     }
 
@@ -82,56 +82,56 @@ class Implement : public BlockBase {
       if( sections.size() > 1 ) {
         QJsonArray array;
 
-        for( int i = 1; i < sections.size(); ++i ) {
+        for( size_t i = 1; i < sections.size(); ++i ) {
           QJsonObject sectionObject;
-          sectionObject["overlapLeft"] = sections[i]->overlapLeft;
-          sectionObject["widthOfSection"] = sections[i]->widthOfSection;
-          sectionObject["overlapRight"] = sections[i]->overlapRight;
+          sectionObject[QStringLiteral( "overlapLeft" )] = sections[i]->overlapLeft;
+          sectionObject[QStringLiteral( "widthOfSection" )] = sections[i]->widthOfSection;
+          sectionObject[QStringLiteral( "overlapRight" )] = sections[i]->overlapRight;
           array.append( sectionObject );
         }
 
         QJsonObject valuesObject;
-        valuesObject["Sections"] = array;
-        json["values"] = valuesObject;
+        valuesObject[QStringLiteral( "Sections" )] = array;
+        json[QStringLiteral( "values" )] = valuesObject;
       }
     }
 
     void fromJSON( QJsonObject& json ) override {
-      if( json["values"].isObject() ) {
-        QJsonObject valuesObject = json["values"].toObject();
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        if( valuesObject["Sections"].isArray() ) {
-          QJsonArray sectionArray = valuesObject["Sections"].toArray();
+        if( valuesObject[QStringLiteral( "Sections" )].isArray() ) {
+          QJsonArray sectionArray = valuesObject[QStringLiteral( "Sections" )].toArray();
 
-          for( auto sectionIndex : sectionArray ) {
+          for( const auto& sectionIndex : qAsConst( sectionArray ) ) {
             QJsonObject sectionObject = sectionIndex.toObject();
-            sections.append(
-                    QSharedPointer<ImplementSection>(
-                            new ImplementSection( sectionObject["overlapLeft"].toDouble( 0 ),
-                                                  sectionObject["widthOfSection"].toDouble( 0 ),
-                                                  sectionObject["overlapRight"].toDouble( 0 ) ) ) );
+            sections.push_back(
+                    new ImplementSection( sectionObject[QStringLiteral( "overlapLeft" )].toDouble( 0 ),
+                                          sectionObject[QStringLiteral( "widthOfSection" )].toDouble( 0 ),
+                                          sectionObject[QStringLiteral( "overlapRight" )].toDouble( 0 ) ) );
           }
         }
       }
     }
 
     void emitImplementChanged() {
-      emit implementChanged( this );
+      emit implementChanged( QPointer<Implement>( this ) );
+
     }
 
     void emitSectionsChanged() {
-      emit sectionsChanged( this );
+      emit sectionsChanged();
     }
 
   signals:
-    void triggerLocalPose( Point_3, QQuaternion, PoseOption::Options );
+    void triggerLocalPose( const Point_3&, const QQuaternion, const PoseOption::Options );
     void leftEdgeChanged( QVector3D );
     void rightEdgeChanged( QVector3D );
-    void implementChanged( QPointer<Implement> );
-    void sectionsChanged( QPointer<Implement> );
+    void implementChanged( const QPointer<Implement> );
+    void sectionsChanged();
 
   public slots:
-    void setName( QString name ) override {
+    void setName( const QString& name ) override {
       dock->setWindowTitle( name );
       action->setText( QStringLiteral( "SC: " ) + name );
     }
@@ -141,7 +141,7 @@ class Implement : public BlockBase {
     QAction* action = nullptr;
     SectionControlToolbar* widget = nullptr;
 
-    QVector<QSharedPointer<ImplementSection>> sections;
+    std::vector<ImplementSection*> sections;
 };
 
 class ImplementFactory : public BlockFactory {
@@ -192,11 +192,11 @@ class ImplementFactory : public BlockFactory {
       mainWindow->addDockWidget( area, object->dock );
       mainWindow->splitDockWidget( dockToSplit, object->dock, Qt::Vertical );
 
-      b->addOutputPort( "Trigger Calculation of Local Pose", SIGNAL( triggerLocalPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addOutputPort( "Implement Data", SIGNAL( implementChanged( QPointer<Implement> ) ) );
-      b->addOutputPort( "Section Control Data", SIGNAL( sectionsChanged( QPointer<Implement> ) ) );
-      b->addOutputPort( "Position Left Edge", SIGNAL( leftEdgeChanged( QVector3D ) ) );
-      b->addOutputPort( "Position Right Edge", SIGNAL( rightEdgeChanged( QVector3D ) ) );
+      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
+      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( QVector3D ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( QVector3D ) ) ) );
 
       model->resetModel();
 

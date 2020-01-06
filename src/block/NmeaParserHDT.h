@@ -32,15 +32,12 @@ class NmeaParserHDT : public BlockBase {
       : BlockBase() {
     }
 
-    void emitConfigSignals() override {
-    }
-
   signals:
-    void orientationChanged( QQuaternion );
+    void orientationChanged( const QQuaternion& );
 
 
   public slots:
-    void setData( QByteArray data ) {
+    void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
     }
@@ -105,7 +102,7 @@ class NmeaParserHDT : public BlockBase {
           }
 
           // https://www.trimble.com/OEM_ReceiverHelp/V4.44/en/NMEA-0183messages_HDT.html
-          if( nmeaFields.front() == "HDT" ) {
+          if( nmeaFields.front() == QStringLiteral( "HDT" ) ) {
             if( nmeaFields.count() >= 3 ) {
               qDebug() << nmeaFields;
 
@@ -153,8 +150,8 @@ class NmeaParserHDTFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
-      b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const QQuaternion& ) ) ) );
 
       return b;
     }

@@ -108,7 +108,7 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) + ( orientation * m_offset ) );
         m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
@@ -193,18 +193,18 @@ class CameraController : public BlockBase {
       QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                           QSettings::IniFormat );
 
-      settings.setValue( "Camera/lenghtToViewCenter", lenghtToViewCenter );
-      settings.setValue( "Camera/panAngle", panAngle );
-      settings.setValue( "Camera/tiltAngle", tiltAngle );
+      settings.setValue( QStringLiteral( "Camera/lenghtToViewCenter" ), lenghtToViewCenter );
+      settings.setValue( QStringLiteral( "Camera/panAngle" ), panAngle );
+      settings.setValue( QStringLiteral( "Camera/tiltAngle" ), tiltAngle );
     }
 
     void loadValuesFromConfig() {
       QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                           QSettings::IniFormat );
 
-      lenghtToViewCenter = settings.value( "Camera/lenghtToViewCenter", 20 ).toFloat();
-      panAngle = settings.value( "Camera/panAngle", 0 ).toFloat();
-      tiltAngle = settings.value( "Camera/tiltAngle", 39 ).toFloat();
+      lenghtToViewCenter = settings.value( QStringLiteral( "Camera/lenghtToViewCenter" ), 20 ).toFloat();
+      panAngle = settings.value( QStringLiteral( "Camera/panAngle" ), 0 ).toFloat();
+      tiltAngle = settings.value( QStringLiteral( "Camera/tiltAngle" ), 39 ).toFloat();
     }
 
   private:
@@ -248,7 +248,7 @@ class CameraControllerFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "View Center Position", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

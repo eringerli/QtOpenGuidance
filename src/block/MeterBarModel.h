@@ -47,7 +47,7 @@ class MeterBarModel : public BlockBase {
 
 
   public slots:
-    void setName( QString name ) override {
+    void setName( const QString& name ) override {
       dock->setWindowTitle( name );
       action->setText( QStringLiteral( "Meter: " ) + name );
       widget->setName( name );
@@ -62,22 +62,22 @@ class MeterBarModel : public BlockBase {
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
 
-      valuesObject["Font"] = QJsonValue::fromVariant( QVariant( widget->fontOfLabel() ) );
-      valuesObject["Precision"] = widget->precision;
-      valuesObject["Scale"] = widget->scale;
-      valuesObject["FieldWitdh"] = widget->fieldWidth;
+      valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( widget->fontOfLabel() ) );
+      valuesObject[QStringLiteral( "Precision" )] = widget->precision;
+      valuesObject[QStringLiteral( "Scale" )] = widget->scale;
+      valuesObject[QStringLiteral( "FieldWitdh" )] = widget->fieldWidth;
 
-      json["values"] = valuesObject;
+      json[QStringLiteral( "values" )] = valuesObject;
     }
 
     void fromJSON( QJsonObject& json ) override {
-      if( json["values"].isObject() ) {
-        QJsonObject valuesObject = json["values"].toObject();
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        widget->setFontOfLabel( valuesObject["Font"].toVariant().value<QFont>() );
-        widget->precision = valuesObject["Precision"].toInt();
-        widget->scale = valuesObject["Scale"].toDouble();
-        widget->fieldWidth = valuesObject["FieldWitdh"].toInt();
+        widget->setFontOfLabel( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
+        widget->precision = valuesObject[QStringLiteral( "Precision" )].toInt();
+        widget->scale = valuesObject[QStringLiteral( "Scale" )].toDouble();
+        widget->fieldWidth = valuesObject[QStringLiteral( "FieldWitdh" )].toInt();
       }
     }
 
@@ -129,7 +129,7 @@ class MeterBarModelFactory : public BlockFactory {
 
       mainWindow->addDockWidget( area, object->dock );
 
-      b->addInputPort( "Number", SLOT( setMeter( float ) ) );
+      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setMeter( float ) ) ) );
 
       return b;
     }

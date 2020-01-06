@@ -32,15 +32,12 @@ class NmeaParserRMC : public BlockBase {
       : BlockBase() {
     }
 
-    void emitConfigSignals() override {
-    }
-
   signals:
-    void globalPositionChanged( double latitude, double longitude, double height );
-    void velocityChanged( float );
+    void globalPositionChanged( const double, const double, const double );
+    void velocityChanged( const float );
 
   public slots:
-    void setData( QByteArray data ) {
+    void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
     }
@@ -107,7 +104,7 @@ class NmeaParserRMC : public BlockBase {
           // as most users will have either a M8T or F9P, the interface documentation of ublox
           // is used for the format of the NMEA sentences
           // https://www.u-blox.com/de/product/zed-f9p-module -> interface manual
-          if( nmeaFields.front() == "RMC" ) {
+          if( nmeaFields.front() == QStringLiteral( "RMC" ) ) {
 
             if( nmeaFields.count() >= 12 ) {
               qDebug() << nmeaFields;
@@ -192,9 +189,9 @@ class NmeaParserRMCFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
-      b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
-      b->addOutputPort( "Velocity", SIGNAL( velocityChanged( float ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const float ) ) ) );
 
       return b;
     }

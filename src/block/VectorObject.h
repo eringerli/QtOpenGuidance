@@ -41,26 +41,26 @@ class VectorObject : public BlockBase {
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject["X"] = double( vector.x() );
-      valuesObject["Y"] = double( vector.y() );
-      valuesObject["Z"] = double( vector.z() );
-      json["values"] = valuesObject;
+      valuesObject[QStringLiteral( "X" )] = double( vector.x() );
+      valuesObject[QStringLiteral( "Y" )] = double( vector.y() );
+      valuesObject[QStringLiteral( "Z" )] = double( vector.z() );
+      json[QStringLiteral( "values" )] = valuesObject;
     }
 
     void fromJSON( QJsonObject& json ) override {
-      if( json["values"].isObject() ) {
-        QJsonObject valuesObject = json["values"].toObject();
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        if( valuesObject["X"].isDouble() ) {
-          vector.setX( float( valuesObject["X"].toDouble() ) );
+        if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
+          vector.setX( float( valuesObject[QStringLiteral( "X" )].toDouble() ) );
         }
 
-        if( valuesObject["Y"].isDouble() ) {
-          vector.setY( float( valuesObject["Y"].toDouble() ) );
+        if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
+          vector.setY( float( valuesObject[QStringLiteral( "Y" )].toDouble() ) );
         }
 
-        if( valuesObject["Z"].isDouble() ) {
-          vector.setZ( float( valuesObject["Z"].toDouble() ) );
+        if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
+          vector.setZ( float( valuesObject[QStringLiteral( "Z" )].toDouble() ) );
 
         }
       }
@@ -98,7 +98,7 @@ class VectorFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addOutputPort( "Position", SIGNAL( vectorChanged( QVector3D ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( QVector3D ) ) ) );
 
       model->resetModel();
 

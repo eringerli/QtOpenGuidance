@@ -52,9 +52,9 @@ class SprayerModel : public BlockBase {
     ~SprayerModel();
 
   public slots:
-    void setPose( Point_3, QQuaternion, PoseOption::Options );
-    void setImplement( QPointer<Implement> );
-    void setSections( QPointer<Implement> );
+    void setPose( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void setImplement( const QPointer<Implement>& );
+    void setSections();
     void setHeight( float );
 
   private:
@@ -66,6 +66,9 @@ class SprayerModel : public BlockBase {
     Qt3DCore::QTransform* m_rootEntityTransform = nullptr;
 
     QPointer<Implement> implement;
+
+    std::vector<Qt3DExtras::QMetalRoughMaterial*> boomMaterials;
+    std::vector<Qt3DCore::QEntity*> sprayEntities;
 
     float m_height = 1.0;
     QColor sprayerColor = QColor( qRgb/*a*/( 0x23, 0xff, 0xed/*, 255*/ ) );
@@ -95,10 +98,10 @@ class SprayerModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort(QStringLiteral("Pose"),QStringLiteral(SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) )));
-      b->addInputPort(QStringLiteral("Height"),QStringLiteral(SLOT( setHeight( float ) )));
-      b->addInputPort(QStringLiteral("Implement Data"),QStringLiteral(SLOT( setImplement( QPointer<Implement> ) )));
-      b->addInputPort(QStringLiteral("Section Control Data"),QStringLiteral(SLOT( setSections( QPointer<Implement> ) )));
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+      b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
 
       return b;
     }

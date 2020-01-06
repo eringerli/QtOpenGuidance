@@ -7,16 +7,16 @@
 
 class MovingAverage {
   public:
-    explicit MovingAverage( unsigned int samples = 3 );
+    explicit MovingAverage( int samples = 3 );
 
     void addSample( float sample );
     float average() const;
 
   private:
-    unsigned int m_maxSampleCount;
-    unsigned int m_sampleCount;
-    unsigned int m_currentSample;
-    float m_total;
+    int m_maxSampleCount = 0;
+    int m_sampleCount = 0;
+    int m_currentSample = 0;
+    float m_total = 0;
     QVector<float> m_samples;
 };
 

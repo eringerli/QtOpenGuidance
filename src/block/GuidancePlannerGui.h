@@ -43,7 +43,7 @@ class PlannerGui : public BlockBase {
         rootEntity( rootEntity ) {}
 
   public slots:
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
@@ -90,14 +90,14 @@ class PlannerGuiFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addOutputPort( "A clicked", SIGNAL( a_clicked() ) );
-      b->addOutputPort( "B clicked", SIGNAL( b_clicked() ) );
-      b->addOutputPort( "Snap clicked", SIGNAL( snap_clicked() ) );
-      b->addOutputPort( "Turn Left", SIGNAL( turnLeft_clicked() ) );
-      b->addOutputPort( "Turn Right", SIGNAL( turnRight_clicked() ) );
-      b->addOutputPort( "Autosteer Enabled", SIGNAL( autosteerEnabled( bool ) ) );
-      b->addInputPort( "XTE", SIGNAL( xteChanged( float ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "A clicked" ), QLatin1String( SIGNAL( a_clicked() ) ) );
+      b->addOutputPort( QStringLiteral( "B clicked" ), QLatin1String( SIGNAL( b_clicked() ) ) );
+      b->addOutputPort( QStringLiteral( "Snap clicked" ), QLatin1String( SIGNAL( snap_clicked() ) ) );
+      b->addOutputPort( QStringLiteral( "Turn Left" ), QLatin1String( SIGNAL( turnLeft_clicked() ) ) );
+      b->addOutputPort( QStringLiteral( "Turn Right" ), QLatin1String( SIGNAL( turnRight_clicked() ) ) );
+      b->addOutputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SIGNAL( autosteerEnabled( bool ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( float ) ) ) );
 
       return b;
     }

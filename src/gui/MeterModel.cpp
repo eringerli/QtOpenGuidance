@@ -28,8 +28,7 @@
 #include "../block/MeterBarModel.h"
 
 MeterModel::MeterModel( QGraphicsScene* scene )
-  : QAbstractTableModel(),
-    scene( scene ) {
+  : scene( scene ) {
 }
 
 QVariant MeterModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -74,9 +73,10 @@ Qt::ItemFlags MeterModel::flags( const QModelIndex& index ) const {
 
   if( index.column() == 1 || index.column() == 7 ) {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
-  } else {
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
   }
+
+  return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
+
 }
 
 bool MeterModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
@@ -104,10 +104,12 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
     if( role == Qt::CheckStateRole ) {
       int countRow = 0;
 
-      for( auto item : scene->items() ) {
+      const auto& constRefOfList = scene->items();
+
+      for( const auto& item : constRefOfList ) {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-        if( block ) {
+        if( block != nullptr ) {
           if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
@@ -127,10 +129,12 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
 
       int countRow = 0;
 
-      for( auto item : scene->items() ) {
+      const auto& constRefOfList = scene->items();
+
+      for( const auto& item : constRefOfList ) {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-        if( block ) {
+        if( block != nullptr ) {
           if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
@@ -171,10 +175,12 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
 bool MeterModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
-  for( auto item : scene->items() ) {
+  const auto& constRefOfList = scene->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
@@ -241,11 +247,13 @@ void MeterModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
-  for( auto item : scene->items() ) {
+  const auto& constRefOfList = scene->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
-      if( qobject_cast<MeterBarModel*>( block->object ) ) {
+    if( block != nullptr ) {
+      if( qobject_cast<MeterBarModel*>( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

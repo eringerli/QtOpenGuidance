@@ -43,21 +43,23 @@ class TransverseMercatorConverter : public BlockBase {
         tmw( tmw ) {}
 
   public slots:
-    void setWGS84Position( double latitude, double longitude, double height ) {
+    void setWGS84Position( const double latitude, const double longitude, const double height ) {
+      double x = 0;
+      double y = 0;
+      double heightToCalculate = height;
+      tmw->Forward( latitude, longitude, heightToCalculate, x, y );
 
-      double x;
-      double y;
-      tmw->Forward( latitude, longitude, height, x, y );
-
-      emit positionChanged( Point_3( x, y, height ) );
+      auto point = Point_3( x, y, heightToCalculate );
+      emit positionChanged( point );
     }
 
   signals:
-    void positionChanged( Point_3 position );
+    void positionChanged( const Point_3& );
 
   public:
     virtual void emitConfigSignals() override {
-      emit positionChanged( Point_3() );
+      auto dummyPoint = Point_3();
+      emit positionChanged( dummyPoint );
     }
 
   public:
@@ -87,9 +89,9 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
 
-      b->addOutputPort( "Position", SIGNAL( positionChanged( Point_3 ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Point_3& ) ) ) );
 
       return b;
     }

@@ -98,8 +98,8 @@ class PrintLatencyFactory : public BlockFactory {
         printLatency->block = b;
       }
 
-      b->addInputPort( "Input1", SLOT( input1() ) );
-      b->addInputPort( "Input2", SLOT( input2() ) );
+      b->addInputPort( QStringLiteral( "Input1" ), QLatin1String( SLOT( input1() ) ) );
+      b->addInputPort( QStringLiteral( "Input2" ), QLatin1String( SLOT( input2() ) ) );
 
       return b;
     }

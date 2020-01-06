@@ -32,7 +32,7 @@ class TransverseMercatorWrapper {
       : _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ) {
     }
 
-    void Forward( double latitude, double longitude, double& height, double& x, double& y ) {
+    void Forward( const double latitude, const double longitude, double& height, double& x, double& y ) {
       if( !isLatLonOffsetSet ) {
         lat0 = latitude;
         lon0 = longitude;
@@ -40,17 +40,17 @@ class TransverseMercatorWrapper {
         isLatLonOffsetSet = true;
       }
 
-      latitude -= lat0;
+      double lat = latitude - lat0;
       height -= height0;
 
       double convergence;
       double scale;
-      _tm.Forward( lon0, latitude, longitude, y, x, convergence, scale );
+      _tm.Forward( lon0, lat, longitude, y, x, convergence, scale );
 //      qDebug() << "lat0, lon0, isLatLonOffsetSet" << lat0 << lon0 << isLatLonOffsetSet;
 //      qDebug() << x << y << convergence << scale;
     }
 
-    void Reverse( double x, double y, double& latitude, double& longitude, double& height ) {
+    void Reverse( const double x, const double y, double& latitude, double& longitude, double& height ) {
       double convergence;
       double scale;
       _tm.Reverse( lon0, y, x, latitude, longitude, convergence, scale );

@@ -53,7 +53,7 @@ class PathPrimitiveLine : public PathPrimitive {
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( QLineF line, qreal width, bool isSegment, bool anyDirection, int passNumber )
+    PathPrimitiveLine( const QLineF& line, qreal width, bool isSegment, bool anyDirection, int passNumber )
       : PathPrimitive( anyDirection, passNumber ), line( line ), width( width ), isSegment( isSegment ) {
     }
 

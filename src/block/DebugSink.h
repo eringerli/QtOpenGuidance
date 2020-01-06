@@ -79,7 +79,7 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << orientation << options;
       } else {
@@ -87,7 +87,7 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setData( QByteArray data ) {
+    void setData( const QByteArray& data ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << "Data:" << data;
       } else {
@@ -130,12 +130,12 @@ class DebugSinkFactory : public BlockFactory {
         debugSink->block = b;
       }
 
-      b->addInputPort( "WGS84 Position", SLOT( setWGS84Position( double, double, double ) ) );
-      b->addInputPort( "Position", SLOT( setPosition( QVector3D ) ) );
-      b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-      b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( double, double, double ) ) ) );
+      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
       return b;
     }

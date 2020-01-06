@@ -38,16 +38,16 @@ class NumberObject : public BlockBase {
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject["Number"] = double( number );
-      json["values"] = valuesObject;
+      valuesObject[QStringLiteral( "Number" )] = double( number );
+      json[QStringLiteral( "values" )] = valuesObject;
     }
 
     void fromJSON( QJsonObject& json ) override {
-      if( json["values"].isObject() ) {
-        QJsonObject valuesObject = json["values"].toObject();
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        if( valuesObject["Number"].isDouble() ) {
-          number = float( valuesObject["Number"].toDouble() );
+        if( valuesObject[QStringLiteral( "Number" )].isDouble() ) {
+          number = float( valuesObject[QStringLiteral( "Number" )].toDouble() );
         }
       }
     }
@@ -82,7 +82,7 @@ class NumberFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addOutputPort( "Number", SIGNAL( numberChanged( float ) ) );
+      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( float ) ) ) );
 
       model->resetModel();
 

@@ -35,7 +35,7 @@ class ImplementSectionModel : public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    explicit ImplementSectionModel();
+    explicit ImplementSectionModel() = default;
 
     // Header:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;

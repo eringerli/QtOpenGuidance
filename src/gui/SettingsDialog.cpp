@@ -102,59 +102,59 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 
     // checkboxes
     {
-      ui->cbSaveConfigOnExit->setCheckState( settings.value( "SaveConfigOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbLoadConfigOnStart->setCheckState( settings.value( "LoadConfigOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbRunSimulatorOnStart->setCheckState( settings.value( "RunSimulatorOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbRestoreDockPositions->setCheckState( settings.value( "RestoreDockPositionsOnStart", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbSaveDockPositionsOnExit->setCheckState( settings.value( "SaveDockPositionsOnExit", false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbSaveConfigOnExit->setCheckState( settings.value( QStringLiteral( "SaveConfigOnExit" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbLoadConfigOnStart->setCheckState( settings.value( QStringLiteral( "LoadConfigOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbRunSimulatorOnStart->setCheckState( settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbRestoreDockPositions->setCheckState( settings.value( QStringLiteral( "RestoreDockPositionsOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbSaveDockPositionsOnExit->setCheckState( settings.value( QStringLiteral( "SaveDockPositionsOnExit" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
     }
 
     // grid
     {
-      ui->gbGrid->setChecked( settings.value( "Grid/Enabled", true ).toBool() );
-      ui->dsbGridXStep->setValue( settings.value( "Grid/XStep", 1 ).toDouble() );
-      ui->dsbGridYStep->setValue( settings.value( "Grid/YStep", 1 ).toDouble() );
-      ui->dsbGridXStepCoarse->setValue( settings.value( "Grid/XStepCoarse", 10 ).toDouble() );
-      ui->dsbGridYStepCoarse->setValue( settings.value( "Grid/YStepCoarse", 10 ).toDouble() );
-      ui->dsbGridSize->setValue( settings.value( "Grid/Size", 10 ).toDouble() );
-      ui->dsbGridCameraThreshold->setValue( settings.value( "Grid/CameraThreshold", 75 ).toDouble() );
-      ui->dsbGridCameraThresholdCoarse->setValue( settings.value( "Grid/CameraThresholdCoarse", 250 ).toDouble() );
-      gridColor = settings.value( "Grid/Color", QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
-      gridColorCoarse = settings.value( "Grid/ColorCoarse", QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+      ui->gbGrid->setChecked( settings.value( QStringLiteral( "Grid/Enabled" ), true ).toBool() );
+      ui->dsbGridXStep->setValue( settings.value( QStringLiteral( "Grid/XStep" ), 1 ).toDouble() );
+      ui->dsbGridYStep->setValue( settings.value( QStringLiteral( "Grid/YStep" ), 1 ).toDouble() );
+      ui->dsbGridXStepCoarse->setValue( settings.value( QStringLiteral( "Grid/XStepCoarse" ), 10 ).toDouble() );
+      ui->dsbGridYStepCoarse->setValue( settings.value( QStringLiteral( "Grid/YStepCoarse" ), 10 ).toDouble() );
+      ui->dsbGridSize->setValue( settings.value( QStringLiteral( "Grid/Size" ), 10 ).toDouble() );
+      ui->dsbGridCameraThreshold->setValue( settings.value( QStringLiteral( "Grid/CameraThreshold" ), 75 ).toDouble() );
+      ui->dsbGridCameraThresholdCoarse->setValue( settings.value( QStringLiteral( "Grid/CameraThresholdCoarse" ), 250 ).toDouble() );
+      gridColor = settings.value( QStringLiteral( "Grid/Color" ), QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
+      gridColorCoarse = settings.value( QStringLiteral( "Grid/ColorCoarse" ), QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
     }
 
     // global/local planner
     {
-      ui->gbGlobalPlanner->setChecked( settings.value( "GlobalPlannerGraphics/Enabled", true ).toBool() );
-      ui->slGlobalPlannerArrowSize->setValue( settings.value( "GlobalPlannerGraphics/ArrowHeight", 50 ).toInt() );
-      ui->slGlobalPlannerArrowWidth->setValue( settings.value( "GlobalPlannerGraphics/ArrowWidth", 90 ).toInt() );
-      ui->dsbGlobalPlannerTextureSize->setValue( settings.value( "GlobalPlannerGraphics/TextureSize", 3 ).toDouble() );
-      ui->slGlobalPlannerCenterLine->setValue( settings.value( "GlobalPlannerGraphics/CenterLineSize", 0 ).toInt() );
-      ui->slGlobalPlannerBorderLine->setValue( settings.value( "GlobalPlannerGraphics/BorderLineSize", 1 ).toInt() );
+      ui->gbGlobalPlanner->setChecked( settings.value( QStringLiteral( "GlobalPlannerGraphics/Enabled" ), true ).toBool() );
+      ui->slGlobalPlannerArrowSize->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowHeight" ), 50 ).toInt() );
+      ui->slGlobalPlannerArrowWidth->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowWidth" ), 90 ).toInt() );
+      ui->dsbGlobalPlannerTextureSize->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/TextureSize" ), 3 ).toDouble() );
+      ui->slGlobalPlannerCenterLine->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/CenterLineSize" ), 0 ).toInt() );
+      ui->slGlobalPlannerBorderLine->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/BorderLineSize" ), 1 ).toInt() );
 
-      ui->cbGlobalPlannerBackground->setChecked( settings.value( "GlobalPlannerGraphics/BackgroundEnabled", true ).toBool() );
+      ui->cbGlobalPlannerBackground->setChecked( settings.value( QStringLiteral( "GlobalPlannerGraphics/BackgroundEnabled" ), true ).toBool() );
 
-      globalPlannerArrowColor = settings.value( "GlobalPlannerGraphics/ArrowColor", QColor( 0xae, 0xec, 0x7f ) ).value<QColor>();
-      globalPlannerCenterLineColor = settings.value( "GlobalPlannerGraphics/CenterLineColor", QColor( 0x7b, 0x5e, 0x9f ) ).value<QColor>();
-      globalPlannerBorderLineColor = settings.value( "GlobalPlannerGraphics/BorderLineColor", QColor( 0x99, 0x99, 0 ) ).value<QColor>();
-      globalPlannerBackgroundColor = settings.value( "GlobalPlannerGraphics/BackgroundColor", QColor( 0xff, 0xff, 0x7f ) ).value<QColor>();
-      ui->slGlobalPlannerTransparency->setValue( settings.value( "GlobalPlannerGraphics/Transparency", 100 ).toInt() );
+      globalPlannerArrowColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowColor" ), QColor( 0xae, 0xec, 0x7f ) ).value<QColor>();
+      globalPlannerCenterLineColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/CenterLineColor" ), QColor( 0x7b, 0x5e, 0x9f ) ).value<QColor>();
+      globalPlannerBorderLineColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/BorderLineColor" ), QColor( 0x99, 0x99, 0 ) ).value<QColor>();
+      globalPlannerBackgroundColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/BackgroundColor" ), QColor( 0xff, 0xff, 0x7f ) ).value<QColor>();
+      ui->slGlobalPlannerTransparency->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/Transparency" ), 100 ).toInt() );
 
 
-      ui->gbLocalPlanner->setChecked( settings.value( "LocalPlannerGraphics/Enabled", true ).toBool() );
-      ui->dsbLocalPlannerArrowSize->setValue( settings.value( "LocalPlannerGraphics/ArrowSize", 1 ).toDouble() );
-      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( "LocalPlannerGraphics/ArrowDistance", 3 ).toDouble() );
-      ui->dsbLocalPlannerLineWidth->setValue( settings.value( "LocalPlannerGraphics/LineWidth", 0.1 ).toDouble() );
-      localPlannerArrowColor = settings.value( "LocalPlannerGraphics/ArrowColor", QColor( 0xff, 0x80, 0 ) ).value<QColor>();
-      localPlannerLineColor = settings.value( "LocalPlannerGraphics/LineColor", QColor( 0xff, 0, 0 ) ).value<QColor>();
-      ui->slLocalPlannerTransparency->setValue( settings.value( "LocalPlannerGraphics/Transparency", 100 ).toInt() );
+      ui->gbLocalPlanner->setChecked( settings.value( QStringLiteral( "LocalPlannerGraphics/Enabled" ), true ).toBool() );
+      ui->dsbLocalPlannerArrowSize->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowSize" ), 1 ).toDouble() );
+      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowDistance" ), 3 ).toDouble() );
+      ui->dsbLocalPlannerLineWidth->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/LineWidth" ), 0.1 ).toDouble() );
+      localPlannerArrowColor = settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowColor" ), QColor( 0xff, 0x80, 0 ) ).value<QColor>();
+      localPlannerLineColor = settings.value( QStringLiteral( "LocalPlannerGraphics/LineColor" ), QColor( 0xff, 0, 0 ) ).value<QColor>();
+      ui->slLocalPlannerTransparency->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/Transparency" ), 100 ).toInt() );
     }
 
     // path planner
     {
-      ui->sbPathsToGenerate->setValue( settings.value( "PathPlanner/PathsToGenerate", 5 ).toInt() );
-      ui->sbPathsInReserve->setValue( settings.value( "PathPlanner/PathsInReserve", 3 ).toInt() );
+      ui->sbPathsToGenerate->setValue( settings.value( QStringLiteral( "PathPlanner/PathsToGenerate" ), 5 ).toInt() );
+      ui->sbPathsInReserve->setValue( settings.value( QStringLiteral( "PathPlanner/PathsInReserve" ), 3 ).toInt() );
     }
 
     blockSettingsSaving = false;
@@ -404,8 +404,8 @@ void SettingsDialog::onStart() {
   if( ui->cbRestoreDockPositions->isChecked() ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
-    mainWindow->restoreState( settings.value( "SavedDockPositions" ).toByteArray() );
-    mainWindow->restoreGeometry( settings.value( "SavedDockGeometry" ).toByteArray() );
+    mainWindow->restoreState( settings.value( QStringLiteral( "SavedDockPositions" ) ).toByteArray() );
+    mainWindow->restoreGeometry( settings.value( QStringLiteral( "SavedDockGeometry" ) ).toByteArray() );
   }
 }
 
@@ -419,8 +419,8 @@ void SettingsDialog::onExit() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "SavedDockPositions", mainWindow->saveState() );
-    settings.setValue( "SavedDockGeometry", mainWindow->saveGeometry() );
+    settings.setValue( QStringLiteral( "SavedDockPositions" ), mainWindow->saveState() );
+    settings.setValue( QStringLiteral( "SavedDockGeometry" ), mainWindow->saveGeometry() );
     settings.sync();
   }
 }
@@ -439,15 +439,23 @@ void SettingsDialog::saveDefaultConfig() {
   if( saveFile.open( QIODevice::WriteOnly ) ) {
 
     // select all items, so everything gets saved
-    for( auto item : ui->gvNodeEditor->scene()->items() ) {
-      item->setSelected( true );
+    {
+      const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+      for( const auto& item : constRefOfList ) {
+        item->setSelected( true );
+      }
     }
 
     saveConfigToFile( saveFile );
 
     // deselect all items
-    for( auto item : ui->gvNodeEditor->scene()->items() ) {
-      item->setSelected( false );
+    {
+      const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+      for( const auto& item : constRefOfList ) {
+        item->setSelected( false );
+      }
     }
   }
 }
@@ -455,13 +463,13 @@ void SettingsDialog::saveDefaultConfig() {
 void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
   auto* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
 
-  if( model ) {
+  if( model != nullptr ) {
     filterModelValues->setSourceModel( model );
     ui->twValues->resizeColumnsToContents();
   }
 
-  ui->grpString->setHidden( !( ui->cbValues->currentText() == "String" ) );
-  ui->grpNumber->setHidden( !( ui->cbValues->currentText() == "Number" ) );
+  ui->grpString->setHidden( !( ui->cbValues->currentText() == QLatin1String( "String" ) ) );
+  ui->grpNumber->setHidden( !( ui->cbValues->currentText() == QLatin1String( "Number" ) ) );
 }
 
 void SettingsDialog::on_pbSaveSelected_clicked() {
@@ -490,14 +498,16 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
   QJsonObject jsonObject;
   QJsonArray blocks;
   QJsonArray connections;
-  jsonObject["blocks"] = blocks;
-  jsonObject["connections"] = connections;
+  jsonObject[QStringLiteral( "blocks" )] = blocks;
+  jsonObject[QStringLiteral( "connections" )] = connections;
 
-  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+  for( const auto& item : constRefOfList ) {
     {
       auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-      if( block ) {
+      if( block != nullptr ) {
         block->toJSON( jsonObject );
       }
     }
@@ -505,7 +515,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
     {
       auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-      if( connection ) {
+      if( connection != nullptr ) {
         connection->toJSON( jsonObject );
       }
     }
@@ -516,10 +526,12 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
 }
 
 QNEBlock* SettingsDialog::getBlockWithId( int id ) {
-  for( auto item : ui->gvNodeEditor->scene()->items() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       if( block->id == id ) {
         return block;
       }
@@ -530,10 +542,12 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
 }
 
 QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
-  for( auto item : ui->gvNodeEditor->scene()->items() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       if( block->getName() == name ) {
         return block;
       }
@@ -547,10 +561,10 @@ void SettingsDialog::on_pbLoad_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
 
-  QFileDialog* fileDialog = new QFileDialog( this,
-      tr( "Open Saved Config" ),
-      dir,
-      selectedFilter );
+  auto* fileDialog = new QFileDialog( this,
+                                      tr( "Open Saved Config" ),
+                                      dir,
+                                      selectedFilter );
   fileDialog->setFileMode( QFileDialog::ExistingFile );
   fileDialog->setNameFilter( tr( "All Files (*);;JSON Files (*.json)" ) );
 
@@ -581,7 +595,7 @@ void SettingsDialog::on_pbLoad_clicked() {
     fileDialog->deleteLater();
   } );
 #else
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( QString fileName ) {
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( const QString & fileName ) {
     qDebug() << "QFileDialog::fileSelected QString" << fileName;
 
     if( !fileName.isEmpty() ) {
@@ -619,40 +633,40 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   // first int: id in file, second int: id in the graphicsview
   QMap<int, int> idMap;
 
-  if( json.contains( "blocks" ) && json["blocks"].isArray() ) {
-    QJsonArray blocksArray = json["blocks"].toArray();
+  if( json.contains( QStringLiteral( "blocks" ) ) && json[QStringLiteral( "blocks" )].isArray() ) {
+    QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
-    for( const auto blockIndex : blocksArray ) {
+    for( const auto& blockIndex : qAsConst( blocksArray ) ) {
       QJsonObject blockObject = blockIndex.toObject();
-      int id = blockObject["id"].toInt( 0 );
+      int id = blockObject[QStringLiteral( "id" )].toInt( 0 );
 
       // if id is a system-id -> search the block and set the values
       if( id != 0 ) {
 
         // system id -> don't create new blocks
         if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
-          QNEBlock* block = getBlockWithName( blockObject["type"].toString() );
+          QNEBlock* block = getBlockWithName( blockObject[QStringLiteral( "type" )].toString() );
 
-          if( block ) {
+          if( block != nullptr ) {
             idMap.insert( id, block->id );
-            block->setX( blockObject["positionX"].toDouble( 0 ) );
-            block->setY( blockObject["positionY"].toDouble( 0 ) );
+            block->setX( blockObject[QStringLiteral( "positionX" )].toDouble( 0 ) );
+            block->setY( blockObject[QStringLiteral( "positionY" )].toDouble( 0 ) );
           }
 
           // id is not a system-id -> create new blocks
         } else {
-          int index = ui->cbNodeType->findText( blockObject["type"].toString(), Qt::MatchExactly );
+          int index = ui->cbNodeType->findText( blockObject[QStringLiteral( "type" )].toString(), Qt::MatchExactly );
           auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
-          if( factory ) {
+          if( factory != nullptr ) {
             BlockBase* obj = factory->createNewObject();
             QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
 
             idMap.insert( id, block->id );
 
-            block->setX( blockObject["positionX"].toDouble( 0 ) );
-            block->setY( blockObject["positionY"].toDouble( 0 ) );
-            block->setName( blockObject["name"].toString( factory->getNameOfFactory() ) );
+            block->setX( blockObject[QStringLiteral( "positionX" )].toDouble( 0 ) );
+            block->setY( blockObject[QStringLiteral( "positionY" )].toDouble( 0 ) );
+            block->setName( blockObject[QStringLiteral( "name" )].toString( factory->getNameOfFactory() ) );
             block->fromJSON( blockObject );
             block->setSelected( true );
           }
@@ -662,32 +676,32 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   }
 
 
-  if( json.contains( "connections" ) && json["connections"].isArray() ) {
-    QJsonArray connectionsArray = json["connections"].toArray();
+  if( json.contains( QStringLiteral( "connections" ) ) && json[QStringLiteral( "connections" )].isArray() ) {
+    QJsonArray connectionsArray = json[QStringLiteral( "connections" )].toArray();
 
-    for( auto connectionsIndex : connectionsArray ) {
+    for( const auto& connectionsIndex : qAsConst( connectionsArray ) ) {
       QJsonObject connectionsObject = connectionsIndex.toObject();
 
-      if( !connectionsObject["idFrom"].isUndefined() &&
-          !connectionsObject["idTo"].isUndefined() &&
-          !connectionsObject["portFrom"].isUndefined() &&
-          !connectionsObject["portTo"].isUndefined() ) {
+      if( !connectionsObject[QStringLiteral( "idFrom" )].isUndefined() &&
+          !connectionsObject[QStringLiteral( "idTo" )].isUndefined() &&
+          !connectionsObject[QStringLiteral( "portFrom" )].isUndefined() &&
+          !connectionsObject[QStringLiteral( "portTo" )].isUndefined() ) {
 
-        int idFrom = idMap[connectionsObject["idFrom"].toInt()];
-        int idTo = idMap[connectionsObject["idTo"].toInt()];
+        int idFrom = idMap[connectionsObject[QStringLiteral( "idFrom" )].toInt()];
+        int idTo = idMap[connectionsObject[QStringLiteral( "idTo" )].toInt()];
 
         if( idFrom != 0 && idTo != 0 ) {
           QNEBlock* blockFrom = getBlockWithId( idFrom );
           QNEBlock* blockTo = getBlockWithId( idTo );
 
-          if( blockFrom && blockTo ) {
-            QString portFromName = connectionsObject["portFrom"].toString();
-            QString portToName = connectionsObject["portTo"].toString();
+          if( ( blockFrom != nullptr ) && ( blockTo != nullptr ) ) {
+            QString portFromName = connectionsObject[QStringLiteral( "portFrom" )].toString();
+            QString portToName = connectionsObject[QStringLiteral( "portTo" )].toString();
 
             QNEPort* portFrom = blockFrom->getPortWithName( portFromName, true );
             QNEPort* portTo = blockTo->getPortWithName( portToName, false );
 
-            if( portFrom && portTo ) {
+            if( ( portFrom != nullptr ) && ( portTo != nullptr ) ) {
               auto* conn = new QNEConnection();
               conn->setPort1( portFrom );
 
@@ -707,10 +721,12 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   }
 
   // as new values for the blocks are added above, emit all signals now, when the connections are made
-  for( auto item : ui->gvNodeEditor->scene()->items() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       block->emitConfigSignals();
     }
   }
@@ -724,7 +740,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 void SettingsDialog::on_pbAddBlock_clicked() {
   auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
 
-  if( factory ) {
+  if( factory != nullptr ) {
     BlockBase* obj = factory->createNewObject();
     QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
     block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
@@ -742,19 +758,25 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 }
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
-  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
+
+  for( const auto& item : constRefOfList ) {
     auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
     delete connection;
-  }
 
-  for( auto item : ui->gvNodeEditor->scene()->selectedItems() ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    {
+      const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
-    if( block != nullptr ) {
-      if( !block->systemBlock ) {
-        delete block;
-        allModelsReset();
+      for( const auto& item : constRefOfList ) {
+        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+        if( block != nullptr ) {
+          if( !block->systemBlock ) {
+            delete block;
+            allModelsReset();
+          }
+        }
       }
     }
   }
@@ -790,7 +812,7 @@ void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
 }
 
 void SettingsDialog::on_pbColor_clicked() {
-  const QColor color = QColorDialog::getColor( gridColor, this, "Select Grid Color" );
+  const QColor color = QColorDialog::getColor( gridColor, this, QStringLiteral( "Select Grid Color" ) );
 
   if( color.isValid() ) {
     gridColor = color;
@@ -811,15 +833,15 @@ void SettingsDialog::saveGridValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "Grid/Enabled", bool( ui->gbGrid->isChecked() ) );
-    settings.setValue( "Grid/XStep", ui->dsbGridXStep->value() );
-    settings.setValue( "Grid/YStep", ui->dsbGridYStep->value() );
-    settings.setValue( "Grid/XStepCoarse", ui->dsbGridXStepCoarse->value() );
-    settings.setValue( "Grid/YStepCoarse", ui->dsbGridYStepCoarse->value() );
-    settings.setValue( "Grid/Size", ui->dsbGridSize->value() );
-    settings.setValue( "Grid/CameraThreshold", ui->dsbGridCameraThreshold->value() );
-    settings.setValue( "Grid/CameraThresholdCoarse", ui->dsbGridCameraThresholdCoarse->value() );
-    settings.setValue( "Grid/Color", gridColor );
+    settings.setValue( QStringLiteral( "Grid/Enabled" ), bool( ui->gbGrid->isChecked() ) );
+    settings.setValue( QStringLiteral( "Grid/XStep" ), ui->dsbGridXStep->value() );
+    settings.setValue( QStringLiteral( "Grid/YStep" ), ui->dsbGridYStep->value() );
+    settings.setValue( QStringLiteral( "Grid/XStepCoarse" ), ui->dsbGridXStepCoarse->value() );
+    settings.setValue( QStringLiteral( "Grid/YStepCoarse" ), ui->dsbGridYStepCoarse->value() );
+    settings.setValue( QStringLiteral( "Grid/Size" ), ui->dsbGridSize->value() );
+    settings.setValue( QStringLiteral( "Grid/CameraThreshold" ), ui->dsbGridCameraThreshold->value() );
+    settings.setValue( QStringLiteral( "Grid/CameraThresholdCoarse" ), ui->dsbGridCameraThresholdCoarse->value() );
+    settings.setValue( QStringLiteral( "Grid/Color" ), gridColor );
     settings.sync();
   }
 }
@@ -829,8 +851,8 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "PathPlanner/PathsToGenerate", ui->sbPathsToGenerate->value() );
-    settings.setValue( "PathPlanner/PathsInReserve", ui->sbPathsInReserve->value() );
+    settings.setValue( QStringLiteral( "PathPlanner/PathsToGenerate" ), ui->sbPathsToGenerate->value() );
+    settings.setValue( QStringLiteral( "PathPlanner/PathsInReserve" ), ui->sbPathsInReserve->value() );
     settings.sync();
   }
 }
@@ -840,28 +862,28 @@ void SettingsDialog::savePlannerValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( "GlobalPlannerGraphics/Enabled", ui->gbGlobalPlanner->isChecked() );
-    settings.setValue( "GlobalPlannerGraphics/ArrowHeight", ui->slGlobalPlannerArrowSize->value() );
-    settings.setValue( "GlobalPlannerGraphics/ArrowWidth", ui->slGlobalPlannerArrowWidth->value() );
-    settings.setValue( "GlobalPlannerGraphics/TextureSize", ui->dsbGlobalPlannerTextureSize->value() );
-    settings.setValue( "GlobalPlannerGraphics/CenterLineSize", ui->slGlobalPlannerCenterLine->value() );
-    settings.setValue( "GlobalPlannerGraphics/BorderLineSize", ui->slGlobalPlannerBorderLine->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/Enabled" ), ui->gbGlobalPlanner->isChecked() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowHeight" ), ui->slGlobalPlannerArrowSize->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowWidth" ), ui->slGlobalPlannerArrowWidth->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/TextureSize" ), ui->dsbGlobalPlannerTextureSize->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/CenterLineSize" ), ui->slGlobalPlannerCenterLine->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BorderLineSize" ), ui->slGlobalPlannerBorderLine->value() );
 
-    settings.setValue( "GlobalPlannerGraphics/BackgroundEnabled", ui->cbGlobalPlannerBackground->isChecked() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BackgroundEnabled" ), ui->cbGlobalPlannerBackground->isChecked() );
 
-    settings.setValue( "GlobalPlannerGraphics/ArrowColor", globalPlannerArrowColor );
-    settings.setValue( "GlobalPlannerGraphics/CenterLineColor", globalPlannerCenterLineColor );
-    settings.setValue( "GlobalPlannerGraphics/BorderLineColor", globalPlannerBorderLineColor );
-    settings.setValue( "GlobalPlannerGraphics/BackgroundColor", globalPlannerBackgroundColor );
-    settings.setValue( "GlobalPlannerGraphics/Transparency", ui->slGlobalPlannerTransparency->value() );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowColor" ), globalPlannerArrowColor );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/CenterLineColor" ), globalPlannerCenterLineColor );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BorderLineColor" ), globalPlannerBorderLineColor );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BackgroundColor" ), globalPlannerBackgroundColor );
+    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/Transparency" ), ui->slGlobalPlannerTransparency->value() );
 
-    settings.setValue( "LocalPlannerGraphics/Enabled", ui->gbLocalPlanner->isChecked() );
-    settings.setValue( "LocalPlannerGraphics/ArrowSize", ui->dsbLocalPlannerArrowSize->value() );
-    settings.setValue( "LocalPlannerGraphics/ArrowDistance", ui->dsbLocalPlannerArrowDistance->value() );
-    settings.setValue( "LocalPlannerGraphics/LineWidth", ui->dsbLocalPlannerLineWidth->value() );
-    settings.setValue( "LocalPlannerGraphics/ArrowColor", localPlannerArrowColor );
-    settings.setValue( "LocalPlannerGraphics/LineColor", localPlannerLineColor );
-    settings.setValue( "LocalPlannerGraphics/Transparency", ui->slLocalPlannerTransparency->value() );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/Enabled" ), ui->gbLocalPlanner->isChecked() );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowSize" ), ui->dsbLocalPlannerArrowSize->value() );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowDistance" ), ui->dsbLocalPlannerArrowDistance->value() );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/LineWidth" ), ui->dsbLocalPlannerLineWidth->value() );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowColor" ), localPlannerArrowColor );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/LineColor" ), localPlannerLineColor );
+    settings.setValue( QStringLiteral( "LocalPlannerGraphics/Transparency" ), ui->slLocalPlannerTransparency->value() );
 
     settings.sync();
   }
@@ -926,7 +948,7 @@ void SettingsDialog::on_cbSaveConfigOnExit_stateChanged( int arg1 ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "SaveConfigOnExit", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.setValue( QStringLiteral( "SaveConfigOnExit" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
@@ -934,7 +956,7 @@ void SettingsDialog::on_cbLoadConfigOnStart_stateChanged( int arg1 ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "LoadConfigOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.setValue( QStringLiteral( "LoadConfigOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
@@ -942,7 +964,7 @@ void SettingsDialog::on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "OpenSettingsDialogOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.setValue( QStringLiteral( "OpenSettingsDialogOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
@@ -950,7 +972,7 @@ void SettingsDialog::on_cbRunSimulatorOnStart_stateChanged( int arg1 ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "RunSimulatorOnStart", bool( arg1 == Qt::CheckState::Checked ) );
+  settings.setValue( QStringLiteral( "RunSimulatorOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
@@ -1032,7 +1054,9 @@ void SettingsDialog::on_pbBaudrateSet_clicked() {
 
 void SettingsDialog::on_pbClear_clicked() {
   // select all items, so everything gets deleted with a call to on_pbDeleteSelected_clicked()
-  for( auto item : ui->gvNodeEditor->scene()->items() ) {
+  const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+  for( const auto& item : constRefOfList ) {
     item->setSelected( true );
   }
 
@@ -1065,8 +1089,8 @@ void SettingsDialog::allModelsReset() {
 }
 
 void SettingsDialog::on_btnSectionAdd_clicked() {
-  if( ui->twSections->selectionModel()->selection().indexes().count() ) {
-    ui->twSections->model()->insertRow( ui->twSections->selectionModel()->selection().indexes().first().row() );
+  if( !( ui->twSections->selectionModel()->selection().indexes().isEmpty() ) ) {
+    ui->twSections->model()->insertRow( ui->twSections->selectionModel()->selection().indexes().constFirst().row() );
   } else {
     ui->twSections->model()->insertRow( ui->twSections->model()->rowCount() );
   }
@@ -1075,16 +1099,18 @@ void SettingsDialog::on_btnSectionAdd_clicked() {
 void SettingsDialog::on_btnSectionRemove_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  QList<int> rows;
+  std::vector<int> rows;
 
-  for( auto index : selection.indexes() ) {
-    rows.append( index.row() );
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
+    rows.push_back( index.row() );
   }
 
   // sort to reverse order
-  std::sort( rows.begin(), rows.end(), std::greater<int>() );
+  std::sort( rows.begin(), rows.end(), std::greater<>() );
 
-  for( auto i : rows ) {
+  for( const auto& i : rows ) {
     ui->twSections->model()->removeRows( i, 1 );
   }
 }
@@ -1092,7 +1118,9 @@ void SettingsDialog::on_btnSectionRemove_clicked() {
 void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  for( auto index : selection.indexes() ) {
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
     ui->twSections->model()->setData( index, ui->dsbSectionsNumber->value() );
   }
 }
@@ -1100,20 +1128,22 @@ void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
 void SettingsDialog::on_btnSectionMoveUp_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  QList<int> rows;
+  std::vector<int> rows;
 
-  for( auto index : selection.indexes() ) {
-    rows.append( index.row() );
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
+    rows.push_back( index.row() );
   }
 
   // forward sort
-  std::sort( rows.begin(), rows.end(), std::less<int>() );
+  std::sort( rows.begin(), rows.end(), std::less<>() );
 
   auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
 
-  if( implementModel ) {
+  if( implementModel != nullptr ) {
     if( rows[0] > 0 ) {
-      for( auto i : rows ) {
+      for( const auto& i : rows ) {
         implementModel->swapElements( i, i - 1 );
       }
     }
@@ -1123,20 +1153,22 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
 void SettingsDialog::on_btnSectionMoveDown_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  QList<int> rows;
+  std::vector<int> rows;
 
-  for( auto index : selection.indexes() ) {
-    rows.append( index.row() );
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
+    rows.push_back( index.row() );
   }
 
   // reverse sort
-  std::sort( rows.begin(), rows.end(), std::greater<int>() );
+  std::sort( rows.begin(), rows.end(), std::greater<>() );
 
   auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
 
-  if( implementModel ) {
+  if( implementModel != nullptr ) {
     if( ( rows[0] + 1 ) < implementModel->rowCount() ) {
-      for( auto i : rows ) {
+      for( const auto& i : rows ) {
         implementModel->swapElements( i, i + 1 );
       }
     }
@@ -1196,7 +1228,7 @@ void SettingsDialog::emitLocalPlannerModelSettings() {
 }
 
 void SettingsDialog::on_pbColorCoarse_clicked() {
-  const QColor color = QColorDialog::getColor( gridColorCoarse, this, "Select Grid Color" );
+  const QColor color = QColorDialog::getColor( gridColorCoarse, this, QStringLiteral( "Select Grid Color" ) );
 
   if( color.isValid() ) {
     gridColorCoarse = color;
@@ -1217,7 +1249,7 @@ void SettingsDialog::on_gbGlobalPlanner_toggled( bool ) {
 void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
   QColor tmp = globalPlannerArrowColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Arrow Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Arrow Color" ) );
 
   if( color.isValid() ) {
     globalPlannerArrowColor = color;
@@ -1233,7 +1265,7 @@ void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
 void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
   QColor tmp = globalPlannerBackgroundColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
 
   if( color.isValid() ) {
     globalPlannerBackgroundColor = color;
@@ -1270,7 +1302,7 @@ void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double ) {
 void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
   QColor tmp = localPlannerArrowColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Arrow Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Arrow Color" ) );
 
   if( color.isValid() ) {
     localPlannerArrowColor = color;
@@ -1286,7 +1318,7 @@ void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
 void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
   QColor tmp = localPlannerLineColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Line Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Line Color" ) );
 
   if( color.isValid() ) {
     localPlannerLineColor = color;
@@ -1316,7 +1348,7 @@ void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
 void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {
   QColor tmp = globalPlannerCenterLineColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
 
   if( color.isValid() ) {
     globalPlannerCenterLineColor = color;
@@ -1332,7 +1364,7 @@ void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {
 void SettingsDialog::on_pbGlobalPlannerBorderLineColor_clicked() {
   QColor tmp = globalPlannerBorderLineColor;
   tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, "Select Background Color" );
+  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
 
   if( color.isValid() ) {
     globalPlannerBorderLineColor = color;
@@ -1374,7 +1406,7 @@ void SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "RestoreDockPositionsOnStart", checked );
+  settings.setValue( QStringLiteral( "RestoreDockPositionsOnStart" ), checked );
   settings.sync();
 }
 
@@ -1382,7 +1414,7 @@ void SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "SaveDockPositionsOnExit", checked );
+  settings.setValue( QStringLiteral( "SaveDockPositionsOnExit" ), checked );
   settings.sync();
 }
 
@@ -1390,20 +1422,22 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
 
-  settings.setValue( "SavedDockPositions", mainWindow->saveState() );
-  settings.setValue( "SavedDockGeometry", mainWindow->saveGeometry() );
+  settings.setValue( QStringLiteral( "SavedDockPositions" ), mainWindow->saveState() );
+  settings.setValue( QStringLiteral( "SavedDockGeometry" ), mainWindow->saveGeometry() );
   settings.sync();
 }
 
 void SettingsDialog::on_pbMeterDefaults_clicked() {
   QItemSelection selection( ui->tvMeter->selectionModel()->selection() );
 
-  for( auto index : selection.indexes() ) {
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
     ui->tvMeter->model()->setData( index.siblingAtColumn( 1 ), true );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 2 ), 0 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 3 ), 1 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 4 ), 0 );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), QFont( "Monospace" ) );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), QFont( QStringLiteral( "Monospace" ) ) );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 30 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), true );
   }

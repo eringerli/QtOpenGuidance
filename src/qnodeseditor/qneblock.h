@@ -48,9 +48,9 @@ class QNEBlock : public QGraphicsPathItem {
 
     ~QNEBlock();
 
-    QNEPort* addPort( const QString& name, const QString& signalSlotSignature, bool isOutput, int flags = 0 );
-    void addInputPort( const QString& name, const QString& signalSlotSignature );
-    void addOutputPort( const QString& name, const QString& signalSlotSignature );
+    QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0 );
+    void addInputPort( const QString& name, QLatin1String signalSlotSignature );
+    void addOutputPort( const QString& name, QLatin1String signalSlotSignature );
 
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
@@ -58,14 +58,14 @@ class QNEBlock : public QGraphicsPathItem {
     void fromJSON( QJsonObject& json );
     void emitConfigSignals();
 
-    QVector<QNEPort*> ports();
+//    const std::vector<QNEPort*> ports();
 
     int type() const override {
       return Type;
     }
 
-    void setName( const QString& str, bool setFromLabel = false );
-    void setType( QString str );
+    void setName( const QString& name, bool setFromLabel = false );
+    void setType( const QString str );
 
     QNEPort* getPortWithName( const QString& name, bool output );
 
@@ -98,12 +98,12 @@ class QNEBlock : public QGraphicsPathItem {
     void mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
 
   private:
-    qreal width;
-    qreal height;
+    qreal width = 0;
+    qreal height = 0;
     QString name;
 
   public:
-    QString getName() {
+    const QString getName() {
       return name;
     }
 

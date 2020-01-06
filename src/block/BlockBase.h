@@ -20,6 +20,9 @@
 #define BLOCKBASE_H
 
 #include <QObject>
+#include <QString>
+#include <QLatin1String>
+#include <QStringLiteral>
 
 #include <QtWidgets>
 #include <QComboBox>
@@ -42,7 +45,7 @@ class BlockBase : public QObject {
     virtual void toJSON( QJsonObject& ) {}
     virtual void fromJSON( QJsonObject& ) {}
 
-    virtual void setName( QString ) {}
+    virtual void setName( const QString& ) {}
 };
 
 class BlockFactory : public QObject {
@@ -65,8 +68,8 @@ class BlockFactory : public QObject {
 
       scene->addItem( b );
 
-      b->addPort( getNameOfFactory(), QString(), false, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(),  QString(), false, QNEPort::TypePort );
+      b->addPort( getNameOfFactory(), QLatin1String(), false, QNEPort::NamePort );
+      b->addPort( getNameOfFactory(),  QLatin1String(), false, QNEPort::TypePort );
 
       return b;
     }

@@ -18,7 +18,7 @@ class FpsMonitorBackend : public Qt3DCore::QBackendNode {
   private:
     void initializeFromPeer( const Qt3DCore::QNodeCreatedChangeBasePtr& change ) override;
 
-    int m_rollingMeanFrameCount;
+    int m_rollingMeanFrameCount = 0;
     MovingAverage m_average;
 };
 

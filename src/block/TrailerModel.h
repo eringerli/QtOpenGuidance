@@ -49,9 +49,9 @@ class TrailerModel : public BlockBase {
     ~TrailerModel();
 
   public slots:
-    void setPoseHookPoint( Point_3, QQuaternion, PoseOption::Options );
-    void setPoseTowPoint( Point_3, QQuaternion, PoseOption::Options );
-    void setPosePivotPoint( Point_3, QQuaternion, PoseOption::Options );
+    void setPoseHookPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void setPoseTowPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void setPosePivotPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
 
     void setOffsetHookPointPosition( QVector3D position );
     void setTrackwidth( float trackwidth );
@@ -117,11 +117,11 @@ class TrailerModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
-      b->addInputPort( "Offset Hook Point", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
-      b->addInputPort( "Pose Hook Point", SLOT( setPoseHookPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Pivot Point", SLOT( setPosePivotPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Tow Point", SLOT( setPoseTowPoint( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

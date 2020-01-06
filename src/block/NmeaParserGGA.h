@@ -32,18 +32,15 @@ class NmeaParserGGA : public BlockBase {
       : BlockBase() {
     }
 
-    void emitConfigSignals() override {
-    }
-
   signals:
-    void globalPositionChanged( double latitude, double longitude, double height );
-    void fixQualityChanged( float );
-    void hdopChanged( float );
-    void numSatelitesChanged( float );
-    void ageOfDifferentialDataChanged( float );
+    void globalPositionChanged( const double, const double, const double );
+    void fixQualityChanged( const float );
+    void hdopChanged( const float );
+    void numSatelitesChanged( const float );
+    void ageOfDifferentialDataChanged( const float );
 
   public slots:
-    void setData( QByteArray data ) {
+    void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
     }
@@ -112,7 +109,7 @@ class NmeaParserGGA : public BlockBase {
           // https://www.u-blox.com/de/product/zed-f9p-module -> interface manual
 
           // GGA and GNS are exactly the same, but GNS displays more than 12 satelites (max 99)
-          if( nmeaFields.front() == "GGA" || nmeaFields.front() == "GNS" ) {
+          if( nmeaFields.front() == QStringLiteral( "GGA" ) || nmeaFields.front() == QStringLiteral( "GNS" ) ) {
             if( nmeaFields.count() >= 14 ) {
               qDebug() << nmeaFields;
 
@@ -126,7 +123,7 @@ class NmeaParserGGA : public BlockBase {
               // the format is like this: DDMM.MMMMM
               double latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
               latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
-              latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
+              latitude += nmeaFileIterator->midRef( 4 ).toDouble() / 60;
               ++nmeaFileIterator;
 
               if( ( *nmeaFileIterator ) == 'S' ) {
@@ -206,14 +203,14 @@ class NmeaParserGGAFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Data", SLOT( setData( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
-      b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
-      b->addOutputPort( "TOW", SIGNAL( towChanched( float ) ) );
-      b->addOutputPort( "Fix Quality", SIGNAL( fixQualityChanged( float ) ) );
-      b->addOutputPort( "HDOP", SIGNAL( hdopChanged( float ) ) );
-      b->addOutputPort( "Num Satelites", SIGNAL( numSatelitesChanged( float ) ) );
-      b->addOutputPort( "Age of Differential Data", SIGNAL( ageOfDifferentialDataChanged( float ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Age of Differential Data" ), QLatin1String( SIGNAL( ageOfDifferentialDataChanged( const float ) ) ) );
 
       return b;
     }

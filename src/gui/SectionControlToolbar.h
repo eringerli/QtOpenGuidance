@@ -41,8 +41,8 @@ class SectionControlToolbar : public QGroupBox {
   signals:
 
   public slots:
-    void sectionsChanged( QPointer<Implement> );
-    void implementChanged( QPointer<Implement> );
+    void sectionsChanged();
+    void implementChanged( const QPointer<Implement>& );
     void setDockLocation( Qt::DockWidgetArea area );
 
   private slots:
@@ -50,8 +50,8 @@ class SectionControlToolbar : public QGroupBox {
     void autoToggled( bool );
 
   private:
-    QToolButton* addButtonToVector( QString name );
-    void addSection( QString name );
+    QToolButton* addButtonToVector( const QString& name );
+    void addSection( const QString& name );
 
   private:
     Implement* implement = nullptr;
@@ -62,7 +62,7 @@ class SectionControlToolbar : public QGroupBox {
     QLabel* lbOn = nullptr;
     QLabel* lbOff = nullptr;
     QToolButton* pbAuto = nullptr;
-    QVector<QToolButton*> buttons;
+    std::vector<QToolButton*> buttons;
 
     bool horizontal = true;
 };

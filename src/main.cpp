@@ -97,10 +97,10 @@
 
 #if defined (Q_OS_ANDROID)
 #include <QtAndroid>
-const QVector<QString> permissions( {"android.permission.INTERNET",
-                                     "android.permission.WRITE_EXTERNAL_STORAGE",
-                                     "android.permission.READ_EXTERNAL_STORAGE"
-                                    } );
+const std::vector<QString> permissions( {"android.permission.INTERNET",
+                                        "android.permission.WRITE_EXTERNAL_STORAGE",
+                                        "android.permission.READ_EXTERNAL_STORAGE"
+                                        } );
 #endif
 
 int main( int argc, char** argv ) {
@@ -119,8 +119,8 @@ int main( int argc, char** argv ) {
 //  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
 
   QApplication app( argc, argv );
-  QApplication::setOrganizationDomain( "QtOpenGuidance.org" );
-  QApplication::setApplicationName( "QtOpenGuidance" );
+  QApplication::setOrganizationDomain( QStringLiteral( "QtOpenGuidance.org" ) );
+  QApplication::setApplicationName( QStringLiteral( "QtOpenGuidance" ) );
 
 #if !defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
   QIcon::setThemeSearchPaths( QIcon::themeSearchPaths() << QStringLiteral( ":themes/" ) );
@@ -130,7 +130,7 @@ int main( int argc, char** argv ) {
   //Request required permissions at runtime on android
 #ifdef Q_OS_ANDROID
 
-  for( const QString& permission : permissions ) {
+  for( const auto& permission : permissions ) {
     auto result = QtAndroid::checkPermission( permission );
 
     if( result == QtAndroid::PermissionResult::Denied ) {
@@ -143,9 +143,11 @@ int main( int argc, char** argv ) {
 
 #endif
 
-  Qt3DExtras::Qt3DWindow* view = new Qt3DExtras::Qt3DWindow();
+  auto* view = new Qt3DExtras::Qt3DWindow();
 
-  view->defaultFrameGraph()->setClearColor( QColor( QRgb( 0x4d4d4f ) ) );
+  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
+
+  view->defaultFrameGraph()->setClearColor( QColor( qRgba( 0x4d, 0x4d, 0x4f, 0x00 ) ) );
 
   QWidget* container = QWidget::createWindowContainer( view );
 //  QSize screenSize = view->screen()->size();
@@ -154,8 +156,8 @@ int main( int argc, char** argv ) {
   container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
   // create MainWindow and set the parameters for the docks
-  MainWindow* mainWindow = new MainWindow;
-  QWidget* widget = new QWidget( mainWindow );
+  auto* mainWindow = new MainWindow;
+  auto* widget = new QWidget( mainWindow );
   mainWindow->setCentralWidget( container );
   mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
   mainWindow->setDockOptions( QMainWindow::AnimatedDocks |
@@ -252,7 +254,7 @@ int main( int argc, char** argv ) {
 
   // guidance toolbar
   auto* guidanceToolbar = new GuidanceToolbar( widget );
-  QDockWidget* guidaceToolbarDock = new QDockWidget( mainWindow );
+  auto* guidaceToolbarDock = new QDockWidget( mainWindow );
   guidaceToolbarDock->setWidget( guidanceToolbar );
   guidaceToolbarDock->setWindowTitle( guidanceToolbar->windowTitle() );
   guidaceToolbarDock->setObjectName( QStringLiteral( "GuidanceToolbar" ) );
@@ -262,7 +264,7 @@ int main( int argc, char** argv ) {
 
   // turning Toolbar
   auto* turningToolbar = new GuidanceTurning( mainWindow );
-  QDockWidget* turningToolbarDock = new QDockWidget( mainWindow );
+  auto* turningToolbarDock = new QDockWidget( mainWindow );
   turningToolbarDock->setWidget( turningToolbar );
   turningToolbarDock->setWindowTitle( turningToolbar->windowTitle() );
   turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbar" ) );
@@ -273,7 +275,7 @@ int main( int argc, char** argv ) {
   // camera Toolbar
   auto* cameraToolbar = new CameraToolbar( widget );
   cameraToolbar->setVisible( false );
-  QDockWidget* cameraToolbarDock = new QDockWidget( mainWindow );
+  auto* cameraToolbarDock = new QDockWidget( mainWindow );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
   cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbar" ) );
@@ -284,7 +286,7 @@ int main( int argc, char** argv ) {
   // passes toolbar
   auto* passesToolbar = new PassToolbar( widget );
   passesToolbar->setVisible( false );
-  QDockWidget* passesToolbarDock = new QDockWidget( mainWindow );
+  auto* passesToolbarDock = new QDockWidget( mainWindow );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
   passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbar" ) );
@@ -296,7 +298,7 @@ int main( int argc, char** argv ) {
   // fields toolbar
   auto* fieldsToolbar = new FieldsToolbar( widget );
   fieldsToolbar->setVisible( false );
-  QDockWidget* fieldsToolbarDock = new QDockWidget( mainWindow );
+  auto* fieldsToolbarDock = new QDockWidget( mainWindow );
   fieldsToolbarDock->setWidget( fieldsToolbar );
   fieldsToolbarDock->setWindowTitle( fieldsToolbar->windowTitle() );
   fieldsToolbarDock->setObjectName( QStringLiteral( "FieldsToolbar" ) );
@@ -310,7 +312,7 @@ int main( int argc, char** argv ) {
   // fields optimition toolbar
   auto* fieldsOptimitionToolbar = new FieldsOptimitionToolbar( widget );
   fieldsOptimitionToolbar->setVisible( false );
-  QDockWidget* fieldsOptimitionToolbarDock = new QDockWidget( mainWindow );
+  auto* fieldsOptimitionToolbarDock = new QDockWidget( mainWindow );
   fieldsOptimitionToolbarDock->setWidget( fieldsOptimitionToolbar );
   fieldsOptimitionToolbarDock->setWindowTitle( fieldsOptimitionToolbar->windowTitle() );
   fieldsOptimitionToolbarDock->setObjectName( QStringLiteral( "FieldOptimitionsToolbar" ) );
@@ -323,7 +325,7 @@ int main( int argc, char** argv ) {
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
   simulatorToolbar->setVisible( false );
-  QDockWidget* simulatorToolbarDock = new QDockWidget( mainWindow );
+  auto* simulatorToolbarDock = new QDockWidget( mainWindow );
   simulatorToolbarDock->setWidget( simulatorToolbar );
   simulatorToolbarDock->setWindowTitle( simulatorToolbar->windowTitle() );
   simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbar" ) );
@@ -352,7 +354,7 @@ int main( int argc, char** argv ) {
   meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // implements
-  ImplementFactory* implementFactory = new ImplementFactory(
+  auto* implementFactory = new ImplementFactory(
     mainWindow,
     Qt::BottomDockWidgetArea,
     Qt::AllDockWidgetAreas,
@@ -469,9 +471,9 @@ int main( int argc, char** argv ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    guidanceToolbar->cbSimulatorSetChecked( settings.value( "RunSimulatorOnStart", false ).toBool() );
+    guidanceToolbar->cbSimulatorSetChecked( settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool() );
 
-    if( settings.value( "OpenSettingsDialogOnStart", false ).toBool() ) {
+    if( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ) {
       settingDialog->show();
     }
   }
@@ -495,4 +497,3 @@ int main( int argc, char** argv ) {
 
   return QApplication::exec();
 }
-

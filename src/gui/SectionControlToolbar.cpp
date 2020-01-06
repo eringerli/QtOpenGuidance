@@ -55,14 +55,14 @@ SectionControlToolbar::SectionControlToolbar( Implement* implement, QWidget* par
   QObject::connect( implement, &Implement::sectionsChanged, this, &SectionControlToolbar::sectionsChanged );
 }
 
-QToolButton* SectionControlToolbar::addButtonToVector( QString name ) {
-  QToolButton* button = new QToolButton( this );
+QToolButton* SectionControlToolbar::addButtonToVector( const QString& name ) {
+  auto* button = new QToolButton( this );
   button->setText( name );
-  buttons << button;
+  buttons.push_back( button );
   return button;
 }
 
-void SectionControlToolbar::addSection( QString name ) {
+void SectionControlToolbar::addSection( const QString& name ) {
   if( horizontal ) {
     int currentCol = gridLayout->columnCount();
     gridLayout->addWidget( addButtonToVector( name ), 0, currentCol );
@@ -74,23 +74,23 @@ void SectionControlToolbar::addSection( QString name ) {
   }
 }
 
-void SectionControlToolbar::implementChanged( QPointer<Implement> ) {
+void SectionControlToolbar::implementChanged( const QPointer<Implement>& ) {
   if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
-    int numButtons = implement->sections.size() > 2 ?
-                     implement->sections.size() * 2 :
-                     ( implement->sections.size() - 1 ) * 2;
+    size_t numButtons = implement->sections.size() > 2 ?
+                        implement->sections.size() * 2 :
+                        ( implement->sections.size() - 1 ) * 2;
 
     static bool lastHorizontal = true;
 
     if( buttons.size() != numButtons || lastHorizontal != horizontal ) {
 
       // delete the old layout, as it takes ownership, remove the persistent labels and button first
-      if( gridLayout ) {
+      if( gridLayout != nullptr ) {
         gridLayout->removeWidget( lbOn );
         gridLayout->removeWidget( lbOff );
         gridLayout->removeWidget( pbAuto );
 
-        for( auto button : buttons ) {
+        for( auto button : qAsConst( buttons ) ) {
           gridLayout->removeWidget( button );
           button->setParent( this );
           button->deleteLater();
@@ -127,7 +127,7 @@ void SectionControlToolbar::implementChanged( QPointer<Implement> ) {
           addSection( QString::number( i ) );
         }
 
-        for( auto button : buttons ) {
+        for( const auto& button : qAsConst( buttons ) ) {
           button->setCheckable( true );
           button->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
           button->setFocusPolicy( Qt::NoFocus );
@@ -147,10 +147,10 @@ void SectionControlToolbar::implementChanged( QPointer<Implement> ) {
   }
 }
 
-void SectionControlToolbar::sectionsChanged( QPointer<Implement> ) {
-  if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
+void SectionControlToolbar::sectionsChanged() {
+//  if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
 
-  }
+//  }
 }
 
 void SectionControlToolbar::setDockLocation( Qt::DockWidgetArea area ) {
@@ -158,21 +158,20 @@ void SectionControlToolbar::setDockLocation( Qt::DockWidgetArea area ) {
     return;
   }
 
-  if( area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea ) {
-    horizontal = false;
-  } else {
-    horizontal = true;
-  }
+  horizontal = !( area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea );
 
   implementChanged( implement );
 }
 
 void SectionControlToolbar::forceOnOffToggled( bool checked ) {
-  QToolButton* clickedButton = qobject_cast<QToolButton*>( sender() );
+  auto* clickedButton = qobject_cast<QToolButton*>( sender() );
 
-  if( clickedButton ) {
-    int col, row, colSpan, rowSpan;
-    gridLayout->getItemPosition( gridLayout->indexOf( qobject_cast<QWidget*>( sender() ) ), &row, &col, &rowSpan, &colSpan );
+  if( clickedButton != nullptr ) {
+    int col;
+    int row;
+    int colSpan;
+    int rowSpan;
+    gridLayout->getItemPosition( gridLayout->indexOf( clickedButton ), &row, &col, &rowSpan, &colSpan );
 
     int sectionIndex = 0;
     bool forceOn = false;
@@ -191,11 +190,11 @@ void SectionControlToolbar::forceOnOffToggled( bool checked ) {
       }
     }
 
-    if( implement->sections.count() > 2 ) {
+    if( implement->sections.size() > 2 ) {
       --sectionIndex;
     }
 
-    auto section = implement->sections[sectionIndex];
+    const auto& section = implement->sections.at( sectionIndex );
 
     if( forceOn ) {
       section->setState( ImplementSection::State::ForceOn, checked );
@@ -220,10 +219,10 @@ void SectionControlToolbar::forceOnOffToggled( bool checked ) {
 }
 
 void SectionControlToolbar::autoToggled( bool checked ) {
-  QToolButton* clickedButton = qobject_cast<QToolButton*>( sender() );
+  auto* clickedButton = qobject_cast<QToolButton*>( sender() );
 
-  if( clickedButton ) {
-    auto section = implement->sections.first();
+  if( clickedButton != nullptr ) {
+    const auto& section = implement->sections[0];
     section->setState( ImplementSection::State::Automatic, checked );
 
     if( checked ) {

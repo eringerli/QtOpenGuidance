@@ -42,8 +42,8 @@ class QNEConnection : public QGraphicsPathItem {
 
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-    void setPos1( const QPointF& p );
-    void setPos2( const QPointF& p );
+    void setPos1( QPointF p );
+    void setPos2( QPointF p );
 
     void setPort1( QNEPort* p );
     bool setPort2( QNEPort* p );

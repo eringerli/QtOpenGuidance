@@ -26,8 +26,7 @@
 #include "../qnodeseditor/qneblock.h"
 
 VectorBlockModel::VectorBlockModel( QGraphicsScene* scene )
-  : QAbstractTableModel(),
-    scene( scene ) {
+  : scene( scene ) {
 }
 
 QVariant VectorBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -79,10 +78,12 @@ QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
 
   int countRow = 0;
 
-  for( auto item : scene->items() ) {
+  const auto& constRefOfList = scene->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       if( auto* object = qobject_cast<VectorObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
@@ -109,10 +110,12 @@ QVariant VectorBlockModel::data( const QModelIndex& index, int role ) const {
 bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
-  for( auto item : scene->items() ) {
+  const auto& constRefOfList = scene->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
+    if( block != nullptr ) {
       if( auto* object = qobject_cast<VectorObject*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
@@ -163,11 +166,13 @@ void VectorBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
-  for( auto item : scene->items() ) {
+  const auto& constRefOfList = scene->items();
+
+  for( const auto& item : constRefOfList ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
-    if( block ) {
-      if( qobject_cast<VectorObject*>( block->object ) ) {
+    if( block != nullptr ) {
+      if( qobject_cast<VectorObject*>( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

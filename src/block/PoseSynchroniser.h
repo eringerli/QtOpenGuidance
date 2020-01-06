@@ -40,19 +40,20 @@ class PoseSynchroniser : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPosition( Point_3 position ) {
+    void setPosition( const Point_3& position ) {
       this->position = position;
       QElapsedTimer timer;
       timer.start();
       emit poseChanged( this->position, orientation, PoseOption::NoOptions );
+      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
     }
 
-    void setOrientation( QQuaternion value ) {
+    void setOrientation( const QQuaternion value ) {
       orientation = value;
     }
 
   signals:
-    void poseChanged( Point_3, QQuaternion, PoseOption::Options );
+    void poseChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
 
   public:
     virtual void emitConfigSignals() override {
@@ -86,10 +87,10 @@ class PoseSynchroniserFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Position", SLOT( setPosition( Point_3 ) ) );
-      b->addInputPort( "Orientation", SLOT( setOrientation( QQuaternion ) ) );
+      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Point_3& ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const QQuaternion ) ) ) );
 
-      b->addOutputPort( "Pose", SIGNAL( poseChanged( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

@@ -47,7 +47,7 @@ class XteBarModel : public BlockBase {
 
 
   public slots:
-    void setName( QString name ) {
+    void setName( const QString& name ) override {
       dock->setWindowTitle( name );
       action->setText( QStringLiteral( "XTE: " ) + name );
       widget->setName( name );
@@ -106,7 +106,7 @@ class XteBarModelFactory : public BlockFactory {
 
       mainWindow->addDockWidget( area, object->dock );
 
-      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
 
       return b;
     }

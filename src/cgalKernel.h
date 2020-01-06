@@ -45,7 +45,7 @@ typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2
 
 // basic conversions
 
-inline QVector3D convertPoint3ToQVector3D( Point_3 point ) {
+inline QVector3D convertPoint3ToQVector3D( const Point_3& point ) {
   return QVector3D( float( point.x() ), float( point.y() ), float( point.z() ) );
 }
 

@@ -51,7 +51,7 @@ class QNodesEditor : public QObject {
     void load( QDataStream& ds );
 
   private:
-    QGraphicsItem* itemAt( const QPointF& );
+    QGraphicsItem* itemAt( QPointF );
 
   private:
     QGraphicsScene* scene = nullptr;

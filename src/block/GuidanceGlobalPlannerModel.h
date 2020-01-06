@@ -177,12 +177,12 @@ class GlobalPlannerModel : public BlockBase {
       recalculateTextureCoordinates();
     }
 
-    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
+    void setPlan( const QVector<QSharedPointer<PathPrimitive>>& plan ) {
       this->plan = plan;
       recalculateMeshes();
     }
 
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
@@ -196,7 +196,7 @@ class GlobalPlannerModel : public BlockBase {
       QVector<QVector2D> textureCoordinates;
       bool anyDirection = false;
 
-      for( const auto& primitive : plan ) {
+      for( const auto& primitive : qAsConst( plan ) ) {
         auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
         if( line ) {
@@ -260,7 +260,7 @@ class GlobalPlannerModel : public BlockBase {
     void recalculateTextureCoordinates() {
       QVector<QVector2D> textureCoordinates;
 
-      for( const auto& primitive : plan ) {
+      for( const auto& primitive : qAsConst( plan ) ) {
         auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
         if( line ) {
@@ -340,8 +340,8 @@ class GlobalPlannerModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const QVector<QSharedPointer<PathPrimitive>>& ) ) ) );
 
       return b;
     }

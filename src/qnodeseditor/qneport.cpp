@@ -42,9 +42,10 @@
 
 #include "qneconnection.h"
 
-QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
-  QGraphicsPathItem( parent ),
-  slotSignalSignature( std::move( std::move( slotSignalSignature ) ) ) {
+QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent ):
+  QGraphicsPathItem( parent ) {
+
+  this->slotSignalSignature = slotSignalSignature;
   label = new QGraphicsTextItem( this );
 
   QPainterPath p;
@@ -58,13 +59,13 @@ QNEPort::QNEPort( QString slotSignalSignature, QGraphicsItem* parent ):
 }
 
 QNEPort::~QNEPort() {
-  for( auto conn : m_connections ) {
+  for( auto conn : qAsConst( m_connections ) ) {
     delete conn;
   }
 
   label->deleteLater();
 
-  if( porthelper ) {
+  if( porthelper != nullptr ) {
     porthelper->deleteLater();
   }
 }
@@ -96,25 +97,25 @@ bool QNEPort::isOutput() {
   return isOutput_;
 }
 
-QVector<QNEConnection*>& QNEPort::connections() {
+std::vector<QNEConnection*>& QNEPort::connections() {
   return m_connections;
 }
 
 void QNEPort::setPortFlags( int f ) {
   m_portFlags = f;
 
-  if( m_portFlags & TypePort ) {
+  if( ( m_portFlags & TypePort ) != 0 ) {
     QFont font( scene()->font() );
     font.setItalic( true );
     label->setFont( font );
     setPath( QPainterPath() );
-  } else if( m_portFlags & NamePort ) {
+  } else if( ( m_portFlags & NamePort ) != 0 ) {
     QFont font( scene()->font() );
     font.setBold( true );
     label->setFont( font );
     setPath( QPainterPath() );
 
-    if( !( m_portFlags & QNEPort::SystemBlock ) ) {
+    if( ( m_portFlags & QNEPort::SystemBlock ) == 0 ) {
       porthelper = new QNEPortHelper( this );
       label->setTextInteractionFlags( Qt::TextEditorInteraction );
     }
@@ -127,7 +128,7 @@ QNEBlock* QNEPort::block() const {
 
 QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
-    for( auto conn : m_connections ) {
+    for( auto conn : qAsConst( m_connections ) ) {
       conn->updatePosFromPorts();
       conn->updatePath();
     }
@@ -139,7 +140,7 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
 void QNEPort::contentsChanged() {
   auto* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
 
-  if( block ) {
+  if( block != nullptr ) {
     block->setName( label->toPlainText(), true );
     block->resizeBlockWidth();
   }

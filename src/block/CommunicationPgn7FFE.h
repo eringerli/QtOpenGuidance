@@ -33,7 +33,7 @@ class CommunicationPgn7ffe : public BlockBase {
     }
 
   signals:
-    void dataReceived( QByteArray );
+    void  dataReceived( const QByteArray& );
 
   public slots:
     void setSteeringAngle( float steeringAngle ) {
@@ -96,10 +96,10 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-      b->addInputPort( "Velocity", SLOT( setVelocity( float ) ) );
-      b->addInputPort( "XTE", SLOT( setXte( float ) ) );
-      b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( float ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;
     }

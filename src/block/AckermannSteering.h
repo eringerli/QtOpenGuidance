@@ -115,16 +115,16 @@ class AckermannSteeringFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
-      b->addInputPort( "Track Width", SLOT( setTrackwidth( float ) ) );
+      b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( float ) ) ) );
 
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-      b->addInputPort( "Steering Angle Left", SLOT( setSteeringAngleLeft( float ) ) );
-      b->addInputPort( "Steering Angle Right", SLOT( setSteeringAngleRight( float ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( float ) ) ) );
 
-      b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
-      b->addOutputPort( "Steering Angle Left", SIGNAL( steeringAngleChangedLeft( float ) ) );
-      b->addOutputPort( "Steering Angle Right", SIGNAL( steeringAngleChangedRight( float ) ) );
+      b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SIGNAL( steeringAngleChangedLeft( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SIGNAL( steeringAngleChangedRight( float ) ) ) );
 
       return b;
     }

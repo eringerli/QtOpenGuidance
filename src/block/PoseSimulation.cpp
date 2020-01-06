@@ -29,7 +29,8 @@
 
 void PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
-    double elapsedTime = double ( m_time.restart() ) / 1000;
+    constexpr double msPerS = 1000;
+    double elapsedTime = double ( m_time.restart() ) / msPerS;
     QQuaternion lastOrientation = m_orientation;
 
     float steerAngle = 0;
@@ -83,6 +84,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       QElapsedTimer timer;
       timer.start();
       emit globalPositionChanged( latitude, longitude, zWithAntennaOffset );
+      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
     }
 
   }

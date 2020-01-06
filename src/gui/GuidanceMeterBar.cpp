@@ -16,7 +16,7 @@ GuidanceMeterBar::~GuidanceMeterBar() {
 }
 
 void GuidanceMeterBar::setMeter( float arg ) {
-  double meter = double( arg );
+  auto meter = double( arg );
   meter *= scale;
 
   if( ( meter > 0 ) && ( ( meter ) < ( 1 / qPow( 10, precision ) ) ) ) {
@@ -39,7 +39,7 @@ void GuidanceMeterBar::setCaptionEnabled( bool enabled ) {
   ui->lbName->setEnabled( enabled );
 }
 
-void GuidanceMeterBar::setFontOfLabel( QFont font ) {
+void GuidanceMeterBar::setFontOfLabel( const QFont& font ) {
   ui->lbMeter->setFont( font );
 }
 

@@ -78,8 +78,8 @@ QNEBlock::~QNEBlock() {
   object->deleteLater();
 }
 
-QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignature, bool isOutput, int flags ) {
-  QNEPort* port = new QNEPort( signalSlotSignature, this );
+QNEPort* QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags ) {
+  auto* port = new QNEPort( signalSlotSignature, this );
   port->setName( name );
   port->setIsOutput( isOutput );
   port->setNEBlock( this );
@@ -88,11 +88,11 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
     flags |= QNEPort::SystemBlock;
   }
 
-  if( flags & QNEPort::NamePort ) {
+  if( ( flags & QNEPort::NamePort ) != 0 ) {
     this->name = name;
   }
 
-  if( flags & QNEPort::TypePort ) {
+  if( ( flags & QNEPort::TypePort ) != 0 ) {
     this->typeString = name;
   }
 
@@ -105,11 +105,11 @@ QNEPort* QNEBlock::addPort( const QString& name, const QString& signalSlotSignat
   return port;
 }
 
-void QNEBlock::addInputPort( const QString& name, const QString& signalSlotSignature ) {
+void QNEBlock::addInputPort( const QString& name, QLatin1String signalSlotSignature ) {
   addPort( name, signalSlotSignature, false );
 }
 
-void QNEBlock::addOutputPort( const QString& name, const QString& signalSlotSignature ) {
+void QNEBlock::addOutputPort( const QString& name, QLatin1String signalSlotSignature ) {
   addPort( name, signalSlotSignature, true );
 }
 
@@ -142,26 +142,30 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
   painter->drawPath( path() );
 }
 
-QVector<QNEPort*> QNEBlock::ports() {
-  QVector<QNEPort*> res;
+//const std::vector<QNEPort*> QNEBlock::ports() {
+//  std::vector<QNEPort*> res;
 
-  for( auto port_ : childItems() ) {
-    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
+//  const auto& constRefOfList = childItems();
 
-    if( port ) {
-      res.append( port );
-    }
-  }
+//  for( const auto& item : constRefOfList ) {
+//    auto* port = qgraphicsitem_cast<QNEPort*>( item );
 
-  return res;
-}
+//    if( port != nullptr ) {
+//      res.push_back( port );
+//    }
+//  }
+
+//  return res;
+//}
 
 void QNEBlock::setName( const QString& name, bool setFromLabel ) {
   if( !setFromLabel ) {
-    for( auto port_ : childItems() ) {
-      auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
+    const auto& constRefOfList = childItems();
 
-      if( port && port->portFlags()&QNEPort::NamePort ) {
+    for( const auto& item : constRefOfList ) {
+      auto* port = qgraphicsitem_cast<QNEPort*>( item );
+
+      if( ( port != nullptr ) && ( ( port->portFlags()&QNEPort::NamePort ) != 0 ) ) {
         port->setName( name );
       }
     }
@@ -171,7 +175,7 @@ void QNEBlock::setName( const QString& name, bool setFromLabel ) {
 
   auto* obj = qobject_cast<BlockBase*>( object );
 
-  if( obj ) {
+  if( obj != nullptr ) {
     obj->setName( name );
   }
 
@@ -186,11 +190,13 @@ QVariant QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value 
 }
 
 QNEPort* QNEBlock::getPortWithName( const QString& name, bool output ) {
-  for( auto port_ : childItems() ) {
-    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
+  const auto& constRefOfList = childItems();
 
-    if( port &&
-        !( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) &&
+  for( const auto& item : constRefOfList ) {
+    auto* port = qgraphicsitem_cast<QNEPort*>( item );
+
+    if( ( port != nullptr ) &&
+        ( ( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) == 0 ) &&
         port->isOutput() == output &&
         port->getName() == name ) {
       return port;
@@ -201,24 +207,24 @@ QNEPort* QNEBlock::getPortWithName( const QString& name, bool output ) {
 }
 
 void QNEBlock::toJSON( QJsonObject& json ) {
-  QJsonArray blocksArray = json["blocks"].toArray();
+  QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
   QJsonObject blockObject;
-  blockObject["id"] = id;
-  blockObject["name"] = name;
-  blockObject["type"] = typeString;
-  blockObject["positionX"] = x();
-  blockObject["positionY"] = y();
+  blockObject[QStringLiteral( "id" )] = id;
+  blockObject[QStringLiteral( "name" )] = name;
+  blockObject[QStringLiteral( "type" )] = typeString;
+  blockObject[QStringLiteral( "positionX" )] = x();
+  blockObject[QStringLiteral( "positionY" )] = y();
 
   qobject_cast<BlockBase*>( object )->toJSON( blockObject );
 
   blocksArray.append( blockObject );
 
-  json["blocks"] = blocksArray;
+  json[QStringLiteral( "blocks" )] = blocksArray;
 }
 
 void QNEBlock::fromJSON( QJsonObject& json ) {
-  if( json["values"].isObject() ) {
+  if( json[QStringLiteral( "values" )].isObject() ) {
     qobject_cast<BlockBase*>( object )->fromJSON( json );
   }
 }
@@ -236,36 +242,44 @@ void QNEBlock::resizeBlockWidth() {
   double y = -heightSnappedToGridSpacing / 2 + verticalMargin + cornerRadius;
   width = 0;
 
-  for( auto port_ : childItems() ) {
-    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
+  {
+    const auto& constRefOfList = childItems();
 
-    if( port ) {
-      if( width < port->getWidthOfLabelBoundingRect() ) {
-        width = port->getWidthOfLabelBoundingRect();
+    for( const auto& item : constRefOfList ) {
+      auto* port = qgraphicsitem_cast<QNEPort*>( item );
+
+      if( port != nullptr ) {
+        if( width < port->getWidthOfLabelBoundingRect() ) {
+          width = port->getWidthOfLabelBoundingRect();
+        }
       }
     }
   }
 
   qreal widthSnappedToGridSpacing = ceil( width / ( gridSpacing ) ) * ( gridSpacing );
 
-  for( auto port_ : childItems() ) {
-    auto* port = qgraphicsitem_cast<QNEPort*>( port_ );
+  {
+    const auto& constRefOfList = childItems();
 
-    if( port ) {
-      if( port->isOutput() ) {
-        port->setPos( widthSnappedToGridSpacing / 2 + cornerRadius, y );
-      } else {
-        port->setPos( -widthSnappedToGridSpacing / 2 - cornerRadius, y );
+    for( const auto& item : constRefOfList ) {
+      auto* port = qgraphicsitem_cast<QNEPort*>( item );
+
+      if( port != nullptr ) {
+        if( port->isOutput() ) {
+          port->setPos( widthSnappedToGridSpacing / 2 + cornerRadius, y );
+        } else {
+          port->setPos( -widthSnappedToGridSpacing / 2 - cornerRadius, y );
+        }
+
+        y += port->getHeightOfLabelBoundingRect();
       }
-
-      y += port->getHeightOfLabelBoundingRect();
     }
   }
 
   QPainterPath p;
   double offset = 0;
 
-  if( childItems().size() % 2 ) {
+  if( ( childItems().size() % 2 ) != 0 ) {
     offset = gridSpacing / 4;
   }
 
@@ -280,11 +294,11 @@ void QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
   qreal xx = x();
   qreal yy = y();
 
-  if( int( xx ) % int( gridSpacing ) ) {
+  if( ( int( xx ) % int( gridSpacing ) ) != 0 ) {
     xx = gridSpacing * round( xx / gridSpacing );
   }
 
-  if( int( yy ) % int( gridSpacing ) ) {
+  if( ( int( yy ) % int( gridSpacing ) ) != 0 ) {
     yy = gridSpacing * round( yy / gridSpacing );
   }
 

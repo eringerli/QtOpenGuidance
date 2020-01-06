@@ -59,12 +59,14 @@ class TrailerKinematic : public BlockBase {
       m_maxAngle = maxAngle;
     }
 
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
-      QQuaternion orientationTrailer;
+    void setPose( const Point_3& position, const QQuaternion rotation, const PoseOption::Options options ) {
+      QQuaternion orientation = rotation;
+      QQuaternion orientationTrailer = QQuaternion();
 
       if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         orientation = QQuaternion();
       } else {
+
         orientationTrailer = QQuaternion::fromAxisAndAngle(
                                      QVector3D( 0.0f, 0.0f, 1.0f ),
                                      float( qRadiansToDegrees( qAtan2(
@@ -105,17 +107,23 @@ class TrailerKinematic : public BlockBase {
                                           positionPivotPoint.y() + double( positionTowPointCorrection.y() ),
                                           positionPivotPoint.z() + double( positionTowPointCorrection.z() ) );
 
-      options.setFlag( PoseOption::CalculateFromPivotPoint, false );
-
-      emit poseHookPointChanged( position, orientation, options );
-      emit posePivotPointChanged( positionPivotPoint, orientation, options );
-      emit poseTowPointChanged( positionTowPoint, orientation, options );
+      if( options.testFlag( PoseOption::CalculateFromPivotPoint ) ) {
+        PoseOption::Options flags = options;
+        flags.setFlag( PoseOption::CalculateFromPivotPoint, false );
+        emit poseHookPointChanged( position, orientation, flags );
+        emit posePivotPointChanged( positionPivotPoint, orientation, flags );
+        emit poseTowPointChanged( positionTowPoint, orientation, flags );
+      } else {
+        emit poseHookPointChanged( position, orientation, options );
+        emit posePivotPointChanged( positionPivotPoint, orientation, options );
+        emit poseTowPointChanged( positionTowPoint, orientation, options );
+      }
     }
 
   signals:
-    void poseHookPointChanged( Point_3, QQuaternion, PoseOption::Options );
-    void posePivotPointChanged( Point_3, QQuaternion, PoseOption::Options );
-    void poseTowPointChanged( Point_3, QQuaternion, PoseOption::Options );
+    void poseHookPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void posePivotPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void poseTowPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetTowPoint is a negative vector
@@ -149,15 +157,15 @@ class TrailerKinematicFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "OffsetHookPoint", SLOT( setOffsetHookPointPosition( QVector3D ) ) );
-      b->addInputPort( "OffsetTowPoint", SLOT( setOffsetTowPointPosition( QVector3D ) ) );
-      b->addInputPort( "MaxJackknifeAngle", SLOT( setMaxJackknifeAngle( float ) ) );
-      b->addInputPort( "MaxAngle", SLOT( setMaxAngle( float ) ) );
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
-      b->addOutputPort( "Pose Hook Point", SIGNAL( poseHookPointChanged( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addOutputPort( "Pose Pivot Point", SIGNAL( posePivotPointChanged( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addOutputPort( "Pose Tow Point", SIGNAL( poseTowPointChanged( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

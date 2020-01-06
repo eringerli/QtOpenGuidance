@@ -44,7 +44,7 @@ class LocalPlanner : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
@@ -56,7 +56,7 @@ class LocalPlanner : public BlockBase {
 
         QSharedPointer<PathPrimitive> lineBuffer;
 
-        for( const auto& primitive : plan ) {
+        for( const auto& primitive : qAsConst( plan ) ) {
           auto* line = qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
@@ -93,7 +93,7 @@ class LocalPlanner : public BlockBase {
       }
     }
 
-    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
+    void setPlan( const QVector<QSharedPointer<PathPrimitive>>& plan ) {
       this->plan = plan;
       emit planChanged( plan );
     }
@@ -132,9 +132,9 @@ class LocalPlannerFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
-      b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const QVector<QSharedPointer<PathPrimitive>>& ) ) ) );
 
       return b;
     }

@@ -17,7 +17,7 @@ class UpdateFpsMonitorsJob : public Qt3DCore::QAspectJob {
 
   private:
     FpsAspect* m_aspect;
-    qint64 m_dt;
+    qint64 m_dt = 0;
 };
 
 using UpdateFpsMonitorsJobPtr = QSharedPointer<UpdateFpsMonitorsJob>;

@@ -48,13 +48,13 @@ class XteGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( Point_3 position, QQuaternion, PoseOption::Options options ) {
+    void setPose( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
 
         double distance = qInf();
         double headingOfABLine = 0;
 
-        for( const auto& primitive : plan ) {
+        for( const auto& primitive : qAsConst( plan ) ) {
           auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
           if( line ) {
@@ -151,11 +151,11 @@ class XteGuidanceFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Plan", SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
 
-      b->addOutputPort( "XTE", SIGNAL( xteChanged( float ) ) );
-      b->addOutputPort( "Heading of Path", SIGNAL( headingOfPathChanged( float ) ) );
+      b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( float ) ) ) );
 
       return b;
     }

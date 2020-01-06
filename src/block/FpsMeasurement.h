@@ -83,7 +83,7 @@ class FpsMeasurementFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addOutputPort( "FPS", SIGNAL( fpsChanged( float ) ) );
+      b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( float ) ) ) );
 
       return b;
     }

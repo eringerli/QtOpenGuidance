@@ -15,11 +15,11 @@ class GuidanceMeterBar : public QGroupBox {
     ~GuidanceMeterBar();
 
   public slots:
-    void setMeter( float meter );
+    void setMeter( float arg );
     void setName( const QString& name );
 
     void setCaptionEnabled( bool enabled );
-    void setFontOfLabel( QFont font );
+    void setFontOfLabel( const QFont& font );
 
   private:
     Ui::GuidanceMeterBar* ui = nullptr;

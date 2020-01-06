@@ -22,8 +22,7 @@
 #include <QtMath>
 
 
-TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
-  : BlockBase() {
+TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
   m_rootEntityTransform = new Qt3DCore::QTransform();
 
   // add an etry, so all coordinates are local
@@ -45,8 +44,8 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   m_wheelFrontMesh = new Qt3DExtras::QCylinderMesh();
-  m_wheelFrontMesh->setRings(5);
-  m_wheelFrontMesh->setSlices(50);
+  m_wheelFrontMesh->setRings( 5 );
+  m_wheelFrontMesh->setSlices( 50 );
 
   // wheel front left
   {
@@ -75,8 +74,8 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity )
   }
 
   m_wheelBackMesh = new Qt3DExtras::QCylinderMesh();
-  m_wheelBackMesh->setRings(5);
-  m_wheelBackMesh->setSlices(50);
+  m_wheelBackMesh->setRings( 5 );
+  m_wheelBackMesh->setSlices( 50 );
 
   // wheel back left
   {
@@ -292,19 +291,19 @@ void TractorModel::setProportions() {
   }
 }
 
-void TractorModel::setPoseTowPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
+void TractorModel::setPoseTowPoint( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_towPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPoseHookPoint( Point_3 position, QQuaternion, PoseOption::Options options ) {
+void TractorModel::setPoseHookPoint( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_towHookTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPosePivotPoint( Point_3 position, QQuaternion rotation, PoseOption::Options options ) {
+void TractorModel::setPosePivotPoint( const Point_3& position, const QQuaternion rotation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_pivotPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 

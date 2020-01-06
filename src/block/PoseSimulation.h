@@ -177,18 +177,18 @@ class PoseSimulationFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Antenna Position", SLOT( setAntennaPosition( QVector3D ) ) );
-      b->addInputPort( "Length Wheelbase", SLOT( setWheelbase( float ) ) );
-      b->addInputPort( "Initial WGS84 Position", SLOT( setInitialWGS84Position( QVector3D ) ) );
+      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( QVector3D ) ) ) );
 
-      b->addOutputPort( "WGS84 Position", SIGNAL( globalPositionChanged( double, double, double ) ) );
-      b->addOutputPort( "Position", SIGNAL( positionChanged( QVector3D ) ) );
-      b->addOutputPort( "Orientation", SIGNAL( orientationChanged( QQuaternion ) ) );
-      b->addOutputPort( "Steering Angle", SIGNAL( steeringAngleChanged( float ) ) );
-      b->addOutputPort( "Velocity", SIGNAL( velocityChanged( float ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( double, double, double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( QVector3D ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( QQuaternion ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( float ) ) ) );
 
-      b->addInputPort( "Autosteer Enabled", SLOT( autosteerEnabled( bool ) ) );
-      b->addInputPort( "Autosteer Steering Angle", SLOT( setSteerAngleFromAutosteer( float ) ) );
+      b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( bool ) ) ) );
+      b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( float ) ) ) );
 
       return b;
     }

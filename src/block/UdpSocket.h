@@ -45,7 +45,7 @@ class UdpSocket : public BlockBase {
     }
 
   signals:
-    void dataReceived( QByteArray );
+    void dataReceived( const QByteArray& );
 
   public slots:
     void setPort( float port ) {
@@ -53,7 +53,7 @@ class UdpSocket : public BlockBase {
       udpSocket->bind( quint16( port ),  QUdpSocket::DontShareAddress );
     }
 
-    void sendData( QByteArray data ) {
+    void sendData( const QByteArray& data ) {
       udpSocket->writeDatagram( data, QHostAddress::Broadcast, port );
     }
 
@@ -97,10 +97,10 @@ class UdpSocketFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Port", SLOT( setPort( float ) ) );
-      b->addInputPort( "Data", SLOT( sendData( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
-      b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
+      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;
     }

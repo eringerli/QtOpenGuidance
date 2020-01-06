@@ -45,7 +45,7 @@ class QNEPort : public QGraphicsPathItem {
     enum { Type = QGraphicsItem::UserType + 1 };
     enum { NamePort = 1, TypePort = 2, SystemBlock = 4 };
 
-    QNEPort( QString slotSignalSignature, QGraphicsItem* parent = nullptr );
+    QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr );
     ~QNEPort();
 
     void setNEBlock( QNEBlock* );
@@ -53,7 +53,7 @@ class QNEPort : public QGraphicsPathItem {
     QString getName();
     void setIsOutput( bool o );
     bool isOutput();
-    QVector<QNEConnection*>& connections();
+    std::vector<QNEConnection*>& connections();
     void setPortFlags( int );
 
     void contentsChanged();
@@ -78,7 +78,7 @@ class QNEPort : public QGraphicsPathItem {
     }
 
   public:
-    QString slotSignalSignature;
+    QLatin1String slotSignalSignature;
 
     static constexpr qreal radiusOfBullet = 5;
     static constexpr qreal marginOfText = 2;
@@ -91,7 +91,7 @@ class QNEPort : public QGraphicsPathItem {
   private:
     QNEBlock* m_block = nullptr;
     bool isOutput_ = false;
-    QVector<QNEConnection*> m_connections;
+    std::vector<QNEConnection*> m_connections;
     int m_portFlags = 0;
 
     QNEPortHelper* porthelper = nullptr;

@@ -94,7 +94,7 @@ class GridModel : public BlockBase {
     }
 
   public slots:
-    void setPose( Point_3 position, QQuaternion, PoseOption::Options ) {
+    void setPose( const Point_3& position, QQuaternion, PoseOption::Options ) {
       m_distanceMeasurementTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
       QVector3D positionModulo( float( std::floor( ( position.x() ) / xStepMax ) * xStepMax ),
@@ -277,7 +277,7 @@ class GridModelFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

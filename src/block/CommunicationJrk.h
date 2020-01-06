@@ -33,7 +33,7 @@ class CommunicationJrk : public BlockBase {
     }
 
   signals:
-    void dataReceived( QByteArray );
+    void  dataReceived( const QByteArray& );
 
   public slots:
     void setSteeringAngle( float steeringAngle ) {
@@ -83,10 +83,10 @@ class CommunicationJrkFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( "Steerzero", SLOT( setSteerZero( float ) ) );
-      b->addInputPort( "Steering count/°", SLOT( setSteerCountPerDegree( float ) ) );
-      b->addInputPort( "Steering Angle", SLOT( setSteeringAngle( float ) ) );
-      b->addOutputPort( "Data", SIGNAL( dataReceived( QByteArray ) ) );
+      b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering count/°" ), QLatin1String( SLOT( setSteerCountPerDegree( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;
     }

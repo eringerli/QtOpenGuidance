@@ -38,16 +38,16 @@ class StringObject : public BlockBase {
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject["String"] = string;
-      json["values"] = valuesObject;
+      valuesObject[QStringLiteral( "String" )] = string;
+      json[QStringLiteral( "values" )] = valuesObject;
     }
 
     void fromJSON( QJsonObject& json ) override {
-      if( json["values"].isObject() ) {
-        QJsonObject valuesObject = json["values"].toObject();
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        if( valuesObject["String"].isString() ) {
-          string = valuesObject["String"].toString();
+        if( valuesObject[QStringLiteral( "String" )].isString() ) {
+          string = valuesObject[QStringLiteral( "String" )].toString();
         }
       }
     }
@@ -82,7 +82,7 @@ class StringFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      b->addOutputPort( "String", SIGNAL( stringChanged( QString ) ) );
+      b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( QString ) ) ) );
 
       model->resetModel();
 
