@@ -30,7 +30,10 @@ void FieldsOptimitionToolbar::setFieldStatistics( size_t pointsRecorded, size_t 
 }
 
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
-  emit recalculate( AlphaType( ui->cbAlphaShape->currentIndex() ), ui->dsbAlpha->value(), ui->dsbMaxDeviation->value() );
+  emit recalculate( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                    ui->dsbAlpha->value(),
+                    ui->dsbMaxDeviation->value(),
+                    ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString& arg1 ) {

@@ -21,6 +21,8 @@
 #ifndef CGALKERNEL_H
 #define CGALKERNEL_H
 
+//#ifndef __clang_analyzer__
+
 // standard includes
 #include <iostream>
 #include <fstream>
@@ -56,5 +58,7 @@ inline QVector3D convertPoint2ToQVector3D( Point_2 point ) {
 inline Point_3 convertQVector3DToPoint3( QVector3D point ) {
   return Point_3( point.x(), point.y(), point.z() );
 }
+
+//#endif // not __clang_analyzer__
 
 #endif // CGALKERNEL_H

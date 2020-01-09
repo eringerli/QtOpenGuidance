@@ -23,6 +23,8 @@
 
 #include "cgalKernel.h"
 
+//#ifndef __clang_analyzer__
+
 #include <QDebug>
 
 // standard includes
@@ -114,5 +116,7 @@ typedef Alpha_shape_2::Alpha_shape_edges_iterator            Alpha_shape_edges_i
 namespace PS = CGAL::Polyline_simplification_2;
 
 #include <CGAL/point_generators_2.h>
+
+//#endif // not __clang_analyzer__
 
 #endif // CGAL_H

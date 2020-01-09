@@ -17,6 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "GuidanceGlobalPlanner.h"
+#include <QtConcurrent>
 
 #include "../cgal.h"
 
@@ -246,9 +247,9 @@ void GlobalPlanner::createPlanAB() {
 }
 
 void GlobalPlanner::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& out_poly ) {
-  typedef typename Alpha_shape_2::Vertex_handle Vertex_handle;
-  typedef typename Alpha_shape_2::Edge Edge;
-  typedef std::vector<Edge> EdgeVector;
+  using Vertex_handle = typename Alpha_shape_2::Vertex_handle;
+  using Edge = typename Alpha_shape_2::Edge;
+  using EdgeVector = std::vector<Edge>;
 
   // form vertex to vertex map
   std::map<Vertex_handle, EdgeVector> v_edges_map;
@@ -272,8 +273,9 @@ void GlobalPlanner::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2
   std::size_t max_id = 0;
   std::set<Edge> existing_edges;
 
-  for( auto it = v_edges_map.begin(); it != v_edges_map.end(); ++it ) {
-    if( existing_edges.count( ( *it ).second.front() ) ) {
+//  for( const auto& edge : v_edges_map ) {
+  for( auto it = v_edges_map.cbegin(); it != v_edges_map.cend(); ++it ) {
+    if( existing_edges.count( ( *it ).second.front() ) != 0u ) {
       continue;
     }
 
@@ -322,220 +324,351 @@ void GlobalPlanner::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2
   out_poly = Polygon_with_holes_2( outer_poly, polies.begin(), polies.end() );
 }
 
+GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+  : BlockBase(),
+    tmw( tmw ) {
+  // a point marker -> orange
+  {
+    aPointMesh = new Qt3DExtras::QSphereMesh();
+    aPointMesh->setRadius( .2f );
+    aPointMesh->setSlices( 20 );
+    aPointMesh->setRings( 20 );
+
+    aPointTransform = new Qt3DCore::QTransform();
+
+    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    material->setDiffuse( QColor( "orange" ) );
+
+    aPointEntity = new Qt3DCore::QEntity( rootEntity );
+    aPointEntity->addComponent( aPointMesh );
+    aPointEntity->addComponent( material );
+    aPointEntity->addComponent( aPointTransform );
+    aPointEntity->setEnabled( false );
+
+    aTextEntity = new Qt3DCore::QEntity( aPointEntity );
+    Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+    aTextMesh->setText( QStringLiteral( "A" ) );
+    aTextMesh->setDepth( 0.05f );
+
+    aTextEntity->setEnabled( true );
+    aTextTransform = new Qt3DCore::QTransform();
+    aTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
+    aTextTransform->setScale( 2.0f );
+    aTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
+    aTextEntity->addComponent( aTextTransform );
+    aTextEntity->addComponent( aTextMesh );
+    aTextEntity->addComponent( material );
+  }
+
+  // b point marker -> purple
+  {
+    bPointMesh = new Qt3DExtras::QSphereMesh();
+    bPointMesh->setRadius( .2f );
+    bPointMesh->setSlices( 20 );
+    bPointMesh->setRings( 20 );
+
+    bPointTransform = new Qt3DCore::QTransform();
+
+    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    material->setDiffuse( QColor( "purple" ) );
+
+    bPointEntity = new Qt3DCore::QEntity( rootEntity );
+    bPointEntity->addComponent( bPointMesh );
+    bPointEntity->addComponent( material );
+    bPointEntity->addComponent( bPointTransform );
+    bPointEntity->setEnabled( false );
+
+    bTextEntity = new Qt3DCore::QEntity( bPointEntity );
+    Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+    bTextMesh->setText( QStringLiteral( "B" ) );
+    bTextMesh->setDepth( 0.05f );
+
+    bTextEntity->setEnabled( true );
+    bTextTransform = new Qt3DCore::QTransform();
+    bTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
+    bTextTransform->setScale( 2.0f );
+    bTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
+    bTextEntity->addComponent( bTextTransform );
+    bTextEntity->addComponent( bTextMesh );
+    bTextEntity->addComponent( material );
+  }
+
+  // test for recording
+  {
+    m_baseEntity = new Qt3DCore::QEntity( rootEntity );
+    m_baseTransform = new Qt3DCore::QTransform();
+    m_baseEntity->addComponent( m_baseTransform );
+
+    m_pointsEntity = new Qt3DCore::QEntity( m_baseEntity );
+    m_segmentsEntity = new Qt3DCore::QEntity( m_baseEntity );
+    m_segmentsEntity2 = new Qt3DCore::QEntity( m_baseEntity );
+    m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
+    m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
+    m_segmentsEntity->setEnabled( false );
+    m_segmentsEntity2->setEnabled( false );
+    m_segmentsEntity3->setEnabled( false );
+
+    m_pointsMesh = new BufferMesh();
+    m_pointsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
+    m_pointsEntity->addComponent( m_pointsMesh );
+
+    m_segmentsMesh = new BufferMesh();
+    m_segmentsEntity->addComponent( m_segmentsMesh );
+
+    m_segmentsMesh2 = new BufferMesh();
+    m_segmentsEntity2->addComponent( m_segmentsMesh2 );
+
+    m_segmentsMesh3 = new BufferMesh();
+    m_segmentsEntity3->addComponent( m_segmentsMesh3 );
+
+    m_segmentsMesh4 = new BufferMesh();
+    m_segmentsEntity4->addComponent( m_segmentsMesh4 );
+
+    m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
+    m_segmentsMaterial = new Qt3DExtras::QPhongMaterial( m_segmentsEntity );
+    m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity2 );
+    m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
+    m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
+
+    m_pointsMaterial->setAmbient( Qt::yellow );
+    m_segmentsMaterial->setAmbient( Qt::white );
+    m_segmentsMaterial2->setAmbient( Qt::green );
+    m_segmentsMaterial3->setAmbient( Qt::blue );
+    m_segmentsMaterial4->setAmbient( Qt::red );
+
+    m_pointsEntity->addComponent( m_pointsMaterial );
+    m_segmentsEntity->addComponent( m_segmentsMaterial );
+    m_segmentsEntity2->addComponent( m_segmentsMaterial2 );
+    m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
+    m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
+  }
+}
+
+Polygon_with_holes_2* GlobalPlanner::fieldOptimitionWorker( std::vector<Point_2>* points,
+    double distanceBetweenConnectPoints,
+    FieldsOptimitionToolbar::AlphaType alphaType,
+    double customAlpha,
+    double maxDeviation ) {
+  auto& pointsCopy2D = *points;
+  Polygon_with_holes_2* out_poly = nullptr;
+
+  // check for collinearity: if all points are collinear, you can't calculate a triangulation and it crashes
+  bool collinearity = true;
+  {
+    const std::size_t numPoints = pointsCopy2D.size();
+
+    for( std::size_t i = 0; i < ( numPoints - 2 ); ++i ) {
+      collinearity &= CGAL::collinear( pointsCopy2D[i + 0], pointsCopy2D[i + 1], pointsCopy2D[i + 2] );
+
+      if( !collinearity ) {
+        break;
+      }
+    }
+  }
+
+  if( !collinearity ) {
+
+    if( distanceBetweenConnectPoints > 0 ) {
+      qDebug() << "pointsCopy.size()" << pointsCopy2D.size();
+
+      for( auto last = pointsCopy2D.cbegin(), it = pointsCopy2D.cbegin() + 1, end = pointsCopy2D.cend();
+           it != end;
+           ++it, ++last ) {
+        const double distance = CGAL::squared_distance( *last, *it );
+        std::cout << *last << " " << *it << " " << distance << std::endl << std::flush;
+
+        if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
+          std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
+          CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( *last, *it, numPoints );
+
+          for( std::size_t i = 1; i < ( numPoints - 1 ); ++i ) {
+            pointsCopy2D.push_back( *pointGenerator );
+            ++pointGenerator;
+          }
+
+          qDebug() << "pointsCopy.size()" << pointsCopy2D.size() << "distance" << distance << distanceBetweenConnectPoints << numPoints;
+        }
+      }
+    }
+
+    qDebug() << "pointsCopy.size()" << pointsCopy2D.size();
+
+
+    Alpha_shape_2 alphaShape( pointsCopy2D.begin(), pointsCopy2D.end(),
+                              K::FT( 0 ),
+                              Alpha_shape_2::REGULARIZED );
+
+    qDebug() << "Alpha Shape computed";
+    double optimalAlpha = *alphaShape.find_optimal_alpha( 1 );
+    qDebug() << "Optimal alpha: " << optimalAlpha;
+    double solidAlpha = alphaShape.find_alpha_solid();
+    qDebug() << "Solid alpha: " << solidAlpha;
+
+//    emit alphaChanged( optimalAlpha, solidAlpha );
+
+    {
+      int numSegments = 0;
+      int numSegmentsExterior = 0;
+      int numSegmentsSingular = 0;
+      int numSegmentsRegular = 0;
+      int numSegmentsInterior = 0;
+
+      {
+        auto it = alphaShape.alpha_shape_edges_begin();
+        const auto& end = alphaShape.alpha_shape_edges_end();
+
+        for( ; it != end; ++it ) {
+          switch( alphaShape.classify( *it ) ) {
+            case Alpha_shape_2::EXTERIOR:
+              ++numSegmentsExterior;
+              break;
+
+            case Alpha_shape_2::SINGULAR:
+              ++numSegmentsInterior;
+              break;
+
+            case Alpha_shape_2::REGULAR:
+              ++numSegmentsRegular;
+              break;
+
+            case Alpha_shape_2::INTERIOR:
+              ++numSegmentsInterior;
+              break;
+          }
+
+          ++numSegments;
+        }
+
+      }
+      qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << pointsCopy2D.size();
+      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
+    }
+
+    switch( alphaType ) {
+      default:
+      case FieldsOptimitionToolbar::AlphaType::Optimal:
+        alphaShape.set_alpha( optimalAlpha + 0.1 );
+        break;
+
+      case FieldsOptimitionToolbar::AlphaType::Solid:
+        alphaShape.set_alpha( solidAlpha + 0.1 );
+        break;
+
+      case FieldsOptimitionToolbar::AlphaType::Custom:
+        alphaShape.set_alpha( customAlpha );
+        break;
+    }
+
+    {
+      int numSegments = 0;
+      int numSegmentsExterior = 0;
+      int numSegmentsSingular = 0;
+      int numSegmentsRegular = 0;
+      int numSegmentsInterior = 0;
+
+      {
+        auto it = alphaShape.alpha_shape_edges_begin();
+        const auto& end = alphaShape.alpha_shape_edges_end();
+
+        for( ; it != end; ++it ) {
+          switch( alphaShape.classify( *it ) ) {
+            case Alpha_shape_2::EXTERIOR:
+              ++numSegmentsExterior;
+              break;
+
+            case Alpha_shape_2::SINGULAR:
+              ++numSegmentsInterior;
+              break;
+
+            case Alpha_shape_2::REGULAR:
+              ++numSegmentsRegular;
+              break;
+
+            case Alpha_shape_2::INTERIOR:
+              ++numSegmentsInterior;
+              break;
+          }
+
+          ++numSegments;
+        }
+
+      }
+      qDebug() << "alpha shape edges tot: " << numSegments << "points: " << pointsCopy2D.size();
+      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
+    }
+
+    out_poly = new Polygon_with_holes_2();
+
+    GlobalPlanner::alphaToPolygon( alphaShape, *out_poly );
+
+    PS::Squared_distance_cost cost;
+
+    *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
+
+    // traverse the vertices and the edges
+    {
+//      using VertexIterator = Polygon_2::Vertex_iterator;
+      CGAL::set_pretty_mode( std::cout );
+
+      qDebug() << "out_poly 2:" << out_poly->outer_boundary().size();
+//      emit fieldStatisticsChanged( pointsCopy2D.size(), size_t( out_poly->outer_boundary().size() ) );
+    }
+  }
+
+  delete points;
+
+  return out_poly;
+}
+
 void GlobalPlanner::alphaShape() {
-  QElapsedTimer timer;
-  timer.start();
+  auto timer = new QElapsedTimer();
+  timer->start();
 
-  std::vector<K::Point_2> pointsCopy2D;
+  // you need at least 3 points for area
+  if( points.size() >= 3 ) {
 
-  for( auto& point : points ) {
-    pointsCopy2D.push_back( Point_2( point.x(), point.y() ) );
-  }
+    // make a 2D copy of the recorded points
+    auto pointsCopy2D = new std::vector<K::Point_2>();
 
-  double distance = CGAL::squared_distance( points.front(), points.back() );
-  distance = sqrt( distance );
-  distance *= 10;
-  std::size_t numPoints = std::size_t( distance );
-  CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( pointsCopy2D.front(), pointsCopy2D.back(), numPoints );
-  pointsCopy2D.reserve( pointsCopy2D.size() + numPoints );
-
-  for( std::size_t i = 0; i < numPoints; ++i ) {
-    pointsCopy2D.push_back( *pointGenerator );
-    ++pointGenerator;
-  }
-
-  qDebug() << "points.size()" << points.size() << "pointsCopy.size()" << pointsCopy2D.size() << "distance" << distance << std::size_t( distance );
-
-  // copy all the points to the mesh
-  {
-    QVector<QVector3D> meshPoints;
-
-    for( auto&& point : pointsCopy2D ) {
-      meshPoints << QVector3D( float( point.x() ), float( point.y() ), 0 );
+    for( const auto& point : points ) {
+      pointsCopy2D->emplace_back( point.x(), point.y() );
     }
 
-    m_pointsMesh->posUpdate( meshPoints );
+    auto watcher = new QFutureWatcher<Polygon_with_holes_2*>();
+    QObject::connect( watcher, &QFutureWatcher<Polygon_with_holes_2*>::finished, this, [timer, watcher, this ]() {
+//      try {
+      this->alphaShapeFinished( watcher->future().result() );
+//      } catch(exception& e){qDebug()<<"                                                                                    EXCEPTION CAUGHT!!!"<<e.what();}
+      delete watcher;
+      qDebug() << "Time elapsed: " << timer->elapsed() << "ms";
+      delete timer;
+
+    } );
+
+    auto future = QtConcurrent::run( &GlobalPlanner::fieldOptimitionWorker, pointsCopy2D, distanceBetweenConnectPoints, alphaType, customAlpha, maxDeviation );
+//    watcher->setFuture( future );
+
   }
 
-  Alpha_shape_2 alphaShape( pointsCopy2D.begin(), pointsCopy2D.end(),
-                            K::FT( 0 ),
-                            Alpha_shape_2::REGULARIZED );
-
-  qDebug() << "Alpha Shape computed";
-  double optimalAlpha = *alphaShape.find_optimal_alpha( 1 );
-  qDebug() << "Optimal alpha: " << optimalAlpha;
-  double solidAlpha = alphaShape.find_alpha_solid();
-  qDebug() << "Solid alpha: " << solidAlpha;
-
-  emit alphaChanged( optimalAlpha, solidAlpha );
-
-  {
-    int numSegments = 0;
-    int numSegmentsExterior = 0;
-    int numSegmentsSingular = 0;
-    int numSegmentsRegular = 0;
-    int numSegmentsInterior = 0;
-
-    {
-      QVector<QVector3D> meshSegmentPoints;
-
-      Alpha_shape_edges_iterator it = alphaShape.alpha_shape_edges_begin(),
-                                 end = alphaShape.alpha_shape_edges_end();
-
-      for( ; it != end; ++it ) {
-        switch( alphaShape.classify( *it ) ) {
-          case Alpha_shape_2::EXTERIOR:
-            ++numSegmentsExterior;
-            break;
-
-          case Alpha_shape_2::SINGULAR:
-            ++numSegmentsInterior;
-            break;
-
-          case Alpha_shape_2::REGULAR:
-            ++numSegmentsRegular;
-            break;
-
-          case Alpha_shape_2::INTERIOR:
-            ++numSegmentsInterior;
-            break;
-        }
-
-        //  if(A.classify(*it) == Alpha_shape_2::EXTERIOR){
-        K::Segment_2 segment = alphaShape.segment( *it );
-        meshSegmentPoints << QVector3D( float( segment.source().x() ), float( segment.source().y() ), 0.3f );
-        meshSegmentPoints << QVector3D( float( segment.target().x() ), float( segment.target().y() ), 0.3f );
-        ++numSegments;
-        //  }
-      }
-
-      m_segmentsMesh2->posUpdate( meshSegmentPoints );
-    }
-    qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << pointsCopy2D.size();
-    qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
-  }
-
-  switch( alphaType ) {
-    default:
-    case FieldsOptimitionToolbar::AlphaType::Optimal:
-      alphaShape.set_alpha( optimalAlpha + 0.1 );
-      break;
-
-    case FieldsOptimitionToolbar::AlphaType::Solid:
-      alphaShape.set_alpha( solidAlpha + 0.1 );
-      break;
-
-    case FieldsOptimitionToolbar::AlphaType::Custom:
-      alphaShape.set_alpha( customAlpha );
-      break;
-  }
+}
 
 
-  {
-    int numSegments = 0;
-    int numSegmentsExterior = 0;
-    int numSegmentsSingular = 0;
-    int numSegmentsRegular = 0;
-    int numSegmentsInterior = 0;
+void GlobalPlanner::alphaShapeFinished( Polygon_with_holes_2* out_poly ) {
 
-    {
-      QVector<QVector3D> meshSegmentPoints;
+  QVector<QVector3D> meshSegmentPoints;
+  typedef Polygon_2::Vertex_iterator VertexIterator;
 
-      Alpha_shape_edges_iterator it = alphaShape.alpha_shape_edges_begin(),
-                                 end = alphaShape.alpha_shape_edges_end();
+  if( out_poly != nullptr ) {
 
-      for( ; it != end; ++it ) {
-        switch( alphaShape.classify( *it ) ) {
-          case Alpha_shape_2::EXTERIOR:
-            ++numSegmentsExterior;
-            break;
-
-          case Alpha_shape_2::SINGULAR:
-            ++numSegmentsInterior;
-            break;
-
-          case Alpha_shape_2::REGULAR:
-            ++numSegmentsRegular;
-            break;
-
-          case Alpha_shape_2::INTERIOR:
-            ++numSegmentsInterior;
-            break;
-        }
-
-        //  if(A.classify(*it) == Alpha_shape_2::EXTERIOR){
-        K::Segment_2 segment = alphaShape.segment( *it );
-
-        meshSegmentPoints << QVector3D( float( segment.source().x() ), float( segment.source().y() ), 0.4f );
-        meshSegmentPoints << QVector3D( float( segment.target().x() ), float( segment.target().y() ), 0.4f );
-        ++numSegments;
-        //  }
-      }
-
-      m_segmentsMesh->posUpdate( meshSegmentPoints );
-    }
-    qDebug() << "alpha shape edges tot: " << numSegments << "points: " << pointsCopy2D.size();
-    qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
-  }
-
-  Polygon_with_holes_2 out_poly;
-  alphaToPolygon( alphaShape, out_poly );
-
-  // traverse the vertices and the edges
-  {
-    typedef Polygon_2::Vertex_iterator VertexIterator;
-    CGAL::set_pretty_mode( std::cout );
-    QVector<QVector3D> meshSegmentPoints;
-
-    for( VertexIterator vi = out_poly.outer_boundary().vertices_begin(); vi != out_poly.outer_boundary().vertices_end(); ++vi ) {
-      //          std::cout << "vertex " << n++ << " = " << *vi << std::endl;
+    for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
+         end = out_poly->outer_boundary().vertices_end();
+         vi != end; ++vi ) {
       meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
     }
 
     meshSegmentPoints << meshSegmentPoints.first();
-    m_segmentsMesh3->posUpdate( meshSegmentPoints );
-    qDebug() << "out_poly 1:" << meshSegmentPoints.size();
-    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
-
-    //        std::cout << std::endl;
-    //        n = 0;
-    //         typedef Polygon_2::Edge_const_iterator EdgeIterator;
-    //
-    //        for( EdgeIterator ei = out_poly.outer_boundary().edges_begin(); ei != out_poly.outer_boundary().edges_end(); ++ei ) {
-    //          std::cout << "edge " << n++ << " = " << *ei << std::endl;
-    //        }
+    m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
   }
 
-  PS::Squared_distance_cost cost;
-
-  out_poly = PS::simplify( out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
-
-  // traverse the vertices and the edges
-  {
-    typedef Polygon_2::Vertex_iterator VertexIterator;
-    //        typedef Polygon_2::Edge_const_iterator EdgeIterator;
-    CGAL::set_pretty_mode( std::cout );
-    //        int n = 0;
-    QVector<QVector3D> meshSegmentPoints;
-
-    for( VertexIterator vi = out_poly.outer_boundary().vertices_begin(); vi != out_poly.outer_boundary().vertices_end(); ++vi ) {
-      //          std::cout << "vertex " << n++ << " = " << *vi << std::endl;
-      meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
-    }
-
-    meshSegmentPoints << meshSegmentPoints.first();
-    m_segmentsMesh4->posUpdate( meshSegmentPoints );
-    qDebug() << "out_poly 2:" << meshSegmentPoints.size();
-    emit fieldStatisticsChanged( points.size(), size_t( meshSegmentPoints.size() ) );
-    m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
-
-    //        std::cout << std::endl;
-    //        n = 0;
-
-    //        for( EdgeIterator ei = out_poly.outer_boundary().edges_begin(); ei != out_poly.outer_boundary().edges_end(); ++ei ) {
-    //          std::cout << "edge " << n++ << " = " << *ei << std::endl;
-    //        }
-  }
-
-  qDebug() << "Time elapsed: " << timer.elapsed() << "ms";
+  delete out_poly;
 }

@@ -41,7 +41,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../3d/linemesh.h"
+#include "../3d/BufferMesh.h"
 
 #include "../gui/FieldsOptimitionToolbar.h"
 
@@ -59,127 +59,12 @@ class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
-      : BlockBase(),
-        tmw( tmw ) {
-      // a point marker -> orange
-      {
-        aPointMesh = new Qt3DExtras::QSphereMesh();
-        aPointMesh->setRadius( .2f );
-        aPointMesh->setSlices( 20 );
-        aPointMesh->setRings( 20 );
-
-        aPointTransform = new Qt3DCore::QTransform();
-
-        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
-        material->setDiffuse( QColor( "orange" ) );
-
-        aPointEntity = new Qt3DCore::QEntity( rootEntity );
-        aPointEntity->addComponent( aPointMesh );
-        aPointEntity->addComponent( material );
-        aPointEntity->addComponent( aPointTransform );
-        aPointEntity->setEnabled( false );
-
-        aTextEntity = new Qt3DCore::QEntity( aPointEntity );
-        Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh();
-        aTextMesh->setText( "A" );
-        aTextMesh->setDepth( 0.05f );
-
-        aTextEntity->setEnabled( true );
-        aTextTransform = new Qt3DCore::QTransform();
-        aTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-        aTextTransform->setScale( 2.0f );
-        aTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
-        aTextEntity->addComponent( aTextTransform );
-        aTextEntity->addComponent( aTextMesh );
-        aTextEntity->addComponent( material );
-      }
-
-      // b point marker -> purple
-      {
-        bPointMesh = new Qt3DExtras::QSphereMesh();
-        bPointMesh->setRadius( .2f );
-        bPointMesh->setSlices( 20 );
-        bPointMesh->setRings( 20 );
-
-        bPointTransform = new Qt3DCore::QTransform();
-
-        Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
-        material->setDiffuse( QColor( "purple" ) );
-
-        bPointEntity = new Qt3DCore::QEntity( rootEntity );
-        bPointEntity->addComponent( bPointMesh );
-        bPointEntity->addComponent( material );
-        bPointEntity->addComponent( bPointTransform );
-        bPointEntity->setEnabled( false );
-
-        bTextEntity = new Qt3DCore::QEntity( bPointEntity );
-        Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh();
-        bTextMesh->setText( "B" );
-        bTextMesh->setDepth( 0.05f );
-
-        bTextEntity->setEnabled( true );
-        bTextTransform = new Qt3DCore::QTransform();
-        bTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-        bTextTransform->setScale( 2.0f );
-        bTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
-        bTextEntity->addComponent( bTextTransform );
-        bTextEntity->addComponent( bTextMesh );
-        bTextEntity->addComponent( material );
-      }
-
-      // test for recording
-      {
-        m_baseEntity = new Qt3DCore::QEntity( rootEntity );
-        m_baseTransform = new Qt3DCore::QTransform();
-        m_baseEntity->addComponent( m_baseTransform );
-
-        m_pointsEntity = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity2 = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
-
-        m_pointsMesh = new LineMesh();
-        m_pointsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
-        m_pointsEntity->addComponent( m_pointsMesh );
-
-        m_segmentsMesh = new LineMesh();
-        m_segmentsEntity->addComponent( m_segmentsMesh );
-
-        m_segmentsMesh2 = new LineMesh();
-        m_segmentsEntity2->addComponent( m_segmentsMesh2 );
-
-        m_segmentsMesh3 = new LineMesh();
-        m_segmentsEntity3->addComponent( m_segmentsMesh3 );
-
-        m_segmentsMesh4 = new LineMesh();
-        m_segmentsEntity4->addComponent( m_segmentsMesh4 );
-
-        m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
-        m_segmentsMaterial = new Qt3DExtras::QPhongMaterial( m_segmentsEntity );
-        m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity2 );
-        m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
-        m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
-
-        m_pointsMaterial->setAmbient( Qt::yellow );
-        m_segmentsMaterial->setAmbient( Qt::white );
-        m_segmentsMaterial2->setAmbient( Qt::green );
-        m_segmentsMaterial3->setAmbient( Qt::blue );
-        m_segmentsMaterial4->setAmbient( Qt::red );
-
-        m_pointsEntity->addComponent( m_pointsMaterial );
-        m_segmentsEntity->addComponent( m_segmentsMaterial );
-        m_segmentsEntity2->addComponent( m_segmentsMaterial2 );
-        m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
-        m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
-      }
-    }
+    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
 
     void alphaShape();
 
   public slots:
-    void setPose( Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
@@ -189,7 +74,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseLeftEdge( Point_3 position, QQuaternion, PoseOption::Options options ) {
+    void setPoseLeftEdge( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
@@ -202,20 +87,21 @@ class GlobalPlanner : public BlockBase {
         }
       } else {
         if( recordOnRightEdgeOfImplement == false ) {
-          if( recordContinous ) {
-            points.push_back( position );
-            recordNextPoint = false;
-          }
-
           if( recordNextPoint ) {
             points.push_back( position );
             recordNextPoint = false;
+            recalculateField();
+          } else {
+            if( recordContinous ) {
+              points.push_back( position );
+              recordNextPoint = false;
+            }
           }
         }
       }
     }
 
-    void setPoseRightEdge( Point_3 position, QQuaternion, PoseOption::Options options ) {
+    void setPoseRightEdge( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
@@ -228,14 +114,15 @@ class GlobalPlanner : public BlockBase {
         }
       } else {
         if( recordOnRightEdgeOfImplement == true ) {
-          if( recordContinous ) {
-            points.push_back( position );
-            recordNextPoint = false;
-          }
-
           if( recordNextPoint ) {
             points.push_back( position );
             recordNextPoint = false;
+            recalculateField();
+          } else {
+            if( recordContinous ) {
+              points.push_back( position );
+              recordNextPoint = false;
+            }
           }
         }
       }
@@ -266,10 +153,11 @@ class GlobalPlanner : public BlockBase {
       alphaShape();
     }
 
-    void setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation ) {
+    void setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints ) {
       this->alphaType = alphaType;
       this->customAlpha = customAlpha;
       this->maxDeviation = maxDeviation;
+      this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
       recalculateField();
     }
 
@@ -281,16 +169,14 @@ class GlobalPlanner : public BlockBase {
 
       aPoint = position;
 
-      points.clear();
-
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
     void createPlanAB();
 
     // form polygons from alpha shape
-    void alphaToPolygon( const Alpha_shape_2& A,
-                         Polygon_with_holes_2& out_poly );
+    static void alphaToPolygon( const Alpha_shape_2& A,
+                                Polygon_with_holes_2& out_poly );
 
 
     void b_clicked() {
@@ -302,7 +188,6 @@ class GlobalPlanner : public BlockBase {
       abLine = Segment_3( aPoint, bPoint );
 
       createPlanAB();
-
 
 //      optimalTransportationReconstruction();
 //      alphaShape();
@@ -395,8 +280,20 @@ class GlobalPlanner : public BlockBase {
 
     FieldsOptimitionToolbar::AlphaType alphaType = FieldsOptimitionToolbar::AlphaType::Optimal;
     double customAlpha = 10;
-    double maxDeviation = 0.01;
+    double maxDeviation = 0.1;
+    double distanceBetweenConnectPoints = 0.5;
 
+
+    static Polygon_with_holes_2* fieldOptimitionWorker( std::vector<Point_2>* points,
+        double distanceBetweenConnectPoints,
+        FieldsOptimitionToolbar::AlphaType alphaType,
+        double customAlpha,
+        double maxDeviation );
+
+  private slots:
+    void alphaShapeFinished( Polygon_with_holes_2* );
+
+  private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;
     Qt3DCore::QTransform* m_baseTransform = nullptr;
 
@@ -405,11 +302,11 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QEntity* m_segmentsEntity2 = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity3 = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity4 = nullptr;
-    LineMesh* m_pointsMesh = nullptr;
-    LineMesh* m_segmentsMesh = nullptr;
-    LineMesh* m_segmentsMesh2 = nullptr;
-    LineMesh* m_segmentsMesh3 = nullptr;
-    LineMesh* m_segmentsMesh4 = nullptr;
+    BufferMesh* m_pointsMesh = nullptr;
+    BufferMesh* m_segmentsMesh = nullptr;
+    BufferMesh* m_segmentsMesh2 = nullptr;
+    BufferMesh* m_segmentsMesh3 = nullptr;
+    BufferMesh* m_segmentsMesh4 = nullptr;
     Qt3DExtras::QPhongMaterial* m_pointsMaterial = nullptr;
     Qt3DExtras::QPhongMaterial* m_segmentsMaterial = nullptr;
     Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
@@ -441,16 +338,16 @@ class GlobalPlannerFactory : public BlockFactory {
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addInputPort( "Pose", SLOT( setPose( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Left Edge", SLOT( setPoseLeftEdge( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "Pose Right Edge", SLOT( setPoseRightEdge( Point_3, QQuaternion, PoseOption::Options ) ) );
-      b->addInputPort( "A clicked", SLOT( a_clicked() ) );
-      b->addInputPort( "B clicked", SLOT( b_clicked() ) );
-      b->addInputPort( "Snap clicked", SLOT( snap_clicked() ) );
-      b->addInputPort( "Turn Left", SLOT( turnLeft_clicked() ) );
-      b->addInputPort( "Turn Right", SLOT( turnRight_clicked() ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "A clicked" ), QLatin1String( SLOT( a_clicked() ) ) );
+      b->addInputPort( QStringLiteral( "B clicked" ), QLatin1String( SLOT( b_clicked() ) ) );
+      b->addInputPort( QStringLiteral( "Snap clicked" ), QLatin1String( SLOT( snap_clicked() ) ) );
+      b->addInputPort( QStringLiteral( "Turn Left" ), QLatin1String( SLOT( turnLeft_clicked() ) ) );
+      b->addInputPort( QStringLiteral( "Turn Right" ), QLatin1String( SLOT( turnRight_clicked() ) ) );
 
-      b->addOutputPort( "Plan", SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
 
       return b;
     }

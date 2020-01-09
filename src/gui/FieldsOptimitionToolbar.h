@@ -22,7 +22,7 @@ class FieldsOptimitionToolbar : public QGroupBox {
     };
 
   signals:
-    void recalculate( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation );
+    void recalculate( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints );
 
   public slots:
     void setAlpha( double optimal, double solid );

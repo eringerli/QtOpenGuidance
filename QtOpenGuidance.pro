@@ -5,7 +5,7 @@ CONFIG += c++14
 # enable to recheck all compile tests/find the libraries
 # CONFIG += recheck
 
-QT += 3dcore 3drender 3dinput 3dextras
+QT += 3dcore 3drender 3dinput 3dextras concurrent
 QT += widgets core
 
 !android {

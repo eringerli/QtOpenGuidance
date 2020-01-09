@@ -45,7 +45,7 @@ class PoseSynchroniser : public BlockBase {
       QElapsedTimer timer;
       timer.start();
       emit poseChanged( this->position, orientation, PoseOption::NoOptions );
-      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
+//      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
     }
 
     void setOrientation( const QQuaternion value ) {
