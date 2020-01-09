@@ -43,7 +43,6 @@
 
 #include <Qt3DInput/QInputAspect>
 
-#include <Qt3DExtras/QTorusMesh>
 #include <Qt3DRender/QMesh>
 #include <Qt3DRender/QTechnique>
 #include <Qt3DRender/QMaterial>
@@ -52,17 +51,20 @@
 #include <Qt3DRender/QRenderPass>
 #include <Qt3DRender/QSceneLoader>
 #include <Qt3DRender/QPointLight>
+
 #include <Qt3DRender/QSortPolicy>
 
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QAspectEngine>
 
 #include <Qt3DRender/QRenderAspect>
+
 #include <Qt3DExtras/QForwardRenderer>
 
 #include <Qt3DExtras/Qt3DWindow>
 #include <Qt3DExtras/QFirstPersonCameraController>
 #include <Qt3DExtras/QOrbitCameraController>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
 #include "gui/MainWindow.h"
 #include "gui/SettingsDialog.h"
@@ -147,7 +149,6 @@ int main( int argc, char** argv ) {
 
   qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
 
-  view->defaultFrameGraph()->setClearColor( QColor( qRgba( 0x4d, 0x4d, 0x4f, 0x00 ) ) );
 
   QWidget* container = QWidget::createWindowContainer( view );
 //  QSize screenSize = view->screen()->size();
@@ -170,7 +171,7 @@ int main( int argc, char** argv ) {
   mainWindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
   // Root entity for Qt3D
-  auto* rootEntity = new Qt3DCore::QEntity();
+  auto rootEntity = new Qt3DCore::QEntity();
 
   // Create setting Window
   auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, widget );
@@ -185,6 +186,7 @@ int main( int argc, char** argv ) {
   Qt3DRender::QCamera* cameraEntity = view->camera();
 
   cameraEntity->lens()->setProjectionType( Qt3DRender::QCameraLens::PerspectiveProjection );
+  cameraEntity->lens()->setNearPlane( 1.0f );
   cameraEntity->lens()->setFarPlane( 2000 );
   cameraEntity->setPosition( QVector3D( 0, 0, 20.0f ) );
   cameraEntity->setUpVector( QVector3D( 0, 1, 0 ) );
@@ -194,63 +196,70 @@ int main( int argc, char** argv ) {
 
   // draw an axis-cross: X-red, Y-green, Z-blue
   if( true ) {
-    auto* xaxis = new Qt3DCore::QEntity( rootEntity );
-    auto* yaxis = new Qt3DCore::QEntity( rootEntity );
-    auto* zaxis = new Qt3DCore::QEntity( rootEntity );
+    constexpr float metalness = 0.1f;
+    constexpr float roughness = 0.5f;
 
-    auto* cylinderMesh = new Qt3DExtras::QCylinderMesh();
-    cylinderMesh->setRadius( 0.05f );
-    cylinderMesh->setLength( 20.0f );
-    cylinderMesh->setRings( 2.0f );
-    cylinderMesh->setSlices( 4.0f );
+    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
+    auto* yAxis = new Qt3DCore::QEntity( rootEntity );
+    auto* zAxis = new Qt3DCore::QEntity( rootEntity );
 
-    auto* blueMaterial = new Qt3DExtras::QPhongMaterial();
-    blueMaterial->setSpecular( Qt::white );
-    blueMaterial->setShininess( 10.0f );
-    blueMaterial->setAmbient( Qt::blue );
+    auto* cylinderMesh = new Qt3DExtras::QCylinderMesh(xAxis);
+    cylinderMesh->setRadius( 0.2f );
+    cylinderMesh->setLength( 10.0f );
+    cylinderMesh->setRings( 10.0f );
+    cylinderMesh->setSlices( 10.0f );
 
-    auto* redMaterial = new Qt3DExtras::QPhongMaterial();
-    redMaterial->setSpecular( Qt::white );
-    redMaterial->setShininess( 10.0f );
-    redMaterial->setAmbient( Qt::red );
+    auto* blueMaterial = new Qt3DExtras::QMetalRoughMaterial(xAxis);
+    blueMaterial->setBaseColor( QColor( Qt::blue ) );
+    blueMaterial->setMetalness( metalness );
+    blueMaterial->setRoughness( roughness );
+    auto* redMaterial = new Qt3DExtras::QMetalRoughMaterial(yAxis);
+    redMaterial->setBaseColor( QColor( Qt::red ) );
+    redMaterial->setMetalness( metalness );
+    redMaterial->setRoughness( roughness );
+    auto* greenMaterial = new Qt3DExtras::QMetalRoughMaterial(zAxis);
+    greenMaterial->setBaseColor( QColor( Qt::green ) );
+    greenMaterial->setMetalness( metalness );
+    greenMaterial->setRoughness( roughness );
 
-    auto* greenMaterial = new Qt3DExtras::QPhongMaterial();
-    greenMaterial->setSpecular( Qt::white );
-    greenMaterial->setShininess( 10.0f );
-    greenMaterial->setAmbient( Qt::green );
+    auto* xTransform = new Qt3DCore::QTransform(xAxis);
+    xTransform->setTranslation( QVector3D( cylinderMesh->length() / 2, 0, 0 ) );
+    xTransform->setRotationZ( 90 );
+//    xTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), 90 ) );
+    auto* yTransform = new Qt3DCore::QTransform(yAxis);
+    yTransform->setTranslation( QVector3D( 0, cylinderMesh->length() / 2, 0 ) );
+    auto* zTransform = new Qt3DCore::QTransform(zAxis);
+    zTransform->setTranslation( QVector3D( 0, 0, cylinderMesh->length() / 2 ) );
+    zTransform->setRotationX( 90 );
 
-    auto* xTransform = new Qt3DCore::QTransform();
-    xTransform->setTranslation( QVector3D( 10, 0, 0 ) );
-    xTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), 90 ) );
-    auto* yTransform = new Qt3DCore::QTransform();
-    yTransform->setTranslation( QVector3D( 0, 10, 0 ) );
-    auto* zTransform = new Qt3DCore::QTransform();
-    zTransform->setTranslation( QVector3D( 0, 0, 10 ) );
-    zTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 1, 0, 0 ), 90 ) );
+//    zTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 1, 0, 0 ), 90 ) );
 
-    xaxis->addComponent( cylinderMesh );
-    xaxis->addComponent( redMaterial );
-    xaxis->addComponent( xTransform );
-    yaxis->addComponent( cylinderMesh );
-    yaxis->addComponent( greenMaterial );
-    yaxis->addComponent( yTransform );
-    zaxis->addComponent( cylinderMesh );
-    zaxis->addComponent( blueMaterial );
-    zaxis->addComponent( zTransform );
+    xAxis->addComponent( cylinderMesh );
+    xAxis->addComponent( redMaterial );
+    xAxis->addComponent( xTransform );
+    yAxis->addComponent( cylinderMesh );
+    yAxis->addComponent( greenMaterial );
+    yAxis->addComponent( yTransform );
+    zAxis->addComponent( cylinderMesh );
+    zAxis->addComponent( blueMaterial );
+    zAxis->addComponent( zTransform );
   }
 
   // Set root object of the scene
   view->setRootEntity( rootEntity );
 
-  // sort the QT3D objects, so transparity works
-  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
-  auto* sortPolicy = new Qt3DRender::QSortPolicy();
-  framegraph->setParent( sortPolicy );
-  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
-  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
-  sortPolicy->setSortTypes( sortTypes );
-  view->setActiveFrameGraph( sortPolicy );
+  view->defaultFrameGraph()->setClearColor( QColor( 0x4d, 0x4d, 0x4f ) );
+  view->defaultFrameGraph()->setFrustumCullingEnabled( false );
+  view->defaultFrameGraph()->setGamma( 2.0f );
 
+//  // sort the QT3D objects, so transparency works
+//  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
+//  auto* sortPolicy = new Qt3DRender::QSortPolicy();
+//  framegraph->setParent( sortPolicy );
+//  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
+//  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
+//  sortPolicy->setSortTypes( sortTypes );
+//  view->setActiveFrameGraph( sortPolicy );
 
   // guidance toolbar
   auto* guidanceToolbar = new GuidanceToolbar( widget );
