@@ -27,14 +27,7 @@
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 
-#include <Qt3DExtras/QTorusMesh>
-#include <Qt3DExtras/QConeMesh>
 #include <Qt3DExtras/QCylinderMesh>
-#include <Qt3DExtras/QCuboidMesh>
-#include <Qt3DExtras/QPlaneMesh>
-#include <Qt3DExtras/QSphereMesh>
-//#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QMetalRoughMaterial>
 
 #include "BlockBase.h"
 
@@ -67,11 +60,18 @@ class SprayerModel : public BlockBase {
 
     QPointer<Implement> implement;
 
-    std::vector<Qt3DExtras::QMetalRoughMaterial*> boomMaterials;
+    std::vector<Qt3DCore::QEntity*> boomEntities;
+    std::vector<Qt3DExtras::QCylinderMesh*> boomMeshes;
+    std::vector<Qt3DCore::QTransform*> boomTransforms;
+    std::vector<Qt3DCore::QEntity*> forcedOffBoomEntities;
+    std::vector<Qt3DCore::QEntity*> forcedOnBoomEntities;
+    std::vector<Qt3DCore::QEntity*> onBoomEntities;
+    std::vector<Qt3DCore::QEntity*> offBoomEntities;
     std::vector<Qt3DCore::QEntity*> sprayEntities;
+    std::vector<Qt3DCore::QTransform*> sprayTransforms;
 
     float m_height = 1.0;
-    QColor sprayerColor = QColor( qRgb/*a*/( 0x23, 0xff, 0xed/*, 255*/ ) );
+    const QColor sprayColor = QColor( qRgb( 0x23, 0xff, 0xed ) /*Qt::lightGray*/ );
 
 };
 

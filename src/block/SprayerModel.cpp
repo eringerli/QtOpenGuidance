@@ -33,9 +33,7 @@ SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity ) {
   m_rootEntity->addComponent( m_rootEntityTransform );
 }
 
-// order is important! Crashes if a parent entity is removed first!
 SprayerModel::~SprayerModel() {
-  m_rootEntityTransform->deleteLater();
   m_rootEntity->deleteLater();
 }
 
@@ -61,26 +59,35 @@ void SprayerModel::setSections() {
       QElapsedTimer timer;
       timer.start();
 
-      const auto& boomMaterial = boomMaterials.at( sectionIndex );
-      const auto& sprayEntity = sprayEntities.at( sectionIndex );
-
       const auto& section = implement->sections.at( sectionIndex + 1 );
       const auto& state = section->state();
 
       if( state.testFlag( ImplementSection::State::ForceOff ) || globalForceOff ) {
-        boomMaterial->setBaseColor( QColor( Qt::red ) );
-        sprayEntity->setEnabled( false );
+        forcedOffBoomEntities.at( sectionIndex )->setEnabled( true );
+        forcedOnBoomEntities.at( sectionIndex )->setEnabled( false );
+        onBoomEntities.at( sectionIndex )->setEnabled( false );
+        offBoomEntities.at( sectionIndex )->setEnabled( false );
+        sprayEntities.at( sectionIndex )->setEnabled( false );
       } else {
         if( state.testFlag( ImplementSection::State::ForceOn ) || globalForceOn ) {
-          boomMaterial->setBaseColor( QColor( Qt::green ) );
-          sprayEntity->setEnabled( true );
+          forcedOffBoomEntities.at( sectionIndex )->setEnabled( false );
+          forcedOnBoomEntities.at( sectionIndex )->setEnabled( true );
+          onBoomEntities.at( sectionIndex )->setEnabled( false );
+          offBoomEntities.at( sectionIndex )->setEnabled( false );
+          sprayEntities.at( sectionIndex )->setEnabled( true );
         } else {
           if( section->isSectionOn() ) {
-            boomMaterial->setBaseColor( QColor( Qt::darkGreen ) );
-            sprayEntity->setEnabled( true );
+            forcedOffBoomEntities.at( sectionIndex )->setEnabled( false );
+            forcedOnBoomEntities.at( sectionIndex )->setEnabled( false );
+            onBoomEntities.at( sectionIndex )->setEnabled( true );
+            offBoomEntities.at( sectionIndex )->setEnabled( false );
+            sprayEntities.at( sectionIndex )->setEnabled( true );
           } else {
-            boomMaterial->setBaseColor( QColor( Qt::darkRed ) );
-            sprayEntity->setEnabled( false );
+            forcedOffBoomEntities.at( sectionIndex )->setEnabled( false );
+            forcedOnBoomEntities.at( sectionIndex )->setEnabled( false );
+            onBoomEntities.at( sectionIndex )->setEnabled( false );
+            offBoomEntities.at( sectionIndex )->setEnabled( true );
+            sprayEntities.at( sectionIndex )->setEnabled( false );
           }
         }
       }
@@ -92,66 +99,148 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
   if( implement != nullptr ) {
     this->implement = implement;
 
-    int numSections = implement->sections.size();
+    size_t numSections = implement->sections.size();
     --numSections;
 
-    const auto& allEntityChildren = m_rootEntity->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
-
-    if( numSections != allEntityChildren.count() && numSections > 0 ) {
+    if( numSections != boomEntities.size() && numSections > 0 ) {
       // delete old sections
-      for( const auto& child : allEntityChildren ) {
-        child->deleteLater();
+      for( const auto& entity : boomEntities ) {
+        entity->deleteLater();
       }
 
-      boomMaterials.clear();
+      boomEntities.clear();
+      boomMeshes.clear();
+      boomTransforms.clear();
+      forcedOnBoomEntities.clear();
+      forcedOffBoomEntities.clear();
+      onBoomEntities.clear();
+      offBoomEntities.clear();
       sprayEntities.clear();
+      sprayTransforms.clear();
+
+      boomEntities.reserve( numSections );
+      boomMeshes.reserve( numSections );
+      boomTransforms.reserve( numSections );
+      forcedOnBoomEntities.reserve( numSections );
+      forcedOffBoomEntities.reserve( numSections );
+      onBoomEntities.reserve( numSections );
+      offBoomEntities.reserve( numSections );
+      sprayEntities.reserve( numSections );
+      sprayTransforms.reserve( numSections );
 
       // create new sections
-      for( int i = 1; i <= numSections; ++i ) {
+      for( size_t i = 0; i < numSections; ++i ) {
         auto entity = new Qt3DCore::QEntity( m_rootEntity );
+        boomEntities.push_back( entity );
 
-        auto boomEntity = new Qt3DCore::QEntity( entity );
-        auto boomMesh = new Qt3DExtras::QCylinderMesh( boomEntity );
-        auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
-        auto boomMeshTransform = new Qt3DCore::QTransform( boomEntity );
+        auto boomRootEntity = new Qt3DCore::QEntity( entity );
 
-        boomMesh->setRadius( 0.2f );
-        boomMesh->setRings( 10.0f );
+        auto boomMeshTransform = new Qt3DCore::QTransform( boomRootEntity );
+        boomRootEntity->addComponent( boomMeshTransform );
+        boomTransforms.push_back( boomMeshTransform );
+
+        auto boomMesh = new Qt3DExtras::QCylinderMesh( boomRootEntity );
+        boomMesh->setRadius( 0.3f );
+        boomMesh->setRings( 20.0f );
         boomMesh->setSlices( 20.0f );
-        materialBoom->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-        materialBoom->setMetalness( .3f );
-        materialBoom->setRoughness( 0.2f );
-//        boomMeshTransform->setRotation(
-//              QQuaternion::fromAxisAndAngle(
-//                QVector3D( 0.0f, 0.0f, 1.0f ),
-//                90 ) );
+        boomMeshes.push_back( boomMesh );
 
-        boomEntity->addComponent( boomMesh );
-        boomEntity->addComponent( materialBoom );
-        boomEntity->addComponent( boomMeshTransform );
+        constexpr float boomMetalness = 0.1f;
+        constexpr float boomRoughness = 0.5f;
 
+        {
+          auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-        auto sprayEntity = new Qt3DCore::QEntity( entity );
-        auto* sprayMesh = new BufferMesh( sprayEntity );
-        auto sprayMaterial = new Qt3DExtras::QMetalRoughMaterial( sprayEntity );
-        auto sprayMeshTransform = new Qt3DCore::QTransform( sprayEntity );
+          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+          materialBoom->setBaseColor( QColor( Qt::red ) );
+          materialBoom->setMetalness( boomMetalness );
+          materialBoom->setRoughness( boomRoughness );
 
-        sprayMaterial->setBaseColor( sprayerColor );
-        sprayMaterial->setMetalness( .1f );
-        sprayMaterial->setRoughness( 0.1f );
+          auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
 
-//        sprayMaterial->setAlphaBlendingEnabled( true );
-//        sprayMaterial->setDiffuse( sprayerColor /*QColor( qRgba( 0xff, 0xff, 0xff, 20 ) )*/ );
-//        sprayMaterial->setAmbient( QColor( qRgba( 127, 127, 127, 0 ) ) );
-//        sprayMaterial->setShininess( 10 );
-        sprayMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::TriangleFan );
+          boomEntity->addComponent( boomMesh );
+          boomEntity->addComponent( materialBoom );
+          boomEntity->addComponent( boomTransform );
 
-        sprayEntity->addComponent( sprayMesh );
-        sprayEntity->addComponent( sprayMaterial );
-        sprayEntity->addComponent( sprayMeshTransform );
+          forcedOffBoomEntities.push_back( boomEntity );
+        }
+        {
+          auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-        boomMaterials.push_back( materialBoom );
-        sprayEntities.push_back( sprayEntity );
+          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+          materialBoom->setBaseColor( QColor( Qt::green ) );
+          materialBoom->setMetalness( boomMetalness );
+          materialBoom->setRoughness( boomRoughness );
+
+          auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
+
+          boomEntity->addComponent( boomMesh );
+          boomEntity->addComponent( materialBoom );
+          boomEntity->addComponent( boomTransform );
+
+          forcedOnBoomEntities.push_back( boomEntity );
+        }
+        {
+          auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
+
+          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+          materialBoom->setBaseColor( QColor( Qt::darkGreen ) );
+          materialBoom->setMetalness( boomMetalness );
+          materialBoom->setRoughness( boomRoughness );
+
+          auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
+
+          boomEntity->addComponent( boomMesh );
+          boomEntity->addComponent( materialBoom );
+          boomEntity->addComponent( boomTransform );
+
+          onBoomEntities.push_back( boomEntity );
+        }
+        {
+          auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
+
+          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+          materialBoom->setBaseColor( QColor( Qt::darkRed ) );
+          materialBoom->setMetalness( boomMetalness );
+          materialBoom->setRoughness( boomRoughness );
+
+          auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
+
+          boomEntity->addComponent( boomMesh );
+          boomEntity->addComponent( materialBoom );
+          boomEntity->addComponent( boomTransform );
+
+          offBoomEntities.push_back( boomEntity );
+        }
+
+        {
+          auto sprayEntity = new Qt3DCore::QEntity( boomRootEntity );
+
+          auto* sprayMesh = new Qt3DExtras::QConeMesh( sprayEntity );
+          sprayMesh->setRings( 20 );
+          sprayMesh->setSlices( 20 );
+          sprayMesh->setTopRadius( 0 );
+          sprayMesh->setBottomRadius( 0.5f );
+          sprayMesh->setLength( 1 );
+          sprayMesh->setHasTopEndcap( false );
+          sprayMesh->setHasBottomEndcap( false );
+
+          auto* sprayTransform = new Qt3DCore::QTransform( sprayEntity );
+          sprayTransform->setRotationX( 90 );
+
+          auto sprayMaterial = new Qt3DExtras::QMetalRoughMaterial( sprayEntity );
+
+          sprayMaterial->setBaseColor( sprayColor );
+          sprayMaterial->setMetalness( 0.0f );
+          sprayMaterial->setRoughness( 0.5f );
+
+          sprayEntity->addComponent( sprayMesh );
+          sprayEntity->addComponent( sprayTransform );
+          sprayEntity->addComponent( sprayMaterial );
+
+          sprayEntities.push_back( sprayEntity );
+          sprayTransforms.push_back( sprayTransform );
+        }
       }
     }
 
@@ -175,66 +264,25 @@ void SprayerModel::updateProprotions() {
     // get the left most point of the implement
     double middleOfSection = 0;
 
-    for( const auto& section : qAsConst( implement->sections ) ) {
+    for( const auto& section : implement->sections ) {
       middleOfSection +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
     }
 
     middleOfSection = middleOfSection / 2;
 
-    // get all direct children of type Entity*
-    auto childrenOfRootEntity = m_rootEntity->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
+    for( int i = 0; i < numSections; ++i ) {
+      const auto section = implement->sections.at( i + 1 );
+      middleOfSection += section->overlapLeft - section->widthOfSection;
 
-    if( numSections > 0 && childrenOfRootEntity.count() >= numSections ) {
-      int sectionIndex = 1;
-      // only operate on the [numSections] last sections
-      auto entity = childrenOfRootEntity.cbegin();
-      entity += childrenOfRootEntity.count() - numSections;
-      auto end = childrenOfRootEntity.cend();
 
-      for( ; entity != end; ++entity ) {
-        const auto section = implement->sections.at( sectionIndex );
-        middleOfSection += section->overlapLeft - section->widthOfSection;
+      boomMeshes.at( i )->setLength( float( section->widthOfSection ) );
+      boomTransforms.at( i )->setTranslation(
+        QVector3D( 0, float( middleOfSection ) + ( boomMeshes.at( i )->length() / 2 ), m_height ) );
 
-        const auto entityVector = ( *entity )->findChildren<Qt3DCore::QEntity*>( QString(), Qt::FindDirectChildrenOnly );
-        const auto boomEntity = entityVector.at( 0 );
-        const auto sprayEntity = entityVector.at( 1 );
+      sprayTransforms.at( i )->setScale3D( QVector3D( m_height / 3, m_height, section->widthOfSection ) );
+      sprayTransforms.at( i )->setTranslation( QVector3D( 0, 0, -m_height / 2 ) );
 
-        if( ( boomEntity != nullptr ) && ( sprayEntity != nullptr ) ) {
-          const auto boomMesh = boomEntity->componentsOfType<Qt3DExtras::QCylinderMesh>().constFirst();
-          const auto boomMeshTransform = boomEntity->componentsOfType<Qt3DCore::QTransform>().constFirst();
-
-          const auto sprayMesh = sprayEntity->componentsOfType<BufferMesh>().constFirst();
-          const auto sprayMeshTransform = sprayEntity->componentsOfType<Qt3DCore::QTransform>().constFirst();
-
-          if( ( boomMesh != nullptr ) && ( boomMeshTransform != nullptr ) && ( sprayMesh != nullptr ) && ( sprayMeshTransform != nullptr ) ) {
-
-            boomMesh->setLength( float( section->widthOfSection ) );
-            boomMeshTransform->setTranslation(
-              QVector3D( 0, float( middleOfSection ) + ( boomMesh->length() / 2 ), m_height ) );
-            sprayMeshTransform->setTranslation( boomMeshTransform->translation() );
-            {
-              QVector<QVector3D> sprayTrianglePoints;
-              auto widthOfSectionHalf = float( section->widthOfSection / 2 );
-              float heightThird = m_height / 3;
-              sprayTrianglePoints << QVector3D( 0, 0, 0 );
-              sprayTrianglePoints << QVector3D( -heightThird, widthOfSectionHalf, -m_height );
-              sprayTrianglePoints << QVector3D( -heightThird, -widthOfSectionHalf, -m_height );
-
-              sprayTrianglePoints << QVector3D( heightThird, -widthOfSectionHalf, -m_height );
-              sprayTrianglePoints << QVector3D( heightThird, widthOfSectionHalf, -m_height );
-              sprayTrianglePoints << QVector3D( -heightThird, widthOfSectionHalf, -m_height );
-
-              sprayMesh->bufferUpdate( sprayTrianglePoints );
-            }
-          }
-        }
-
-        if( ++sectionIndex > numSections ) {
-          break;
-        }
-
-        middleOfSection += section->overlapRight;
-      }
+      middleOfSection += section->overlapRight;
     }
   }
 }
