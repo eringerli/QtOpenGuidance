@@ -291,7 +291,7 @@ class GlobalPlanner : public BlockBase {
         double maxDeviation );
 
   private slots:
-    void alphaShapeFinished( Polygon_with_holes_2* );
+    void alphaShapeFinished();
 
   private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;

@@ -413,15 +413,19 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
     m_pointsEntity->addComponent( m_pointsMesh );
 
     m_segmentsMesh = new BufferMesh();
+    m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity->addComponent( m_segmentsMesh );
 
     m_segmentsMesh2 = new BufferMesh();
+    m_segmentsMesh2->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity2->addComponent( m_segmentsMesh2 );
 
     m_segmentsMesh3 = new BufferMesh();
+    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity3->addComponent( m_segmentsMesh3 );
 
     m_segmentsMesh4 = new BufferMesh();
+    m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity4->addComponent( m_segmentsMesh4 );
 
     m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
@@ -635,40 +639,45 @@ void GlobalPlanner::alphaShape() {
     }
 
     auto watcher = new QFutureWatcher<Polygon_with_holes_2*>();
-    QObject::connect( watcher, &QFutureWatcher<Polygon_with_holes_2*>::finished, this, [timer, watcher, this ]() {
-//      try {
-      this->alphaShapeFinished( watcher->future().result() );
-//      } catch(exception& e){qDebug()<<"                                                                                    EXCEPTION CAUGHT!!!"<<e.what();}
-      delete watcher;
-      qDebug() << "Time elapsed: " << timer->elapsed() << "ms";
-      delete timer;
+    QObject::connect( watcher, &QFutureWatcher<Polygon_with_holes_2*>::finished, this, &GlobalPlanner::alphaShapeFinished );
 
-    } );
-
-    auto future = QtConcurrent::run( &GlobalPlanner::fieldOptimitionWorker, pointsCopy2D, distanceBetweenConnectPoints, alphaType, customAlpha, maxDeviation );
-//    watcher->setFuture( future );
-
+    watcher->setFuture(
+      QtConcurrent::run( &GlobalPlanner::fieldOptimitionWorker,
+                         pointsCopy2D,
+                         distanceBetweenConnectPoints,
+                         alphaType,
+                         customAlpha,
+                         maxDeviation ) );
   }
 
+  qDebug() << "Time elapsed: " << timer->elapsed() << "ms";
+  delete timer;
 }
 
 
-void GlobalPlanner::alphaShapeFinished( Polygon_with_holes_2* out_poly ) {
+void GlobalPlanner::alphaShapeFinished() {
+  auto futureWatcher = static_cast<QFutureWatcher<Polygon_with_holes_2*>*>( sender() );
 
-  QVector<QVector3D> meshSegmentPoints;
-  typedef Polygon_2::Vertex_iterator VertexIterator;
+  if( futureWatcher != nullptr ) {
+    auto out_poly = futureWatcher->future().result();
 
-  if( out_poly != nullptr ) {
+    if( out_poly != nullptr ) {
 
-    for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
-         end = out_poly->outer_boundary().vertices_end();
-         vi != end; ++vi ) {
-      meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
+      QVector<QVector3D> meshSegmentPoints;
+      typedef Polygon_2::Vertex_iterator VertexIterator;
+
+      for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
+           end = out_poly->outer_boundary().vertices_end();
+           vi != end; ++vi ) {
+        meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
+      }
+
+      meshSegmentPoints << meshSegmentPoints.first();
+      m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
     }
 
-    meshSegmentPoints << meshSegmentPoints.first();
-    m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
-  }
+    delete out_poly;
 
-  delete out_poly;
+    futureWatcher->deleteLater();
+  }
 }
