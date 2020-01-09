@@ -27,13 +27,9 @@
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 
-#include <Qt3DExtras/QTorusMesh>
-#include <Qt3DExtras/QConeMesh>
 #include <Qt3DExtras/QCylinderMesh>
 #include <Qt3DExtras/QCuboidMesh>
-#include <Qt3DExtras/QPlaneMesh>
 #include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
 
 #include "BlockBase.h"
 

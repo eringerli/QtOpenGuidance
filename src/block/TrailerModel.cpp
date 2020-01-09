@@ -21,25 +21,33 @@
 #include <QtCore/QDebug>
 #include <QtMath>
 
+#include <Qt3DExtras/QMetalRoughMaterial>
+
 
 TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
-  m_rootEntityTransform = new Qt3DCore::QTransform();
 
   // add an etry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
+  m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
-  auto* material = new Qt3DExtras::QPhongMaterial();
-  material->setDiffuse( QColor( QRgb( 0x668823 ) ) );
+  constexpr float metalness = 0.1f;
+  constexpr float roughness = 0.5f;
 
   // wheel left
   {
-    m_wheelMesh = new Qt3DExtras::QCylinderMesh();
+    m_wheelLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
+
+    m_wheelMesh = new Qt3DExtras::QCylinderMesh( m_rootEntity );
     m_wheelMesh->setRings( 5 );
     m_wheelMesh->setSlices( 50 );
-    m_wheelLeftTransform = new Qt3DCore::QTransform();
+    m_wheelLeftTransform = new Qt3DCore::QTransform( m_wheelLeftEntity );
 
-    m_wheelLeftEntity = new Qt3DCore::QEntity( m_rootEntity );
+    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelLeftEntity );
+    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
+    material->setMetalness( metalness );
+    material->setRoughness( roughness );
+
     m_wheelLeftEntity->addComponent( m_wheelMesh );
     m_wheelLeftEntity->addComponent( material );
     m_wheelLeftEntity->addComponent( m_wheelLeftTransform );
@@ -47,9 +55,15 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
   // wheel right
   {
-    m_wheelRightTransform = new Qt3DCore::QTransform();
-
     m_wheelRightEntity = new Qt3DCore::QEntity( m_rootEntity );
+
+    m_wheelRightTransform = new Qt3DCore::QTransform( m_wheelRightEntity );
+
+    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelRightEntity );
+    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
+    material->setMetalness( metalness );
+    material->setRoughness( roughness );
+
     m_wheelRightEntity->addComponent( m_wheelMesh );
     m_wheelRightEntity->addComponent( material );
     m_wheelRightEntity->addComponent( m_wheelRightTransform );
@@ -57,16 +71,22 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
   // hitch
   {
-    m_hitchMesh = new Qt3DExtras::QCylinderMesh();
+    m_hitchEntity = new Qt3DCore::QEntity( m_rootEntity );
+
+    m_hitchMesh = new Qt3DExtras::QCylinderMesh( m_hitchEntity );
     m_hitchMesh->setRadius( 0.1f );
 
-    m_hitchTransform = new Qt3DCore::QTransform();
+    m_hitchTransform = new Qt3DCore::QTransform( m_hitchEntity );
     m_hitchTransform->setRotation(
       QQuaternion::fromAxisAndAngle(
         QVector3D( 0.0f, 0.0f, 1.0f ),
         90 ) );
 
-    m_hitchEntity = new Qt3DCore::QEntity( m_rootEntity );
+    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_hitchEntity );
+    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
+    material->setMetalness( metalness );
+    material->setRoughness( roughness );
+
     m_hitchEntity->addComponent( m_hitchMesh );
     m_hitchEntity->addComponent( material );
     m_hitchEntity->addComponent( m_hitchTransform );
@@ -74,12 +94,18 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
   // axle
   {
-    m_axleMesh = new Qt3DExtras::QCylinderMesh();
+    m_axleEntity = new Qt3DCore::QEntity( m_rootEntity );
+
+    m_axleMesh = new Qt3DExtras::QCylinderMesh( m_axleEntity );
     m_axleMesh->setRadius( 0.1f );
 
-    m_axleTransform = new Qt3DCore::QTransform();
+    m_axleTransform = new Qt3DCore::QTransform( m_axleEntity );
 
-    m_axleEntity = new Qt3DCore::QEntity( m_rootEntity );
+    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_axleEntity );
+    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
+    material->setMetalness( metalness );
+    material->setRoughness( roughness );
+
     m_axleEntity->addComponent( m_axleMesh );
     m_axleEntity->addComponent( material );
     m_axleEntity->addComponent( m_axleTransform );
@@ -92,17 +118,20 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
   {
     // tow hook marker -> red
     {
-      m_towHookMesh = new Qt3DExtras::QSphereMesh();
+      m_towHookEntity = new Qt3DCore::QEntity( rootEntity );
+
+      m_towHookMesh = new Qt3DExtras::QSphereMesh( m_towHookEntity );
       m_towHookMesh->setRadius( .2f );
       m_towHookMesh->setSlices( 20 );
       m_towHookMesh->setRings( 20 );
 
-      m_towHookTransform = new Qt3DCore::QTransform();
+      m_towHookTransform = new Qt3DCore::QTransform( m_towHookEntity );
 
-      auto* material = new Qt3DExtras::QPhongMaterial();
-      material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towHookEntity );
+      material->setBaseColor( QColor( Qt::darkRed ) );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
 
-      m_towHookEntity = new Qt3DCore::QEntity( rootEntity );
       m_towHookEntity->addComponent( m_towHookMesh );
       m_towHookEntity->addComponent( material );
       m_towHookEntity->addComponent( m_towHookTransform );
@@ -110,17 +139,20 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
     // pivot point marker -> green
     {
-      m_pivotPointMesh = new Qt3DExtras::QSphereMesh();
+      m_pivotPointEntity = new Qt3DCore::QEntity( rootEntity );
+
+      m_pivotPointMesh = new Qt3DExtras::QSphereMesh( m_pivotPointEntity );
       m_pivotPointMesh->setRadius( .2f );
       m_pivotPointMesh->setSlices( 20 );
       m_pivotPointMesh->setRings( 20 );
 
-      m_pivotPointTransform = new Qt3DCore::QTransform();
+      m_pivotPointTransform = new Qt3DCore::QTransform( m_pivotPointEntity );
 
-      auto* material = new Qt3DExtras::QPhongMaterial();
-      material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_pivotPointEntity );
+      material->setBaseColor( QColor( Qt::darkGreen ) );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
 
-      m_pivotPointEntity = new Qt3DCore::QEntity( rootEntity );
       m_pivotPointEntity->addComponent( m_pivotPointMesh );
       m_pivotPointEntity->addComponent( material );
       m_pivotPointEntity->addComponent( m_pivotPointTransform );
@@ -128,17 +160,20 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
     // hitch marker -> blue
     {
-      m_towPointMesh = new Qt3DExtras::QSphereMesh();
+      m_towPointEntity = new Qt3DCore::QEntity( rootEntity );
+
+      m_towPointMesh = new Qt3DExtras::QSphereMesh( m_towPointEntity );
       m_towPointMesh->setRadius( .2f );
       m_towPointMesh->setSlices( 20 );
       m_towPointMesh->setRings( 20 );
 
-      m_towPointTransform = new Qt3DCore::QTransform();
+      m_towPointTransform = new Qt3DCore::QTransform( m_towPointEntity );
 
-      auto* material = new Qt3DExtras::QPhongMaterial();
-      material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towPointEntity );
+      material->setBaseColor( QColor( Qt::darkBlue ) );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
 
-      m_towPointEntity = new Qt3DCore::QEntity( rootEntity );
       m_towPointEntity->addComponent( m_towPointMesh );
       m_towPointEntity->addComponent( material );
       m_towPointEntity->addComponent( m_towPointTransform );
@@ -148,33 +183,9 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
 // order is important! Crashes if a parent entity is removed first!
 TrailerModel::~TrailerModel() {
-  m_hitchMesh->deleteLater();
-  m_axleMesh->deleteLater();
-  m_wheelMesh->deleteLater();
-
-  m_rootEntityTransform->deleteLater();
-  m_hitchTransform->deleteLater();
-  m_axleTransform->deleteLater();
-  m_wheelLeftTransform->deleteLater();
-  m_wheelRightTransform->deleteLater();
-
-  m_towHookMesh->deleteLater();
-  m_pivotPointMesh->deleteLater();
-  m_towPointMesh->deleteLater();
-
-  m_towHookTransform->deleteLater();
-  m_pivotPointTransform->deleteLater();
-  m_towPointTransform->deleteLater();
-
-  m_wheelLeftEntity->deleteLater();
-  m_wheelRightEntity->deleteLater();
-
   m_towHookEntity->deleteLater();
   m_pivotPointEntity->deleteLater();
   m_towPointEntity->deleteLater();
-
-  m_hitchEntity->deleteLater();
-  m_axleEntity->deleteLater();
 
   m_rootEntity->deleteLater();
 }

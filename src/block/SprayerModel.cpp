@@ -21,6 +21,8 @@
 #include <QtCore/QDebug>
 #include <QtMath>
 #include <QElapsedTimer>
+#include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QConeMesh>
 
 #include "../3d/BufferMesh.h"
 
