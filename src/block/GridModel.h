@@ -52,7 +52,7 @@ class GridModel : public BlockBase {
   public:
     explicit GridModel( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity ) {
       m_distanceMeasurementEntity = new Qt3DCore::QEntity( rootEntity );
-      m_distanceMeasurementTransform = new Qt3DCore::QTransform();
+      m_distanceMeasurementTransform = new Qt3DCore::QTransform( m_distanceMeasurementEntity );
       m_distanceMeasurementEntity->addComponent( m_distanceMeasurementTransform );
       m_lod = new Qt3DRender::QLevelOfDetail( m_distanceMeasurementEntity );
       m_lod->setCamera( cameraEntity );
@@ -60,16 +60,16 @@ class GridModel : public BlockBase {
 
       m_baseEntity = new Qt3DCore::QEntity( rootEntity );
 
-      m_baseTransform = new Qt3DCore::QTransform();
+      m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
       m_baseEntity->addComponent( m_baseTransform );
 
       m_fineGridEntity = new Qt3DCore::QEntity( m_baseEntity );
       m_coarseGridEntity = new Qt3DCore::QEntity( m_baseEntity );
 
-      m_fineLinesMesh = new BufferMesh();
+      m_fineLinesMesh = new BufferMesh( m_fineGridEntity );
       m_fineGridEntity->addComponent( m_fineLinesMesh );
 
-      m_coarseLinesMesh = new BufferMesh();
+      m_coarseLinesMesh = new BufferMesh( m_coarseGridEntity );
       m_coarseGridEntity->addComponent( m_coarseLinesMesh );
 
       m_material = new Qt3DExtras::QPhongMaterial( m_fineGridEntity );

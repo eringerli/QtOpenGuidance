@@ -62,7 +62,7 @@ class GlobalPlanner : public BlockBase {
   public:
     explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
 
-    ~GlobalPlanner(){
+    ~GlobalPlanner() {
       cgalWorker->deleteLater();
       threadForCgalWorker->deleteLater();
     }
@@ -98,6 +98,7 @@ class GlobalPlanner : public BlockBase {
             points.push_back( position );
             recordNextPoint = false;
             recalculateField();
+            qDebug() << "setPoseLeftEdge -> recalculateField";
           } else {
             if( recordContinous ) {
               points.push_back( position );
@@ -125,6 +126,7 @@ class GlobalPlanner : public BlockBase {
             points.push_back( position );
             recordNextPoint = false;
             recalculateField();
+            qDebug() << "setPoseRightEdge -> recalculateField";
           } else {
             if( recordContinous ) {
               points.push_back( position );

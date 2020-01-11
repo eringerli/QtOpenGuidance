@@ -251,29 +251,30 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
     tmw( tmw ) {
   // a point marker -> orange
   {
-    aPointMesh = new Qt3DExtras::QSphereMesh();
+    aPointEntity = new Qt3DCore::QEntity( rootEntity );
+
+    aPointMesh = new Qt3DExtras::QSphereMesh( aPointEntity );
     aPointMesh->setRadius( .2f );
     aPointMesh->setSlices( 20 );
     aPointMesh->setRings( 20 );
 
-    aPointTransform = new Qt3DCore::QTransform();
+    aPointTransform = new Qt3DCore::QTransform( aPointEntity );
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial( aPointEntity );
     material->setDiffuse( QColor( "orange" ) );
 
-    aPointEntity = new Qt3DCore::QEntity( rootEntity );
     aPointEntity->addComponent( aPointMesh );
     aPointEntity->addComponent( material );
     aPointEntity->addComponent( aPointTransform );
     aPointEntity->setEnabled( false );
 
     aTextEntity = new Qt3DCore::QEntity( aPointEntity );
-    Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+    Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh( aTextEntity );
     aTextMesh->setText( QStringLiteral( "A" ) );
     aTextMesh->setDepth( 0.05f );
 
     aTextEntity->setEnabled( true );
-    aTextTransform = new Qt3DCore::QTransform();
+    aTextTransform = new Qt3DCore::QTransform( aTextEntity );
     aTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
     aTextTransform->setScale( 2.0f );
     aTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
@@ -284,29 +285,29 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
 
   // b point marker -> purple
   {
-    bPointMesh = new Qt3DExtras::QSphereMesh();
+    bPointEntity = new Qt3DCore::QEntity( rootEntity );
+    bPointMesh = new Qt3DExtras::QSphereMesh( bPointEntity );
     bPointMesh->setRadius( .2f );
     bPointMesh->setSlices( 20 );
     bPointMesh->setRings( 20 );
 
-    bPointTransform = new Qt3DCore::QTransform();
+    bPointTransform = new Qt3DCore::QTransform( bPointEntity );
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial();
+    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial( bPointEntity );
     material->setDiffuse( QColor( "purple" ) );
 
-    bPointEntity = new Qt3DCore::QEntity( rootEntity );
     bPointEntity->addComponent( bPointMesh );
     bPointEntity->addComponent( material );
     bPointEntity->addComponent( bPointTransform );
     bPointEntity->setEnabled( false );
 
     bTextEntity = new Qt3DCore::QEntity( bPointEntity );
-    Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh();
+    Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh( bTextEntity );
     bTextMesh->setText( QStringLiteral( "B" ) );
     bTextMesh->setDepth( 0.05f );
 
     bTextEntity->setEnabled( true );
-    bTextTransform = new Qt3DCore::QTransform();
+    bTextTransform = new Qt3DCore::QTransform( bTextEntity );
     bTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
     bTextTransform->setScale( 2.0f );
     bTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
@@ -318,7 +319,7 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
   // test for recording
   {
     m_baseEntity = new Qt3DCore::QEntity( rootEntity );
-    m_baseTransform = new Qt3DCore::QTransform();
+    m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
     m_baseEntity->addComponent( m_baseTransform );
 
     m_pointsEntity = new Qt3DCore::QEntity( m_baseEntity );
@@ -330,23 +331,23 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
     m_segmentsEntity2->setEnabled( false );
     m_segmentsEntity3->setEnabled( false );
 
-    m_pointsMesh = new BufferMesh();
+    m_pointsMesh = new BufferMesh( m_pointsEntity );
     m_pointsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
     m_pointsEntity->addComponent( m_pointsMesh );
 
-    m_segmentsMesh = new BufferMesh();
+    m_segmentsMesh = new BufferMesh( m_segmentsEntity );
     m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity->addComponent( m_segmentsMesh );
 
-    m_segmentsMesh2 = new BufferMesh();
+    m_segmentsMesh2 = new BufferMesh( m_segmentsEntity2 );
     m_segmentsMesh2->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity2->addComponent( m_segmentsMesh2 );
 
-    m_segmentsMesh3 = new BufferMesh();
+    m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
     m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity3->addComponent( m_segmentsMesh3 );
 
-    m_segmentsMesh4 = new BufferMesh();
+    m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
     m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
     m_segmentsEntity4->addComponent( m_segmentsMesh4 );
 

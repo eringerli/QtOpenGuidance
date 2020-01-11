@@ -67,7 +67,7 @@ class GlobalPlannerModel : public BlockBase {
       // arrows for passes
       {
         arrowsEntity = new Qt3DCore::QEntity( rootEntity );
-        arrowsTransform = new Qt3DCore::QTransform();
+        arrowsTransform = new Qt3DCore::QTransform( arrowsEntity );
         arrowsEntity->addComponent( arrowsTransform );
 
         arrowsForegroundEntity = new Qt3DCore::QEntity( arrowsEntity );
