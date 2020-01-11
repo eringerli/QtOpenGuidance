@@ -246,84 +246,6 @@ void GlobalPlanner::createPlanAB() {
 //  }
 }
 
-void GlobalPlanner::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& out_poly ) {
-  using Vertex_handle = typename Alpha_shape_2::Vertex_handle;
-  using Edge = typename Alpha_shape_2::Edge;
-  using EdgeVector = std::vector<Edge>;
-
-  // form vertex to vertex map
-  std::map<Vertex_handle, EdgeVector> v_edges_map;
-
-  for( auto it = A.alpha_shape_edges_begin(); it != A.alpha_shape_edges_end(); ++it ) {
-    auto edge = *it;  // edge <=> pair<face_handle, vertex id>
-    const int vid = edge.second;
-    auto v = edge.first->vertex( ( vid + 1 ) % 3 );
-
-    if( v_edges_map.count( v ) == 0 ) {
-      v_edges_map[v] = EdgeVector();
-    }
-
-    v_edges_map[v].push_back( edge );
-  }
-
-  // form all possible boundaries
-  std::vector<Polygon_2> polies;
-  std::vector<double> lengths;
-  double max_length = 0;
-  std::size_t max_id = 0;
-  std::set<Edge> existing_edges;
-
-//  for( const auto& edge : v_edges_map ) {
-  for( auto it = v_edges_map.cbegin(); it != v_edges_map.cend(); ++it ) {
-    if( existing_edges.count( ( *it ).second.front() ) != 0u ) {
-      continue;
-    }
-
-    auto begin_v = ( *it ).first;
-    auto next_e = ( *it ).second.front();
-    auto next_v = next_e.first->vertex( ( next_e.second + 2 ) % 3 );
-
-    Polygon_2 poly;
-    poly.push_back( next_v->point() );
-
-    existing_edges.insert( next_e );
-
-    if( v_edges_map[begin_v].size() > 1 ) {
-      v_edges_map[begin_v].erase( v_edges_map[begin_v].begin() );
-    }
-
-    double length = CGAL::squared_distance( begin_v->point(), next_v->point() );
-
-    while( next_v != begin_v && v_edges_map.count( next_v ) > 0 ) {
-      next_e = v_edges_map[next_v].front();
-      existing_edges.insert( next_e );
-
-      if( v_edges_map[next_v].size() > 1 ) {
-        v_edges_map[next_v].erase( v_edges_map[next_v].begin() );
-      }
-
-      auto t_next_v = next_e.first->vertex( ( next_e.second + 2 ) % 3 );
-      length += CGAL::squared_distance( next_v->point(), t_next_v->point() );
-      next_v = t_next_v;
-      poly.push_back( next_v->point() );
-    }
-
-    if( max_length < length ) {
-      max_length = length;
-      max_id = polies.size();
-    }
-
-    polies.push_back( poly );
-    lengths.push_back( length );
-  }
-
-  // build polygon with holes
-  // the first one is outer boundary, the rest are holes
-  Polygon_2 outer_poly = polies[max_id];
-  polies.erase( polies.begin() + max_id );
-  out_poly = Polygon_with_holes_2( outer_poly, polies.begin(), polies.end() );
-}
-
 GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
   : BlockBase(),
     tmw( tmw ) {
@@ -446,238 +368,65 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
     m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
     m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
   }
-}
 
-Polygon_with_holes_2* GlobalPlanner::fieldOptimitionWorker( std::vector<Point_2>* points,
-    double distanceBetweenConnectPoints,
-    FieldsOptimitionToolbar::AlphaType alphaType,
-    double customAlpha,
-    double maxDeviation ) {
-  auto& pointsCopy2D = *points;
-  Polygon_with_holes_2* out_poly = nullptr;
-
-  // check for collinearity: if all points are collinear, you can't calculate a triangulation and it crashes
-  bool collinearity = true;
+  // create the CGAL worker and move to it's own thread
   {
-    const std::size_t numPoints = pointsCopy2D.size();
+    threadForCgalWorker = new QThread();
+    cgalWorker = new CgalWorker();
 
-    for( std::size_t i = 0; i < ( numPoints - 2 ); ++i ) {
-      collinearity &= CGAL::collinear( pointsCopy2D[i + 0], pointsCopy2D[i + 1], pointsCopy2D[i + 2] );
+    qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
 
-      if( !collinearity ) {
-        break;
-      }
-    }
+    QObject::connect( threadForCgalWorker, &QThread::finished, cgalWorker, &CgalWorker::deleteLater );
+
+    QObject::connect( this, &GlobalPlanner::requestFieldOptimition, cgalWorker, &CgalWorker::fieldOptimitionWorker );
+    QObject::connect( cgalWorker, &CgalWorker::alphaChanged, this, &GlobalPlanner::alphaChanged );
+    QObject::connect( cgalWorker, &CgalWorker::fieldStatisticsChanged, this, &GlobalPlanner::fieldStatisticsChanged );
+    QObject::connect( cgalWorker, &CgalWorker::alphaShapeFinished, this, &GlobalPlanner::alphaShapeFinished );
+
+    cgalWorker->moveToThread( threadForCgalWorker );
+    threadForCgalWorker->start();
   }
-
-  if( !collinearity ) {
-
-    if( distanceBetweenConnectPoints > 0 ) {
-      qDebug() << "pointsCopy.size()" << pointsCopy2D.size();
-
-      for( auto last = pointsCopy2D.cbegin(), it = pointsCopy2D.cbegin() + 1, end = pointsCopy2D.cend();
-           it != end;
-           ++it, ++last ) {
-        const double distance = CGAL::squared_distance( *last, *it );
-        std::cout << *last << " " << *it << " " << distance << std::endl << std::flush;
-
-        if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
-          std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
-          CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( *last, *it, numPoints );
-
-          for( std::size_t i = 1; i < ( numPoints - 1 ); ++i ) {
-            pointsCopy2D.push_back( *pointGenerator );
-            ++pointGenerator;
-          }
-
-          qDebug() << "pointsCopy.size()" << pointsCopy2D.size() << "distance" << distance << distanceBetweenConnectPoints << numPoints;
-        }
-      }
-    }
-
-    qDebug() << "pointsCopy.size()" << pointsCopy2D.size();
-
-
-    Alpha_shape_2 alphaShape( pointsCopy2D.begin(), pointsCopy2D.end(),
-                              K::FT( 0 ),
-                              Alpha_shape_2::REGULARIZED );
-
-    qDebug() << "Alpha Shape computed";
-    double optimalAlpha = *alphaShape.find_optimal_alpha( 1 );
-    qDebug() << "Optimal alpha: " << optimalAlpha;
-    double solidAlpha = alphaShape.find_alpha_solid();
-    qDebug() << "Solid alpha: " << solidAlpha;
-
-//    emit alphaChanged( optimalAlpha, solidAlpha );
-
-    {
-      int numSegments = 0;
-      int numSegmentsExterior = 0;
-      int numSegmentsSingular = 0;
-      int numSegmentsRegular = 0;
-      int numSegmentsInterior = 0;
-
-      {
-        auto it = alphaShape.alpha_shape_edges_begin();
-        const auto& end = alphaShape.alpha_shape_edges_end();
-
-        for( ; it != end; ++it ) {
-          switch( alphaShape.classify( *it ) ) {
-            case Alpha_shape_2::EXTERIOR:
-              ++numSegmentsExterior;
-              break;
-
-            case Alpha_shape_2::SINGULAR:
-              ++numSegmentsInterior;
-              break;
-
-            case Alpha_shape_2::REGULAR:
-              ++numSegmentsRegular;
-              break;
-
-            case Alpha_shape_2::INTERIOR:
-              ++numSegmentsInterior;
-              break;
-          }
-
-          ++numSegments;
-        }
-
-      }
-      qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << pointsCopy2D.size();
-      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
-    }
-
-    switch( alphaType ) {
-      default:
-      case FieldsOptimitionToolbar::AlphaType::Optimal:
-        alphaShape.set_alpha( optimalAlpha + 0.1 );
-        break;
-
-      case FieldsOptimitionToolbar::AlphaType::Solid:
-        alphaShape.set_alpha( solidAlpha + 0.1 );
-        break;
-
-      case FieldsOptimitionToolbar::AlphaType::Custom:
-        alphaShape.set_alpha( customAlpha );
-        break;
-    }
-
-    {
-      int numSegments = 0;
-      int numSegmentsExterior = 0;
-      int numSegmentsSingular = 0;
-      int numSegmentsRegular = 0;
-      int numSegmentsInterior = 0;
-
-      {
-        auto it = alphaShape.alpha_shape_edges_begin();
-        const auto& end = alphaShape.alpha_shape_edges_end();
-
-        for( ; it != end; ++it ) {
-          switch( alphaShape.classify( *it ) ) {
-            case Alpha_shape_2::EXTERIOR:
-              ++numSegmentsExterior;
-              break;
-
-            case Alpha_shape_2::SINGULAR:
-              ++numSegmentsInterior;
-              break;
-
-            case Alpha_shape_2::REGULAR:
-              ++numSegmentsRegular;
-              break;
-
-            case Alpha_shape_2::INTERIOR:
-              ++numSegmentsInterior;
-              break;
-          }
-
-          ++numSegments;
-        }
-
-      }
-      qDebug() << "alpha shape edges tot: " << numSegments << "points: " << pointsCopy2D.size();
-      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
-    }
-
-    out_poly = new Polygon_with_holes_2();
-
-    GlobalPlanner::alphaToPolygon( alphaShape, *out_poly );
-
-    PS::Squared_distance_cost cost;
-
-    *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
-
-    // traverse the vertices and the edges
-    {
-//      using VertexIterator = Polygon_2::Vertex_iterator;
-      CGAL::set_pretty_mode( std::cout );
-
-      qDebug() << "out_poly 2:" << out_poly->outer_boundary().size();
-//      emit fieldStatisticsChanged( pointsCopy2D.size(), size_t( out_poly->outer_boundary().size() ) );
-    }
-  }
-
-  delete points;
-
-  return out_poly;
 }
 
 void GlobalPlanner::alphaShape() {
-  auto timer = new QElapsedTimer();
-  timer->start();
+  QElapsedTimer timer;
+  timer.start();
 
   // you need at least 3 points for area
   if( points.size() >= 3 ) {
 
     // make a 2D copy of the recorded points
     auto pointsCopy2D = new std::vector<K::Point_2>();
+    pointsCopy2D->reserve( points.size() );
 
     for( const auto& point : points ) {
       pointsCopy2D->emplace_back( point.x(), point.y() );
     }
 
-    auto watcher = new QFutureWatcher<Polygon_with_holes_2*>();
-    QObject::connect( watcher, &QFutureWatcher<Polygon_with_holes_2*>::finished, this, &GlobalPlanner::alphaShapeFinished );
-
-    watcher->setFuture(
-      QtConcurrent::run( &GlobalPlanner::fieldOptimitionWorker,
-                         pointsCopy2D,
-                         distanceBetweenConnectPoints,
-                         alphaType,
-                         customAlpha,
-                         maxDeviation ) );
+    emit requestFieldOptimition( pointsCopy2D,
+                                 alphaType,
+                                 customAlpha,
+                                 maxDeviation,
+                                 distanceBetweenConnectPoints );
   }
 
-  qDebug() << "Time elapsed: " << timer->elapsed() << "ms";
-  delete timer;
+  qDebug() << "GlobalPlanner::alphaShape: " << timer.nsecsElapsed() << "ns";
 }
 
+void GlobalPlanner::alphaShapeFinished( Polygon_with_holes_2* out_poly ) {
+  qDebug() << "GlobalPlanner::alphaShapeFinished" << out_poly;
 
-void GlobalPlanner::alphaShapeFinished() {
-  auto futureWatcher = static_cast<QFutureWatcher<Polygon_with_holes_2*>*>( sender() );
+  QVector<QVector3D> meshSegmentPoints;
+  typedef Polygon_2::Vertex_iterator VertexIterator;
 
-  if( futureWatcher != nullptr ) {
-    auto out_poly = futureWatcher->future().result();
-
-    if( out_poly != nullptr ) {
-
-      QVector<QVector3D> meshSegmentPoints;
-      typedef Polygon_2::Vertex_iterator VertexIterator;
-
-      for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
-           end = out_poly->outer_boundary().vertices_end();
-           vi != end; ++vi ) {
-        meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
-      }
-
-      meshSegmentPoints << meshSegmentPoints.first();
-      m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
-    }
-
-    delete out_poly;
-
-    futureWatcher->deleteLater();
+  for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
+       end = out_poly->outer_boundary().vertices_end();
+       vi != end; ++vi ) {
+    meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
   }
+
+  meshSegmentPoints << meshSegmentPoints.first();
+  m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
+
+  delete out_poly;
 }

@@ -465,12 +465,12 @@ int main( int argc, char** argv ) {
                     settingDialog->globalPlanner, SLOT( recordPoint() ) );
   QObject::connect( fieldsToolbar, SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
                     settingDialog->globalPlanner, SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
-  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculate( FieldsOptimitionToolbar::AlphaType, double, double ) ),
-                    settingDialog->globalPlanner, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double ) ) );
+  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculate( FieldsOptimitionToolbar::AlphaType, double, double, double ) ),
+                    settingDialog->globalPlanner, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
   QObject::connect( settingDialog->globalPlanner, SIGNAL( alphaChanged( double, double ) ),
                     fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
-  QObject::connect( settingDialog->globalPlanner, SIGNAL( fieldStatisticsChanged( size_t, size_t ) ),
-                    fieldsOptimitionToolbar, SLOT( setFieldStatistics( size_t, size_t ) ) );
+  QObject::connect( settingDialog->globalPlanner, SIGNAL( fieldStatisticsChanged( double, double, double ) ),
+                    fieldsOptimitionToolbar, SLOT( setFieldStatistics( double, double, double ) ) );
 
   // emit all initial signals from the settings dialog
   settingDialog->emitAllConfigSignals();

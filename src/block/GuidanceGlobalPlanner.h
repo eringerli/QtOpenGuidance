@@ -45,10 +45,11 @@
 
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include "../cgal.h"
+#include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
+#include "../kinematic/CgalWorker.h"
 #include "../kinematic/TransverseMercatorWrapper.h"
 
 #include <QVector>
@@ -61,6 +62,12 @@ class GlobalPlanner : public BlockBase {
   public:
     explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
 
+    ~GlobalPlanner(){
+      cgalWorker->deleteLater();
+      threadForCgalWorker->deleteLater();
+    }
+
+  private:
     void alphaShape();
 
   public slots:
@@ -174,11 +181,6 @@ class GlobalPlanner : public BlockBase {
 
     void createPlanAB();
 
-    // form polygons from alpha shape
-    static void alphaToPolygon( const Alpha_shape_2& A,
-                                Polygon_with_holes_2& out_poly );
-
-
     void b_clicked() {
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
@@ -231,10 +233,18 @@ class GlobalPlanner : public BlockBase {
 
     void setPassNumberTo( int /*passNumber*/ ) {}
 
+    void alphaShapeFinished( Polygon_with_holes_2* );
+
   signals:
-    void alphaChanged( double optimal, double solid );
-    void fieldStatisticsChanged( size_t pointsRecorded, size_t pointsInPolygon );
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
+
+    void alphaChanged( double optimal, double solid );
+    void fieldStatisticsChanged( double, double, double );
+    void requestFieldOptimition( std::vector<K::Point_2>* points,
+                                 FieldsOptimitionToolbar::AlphaType alphaType,
+                                 double customAlpha,
+                                 double maxDeviation,
+                                 double distanceBetweenConnectPoints );
 
   public:
     Point_3 position = Point_3();
@@ -278,24 +288,17 @@ class GlobalPlanner : public BlockBase {
     bool recordNextPoint = false;
     bool recordOnRightEdgeOfImplement = false;
 
+  private:
+    Qt3DCore::QEntity* m_baseEntity = nullptr;
+    Qt3DCore::QTransform* m_baseTransform = nullptr;
+
     FieldsOptimitionToolbar::AlphaType alphaType = FieldsOptimitionToolbar::AlphaType::Optimal;
     double customAlpha = 10;
     double maxDeviation = 0.1;
     double distanceBetweenConnectPoints = 0.5;
 
-
-    static Polygon_with_holes_2* fieldOptimitionWorker( std::vector<Point_2>* points,
-        double distanceBetweenConnectPoints,
-        FieldsOptimitionToolbar::AlphaType alphaType,
-        double customAlpha,
-        double maxDeviation );
-
-  private slots:
-    void alphaShapeFinished();
-
-  private:
-    Qt3DCore::QEntity* m_baseEntity = nullptr;
-    Qt3DCore::QTransform* m_baseTransform = nullptr;
+    QThread* threadForCgalWorker = nullptr;
+    CgalWorker* cgalWorker = nullptr;
 
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;

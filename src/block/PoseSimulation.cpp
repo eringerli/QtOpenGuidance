@@ -84,7 +84,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       QElapsedTimer timer;
       timer.start();
       emit globalPositionChanged( latitude, longitude, zWithAntennaOffset );
-//      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
+      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
     }
 
   }

@@ -24,9 +24,9 @@ void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha )
   }
 }
 
-void FieldsOptimitionToolbar::setFieldStatistics( size_t pointsRecorded, size_t pointsInPolygon ) {
-  ui->lbPointsInPolygon->setNum( double( pointsInPolygon ) );
-  ui->lbPointsRecorded->setNum( double( pointsRecorded ) );
+void FieldsOptimitionToolbar::setFieldStatistics( double pointsRecorded, double pointsCalculated, double pointsInPolygon ) {
+  ui->lbPointsRecorded->setText( QString::number( pointsRecorded ) + " | " + QString::number( pointsCalculated ) );
+  ui->lbPointsInPolygon->setNum( pointsInPolygon );
 }
 
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {

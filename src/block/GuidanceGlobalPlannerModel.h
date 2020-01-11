@@ -182,7 +182,7 @@ class GlobalPlannerModel : public BlockBase {
       recalculateMeshes();
     }
 
-    void setPose( Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;

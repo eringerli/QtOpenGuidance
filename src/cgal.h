@@ -105,11 +105,12 @@ typedef VD::Ccb_halfedge_circulator   VdCcb_halfedge_circulator;
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
-typedef CGAL::Alpha_shape_vertex_base_2<K>                   AVb;
-typedef CGAL::Alpha_shape_face_base_2<K>                     AFb;
+typedef CGAL::Tag_true                                       Alpha_cmp_tag;
+typedef CGAL::Alpha_shape_vertex_base_2<K, CGAL::Default, Alpha_cmp_tag>     AVb;
+typedef CGAL::Alpha_shape_face_base_2<K, CGAL::Default, Alpha_cmp_tag>       AFb;
 typedef CGAL::Triangulation_data_structure_2<AVb, AFb>        ATds;
 typedef CGAL::Delaunay_triangulation_2<K, ATds>               ATriangulation_2;
-typedef CGAL::Alpha_shape_2<ATriangulation_2>                Alpha_shape_2;
+typedef CGAL::Alpha_shape_2<ATriangulation_2, Alpha_cmp_tag>   Alpha_shape_2;
 typedef Alpha_shape_2::Alpha_shape_edges_iterator            Alpha_shape_edges_iterator;
 
 #include <CGAL/Polyline_simplification_2/simplify.h>

@@ -35,6 +35,7 @@ SOURCES += \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
+    src/kinematic/CgalWorker.cpp \
     src/main.cpp \
     src/block/GuidanceGlobalPlanner.cpp \
     src/block/PoseSimulation.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
     src/gui/VectorBlockModel.h \
+    src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PoseOptions.h \
