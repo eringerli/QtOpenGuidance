@@ -228,7 +228,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   plannerGui = plannerGuiFactory->createNewObject();
   plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
 
-  globalPlannerFactory = new GlobalPlannerFactory( rootEntity, tmw );
+  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, tmw );
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 

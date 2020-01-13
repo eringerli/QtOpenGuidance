@@ -19,6 +19,8 @@
 #include "CgalWorker.h"
 #include "../cgal.h"
 
+#include <QScopedPointer>
+
 CgalWorker::CgalWorker( QObject* parent ) : QObject( parent ) {
 
 }
@@ -51,7 +53,7 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   std::set<Edge> existing_edges;
 
   //  for( const auto& edge : v_edges_map ) {
-  for( auto it = v_edges_map.cbegin(); it != v_edges_map.cend(); ++it ) {
+  for( auto it = v_edges_map.cbegin(), end = v_edges_map.cend(); it != end; ++it ) {
     if( existing_edges.count( ( *it ).second.front() ) != 0u ) {
       continue;
     }
@@ -101,11 +103,26 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   out_poly = Polygon_with_holes_2( outer_poly, polies.begin(), polies.end() );
 }
 
-void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
+void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
+                                        std::vector<Point_2>* pointsPointer,
                                         FieldsOptimitionToolbar::AlphaType alphaType,
                                         double customAlpha,
                                         double maxDeviation,
                                         double distanceBetweenConnectPoints ) {
+
+  QScopedPointer<std::vector<Point_2>> points( pointsPointer );
+
+  auto cgalThread = qobject_cast<CgalThread*>( thread() );
+
+  if( cgalThread != nullptr ) {
+    QMutexLocker lock( &cgalThread->mutex );
+
+    if( runNumber < cgalThread->runNumber ) {
+      qDebug() << "Returned early...";
+      return;
+    }
+  }
+
   qDebug() << "CgalWorker::fieldOptimitionWorker" << points;
 
   double numPointsRecorded = double( points->size() );
@@ -138,7 +155,7 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
         if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
           std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
 
-          if( numPoints > 10000 ) {
+          if( numPoints > 1000 ) {
             CGAL::set_pretty_mode( std::cerr );
             std::cerr << "pointsCopy.size(): " << points->size() << " distance: " << distance  << " distanceBetweenConnectPoints:" << distanceBetweenConnectPoints << " numPoints:" << numPoints  << " points: " << *last << " " << *it << "\n";
             numPoints = 10000;
@@ -156,12 +173,30 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
       }
     }
 
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        qDebug() << "Returned early...";
+        return;
+      }
+    }
+
     qDebug() << "pointsCopy.size()" << points->size();
 
 
     Alpha_shape_2 alphaShape( points->begin(), points->end(),
                               K::FT( 0 ),
                               Alpha_shape_2::REGULARIZED );
+
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        qDebug() << "Returned early...";
+        return;
+      }
+    }
 
     qDebug() << "Alpha Shape computed";
     double optimalAlpha = CGAL::to_double( *alphaShape.find_optimal_alpha( 1 ) );
@@ -171,7 +206,16 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
 
     emit alphaChanged( optimalAlpha, solidAlpha );
 
-    {
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        qDebug() << "Returned early...";
+        return;
+      }
+    }
+
+    if( 0 ) {
       int numSegments = 0;
       int numSegmentsExterior = 0;
       int numSegmentsSingular = 0;
@@ -224,7 +268,16 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
         break;
     }
 
-    {
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        qDebug() << "Returned early...";
+        return;
+      }
+    }
+
+    if( 0 ) {
       int numSegments = 0;
       int numSegmentsExterior = 0;
       int numSegmentsSingular = 0;
@@ -266,9 +319,26 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
 
     alphaToPolygon( alphaShape, *out_poly );
 
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        return;
+      }
+    }
+
     PS::Squared_distance_cost cost;
 
     *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
+
+    if( cgalThread != nullptr ) {
+      QMutexLocker lock( &cgalThread->mutex );
+
+      if( runNumber < cgalThread->runNumber ) {
+        qDebug() << "Returned early...";
+        return;
+      }
+    }
 
     // traverse the vertices and the edges
     {
@@ -282,6 +352,4 @@ void CgalWorker::fieldOptimitionWorker( std::vector<Point_2>* points,
 
     emit alphaShapeFinished( out_poly );
   }
-
-  delete points;
 }

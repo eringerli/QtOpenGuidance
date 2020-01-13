@@ -5,6 +5,11 @@ FieldsOptimitionToolbar::FieldsOptimitionToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::FieldsOptimitionToolbar ) {
   ui->setupUi( this );
+
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 FieldsOptimitionToolbar::~FieldsOptimitionToolbar() {
@@ -30,10 +35,11 @@ void FieldsOptimitionToolbar::setFieldStatistics( double pointsRecorded, double 
 }
 
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
-  emit recalculate( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                    ui->dsbAlpha->value(),
-                    ui->dsbMaxDeviation->value(),
-                    ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  emit recalculateField();
 }
 
 void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString& arg1 ) {
@@ -46,4 +52,38 @@ void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString&
   if( arg1 == QLatin1String( "Solid" ) ) {
     ui->dsbAlpha->setValue( solidAlpha );
   }
+
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+}
+
+void FieldsOptimitionToolbar::on_cbConnectEndToStart_stateChanged( int ) {
+
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+}
+
+void FieldsOptimitionToolbar::on_dsbDistanceConnectingPoints_valueChanged( double ) {
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+}
+
+void FieldsOptimitionToolbar::on_dsbAlpha_valueChanged( double ) {
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+}
+
+void FieldsOptimitionToolbar::on_dsbMaxDeviation_valueChanged( double ) {
+  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                        ui->dsbAlpha->value(),
+                                        ui->dsbMaxDeviation->value(),
+                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }

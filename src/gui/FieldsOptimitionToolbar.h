@@ -22,7 +22,8 @@ class FieldsOptimitionToolbar : public QGroupBox {
     };
 
   signals:
-    void recalculate( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints );
+    void recalculateField();
+    void recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints );
 
   public slots:
     void setAlpha( double optimal, double solid );
@@ -32,7 +33,15 @@ class FieldsOptimitionToolbar : public QGroupBox {
   private slots:
     void on_pbRecalculate_clicked();
 
-    void on_cbAlphaShape_currentTextChanged( const QString& arg1 );
+    void on_cbAlphaShape_currentTextChanged( const QString& );
+
+    void on_cbConnectEndToStart_stateChanged( int );
+
+    void on_dsbDistanceConnectingPoints_valueChanged( double );
+
+    void on_dsbAlpha_valueChanged( double arg1 );
+
+    void on_dsbMaxDeviation_valueChanged( double arg1 );
 
   private:
     Ui::FieldsOptimitionToolbar* ui = nullptr;

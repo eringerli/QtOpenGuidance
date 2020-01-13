@@ -60,12 +60,9 @@ class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
+    explicit GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
 
-    ~GlobalPlanner() {
-      cgalWorker->deleteLater();
-      threadForCgalWorker->deleteLater();
-    }
+    ~GlobalPlanner() {}
 
   private:
     void alphaShape();
@@ -141,7 +138,8 @@ class GlobalPlanner : public BlockBase {
     void newField() {
       points.clear();
     }
-    void saveField() {}
+    void saveField();
+    void saveFieldToFile( QFile& file );
 
     void setContinousRecord( bool enabled ) {
       if( recordContinous == true && enabled == false ) {
@@ -167,7 +165,6 @@ class GlobalPlanner : public BlockBase {
       this->customAlpha = customAlpha;
       this->maxDeviation = maxDeviation;
       this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
-      recalculateField();
     }
 
     void a_clicked() {
@@ -235,6 +232,10 @@ class GlobalPlanner : public BlockBase {
 
     void setPassNumberTo( int /*passNumber*/ ) {}
 
+    void setRunNumber( uint32_t runNumber ) {
+      this->runNumber = runNumber;
+    }
+
     void alphaShapeFinished( Polygon_with_holes_2* );
 
   signals:
@@ -242,11 +243,13 @@ class GlobalPlanner : public BlockBase {
 
     void alphaChanged( double optimal, double solid );
     void fieldStatisticsChanged( double, double, double );
-    void requestFieldOptimition( std::vector<K::Point_2>* points,
+    void requestFieldOptimition( uint32_t runNumber,
+                                 std::vector<K::Point_2>* points,
                                  FieldsOptimitionToolbar::AlphaType alphaType,
                                  double customAlpha,
                                  double maxDeviation,
                                  double distanceBetweenConnectPoints );
+    void requestNewRunNumber();
 
   public:
     Point_3 position = Point_3();
@@ -269,6 +272,7 @@ class GlobalPlanner : public BlockBase {
     Point_3 positionRightEdgeOfImplement = Point_3();
 
   private:
+    QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
     TransverseMercatorWrapper* tmw = nullptr;
 
@@ -299,8 +303,11 @@ class GlobalPlanner : public BlockBase {
     double maxDeviation = 0.1;
     double distanceBetweenConnectPoints = 0.5;
 
-    QThread* threadForCgalWorker = nullptr;
+    CgalThread* threadForCgalWorker = nullptr;
     CgalWorker* cgalWorker = nullptr;
+    uint32_t runNumber = 0;
+
+    Polygon_with_holes_2 currentField;
 
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;
@@ -323,8 +330,9 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
       : BlockFactory(),
+        mainWindow( mainWindow ),
         rootEntity( rootEntity ),
         tmw( tmw ) {}
 
@@ -337,7 +345,7 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new GlobalPlanner( rootEntity, tmw );
+      return new GlobalPlanner( mainWindow, rootEntity, tmw );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -358,6 +366,7 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
   private:
+    QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
     TransverseMercatorWrapper* tmw = nullptr;
 };

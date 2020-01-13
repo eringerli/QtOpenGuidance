@@ -19,7 +19,10 @@
 #ifndef CGALWORKER_H
 #define CGALWORKER_H
 
-#include <QtCore/QObject>
+#include <QObject>
+#include <QThread>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "../cgalKernel.h"
 #include "../gui/FieldsOptimitionToolbar.h"
@@ -31,13 +34,9 @@ class CgalWorker : public QObject {
   public:
     explicit CgalWorker( QObject* parent = nullptr );
 
-  private:
-    // form polygons from alpha shape
-    void alphaToPolygon( const Alpha_shape_2& A,
-                         Polygon_with_holes_2& out_poly );
-
   public slots:
-    void fieldOptimitionWorker( std::vector<Point_2>* points,
+    void fieldOptimitionWorker( uint32_t runNumber,
+                                std::vector<Point_2>* points,
                                 FieldsOptimitionToolbar::AlphaType alphaType,
                                 double customAlpha,
                                 double maxDeviation,
@@ -47,8 +46,37 @@ class CgalWorker : public QObject {
     void alphaShapeFinished( Polygon_with_holes_2* );
     void alphaChanged( double optimal, double solid );
     void fieldStatisticsChanged( double, double, double );
+
+  private:
+    // form polygons from alpha shape
+    void alphaToPolygon( const Alpha_shape_2& A,
+                         Polygon_with_holes_2& out_poly );
+};
+
+class CgalThread : public QThread {
+    Q_OBJECT
+  public:
+    explicit CgalThread( QObject* parent = nullptr )
+      : QThread( parent ) {}
+
+  public slots:
+    void requestNewRunNumber() {
+      {
+        QMutexLocker lock( &mutex );
+        ++runNumber;
+      }
+      emit runNumberChanged( runNumber );
+    }
+
+  signals:
+    void runNumberChanged( uint32_t );
+
+  public:
+    QMutex mutex;
+    uint32_t runNumber = 0;
 };
 
 Q_DECLARE_METATYPE( FieldsOptimitionToolbar::AlphaType )
+Q_DECLARE_METATYPE( uint32_t )
 
 #endif // CGALWORKER_H

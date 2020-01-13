@@ -57,8 +57,6 @@ class TransverseMercatorWrapper {
 
       latitude += lat0;
       height += height0;
-      qDebug() << lat0 << lon0;
-      qDebug() << x << y << convergence << scale;
     }
 
   private:

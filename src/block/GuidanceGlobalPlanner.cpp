@@ -17,7 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "GuidanceGlobalPlanner.h"
-#include <QtConcurrent>
+#include <QScopedPointer>
 
 #include "../cgal.h"
 
@@ -246,9 +246,9 @@ void GlobalPlanner::createPlanAB() {
 //  }
 }
 
-GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
   : BlockBase(),
-    tmw( tmw ) {
+    mainWindow( mainWindow ), tmw( tmw ) {
   // a point marker -> orange
   {
     aPointEntity = new Qt3DCore::QEntity( rootEntity );
@@ -372,11 +372,15 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
 
   // create the CGAL worker and move to it's own thread
   {
-    threadForCgalWorker = new QThread();
+    threadForCgalWorker = new CgalThread( this );
     cgalWorker = new CgalWorker();
+    cgalWorker->moveToThread( threadForCgalWorker );
 
     qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
+    qRegisterMetaType<uint32_t>( "uint32_t" );
 
+    QObject::connect( this, &GlobalPlanner::requestNewRunNumber, threadForCgalWorker, &CgalThread::requestNewRunNumber );
+    QObject::connect( threadForCgalWorker, &CgalThread::runNumberChanged, this, &GlobalPlanner::setRunNumber );
     QObject::connect( threadForCgalWorker, &QThread::finished, cgalWorker, &CgalWorker::deleteLater );
 
     QObject::connect( this, &GlobalPlanner::requestFieldOptimition, cgalWorker, &CgalWorker::fieldOptimitionWorker );
@@ -384,7 +388,6 @@ GlobalPlanner::GlobalPlanner( Qt3DCore::QEntity* rootEntity, TransverseMercatorW
     QObject::connect( cgalWorker, &CgalWorker::fieldStatisticsChanged, this, &GlobalPlanner::fieldStatisticsChanged );
     QObject::connect( cgalWorker, &CgalWorker::alphaShapeFinished, this, &GlobalPlanner::alphaShapeFinished );
 
-    cgalWorker->moveToThread( threadForCgalWorker );
     threadForCgalWorker->start();
   }
 }
@@ -404,7 +407,10 @@ void GlobalPlanner::alphaShape() {
       pointsCopy2D->emplace_back( point.x(), point.y() );
     }
 
-    emit requestFieldOptimition( pointsCopy2D,
+    emit requestNewRunNumber();
+
+    emit requestFieldOptimition( runNumber,
+                                 pointsCopy2D,
                                  alphaType,
                                  customAlpha,
                                  maxDeviation,
@@ -414,20 +420,112 @@ void GlobalPlanner::alphaShape() {
   qDebug() << "GlobalPlanner::alphaShape: " << timer.nsecsElapsed() << "ns";
 }
 
+void GlobalPlanner::saveField() {
+  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+  QString dir;
+  QString fileName = QFileDialog::getSaveFileName( mainWindow,
+                     tr( "Open Saved Config" ),
+                     dir,
+                     tr( "All Files (*);;GeoJSON Files (*.geojson)" ),
+                     &selectedFilter );
+
+  if( !fileName.isEmpty() ) {
+
+    QFile saveFile( fileName );
+
+    if( !saveFile.open( QIODevice::WriteOnly ) ) {
+      qWarning() << "Couldn't open save file.";
+      return;
+    }
+
+    saveFieldToFile( saveFile );
+  }
+}
+
+void GlobalPlanner::saveFieldToFile( QFile& file ) {
+  QJsonObject jsonObject;
+  QJsonArray fields;
+
+  jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
+
+  {
+    QJsonObject field;
+    QJsonObject geometry;
+
+    geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
+
+    QJsonArray coordinatesDummy;
+    QJsonArray coordinates;
+
+    typedef Polygon_2::Vertex_iterator VertexIterator;
+
+    auto outerBoundary = currentField.outer_boundary();
+    outerBoundary.reverse_orientation();
+
+    for( VertexIterator vi = outerBoundary.vertices_begin(),
+         end = outerBoundary.vertices_end();
+         vi != end; ++vi ) {
+
+      double latitude = 0;
+      double longitude = 0;
+      double height = 0;
+      tmw->Reverse( vi->x(), vi->y(), latitude, longitude, height );
+
+      QJsonArray coordinate;
+      coordinate.push_back( latitude );
+      coordinate.push_back( longitude );
+
+      coordinates.push_back( coordinate );
+    }
+
+    // add the first point again
+    {
+      VertexIterator vi = outerBoundary.vertices_begin();
+      double latitude = 0;
+      double longitude = 0;
+      double height = 0;
+
+      tmw->Reverse( vi->x(), vi->y(), latitude, longitude, height );
+
+      QJsonArray coordinate;
+      coordinate.push_back( latitude );
+      coordinate.push_back( longitude );
+
+      coordinates.push_back( coordinate );
+    }
+
+    coordinatesDummy.push_back( coordinates );
+    geometry[QStringLiteral( "coordinates" )] = coordinatesDummy;
+
+    field[QStringLiteral( "geometry" )] = geometry;
+    fields.push_back( field );
+  }
+
+//  field[QStringLiteral("type")] = "Feature";
+//  field[QStringLiteral("geometry")] = geometry;
+
+  jsonObject[QStringLiteral( "features" )] = fields;
+
+  QJsonDocument jsonDocument( jsonObject );
+  file.write( jsonDocument.toJson() );
+}
+
 void GlobalPlanner::alphaShapeFinished( Polygon_with_holes_2* out_poly ) {
-  qDebug() << "GlobalPlanner::alphaShapeFinished" << out_poly;
+  QScopedPointer<Polygon_with_holes_2> field( out_poly );
+
+  currentField = *field;
+
+  qDebug() << "GlobalPlanner::alphaShapeFinished" << field;
 
   QVector<QVector3D> meshSegmentPoints;
   typedef Polygon_2::Vertex_iterator VertexIterator;
 
-  for( VertexIterator vi = out_poly->outer_boundary().vertices_begin(),
-       end = out_poly->outer_boundary().vertices_end();
+  for( VertexIterator vi = field->outer_boundary().vertices_begin(),
+       end = field->outer_boundary().vertices_end();
        vi != end; ++vi ) {
     meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
   }
 
   meshSegmentPoints << meshSegmentPoints.first();
   m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
-
-  delete out_poly;
 }
