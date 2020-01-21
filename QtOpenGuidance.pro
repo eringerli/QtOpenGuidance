@@ -114,10 +114,10 @@ HEADERS += \
     src/gui/VectorBlockModel.h \
     src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
+    src/kinematic/GeographicConvertionWrapper.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PoseOptions.h \
-    src/kinematic/TrailerKinematic.h \
-    src/kinematic/TransverseMercatorWrapper.h
+    src/kinematic/TrailerKinematic.h
 
 android {
     HEADER += \

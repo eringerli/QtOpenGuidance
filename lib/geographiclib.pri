@@ -41,5 +41,4 @@ $$PWD/geographiclib/src/TransverseMercatorExact.cpp    \
 $$PWD/geographiclib/src/Utility.cpp                    \
 $$PWD/geographiclib/src/UTMUPS.cpp
 
-HEADERS  += 
-
+HEADERS  += $$PWD/geographiclib/include/GeographicLib/*

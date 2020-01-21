@@ -74,16 +74,12 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     // in global coordinates: WGS84
     {
-      double latitude = 0;
-      double longitude = 0;
-
-      _tm.Reverse( double( m_initialWGS84Position.y() ), yWithAntennaOffset, xWithAntennaOffset, latitude, longitude );
-      latitude += double( m_initialWGS84Position.x() );
-
+      double latitude, longitude, height;
+      _tm.Reverse( yWithAntennaOffset, xWithAntennaOffset, 0, latitude, longitude, height );
 
       QElapsedTimer timer;
       timer.start();
-      emit globalPositionChanged( latitude, longitude, zWithAntennaOffset );
+      emit globalPositionChanged( latitude, longitude, height );
 //      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
     }
 

@@ -30,7 +30,7 @@
 #include "qneport.h"
 
 #include "../cgalKernel.h"
-#include "../kinematic/TransverseMercatorWrapper.h"
+#include "../kinematic/GeographicConvertionWrapper.h"
 
 #include <QDebug>
 
@@ -38,7 +38,7 @@ class TransverseMercatorConverter : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit TransverseMercatorConverter( TransverseMercatorWrapper* tmw )
+    explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw )
       : BlockBase(),
         tmw( tmw ) {}
 
@@ -46,10 +46,10 @@ class TransverseMercatorConverter : public BlockBase {
     void setWGS84Position( const double latitude, const double longitude, const double height ) {
       double x = 0;
       double y = 0;
-      double heightToCalculate = height;
-      tmw->Forward( latitude, longitude, heightToCalculate, x, y );
+      double z = 0;
+      tmw->Forward( latitude, longitude, height, x, y, z );
 
-      auto point = Point_3( x, y, heightToCalculate );
+      auto point = Point_3( x, y, z );
       emit positionChanged( point );
     }
 
@@ -63,14 +63,14 @@ class TransverseMercatorConverter : public BlockBase {
     }
 
   public:
-    TransverseMercatorWrapper* tmw = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
 };
 
 class TransverseMercatorConverterFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    TransverseMercatorConverterFactory( TransverseMercatorWrapper* tmw )
+    TransverseMercatorConverterFactory( GeographicConvertionWrapper* tmw )
       : BlockFactory(),
         tmw( tmw ) {}
 
@@ -97,7 +97,7 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     }
 
   private:
-    TransverseMercatorWrapper* tmw = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
 };
 
 #endif // TRANSVERSEMERCATORCONVERTER_H

@@ -34,7 +34,7 @@
 
 #include "../cgalKernel.h"
 
-#include <GeographicLib/TransverseMercator.hpp>
+#include "../kinematic/GeographicConvertionWrapper.h"
 
 using namespace std;
 using namespace GeographicLib;
@@ -44,8 +44,7 @@ class PoseSimulation : public BlockBase {
 
   public:
     explicit PoseSimulation()
-      : BlockBase(),
-        _tm( Constants::WGS84_a(), Constants::WGS84_f(), Constants::UTM_k0() ) {
+      : BlockBase() {
       setSimulation( false );
     }
 
@@ -98,7 +97,7 @@ class PoseSimulation : public BlockBase {
     }
 
     void setInitialWGS84Position( QVector3D position ) {
-      m_initialWGS84Position = position;
+      _tm.Reset( position.x(), position.y(), position.z() );
     }
 
     void autosteerEnabled( bool enabled ) {
@@ -148,12 +147,10 @@ class PoseSimulation : public BlockBase {
     QVector3D m_antennaPosition = QVector3D();
     QQuaternion m_orientation = QQuaternion();
 
-    QVector3D m_initialWGS84Position = QVector3D();
-
     double x = 0;
     double y = 0;
     double height = 0;
-    TransverseMercator _tm;
+    GeographicConvertionWrapper _tm;
 };
 
 class PoseSimulationFactory : public BlockFactory {

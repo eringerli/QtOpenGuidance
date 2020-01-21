@@ -19,6 +19,8 @@
 #include "GuidanceGlobalPlanner.h"
 #include <QScopedPointer>
 
+#include <QFileDialog>
+
 #include "../cgal.h"
 
 void GlobalPlanner::createPlanAB() {
@@ -246,7 +248,7 @@ void GlobalPlanner::createPlanAB() {
 //  }
 }
 
-GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
   : BlockBase(),
     mainWindow( mainWindow ), tmw( tmw ) {
   // a point marker -> orange
@@ -420,6 +422,120 @@ void GlobalPlanner::alphaShape() {
   qDebug() << "GlobalPlanner::alphaShape: " << timer.nsecsElapsed() << "ns";
 }
 
+void GlobalPlanner::openField() {
+  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+  QString dir;
+
+  auto* fileDialog = new QFileDialog( mainWindow,
+                                      tr( "Open Saved Config" ),
+                                      dir,
+                                      selectedFilter );
+  fileDialog->setFileMode( QFileDialog::ExistingFile );
+  fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
+
+  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
+  // the signals instead of using the static functions for the dialogs
+#ifdef Q_OS_ANDROID
+  QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
+    qDebug() << "QFileDialog::urlSelected QUrl" << fileName << fileName.toDisplayString() << fileName.toLocalFile();
+
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile(
+        QUrl::fromPercentEncoding(
+          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        openFieldFromFile( loadFile );
+      }
+    }
+
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+#else
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString & fileName ) {
+    qDebug() << "QFileDialog::fileSelected QString" << fileName;
+
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile( fileName );
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        openFieldFromFile( loadFile );
+      }
+    }
+
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+#endif
+
+  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+
+  fileDialog->open();
+}
+
+void GlobalPlanner::openFieldFromFile( QFile& file ) {
+
+  QByteArray saveData = file.readAll();
+
+  QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
+  QJsonObject json = loadDoc.object();
+
+  if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
+      json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
+    QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
+
+    if( featuresArray.size() >= 1 ) {
+      QJsonObject featuresObject = featuresArray.first().toObject();
+
+      if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
+          featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
+        QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
+
+        if( geometryObject.contains( QStringLiteral( "type" ) ) && geometryObject[QStringLiteral( "type" )] == "Polygon" &&
+            geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
+          QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
+
+          if( coordinatesArray.size() >= 1 ) {
+
+            QJsonArray coordinateArray = coordinatesArray.first().toArray();
+
+            QVector<QVector3D> positions;
+
+            for( const auto& blockIndex : qAsConst( coordinateArray ) ) {
+              QJsonArray coordinate = blockIndex.toArray();
+
+              if( coordinate.size() >= 2 ) {
+                double x, y, z;
+
+                tmw->Forward( coordinate.at( 0 ).toDouble(), coordinate.at( 1 ).toDouble(), x, y, z );
+                positions.push_back( QVector3D( x, y, z ) );
+              }
+            }
+
+            m_segmentsMesh2->bufferUpdate( positions );
+            m_segmentsEntity2->setEnabled( true );
+          }
+        }
+      }
+    }
+  }
+}
+
 void GlobalPlanner::saveField() {
   QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
   QString dir;
@@ -450,6 +566,7 @@ void GlobalPlanner::saveFieldToFile( QFile& file ) {
 
   {
     QJsonObject field;
+
     QJsonObject geometry;
 
     geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
@@ -460,7 +577,7 @@ void GlobalPlanner::saveFieldToFile( QFile& file ) {
     typedef Polygon_2::Vertex_iterator VertexIterator;
 
     auto outerBoundary = currentField.outer_boundary();
-    outerBoundary.reverse_orientation();
+//    outerBoundary.reverse_orientation();
 
     for( VertexIterator vi = outerBoundary.vertices_begin(),
          end = outerBoundary.vertices_end();
@@ -469,7 +586,7 @@ void GlobalPlanner::saveFieldToFile( QFile& file ) {
       double latitude = 0;
       double longitude = 0;
       double height = 0;
-      tmw->Reverse( vi->x(), vi->y(), latitude, longitude, height );
+      tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
 
       QJsonArray coordinate;
       coordinate.push_back( latitude );
@@ -485,7 +602,7 @@ void GlobalPlanner::saveFieldToFile( QFile& file ) {
       double longitude = 0;
       double height = 0;
 
-      tmw->Reverse( vi->x(), vi->y(), latitude, longitude, height );
+      tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
 
       QJsonArray coordinate;
       coordinate.push_back( latitude );
@@ -497,6 +614,7 @@ void GlobalPlanner::saveFieldToFile( QFile& file ) {
     coordinatesDummy.push_back( coordinates );
     geometry[QStringLiteral( "coordinates" )] = coordinatesDummy;
 
+    field[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
     field[QStringLiteral( "geometry" )] = geometry;
     fields.push_back( field );
   }

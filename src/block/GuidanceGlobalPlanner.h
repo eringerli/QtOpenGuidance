@@ -50,7 +50,7 @@
 #include "../kinematic/PathPrimitive.h"
 
 #include "../kinematic/CgalWorker.h"
-#include "../kinematic/TransverseMercatorWrapper.h"
+#include "../kinematic/GeographicConvertionWrapper.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -60,7 +60,7 @@ class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw );
+    explicit GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
 
     ~GlobalPlanner() {}
 
@@ -134,7 +134,9 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void openField() {}
+    void openField();
+    void openFieldFromFile( QFile& file );
+
     void newField() {
       points.clear();
     }
@@ -274,7 +276,7 @@ class GlobalPlanner : public BlockBase {
   private:
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
-    TransverseMercatorWrapper* tmw = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
 
     // markers
     Qt3DCore::QEntity* aPointEntity = nullptr;
@@ -330,7 +332,7 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, TransverseMercatorWrapper* tmw )
+    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
       : BlockFactory(),
         mainWindow( mainWindow ),
         rootEntity( rootEntity ),
@@ -368,7 +370,7 @@ class GlobalPlannerFactory : public BlockFactory {
   private:
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
-    TransverseMercatorWrapper* tmw = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
 };
 
 #endif // GLOBALPLANNER_H

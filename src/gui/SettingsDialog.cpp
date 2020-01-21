@@ -81,7 +81,7 @@
 #include "../block/CommunicationPgn7FFE.h"
 #include "../block/CommunicationJrk.h"
 
-#include "../kinematic/TransverseMercatorWrapper.h"
+#include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 
@@ -206,7 +206,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
 
   // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
-  auto* tmw = new TransverseMercatorWrapper();
+  auto* tmw = new GeographicConvertionWrapper();
 
   // simulator
   poseSimulationFactory = new PoseSimulationFactory();
