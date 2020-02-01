@@ -35,6 +35,7 @@ SOURCES += \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
+    src/gui/ValueDock.cpp \
     src/kinematic/CgalWorker.cpp \
     src/main.cpp \
     src/block/GuidanceGlobalPlanner.cpp \
@@ -42,7 +43,6 @@ SOURCES += \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
     src/gui/CameraToolbar.cpp \
-    src/gui/GuidanceMeterBar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceTurning.cpp \
     src/gui/GuidanceXteBar.cpp \
@@ -77,7 +77,6 @@ HEADERS += \
     src/block/GuidanceXte.h \
     src/block/Implement.h \
     src/block/ImplementSection.h \
-    src/block/MeterBarModel.h \
     src/block/NmeaParserGGA.h \
     src/block/NmeaParserHDT.h \
     src/block/NmeaParserRMC.h \
@@ -91,13 +90,13 @@ HEADERS += \
     src/block/TrailerModel.h \
     src/block/TransverseMercatorConverter.h \
     src/block/UdpSocket.h \
+    src/block/ValueDockBlock.h \
     src/block/VectorObject.h \
     src/block/XteBarModel.h \
     src/gui/CameraToolbar.h \
     src/gui/FieldsOptimitionToolbar.h \
     src/gui/FieldsToolbar.h \
     src/gui/FontComboboxDelegate.h \
-    src/gui/GuidanceMeterBar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceTurning.h \
     src/gui/GuidanceXteBar.h \
@@ -111,6 +110,7 @@ HEADERS += \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
+    src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \
     src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
@@ -134,13 +134,13 @@ FORMS += \
     src/gui/CameraToolbar.ui \
     src/gui/FieldsOptimitionToolbar.ui \
     src/gui/FieldsToolbar.ui \
-    src/gui/GuidanceMeterBar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \
     src/gui/GuidanceXteBar.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
+    src/gui/ValueDock.ui \
     src/gui/lengthwidget.ui \
     src/gui/vectorwidget.ui
 

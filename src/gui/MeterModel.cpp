@@ -25,7 +25,7 @@
 
 #include "../qnodeseditor/qneblock.h"
 
-#include "../block/MeterBarModel.h"
+#include "../block/ValueDockBlock.h"
 
 MeterModel::MeterModel( QGraphicsScene* scene )
   : scene( scene ) {
@@ -110,7 +110,7 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
+          if( auto* object = qobject_cast<ValueDockBlock*>( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 1:
@@ -135,7 +135,7 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
         auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
+          if( auto* object = qobject_cast<ValueDockBlock*>( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 0:
@@ -181,7 +181,7 @@ bool MeterModel::setData( const QModelIndex& index, const QVariant& value, int r
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<MeterBarModel*>( block->object ) ) {
+      if( auto* object = qobject_cast<ValueDockBlock*>( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -253,7 +253,7 @@ void MeterModel::resetModel() {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<MeterBarModel*>( block->object ) != nullptr ) {
+      if( qobject_cast<ValueDockBlock*>( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

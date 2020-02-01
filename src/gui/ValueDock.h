@@ -1,18 +1,18 @@
-#ifndef GUIDANCEMETERBAR_H
-#define GUIDANCEMETERBAR_H
+#ifndef VALUEDOCK_H
+#define VALUEDOCK_H
 
 #include <QGroupBox>
 
 namespace Ui {
-  class GuidanceMeterBar;
+  class ValueDock;
 }
 
-class GuidanceMeterBar : public QGroupBox {
+class ValueDock : public QGroupBox {
     Q_OBJECT
 
   public:
-    explicit GuidanceMeterBar( QWidget* parent = nullptr );
-    ~GuidanceMeterBar();
+    explicit ValueDock( QWidget* parent = nullptr );
+    ~ValueDock();
 
   public slots:
     void setMeter( float arg );
@@ -22,7 +22,7 @@ class GuidanceMeterBar : public QGroupBox {
     void setFontOfLabel( const QFont& font );
 
   private:
-    Ui::GuidanceMeterBar* ui = nullptr;
+    Ui::ValueDock* ui = nullptr;
 
   public:
     const QFont& fontOfLabel();
@@ -33,4 +33,4 @@ class GuidanceMeterBar : public QGroupBox {
     double scale = 1;
 };
 
-#endif // GUIDANCEMETERBAR_H
+#endif // VALUEDOCK_H

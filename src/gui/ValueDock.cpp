@@ -1,21 +1,21 @@
-#include "GuidanceMeterBar.h"
-#include "ui_GuidanceMeterBar.h"
+#include "ValueDock.h"
+#include "ui_ValueDock.h"
 
 #include <QtMath>
 
 #include <cmath>
 
-GuidanceMeterBar::GuidanceMeterBar( QWidget* parent ) :
+ValueDock::ValueDock( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::GuidanceMeterBar ) {
+  ui( new Ui::ValueDock ) {
   ui->setupUi( this );
 }
 
-GuidanceMeterBar::~GuidanceMeterBar() {
+ValueDock::~ValueDock() {
   delete ui;
 }
 
-void GuidanceMeterBar::setMeter( float arg ) {
+void ValueDock::setMeter( float arg ) {
   auto meter = double( arg );
   meter *= scale;
 
@@ -30,23 +30,23 @@ void GuidanceMeterBar::setMeter( float arg ) {
   ui->lbMeter->setText( QStringLiteral( "%1" ).arg( meter, fieldWidth, 'f', precision, ' ' ) );
 }
 
-void GuidanceMeterBar::setName( const QString& name ) {
+void ValueDock::setName( const QString& name ) {
   ui->lbName->setText( name );
 }
 
-void GuidanceMeterBar::setCaptionEnabled( bool enabled ) {
+void ValueDock::setCaptionEnabled( bool enabled ) {
   ui->lbName->setVisible( enabled );
   ui->lbName->setEnabled( enabled );
 }
 
-void GuidanceMeterBar::setFontOfLabel( const QFont& font ) {
+void ValueDock::setFontOfLabel( const QFont& font ) {
   ui->lbMeter->setFont( font );
 }
 
-const QFont& GuidanceMeterBar::fontOfLabel() {
+const QFont& ValueDock::fontOfLabel() {
   return ui->lbMeter->font();
 }
 
-bool GuidanceMeterBar::captionEnabled() {
+bool ValueDock::captionEnabled() {
   return ui->lbName->isVisible();
 }

@@ -82,7 +82,7 @@
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
 #include "block/XteBarModel.h"
-#include "block/MeterBarModel.h"
+#include "block/ValueDockBlock.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -354,7 +354,7 @@ int main( int argc, char** argv ) {
   xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // meter dock
-  BlockFactory* meterBarModelFactory = new MeterBarModelFactory(
+  BlockFactory* meterBarModelFactory = new ValueDockBlockFactory(
     mainWindow,
     Qt::TopDockWidgetArea,
     Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GuidanceMeterBar</class>
- <widget class="QGroupBox" name="GuidanceMeterBar">
+ <class>ValueDock</class>
+ <widget class="QGroupBox" name="ValueDock">
   <property name="geometry">
    <rect>
     <x>0</x>

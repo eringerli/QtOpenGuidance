@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef METERBARMODEL_H
-#define METERBARMODEL_H
+#ifndef VALUEDOCKBLOCK_H
+#define VALUEDOCKBLOCK_H
 
 #include <QObject>
 #include <QDockWidget>
@@ -25,22 +25,22 @@
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
-#include "../gui/GuidanceMeterBar.h"
+#include "../gui/ValueDock.h"
 
 #include "BlockBase.h"
 
-class MeterBarModel : public BlockBase {
+class ValueDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit MeterBarModel( MainWindow* mainWindow )
+    explicit ValueDockBlock( MainWindow* mainWindow )
       : BlockBase() {
-      widget = new GuidanceMeterBar( mainWindow );
+      widget = new ValueDock( mainWindow );
       dock = new QDockWidget( mainWindow );
       dock->setWidget( widget );
     }
 
-    ~MeterBarModel() {
+    ~ValueDockBlock() {
       widget->deleteLater();
       dock->deleteLater();
     }
@@ -83,14 +83,14 @@ class MeterBarModel : public BlockBase {
 
     QDockWidget* dock = nullptr;
     QAction* action = nullptr;
-    GuidanceMeterBar* widget = nullptr;
+    ValueDock* widget = nullptr;
 };
 
-class MeterBarModelFactory : public BlockFactory {
+class ValueDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    MeterBarModelFactory( MainWindow* mainWindow,
+    ValueDockBlockFactory( MainWindow* mainWindow,
                           Qt::DockWidgetArea area,
                           Qt::DockWidgetAreas allowedAreas,
                           QDockWidget::DockWidgetFeatures features,
@@ -103,7 +103,7 @@ class MeterBarModelFactory : public BlockFactory {
         menu( menu ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "MeterBarModel" );
+      return QStringLiteral( "ValueDockBlock" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -111,13 +111,13 @@ class MeterBarModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new MeterBarModel( mainWindow );
+      return new ValueDockBlock( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      MeterBarModel* object = qobject_cast<MeterBarModel*>( obj );
+      ValueDockBlock* object = qobject_cast<ValueDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
       object->dock->setFeatures( features );
@@ -142,4 +142,4 @@ class MeterBarModelFactory : public BlockFactory {
     QMenu* menu = nullptr;
 };
 
-#endif // METERBARMODEL_H
+#endif // VALUEDOCKBLOCK_H
