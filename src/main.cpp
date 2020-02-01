@@ -81,7 +81,7 @@
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
-#include "block/XteBarModel.h"
+#include "block/XteDockBlock.h"
 #include "block/ValueDockBlock.h"
 
 #include "block/PoseSimulation.h"
@@ -345,7 +345,7 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
 
   // XTE dock
-  BlockFactory* xteBarModelFactory = new XteBarModelFactory(
+  BlockFactory* xteBarModelFactory = new XteDockBlockFactory(
     mainWindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,

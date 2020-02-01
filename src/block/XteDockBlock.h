@@ -16,30 +16,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef XTEBARMODEL_H
-#define XTEBARMODEL_H
+#ifndef XTEDOCKBLOCK_H
+#define XTEDOCKBLOCK_H
 
 #include <QObject>
 #include <QDockWidget>
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
-#include "../gui/GuidanceXteBar.h"
+#include "../gui/XteDock.h"
 
 #include "BlockBase.h"
 
-class XteBarModel : public BlockBase {
+class XteDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit XteBarModel( MainWindow* mainWindow )
+    explicit XteDockBlock( MainWindow* mainWindow )
       : BlockBase() {
-      widget = new GuidanceXteBar( mainWindow );
+      widget = new XteDock( mainWindow );
       dock = new QDockWidget( mainWindow );
       dock->setWidget( widget );
     }
 
-    ~XteBarModel() {
+    ~XteDockBlock() {
       widget->deleteLater();
       dock->deleteLater();
       action->deleteLater();
@@ -60,14 +60,14 @@ class XteBarModel : public BlockBase {
   public:
     QDockWidget* dock = nullptr;
     QAction* action = nullptr;
-    GuidanceXteBar* widget = nullptr;
+    XteDock* widget = nullptr;
 };
 
-class XteBarModelFactory : public BlockFactory {
+class XteDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    XteBarModelFactory( MainWindow* mainWindow,
+    XteDockBlockFactory( MainWindow* mainWindow,
                         Qt::DockWidgetArea area,
                         Qt::DockWidgetAreas allowedAreas,
                         QDockWidget::DockWidgetFeatures features,
@@ -80,7 +80,7 @@ class XteBarModelFactory : public BlockFactory {
         menu( menu ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "XteBarModel" );
+      return QStringLiteral( "XteDockBlock" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -88,13 +88,13 @@ class XteBarModelFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new XteBarModel( mainWindow );
+      return new XteDockBlock( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      XteBarModel* object = qobject_cast<XteBarModel*>( obj );
+      XteDockBlock* object = qobject_cast<XteDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
       object->dock->setFeatures( features );
@@ -119,4 +119,4 @@ class XteBarModelFactory : public BlockFactory {
     QMenu* menu = nullptr;
 };
 
-#endif // XTEBARMODEL_H
+#endif // XTEDOCKBLOCK_H

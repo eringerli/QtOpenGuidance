@@ -1,19 +1,19 @@
-#include "GuidanceXteBar.h"
-#include "ui_GuidanceXteBar.h"
+#include "XteDock.h"
+#include "ui_XteDock.h"
 
 #include <cmath>
 
-GuidanceXteBar::GuidanceXteBar( QWidget* parent ) :
+XteDock::XteDock( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::GuidanceXteBar ) {
+  ui( new Ui::XteDock ) {
   ui->setupUi( this );
 }
 
-GuidanceXteBar::~GuidanceXteBar() {
+XteDock::~XteDock() {
   delete ui;
 }
 
-void GuidanceXteBar::setXte( float xte ) {
+void XteDock::setXte( float xte ) {
   float xteAbsInCm = qAbs( xte * 100 );
 
   if( qIsInf( xte ) ) {
@@ -53,6 +53,6 @@ void GuidanceXteBar::setXte( float xte ) {
   }
 }
 
-void GuidanceXteBar::setName( const QString& name ) {
+void XteDock::setName( const QString& name ) {
   ui->lbName->setText( name );
 }

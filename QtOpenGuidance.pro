@@ -36,6 +36,7 @@ SOURCES += \
     src/gui/FieldsToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/ValueDock.cpp \
+    src/gui/XteDock.cpp \
     src/kinematic/CgalWorker.cpp \
     src/main.cpp \
     src/block/GuidanceGlobalPlanner.cpp \
@@ -45,7 +46,6 @@ SOURCES += \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceTurning.cpp \
-    src/gui/GuidanceXteBar.cpp \
     src/gui/ImplementBlockModel.cpp \
     src/gui/ImplementSectionModel.cpp \
     src/gui/MeterModel.cpp \
@@ -92,14 +92,13 @@ HEADERS += \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
     src/block/VectorObject.h \
-    src/block/XteBarModel.h \
+    src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \
     src/gui/FieldsOptimitionToolbar.h \
     src/gui/FieldsToolbar.h \
     src/gui/FontComboboxDelegate.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceTurning.h \
-    src/gui/GuidanceXteBar.h \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
     src/gui/MainWindow.h \
@@ -112,6 +111,7 @@ HEADERS += \
     src/gui/StringBlockModel.h \
     src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \
+    src/gui/XteDock.h \
     src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/GeographicConvertionWrapper.h \
@@ -136,11 +136,11 @@ FORMS += \
     src/gui/FieldsToolbar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \
-    src/gui/GuidanceXteBar.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
     src/gui/ValueDock.ui \
+    src/gui/XteDock.ui \
     src/gui/lengthwidget.ui \
     src/gui/vectorwidget.ui
 
