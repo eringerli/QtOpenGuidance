@@ -109,13 +109,10 @@ const std::vector<QString> permissions( {"android.permission.INTERNET",
 int main( int argc, char** argv ) {
 //  // hack to make the app apear without cropped qt3d-widget
 //  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+
   QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
-
-//  qputenv( "QT_AUTO_SCREEN_SCALE_FACTOR", "1.5" );
-//  qputenv( "QT_SCALE_FACTOR_ROUNDING_POLICY","PassThrough");
-//  qputenv( "QT_SCALE_FACTOR", "1" );
-
   QCoreApplication::setAttribute( Qt::AA_UseHighDpiPixmaps );
+  QGuiApplication::setHighDpiScaleFactorRoundingPolicy( Qt::HighDpiScaleFactorRoundingPolicy::PassThrough );
 //  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
 
   // make qDebug() more expressive
