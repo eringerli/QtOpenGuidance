@@ -1,4 +1,4 @@
-// Copyright( C ) 2019 Christian Riggenbach
+// Copyright( C ) 2020 Christian Riggenbach
 //
 // This program is free software:
 // you can redistribute it and / or modify
@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCKBLOCK_H
-#define VALUEDOCKBLOCK_H
+#ifndef ORIENTATIONDOCKBLOCK_H
+#define ORIENTATIONDOCKBLOCK_H
 
 #include <QObject>
 #include <QDockWidget>
@@ -25,22 +25,24 @@
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
-#include "../gui/ValueDock.h"
+#include "../gui/OrientationDock.h"
 
 #include "BlockBase.h"
 
-class ValueDockBlock : public BlockBase {
+#include "../kinematic/PoseOptions.h"
+
+class OrientationDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlock( MainWindow* mainWindow )
+    explicit OrientationDockBlock( MainWindow* mainWindow )
       : BlockBase() {
-      widget = new ValueDock( mainWindow );
+      widget = new OrientationDock( mainWindow );
       dock = new QDockWidget( mainWindow );
       dock->setWidget( widget );
     }
 
-    ~ValueDockBlock() {
+    ~OrientationDockBlock() {
       widget->deleteLater();
       dock->deleteLater();
     }
@@ -49,13 +51,18 @@ class ValueDockBlock : public BlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "Value: " ) + name );
+      action->setText( QStringLiteral( "Orientation: " ) + name );
       widget->setName( name );
     }
 
-    void setValue( float value ) {
-      widget->setMeter( value );
+    void setOrientation( QQuaternion orientation ) {
+      widget->setOrientation( orientation );
     }
+
+    void setPose( const Point_3&, const QQuaternion orientation, const PoseOption::Options ) {
+      widget->setOrientation( orientation );
+    }
+
 
   public:
 
@@ -83,18 +90,18 @@ class ValueDockBlock : public BlockBase {
 
     QDockWidget* dock = nullptr;
     QAction* action = nullptr;
-    ValueDock* widget = nullptr;
+    OrientationDock* widget = nullptr;
 };
 
-class ValueDockBlockFactory : public BlockFactory {
+class OrientationDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueDockBlockFactory( MainWindow* mainWindow,
-                           Qt::DockWidgetArea area,
-                           Qt::DockWidgetAreas allowedAreas,
-                           QDockWidget::DockWidgetFeatures features,
-                           QMenu* menu )
+    OrientationDockBlockFactory( MainWindow* mainWindow,
+                                 Qt::DockWidgetArea area,
+                                 Qt::DockWidgetAreas allowedAreas,
+                                 QDockWidget::DockWidgetFeatures features,
+                                 QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
         area( area ),
@@ -103,7 +110,7 @@ class ValueDockBlockFactory : public BlockFactory {
         menu( menu ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "ValueDockBlock" );
+      return QStringLiteral( "OrientationDockBlock" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -111,13 +118,13 @@ class ValueDockBlockFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new ValueDockBlock( mainWindow );
+      return new OrientationDockBlock( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      ValueDockBlock* object = qobject_cast<ValueDockBlock*>( obj );
+      OrientationDockBlock* object = qobject_cast<OrientationDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
       object->dock->setFeatures( features );
@@ -129,7 +136,8 @@ class ValueDockBlockFactory : public BlockFactory {
 
       mainWindow->addDockWidget( area, object->dock );
 
-      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }
@@ -142,4 +150,4 @@ class ValueDockBlockFactory : public BlockFactory {
     QMenu* menu = nullptr;
 };
 
-#endif // VALUEDOCKBLOCK_H
+#endif // ORIENTATIONDOCKBLOCK_H

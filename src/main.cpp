@@ -83,6 +83,7 @@
 #include "block/GridModel.h"
 #include "block/XteDockBlock.h"
 #include "block/ValueDockBlock.h"
+#include "block/OrientationDockBlock.h"
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -345,22 +346,31 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( Qt::BottomDockWidgetArea, simulatorToolbarDock );
 
   // XTE dock
-  BlockFactory* xteBarModelFactory = new XteDockBlockFactory(
+  BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
     mainWindow,
     Qt::TopDockWidgetArea,
     Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
     guidanceToolbar->menu );
-  xteBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
+  xteDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
-  // meter dock
-  BlockFactory* meterBarModelFactory = new ValueDockBlockFactory(
+  // value dock
+  BlockFactory* valueDockBlockFactory = new ValueDockBlockFactory(
     mainWindow,
     Qt::TopDockWidgetArea,
     Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
     guidanceToolbar->menu );
-  meterBarModelFactory->addToCombobox( settingDialog->getCbNodeType() );
+  valueDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // orientation dock
+  BlockFactory* orientationDockBlockFactory = new OrientationDockBlockFactory(
+    mainWindow,
+    Qt::TopDockWidgetArea,
+    Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
+    guidanceToolbar->menu );
+  orientationDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // implements
   auto* implementFactory = new ImplementFactory(

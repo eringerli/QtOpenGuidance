@@ -34,6 +34,7 @@ SOURCES += \
     src/block/SprayerModel.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
+    src/gui/OrientationDock.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/ValueDock.cpp \
     src/gui/XteDock.cpp \
@@ -81,6 +82,7 @@ HEADERS += \
     src/block/NmeaParserHDT.h \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
+    src/block/OrientationDockBlock.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PrintLatency.h \
@@ -104,6 +106,7 @@ HEADERS += \
     src/gui/MainWindow.h \
     src/gui/MeterModel.h \
     src/gui/NumberBlockModel.h \
+    src/gui/OrientationDock.h \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
@@ -136,6 +139,7 @@ FORMS += \
     src/gui/FieldsToolbar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \
+    src/gui/OrientationDock.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \

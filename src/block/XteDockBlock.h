@@ -68,10 +68,10 @@ class XteDockBlockFactory : public BlockFactory {
 
   public:
     XteDockBlockFactory( MainWindow* mainWindow,
-                        Qt::DockWidgetArea area,
-                        Qt::DockWidgetAreas allowedAreas,
-                        QDockWidget::DockWidgetFeatures features,
-                        QMenu* menu )
+                         Qt::DockWidgetArea area,
+                         Qt::DockWidgetAreas allowedAreas,
+                         QDockWidget::DockWidgetFeatures features,
+                         QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
         area( area ),

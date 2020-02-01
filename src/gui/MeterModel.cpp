@@ -26,6 +26,7 @@
 #include "../qnodeseditor/qneblock.h"
 
 #include "../block/ValueDockBlock.h"
+#include "../block/OrientationDockBlock.h"
 
 MeterModel::MeterModel( QGraphicsScene* scene )
   : scene( scene ) {
@@ -121,6 +122,19 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
               }
             }
           }
+
+          if( auto* object = qobject_cast<OrientationDockBlock*>( block->object ) ) {
+            if( countRow++ == index.row() ) {
+              switch( index.column() ) {
+                case 1:
+                  return object->widget->captionEnabled() ? Qt::Checked : Qt::Unchecked;
+
+                case 7:
+                  return object->widget->fontOfLabel().bold() ? Qt::Checked : Qt::Unchecked;
+              }
+            }
+          }
+
         }
       }
     }
@@ -136,6 +150,36 @@ QVariant MeterModel::data( const QModelIndex& index, int role ) const {
 
         if( block != nullptr ) {
           if( auto* object = qobject_cast<ValueDockBlock*>( block->object ) ) {
+            if( countRow++ == index.row() ) {
+              switch( index.column() ) {
+                case 0:
+                  return block->getName();
+
+//                case 1:
+//                  return object->widget->captionEnabled();
+
+                case 2:
+                  return object->widget->precision;
+
+                case 3:
+                  return object->widget->scale;
+
+                case 4:
+                  return object->widget->fieldWidth;
+
+                case 5:
+                  return object->widget->fontOfLabel();
+
+                case 6:
+                  return object->widget->fontOfLabel().pointSize();
+
+//                case 7:
+//                  return object->widget->fontOfLabel().bold();
+              }
+            }
+          }
+
+          if( auto* object = qobject_cast<OrientationDockBlock*>( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 0:
@@ -237,6 +281,63 @@ bool MeterModel::setData( const QModelIndex& index, const QVariant& value, int r
           }
         }
       }
+
+      if( auto* object = qobject_cast<OrientationDockBlock*>( block->object ) ) {
+        if( countRow++ == index.row() ) {
+          switch( index.column() ) {
+            case 0:
+              block->setName( qvariant_cast<QString>( value ) );
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 1:
+              object->widget->setCaptionEnabled( value.toBool() );
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 2:
+              object->widget->precision = value.toString().toInt();
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 3:
+              object->widget->scale = value.toString().toFloat();
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 4:
+              object->widget->fieldWidth = value.toString().toInt();
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 5: {
+                QFont font = value.value<QFont>();
+                QFont oldFont = object->widget->fontOfLabel();
+                font.setBold( oldFont.bold() );
+                font.setPointSize( oldFont.pointSize() );
+                object->widget->setFontOfLabel( font );
+                emit dataChanged( index, index, QVector<int>() << role );
+                return true;
+              }
+
+            case 6: {
+                QFont font = object->widget->fontOfLabel();
+                font.setPointSize( value.toInt() );
+                object->widget->setFontOfLabel( font );
+                emit dataChanged( index, index, QVector<int>() << role );
+                return true;
+              }
+
+            case 7: {
+                QFont font = object->widget->fontOfLabel();
+                font.setBold( value.toBool() );
+                object->widget->setFontOfLabel( font );
+                emit dataChanged( index, index, QVector<int>() << role );
+                return true;
+              }
+          }
+        }
+      }
     }
   }
 
@@ -253,7 +354,8 @@ void MeterModel::resetModel() {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<ValueDockBlock*>( block->object ) != nullptr ) {
+      if( qobject_cast<ValueDockBlock*>( block->object ) != nullptr ||
+          qobject_cast<OrientationDockBlock*>( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

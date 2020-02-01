@@ -16,31 +16,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCK_H
-#define VALUEDOCK_H
+#ifndef ORIENTATIONDOCK_H
+#define ORIENTATIONDOCK_H
 
 #include <QGroupBox>
+#include <QQuaternion>
 
 namespace Ui {
-  class ValueDock;
+  class OrientationDock;
 }
 
-class ValueDock : public QGroupBox {
+class OrientationDock : public QGroupBox {
     Q_OBJECT
 
   public:
-    explicit ValueDock( QWidget* parent = nullptr );
-    ~ValueDock();
+    explicit OrientationDock( QWidget* parent = nullptr );
+    ~OrientationDock();
 
   public slots:
-    void setMeter( float arg );
+    void setOrientation( QQuaternion orientation );
     void setName( const QString& name );
 
     void setCaptionEnabled( bool enabled );
     void setFontOfLabel( const QFont& font );
 
   private:
-    Ui::ValueDock* ui = nullptr;
+    Ui::OrientationDock* ui = nullptr;
 
   public:
     const QFont& fontOfLabel();
@@ -51,4 +52,4 @@ class ValueDock : public QGroupBox {
     double scale = 1;
 };
 
-#endif // VALUEDOCK_H
+#endif // ORIENTATIONDOCK_H
