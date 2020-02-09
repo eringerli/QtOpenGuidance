@@ -264,7 +264,7 @@ int main( int argc, char** argv ) {
   auto* guidaceToolbarDock = new QDockWidget( mainWindow );
   guidaceToolbarDock->setWidget( guidanceToolbar );
   guidaceToolbarDock->setWindowTitle( guidanceToolbar->windowTitle() );
-  guidaceToolbarDock->setObjectName( QStringLiteral( "GuidanceToolbar" ) );
+  guidaceToolbarDock->setObjectName( QStringLiteral( "GuidanceToolbarDock" ) );
   guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
   guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
   mainWindow->addDockWidget( Qt::RightDockWidgetArea, guidaceToolbarDock );
@@ -274,7 +274,7 @@ int main( int argc, char** argv ) {
   auto* turningToolbarDock = new QDockWidget( mainWindow );
   turningToolbarDock->setWidget( turningToolbar );
   turningToolbarDock->setWindowTitle( turningToolbar->windowTitle() );
-  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbar" ) );
+  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbarDock" ) );
   turningToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( Qt::TopDockWidgetArea, turningToolbarDock );
   guidanceToolbar->menu->addAction( turningToolbarDock->toggleViewAction() );
@@ -285,7 +285,7 @@ int main( int argc, char** argv ) {
   auto* cameraToolbarDock = new QDockWidget( mainWindow );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setWindowTitle( cameraToolbar->windowTitle() );
-  cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbar" ) );
+  cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbarDock" ) );
   cameraToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, cameraToolbarDock );
   guidanceToolbar->menu->addAction( cameraToolbarDock->toggleViewAction() );
@@ -296,7 +296,7 @@ int main( int argc, char** argv ) {
   auto* passesToolbarDock = new QDockWidget( mainWindow );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setWindowTitle( passesToolbar->windowTitle() );
-  passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbar" ) );
+  passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbarDock" ) );
   passesToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, passesToolbarDock );
   mainWindow->tabifyDockWidget( cameraToolbarDock, passesToolbarDock );
@@ -308,7 +308,7 @@ int main( int argc, char** argv ) {
   auto* fieldsToolbarDock = new QDockWidget( mainWindow );
   fieldsToolbarDock->setWidget( fieldsToolbar );
   fieldsToolbarDock->setWindowTitle( fieldsToolbar->windowTitle() );
-  fieldsToolbarDock->setObjectName( QStringLiteral( "FieldsToolbar" ) );
+  fieldsToolbarDock->setObjectName( QStringLiteral( "FieldsToolbarDock" ) );
   fieldsToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
 //  fieldsToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
   QObject::connect( fieldsToolbarDock, &QDockWidget::dockLocationChanged, fieldsToolbar, &FieldsToolbar::setDockLocation );
@@ -322,7 +322,7 @@ int main( int argc, char** argv ) {
   auto* fieldsOptimitionToolbarDock = new QDockWidget( mainWindow );
   fieldsOptimitionToolbarDock->setWidget( fieldsOptimitionToolbar );
   fieldsOptimitionToolbarDock->setWindowTitle( fieldsOptimitionToolbar->windowTitle() );
-  fieldsOptimitionToolbarDock->setObjectName( QStringLiteral( "FieldOptimitionsToolbar" ) );
+  fieldsOptimitionToolbarDock->setObjectName( QStringLiteral( "FieldOptimitionsToolbarDock" ) );
   fieldsOptimitionToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   fieldsOptimitionToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
   mainWindow->addDockWidget( Qt::LeftDockWidgetArea, fieldsOptimitionToolbarDock );
@@ -335,7 +335,7 @@ int main( int argc, char** argv ) {
   auto* simulatorToolbarDock = new QDockWidget( mainWindow );
   simulatorToolbarDock->setWidget( simulatorToolbar );
   simulatorToolbarDock->setWindowTitle( simulatorToolbar->windowTitle() );
-  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbar" ) );
+  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbarDock" ) );
   simulatorToolbarDock->setFeatures( QDockWidget::DockWidgetMovable |
                                      QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetVerticalTitleBar );
