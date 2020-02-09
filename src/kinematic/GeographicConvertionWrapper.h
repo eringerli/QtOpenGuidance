@@ -94,7 +94,7 @@ class GeographicConvertionWrapper {
 #endif
         y -= falseNorthingTM;
         y = -y;
-        z = height0TM;
+        z = 0;
       } else {
         _lc.Forward( latitude, longitude, _lc.HeightOrigin(), x, y, z );
         y = -y;
