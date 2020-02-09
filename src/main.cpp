@@ -489,7 +489,9 @@ int main( int argc, char** argv ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    guidanceToolbar->cbSimulatorSetChecked( settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool() );
+    bool simulatorEnabled = settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool();
+    guidanceToolbar->cbSimulatorSetChecked( simulatorEnabled );
+    simulatorToolbarDock->setVisible( simulatorEnabled );
 
     if( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ) {
       settingDialog->show();
