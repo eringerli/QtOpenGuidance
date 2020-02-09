@@ -145,7 +145,7 @@ int main( int argc, char** argv ) {
 
   auto* view = new Qt3DExtras::Qt3DWindow();
 
-  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
+  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
 
 
   QWidget* container = QWidget::createWindowContainer( view );
