@@ -25,28 +25,59 @@
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
-#include "../gui/OrientationDock.h"
+#include "../gui/ThreeValuesDock.h"
 
 #include "BlockBase.h"
+#include "ValueDockBlockBase.h"
 
 #include "../kinematic/PoseOptions.h"
 
-class OrientationDockBlock : public BlockBase {
+class OrientationDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
     explicit OrientationDockBlock( MainWindow* mainWindow )
-      : BlockBase() {
-      widget = new OrientationDock( mainWindow );
-      dock = new QDockWidget( mainWindow );
-      dock->setWidget( widget );
+      : ValueDockBlockBase( mainWindow ) {
+      widget = new ThreeValuesDock( mainWindow );
+
+      widget->setDescriptions( QStringLiteral( "R" ), QStringLiteral( "P" ), QStringLiteral( "H" ) );
     }
 
     ~OrientationDockBlock() {
       widget->deleteLater();
-      dock->deleteLater();
     }
 
+    virtual const QFont& getFont() {
+      return widget->fontOfLabel();
+    }
+    virtual int getPrecision() override {
+      return widget->precision;
+    }
+    virtual int getFieldWidth() override {
+      return widget->fieldWidth;
+    }
+    virtual double getScale() override {
+      return widget->scale;
+    }
+    virtual bool captionEnabled() {
+      return widget->captionEnabled();
+    }
+
+    virtual void setFont( const QFont& font ) {
+      widget->setFontOfLabel( font );
+    }
+    virtual void setPrecision( int precision ) override {
+      widget->precision = precision;
+    }
+    virtual void setFieldWidth( int fieldWidth ) override {
+      widget->fieldWidth = fieldWidth;
+    }
+    virtual void setScale( double scale ) override {
+      widget->scale = scale;
+    }
+    virtual void setCaptionEnabled( bool enabled ) override {
+      widget->setCaptionEnabled( enabled );
+    }
 
   public slots:
     void setName( const QString& name ) override {
@@ -56,13 +87,14 @@ class OrientationDockBlock : public BlockBase {
     }
 
     void setOrientation( QQuaternion orientation ) {
-      widget->setOrientation( orientation );
+      QVector3D eulerAngles = orientation.toEulerAngles();
+
+      widget->setValues( eulerAngles.y(), eulerAngles.x(), eulerAngles.z() );
     }
 
     void setPose( const Point_3&, const QQuaternion orientation, const PoseOption::Options ) {
-      widget->setOrientation( orientation );
+      setOrientation( orientation );
     }
-
 
   public:
 
@@ -88,9 +120,7 @@ class OrientationDockBlock : public BlockBase {
       }
     }
 
-    QDockWidget* dock = nullptr;
-    QAction* action = nullptr;
-    OrientationDock* widget = nullptr;
+    ThreeValuesDock* widget = nullptr;
 };
 
 class OrientationDockBlockFactory : public BlockFactory {

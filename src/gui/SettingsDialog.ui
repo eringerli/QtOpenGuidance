@@ -657,7 +657,7 @@
        </widget>
        <widget class="QWidget" name="tabMeter">
         <attribute name="title">
-         <string>Meter</string>
+         <string>Value Docks</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_15">
          <item>

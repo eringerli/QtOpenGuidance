@@ -34,8 +34,9 @@ SOURCES += \
     src/block/SprayerModel.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
-    src/gui/OrientationDock.cpp \
     src/gui/SectionControlToolbar.cpp \
+    src/gui/ThreeValuesDock.cpp \
+    src/gui/ValueBlockModel.cpp \
     src/gui/ValueDock.cpp \
     src/gui/XteDock.cpp \
     src/kinematic/CgalWorker.cpp \
@@ -49,7 +50,6 @@ SOURCES += \
     src/gui/GuidanceTurning.cpp \
     src/gui/ImplementBlockModel.cpp \
     src/gui/ImplementSectionModel.cpp \
-    src/gui/MeterModel.cpp \
     src/gui/NumberBlockModel.cpp \
     src/gui/PassToolbar.cpp \
     src/gui/SettingsDialog.cpp \
@@ -85,6 +85,7 @@ HEADERS += \
     src/block/OrientationDockBlock.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
+    src/block/PositionDockBlock.h \
     src/block/PrintLatency.h \
     src/block/SprayerModel.h \
     src/block/StringObject.h \
@@ -93,6 +94,7 @@ HEADERS += \
     src/block/TransverseMercatorConverter.h \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
+    src/block/ValueDockBlockBase.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \
@@ -104,14 +106,14 @@ HEADERS += \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
     src/gui/MainWindow.h \
-    src/gui/MeterModel.h \
     src/gui/NumberBlockModel.h \
-    src/gui/OrientationDock.h \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
+    src/gui/ThreeValuesDock.h \
+    src/gui/ValueBlockModel.h \
     src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \
     src/gui/XteDock.h \
@@ -139,10 +141,10 @@ FORMS += \
     src/gui/FieldsToolbar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \
-    src/gui/OrientationDock.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
+    src/gui/ThreeValuesDock.ui \
     src/gui/ValueDock.ui \
     src/gui/XteDock.ui \
     src/gui/lengthwidget.ui \

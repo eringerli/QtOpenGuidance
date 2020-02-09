@@ -200,7 +200,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   implementSectionModel = new ImplementSectionModel();
   ui->twSections->setModel( implementSectionModel );
 
-  meterModel = new MeterModel( scene );
+  meterModel = new ValueBlockModel( scene );
   filterModelMeter = new QSortFilterProxyModel( scene );
   filterModelMeter->setDynamicSortFilter( true );
   filterModelMeter->setSourceModel( meterModel );

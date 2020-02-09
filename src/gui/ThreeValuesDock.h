@@ -20,28 +20,29 @@
 #define ORIENTATIONDOCK_H
 
 #include <QGroupBox>
-#include <QQuaternion>
 
 namespace Ui {
-  class OrientationDock;
+  class ThreeValuesDock;
 }
 
-class OrientationDock : public QGroupBox {
+class ThreeValuesDock : public QGroupBox {
     Q_OBJECT
 
   public:
-    explicit OrientationDock( QWidget* parent = nullptr );
-    ~OrientationDock();
+    explicit ThreeValuesDock( QWidget* parent = nullptr );
+    ~ThreeValuesDock();
 
   public slots:
-    void setOrientation( QQuaternion orientation );
     void setName( const QString& name );
 
     void setCaptionEnabled( bool enabled );
     void setFontOfLabel( const QFont& font );
 
+    void setValues( const double first, const double second, const double third );
+    void setDescriptions( const QString& first, const QString& second, const QString& third );
+
   private:
-    Ui::OrientationDock* ui = nullptr;
+    Ui::ThreeValuesDock* ui = nullptr;
 
   public:
     const QFont& fontOfLabel();

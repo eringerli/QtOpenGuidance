@@ -1,4 +1,4 @@
-// Copyright( C ) 2019 Christian Riggenbach
+// Copyright( C ) 2020 Christian Riggenbach
 //
 // This program is free software:
 // you can redistribute it and / or modify
@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCKBLOCK_H
-#define VALUEDOCKBLOCK_H
+#ifndef POSITIONDOCKBLOCK_H
+#define POSITIONDOCKBLOCK_H
 
 #include <QObject>
 #include <QDockWidget>
@@ -25,21 +25,25 @@
 #include <QMenu>
 
 #include "../gui/MainWindow.h"
-#include "../gui/ValueDock.h"
+#include "../gui/ThreeValuesDock.h"
 
 #include "BlockBase.h"
 #include "ValueDockBlockBase.h"
 
-class ValueDockBlock : public ValueDockBlockBase {
+#include "../kinematic/PoseOptions.h"
+
+class PositionDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlock( MainWindow* mainWindow )
+    explicit PositionDockBlock( MainWindow* mainWindow )
       : ValueDockBlockBase( mainWindow ) {
-      widget = new ValueDock( mainWindow );
+      widget = new ThreeValuesDock( mainWindow );
+
+      widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
     }
 
-    ~ValueDockBlock() {
+    ~PositionDockBlock() {
       widget->deleteLater();
     }
 
@@ -78,12 +82,24 @@ class ValueDockBlock : public ValueDockBlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "Value: " ) + name );
+      action->setText( QStringLiteral( "Position: " ) + name );
       widget->setName( name );
     }
 
-    void setValue( float value ) {
-      widget->setMeter( value );
+    void setPose( const Point_3& point, const QQuaternion, const PoseOption::Options ) {
+      if( wgs84 ) {
+        widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
+      }
+
+      widget->setValues( point.x(), point.y(), point.z() );
+    }
+
+    void setWGS84Position( double lat, double lon, double height ) {
+      if( !wgs84 ) {
+        widget->setDescriptions( QStringLiteral( "Lat" ), QStringLiteral( "Lon" ), QStringLiteral( "H" ) );
+      }
+
+      widget->setValues( lat, lon, height );
     }
 
   public:
@@ -110,18 +126,20 @@ class ValueDockBlock : public ValueDockBlockBase {
       }
     }
 
-    ValueDock* widget = nullptr;
+    ThreeValuesDock* widget = nullptr;
+
+    bool wgs84 = false;
 };
 
-class ValueDockBlockFactory : public BlockFactory {
+class PositionDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueDockBlockFactory( MainWindow* mainWindow,
-                           Qt::DockWidgetArea area,
-                           Qt::DockWidgetAreas allowedAreas,
-                           QDockWidget::DockWidgetFeatures features,
-                           QMenu* menu )
+    PositionDockBlockFactory( MainWindow* mainWindow,
+                              Qt::DockWidgetArea area,
+                              Qt::DockWidgetAreas allowedAreas,
+                              QDockWidget::DockWidgetFeatures features,
+                              QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
         area( area ),
@@ -130,7 +148,7 @@ class ValueDockBlockFactory : public BlockFactory {
         menu( menu ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "ValueDockBlock" );
+      return QStringLiteral( "PositionDockBlock" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -138,13 +156,13 @@ class ValueDockBlockFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new ValueDockBlock( mainWindow );
+      return new PositionDockBlock( mainWindow );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
       auto* b = createBaseBlock( scene, obj );
 
-      ValueDockBlock* object = qobject_cast<ValueDockBlock*>( obj );
+      PositionDockBlock* object = qobject_cast<PositionDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
       object->dock->setFeatures( features );
@@ -156,7 +174,8 @@ class ValueDockBlockFactory : public BlockFactory {
 
       mainWindow->addDockWidget( area, object->dock );
 
-      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( float ) ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }
@@ -169,4 +188,4 @@ class ValueDockBlockFactory : public BlockFactory {
     QMenu* menu = nullptr;
 };
 
-#endif // VALUEDOCKBLOCK_H
+#endif // POSITIONDOCKBLOCK_H

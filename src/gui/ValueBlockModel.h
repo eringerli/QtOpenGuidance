@@ -31,11 +31,11 @@
 
 #include "../block/Implement.h"
 
-class MeterModel : public QAbstractTableModel {
+class ValueBlockModel : public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    explicit MeterModel( QGraphicsScene* scene );
+    explicit ValueBlockModel( QGraphicsScene* scene );
 
     // Header:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;

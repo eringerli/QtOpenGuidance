@@ -35,7 +35,7 @@
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
 #include "ImplementSectionModel.h"
-#include "MeterModel.h"
+#include "ValueBlockModel.h"
 #include "FontComboboxDelegate.h"
 
 #include "../cgalKernel.h"
@@ -258,7 +258,7 @@ class SettingsDialog : public QDialog {
   private:
     ImplementSectionModel* implementSectionModel = nullptr;
 
-    MeterModel* meterModel = nullptr;
+    ValueBlockModel* meterModel = nullptr;
     QSortFilterProxyModel* filterModelMeter = nullptr;
     FontComboboxDelegate* meterModelFontDelegate = nullptr;
 

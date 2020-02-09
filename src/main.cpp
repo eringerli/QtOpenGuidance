@@ -83,6 +83,7 @@
 #include "block/GridModel.h"
 #include "block/XteDockBlock.h"
 #include "block/ValueDockBlock.h"
+#include "block/PositionDockBlock.h"
 #include "block/OrientationDockBlock.h"
 
 #include "block/PoseSimulation.h"
@@ -368,6 +369,15 @@ int main( int argc, char** argv ) {
     QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
     guidanceToolbar->menu );
   orientationDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // orientation dock
+  BlockFactory* positionDockBlockFactory = new PositionDockBlockFactory(
+    mainWindow,
+    Qt::TopDockWidgetArea,
+    Qt::LeftDockWidgetArea | Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea,
+    QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar,
+    guidanceToolbar->menu );
+  positionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // implements
   auto* implementFactory = new ImplementFactory(
