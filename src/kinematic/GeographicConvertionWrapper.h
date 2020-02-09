@@ -19,8 +19,15 @@
 #ifndef GEOGRAPHICCONVERTIONWRAPPER_H
 #define GEOGRAPHICCONVERTIONWRAPPER_H
 
+#include <GeographicLib/TransverseMercator.hpp>
 #include <GeographicLib/LocalCartesian.hpp>
+#include <GeographicLib/UTMUPS.hpp>
 #include <GeographicLib/Ellipsoid.hpp>
+
+// define the symbol USE_TRANSVERSEMERCATOR tu use a transverse mercator-projection centered on the first
+// longitude, set byGeographicConvertionWrapper::Reset(). If not defined, it uses the normal UTM-projection.
+// This introduces deviations in heading, the farther you get from the center, so it is not recomended.
+#define USE_TRANSVERSEMERCATOR
 
 using namespace std;
 using namespace GeographicLib;
@@ -29,64 +36,148 @@ using namespace GeographicLib;
 class GeographicConvertionWrapper {
   public:
 
-    GeographicConvertionWrapper()
-      : _tm() {
+    GeographicConvertionWrapper() {
     }
 
     void Forward( const double latitude, const double longitude, const double height, double& x, double& y, double& z ) {
       if( !isLatLonOffsetSet ) {
-        _tm.Reset( latitude, longitude, height );
+        Reset( latitude, longitude, height );
 
-        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward Reset" << latitude << longitude << height;
+//        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward Reset" << latitude << longitude << height << useTM;
         x = 0;
         y = 0;
         z = 0;
 
-        isLatLonOffsetSet = true;
-
         return;
       }
 
-      _tm.Forward( latitude, longitude,  height, y, x, z );
-      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward" << latitude << longitude << height << x << y << z << _tm.LatitudeOrigin() << _tm.LongitudeOrigin() << _tm.HeightOrigin();
+      if( useTM ) {
+#ifdef USE_TRANSVERSEMERCATOR
+        TransverseMercator::UTM().Forward( lon0TM, latitude, longitude, x, y );
+#else
+        int zone;
+        bool northp;
+        UTMUPS::Forward( latitude, longitude, zone, northp, x, y );
+        x -= falseEastingUTM;
+#endif
+        y -= falseNortingTM;
+        y = -y;
+        z = height - height0TM;
+      } else {
+        _lc.Forward( latitude, longitude,  height, x, y, z );
+        y = -y;
+      }
+
+//      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward" << latitude << longitude << height << useTM << x << y << z << _lc.LatitudeOrigin() << _lc.LongitudeOrigin() << _lc.HeightOrigin();
     }
 
     void Forward( const double latitude, const double longitude, double& x, double& y, double& z ) {
       if( !isLatLonOffsetSet ) {
-        _tm.Reset( latitude, longitude, _tm.HeightOrigin() );
+        Reset( latitude, longitude, height0TM );
 
-        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward Reset" << latitude << longitude;
+//        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward Reset" << latitude << longitude << useTM;
         x = 0;
         y = 0;
         z = 0;
 
-        isLatLonOffsetSet = true;
-
         return;
       }
 
-      _tm.Forward( latitude, longitude, _tm.HeightOrigin(), y, x, z );
-      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward" << latitude << longitude << x << y << z << _tm.LatitudeOrigin() << _tm.LongitudeOrigin() << _tm.HeightOrigin();
+      if( useTM ) {
+#ifdef USE_TRANSVERSEMERCATOR
+        TransverseMercator::UTM().Forward( lon0TM, latitude, longitude, x, y );
+#else
+        int zone;
+        bool northp;
+        UTMUPS::Forward( latitude, longitude, zone, northp, x, y );
+        x -= falseEastingUTM;
+#endif
+        y -= falseNortingTM;
+        y = -y;
+        z = height0TM;
+      } else {
+        _lc.Forward( latitude, longitude, _lc.HeightOrigin(), x, y, z );
+        y = -y;
+      }
+
+//      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Forward" << latitude << longitude << useTM << x << y << z << _lc.LatitudeOrigin() << _lc.LongitudeOrigin() << _lc.HeightOrigin();
     }
 
     void Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height ) {
-      _tm.Reverse( x, y, z, latitude, longitude, height );
-      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Reverse" << latitude << longitude << height << x << y << z;
+      if( isLatLonOffsetSet ) {
+        if( useTM ) {
+#ifdef USE_TRANSVERSEMERCATOR
+          TransverseMercator::UTM().Reverse( lon0TM, x, -y + falseNortingTM, latitude, longitude );
+#else
+          UTMUPS::Reverse( zoneUTM, northUTM, x + falseEastingUTM, -y + falseNortingTM, latitude, longitude );
+#endif
+          height = z + height0TM;
+        } else {
+          _lc.Reverse( x, -y, z, latitude, longitude, height );
+        }
+
+//        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Reverse" << latitude << longitude << height << useTM << x << y << z;
+      } else {
+        qDebug() << "TransverseMercatorWrapper::Reverse: No RESET!!!!";
+      }
     }
 
     void Reverse( const double x, const double y, double& latitude, double& longitude, double& height ) {
-      _tm.Reverse( x, y, _tm.HeightOrigin(), latitude, longitude, height );
-      qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Reverse" << latitude << longitude << height << x << y;
+      if( isLatLonOffsetSet ) {
+        if( useTM ) {
+#ifdef USE_TRANSVERSEMERCATOR
+          TransverseMercator::UTM().Reverse( lon0TM, x, -y + falseNortingTM, latitude, longitude );
+#else
+          UTMUPS::Reverse( zoneUTM, northUTM, x + falseEastingUTM, -y + falseNortingTM, latitude, longitude );
+#endif
+          height = height0TM;
+        } else {
+          _lc.Reverse( x, -y, _lc.HeightOrigin(), latitude, longitude, height );
+        }
+
+//        qDebug() << qSetRealNumberPrecision( 10 ) << "TransverseMercatorWrapper::Reverse" << latitude << longitude << height << useTM << x << y;
+      } else {
+        qDebug() << "TransverseMercatorWrapper::Reverse: No RESET!!!!";
+      }
     }
 
     void Reset( const double latitude, const double longitude, const double height ) {
-      _tm.Reset( latitude, longitude, height );
+      // set the false Easting/Norting and zone
+      //      falseEastingUTM = x;
+      //      falseNortingTM = y;
+#ifdef USE_TRANSVERSEMERCATOR
+      double x;
+      TransverseMercator::UTM().Forward( lon0TM, latitude, longitude, x, falseNortingTM );
+      qDebug() << "TransverseMercatorWrapper::Reset" << this << latitude << longitude << height << useTM << falseNortingTM << height0TM;
+#else
+      UTMUPS::Forward( latitude, longitude, zoneUTM, northUTM, falseEastingUTM, falseNortingTM );
+      qDebug() << "TransverseMercatorWrapper::Reset" << this << latitude << longitude << height << useTM << falseNortingTM << falseEastingUTM << height0TM;
+#endif
+      height0TM = height;
+
+      _lc.Reset( latitude, longitude, height );
+
+      isLatLonOffsetSet = true;
+
     }
 
+  public:
+    bool useTM = true;
+
   private:
-    LocalCartesian _tm;
+    LocalCartesian _lc;
 
     bool isLatLonOffsetSet = false;
+
+    double falseNortingTM = 0;
+#ifdef USE_TRANSVERSEMERCATOR
+    double lon0TM = 0;
+#else
+    double falseEastingUTM = 0;
+    int zoneUTM = -2;
+    bool northUTM = true;
+#endif
+    double height0TM = 0;
 };
 
 #endif // GEOGRAPHICCONVERTIONWRAPPER_H

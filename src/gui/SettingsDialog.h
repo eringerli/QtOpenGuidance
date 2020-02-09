@@ -41,6 +41,7 @@
 #include "../cgalKernel.h"
 
 class SpaceNavigatorPollingThread;
+class GeographicConvertionWrapper;
 
 namespace Ui {
   class SettingsDialog;
@@ -168,6 +169,9 @@ class SettingsDialog : public QDialog {
 
     void on_pbMeterDefaults_clicked();
 
+    void on_rbCrsSimulatorTransverseMercator_toggled( bool checked );
+    void on_rbCrsGuidanceTransverseMercator_toggled( bool checked );
+
   private:
     void saveGridValuesInSettings();
     void savePlannerValuesInSettings();
@@ -201,7 +205,8 @@ class SettingsDialog : public QDialog {
   private:
     Ui::SettingsDialog* ui = nullptr;
 
-//    Qt3DCore::QEntity* rootEntity = nullptr;
+    GeographicConvertionWrapper* geographicConvertionWrapperGuidance = nullptr;
+    GeographicConvertionWrapper* geographicConvertionWrapperSimulator = nullptr;
 
     BlockFactory* poseSimulationFactory = nullptr;
 

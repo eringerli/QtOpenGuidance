@@ -43,8 +43,9 @@ class PoseSimulation : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PoseSimulation()
-      : BlockBase() {
+    explicit PoseSimulation( GeographicConvertionWrapper* geographicConvertionWrapper )
+      : BlockBase(),
+        geographicConvertionWrapper( geographicConvertionWrapper ) {
       setSimulation( false );
     }
 
@@ -97,7 +98,7 @@ class PoseSimulation : public BlockBase {
     }
 
     void setInitialWGS84Position( QVector3D position ) {
-      _tm.Reset( position.x(), position.y(), position.z() );
+      geographicConvertionWrapper->Reset( position.x(), position.y(), position.z() );
     }
 
     void autosteerEnabled( bool enabled ) {
@@ -150,15 +151,16 @@ class PoseSimulation : public BlockBase {
     double x = 0;
     double y = 0;
     double height = 0;
-    GeographicConvertionWrapper _tm;
+    GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };
 
 class PoseSimulationFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PoseSimulationFactory()
-      : BlockFactory() {}
+    PoseSimulationFactory( GeographicConvertionWrapper* geographicConvertionWrapper )
+      : BlockFactory(),
+        geographicConvertionWrapper( geographicConvertionWrapper ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Pose Simulation" );
@@ -168,7 +170,7 @@ class PoseSimulationFactory : public BlockFactory {
     }
 
     virtual BlockBase* createNewObject() override {
-      return new PoseSimulation();
+      return new PoseSimulation( geographicConvertionWrapper );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
@@ -189,6 +191,9 @@ class PoseSimulationFactory : public BlockFactory {
 
       return b;
     }
+
+  private:
+    GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };
 
 #endif // POSESIMULATION_H

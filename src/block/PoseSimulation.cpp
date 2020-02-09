@@ -75,7 +75,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     // in global coordinates: WGS84
     {
       double latitude, longitude, height;
-      _tm.Reverse( yWithAntennaOffset, xWithAntennaOffset, 0, latitude, longitude, height );
+      geographicConvertionWrapper->Reverse( xWithAntennaOffset, yWithAntennaOffset, zWithAntennaOffset, latitude, longitude, height );
 
       QElapsedTimer timer;
       timer.start();

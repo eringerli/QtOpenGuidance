@@ -91,6 +91,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   QDialog( parent ),
   mainWindow( mainWindow ),
   ui( new Ui::SettingsDialog ) {
+  // initialise the wrapper for the geographic conversion, so all offsets are the same application-wide
+  geographicConvertionWrapperGuidance = new GeographicConvertionWrapper();
+  geographicConvertionWrapperSimulator = new GeographicConvertionWrapper();
+
   ui->setupUi( this );
 
   // load states of checkboxes from global config
@@ -205,11 +209,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
 
-  // initialise the wrapper for the Transverse Mercator conversion, so all offsets are the same application-wide
-  auto* tmw = new GeographicConvertionWrapper();
-
   // simulator
-  poseSimulationFactory = new PoseSimulationFactory();
+  poseSimulationFactory = new PoseSimulationFactory( geographicConvertionWrapperSimulator );
   poseSimulation = poseSimulationFactory->createNewObject();
   poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
 
@@ -228,7 +229,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   plannerGui = plannerGuiFactory->createNewObject();
   plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
 
-  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, tmw );
+  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
   globalPlanner = globalPlannerFactory->createNewObject();
   globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
 
@@ -247,7 +248,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
                     globalPlannerModel, SLOT( setPlannerModelSettings( int, int, float, int, int, QColor, QColor, QColor, QColor ) ) );
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( tmw );
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( geographicConvertionWrapperGuidance );
   poseSynchroniserFactory = new PoseSynchroniserFactory();
   trailerModelFactory = new TrailerModelFactory( rootEntity );
   tractorModelFactory = new TractorModelFactory( rootEntity );
@@ -1441,4 +1442,12 @@ void SettingsDialog::on_pbMeterDefaults_clicked() {
     ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 30 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), true );
   }
+}
+
+void SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked ) {
+  geographicConvertionWrapperSimulator->useTM = checked;
+}
+
+void SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
+  geographicConvertionWrapperGuidance->useTM = checked;
 }
