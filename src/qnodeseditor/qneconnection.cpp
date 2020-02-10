@@ -1,5 +1,5 @@
 /* Copyright (c) 2012, STANISLAW ADASZEWSKI
- * Copyright (c) 2019, Christian Riggenbach
+ * Copyright (c) 2020, Christian Riggenbach
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
