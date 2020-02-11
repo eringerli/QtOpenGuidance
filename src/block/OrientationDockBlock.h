@@ -24,7 +24,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MainWindow.h"
+#include "../gui/MyMainWindow.h"
 #include "../gui/ThreeValuesDock.h"
 
 #include "BlockBase.h"
@@ -36,7 +36,7 @@ class OrientationDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit OrientationDockBlock( MainWindow* mainWindow )
+    explicit OrientationDockBlock( MyMainWindow* mainWindow )
       : ValueDockBlockBase( mainWindow ) {
       widget = new ThreeValuesDock( mainWindow );
 
@@ -127,7 +127,7 @@ class OrientationDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    OrientationDockBlockFactory( MainWindow* mainWindow,
+    OrientationDockBlockFactory( MyMainWindow* mainWindow,
                                  Qt::DockWidgetArea area,
                                  Qt::DockWidgetAreas allowedAreas,
                                  QDockWidget::DockWidgetFeatures features,
@@ -173,7 +173,7 @@ class OrientationDockBlockFactory : public BlockFactory {
     }
 
   private:
-    MainWindow* mainWindow = nullptr;
+    MyMainWindow* mainWindow = nullptr;
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;

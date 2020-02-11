@@ -38,13 +38,13 @@
 
 #include "../kinematic/PoseOptions.h"
 
-#include "../gui/MainWindow.h"
+#include "../gui/MyMainWindow.h"
 
 class Implement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit Implement( MainWindow* mainWindow )
+    explicit Implement( MyMainWindow* mainWindow )
       : BlockBase() {
       widget = new SectionControlToolbar( this, mainWindow );
       dock = new QDockWidget( mainWindow );
@@ -148,7 +148,7 @@ class ImplementFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ImplementFactory( MainWindow* mainWindow,
+    ImplementFactory( MyMainWindow* mainWindow,
                       Qt::DockWidgetArea area,
                       Qt::DockWidgetAreas allowedAreas,
                       QDockWidget::DockWidgetFeatures features,
@@ -204,7 +204,7 @@ class ImplementFactory : public BlockFactory {
     }
 
   private:
-    MainWindow* mainWindow = nullptr;
+    MyMainWindow* mainWindow = nullptr;
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;

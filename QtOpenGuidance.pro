@@ -105,7 +105,7 @@ HEADERS += \
     src/gui/GuidanceTurning.h \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
-    src/gui/MainWindow.h \
+    src/gui/MyMainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \

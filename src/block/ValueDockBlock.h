@@ -24,7 +24,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MainWindow.h"
+#include "../gui/MyMainWindow.h"
 #include "../gui/ValueDock.h"
 
 #include "BlockBase.h"
@@ -34,7 +34,7 @@ class ValueDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlock( MainWindow* mainWindow )
+    explicit ValueDockBlock( MyMainWindow* mainWindow )
       : ValueDockBlockBase( mainWindow ) {
       widget = new ValueDock( mainWindow );
     }
@@ -117,7 +117,7 @@ class ValueDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueDockBlockFactory( MainWindow* mainWindow,
+    ValueDockBlockFactory( MyMainWindow* mainWindow,
                            Qt::DockWidgetArea area,
                            Qt::DockWidgetAreas allowedAreas,
                            QDockWidget::DockWidgetFeatures features,
@@ -162,7 +162,7 @@ class ValueDockBlockFactory : public BlockFactory {
     }
 
   private:
-    MainWindow* mainWindow = nullptr;
+    MyMainWindow* mainWindow = nullptr;
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;

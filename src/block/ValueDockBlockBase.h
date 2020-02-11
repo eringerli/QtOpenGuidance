@@ -24,7 +24,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MainWindow.h"
+#include "../gui/MyMainWindow.h"
 
 #include "BlockBase.h"
 
@@ -32,7 +32,7 @@ class ValueDockBlockBase : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlockBase( MainWindow* mainWindow )
+    explicit ValueDockBlockBase( MyMainWindow* mainWindow )
       : BlockBase() {
       dock = new QDockWidget( mainWindow );
     }

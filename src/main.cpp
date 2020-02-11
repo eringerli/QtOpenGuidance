@@ -66,7 +66,7 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-#include "gui/MainWindow.h"
+#include "gui/MyMainWindow.h"
 #include "gui/SettingsDialog.h"
 #include "gui/GuidanceToolbar.h"
 #include "gui/GuidanceTurning.h"
@@ -156,7 +156,7 @@ int main( int argc, char** argv ) {
   container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
   // create MainWindow and set the parameters for the docks
-  auto* mainWindow = new MainWindow;
+  auto* mainWindow = new MyMainWindow;
   auto* widget = new QWidget( mainWindow );
   mainWindow->setCentralWidget( container );
   mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
@@ -510,7 +510,7 @@ int main( int argc, char** argv ) {
 
   // start all the tasks of settingDialog on start/exit
   settingDialog->onStart();
-  QObject::connect( mainWindow, &MainWindow::closed,
+  QObject::connect( mainWindow, &MyMainWindow::closed,
                     settingDialog, &SettingsDialog::onExit );
 
   // camera controller

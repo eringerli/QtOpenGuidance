@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MYMAINWINDOW_H
+#define MYMAINWINDOW_H
 
 #include <QGuiApplication>
 #include <QMainWindow>
@@ -28,11 +28,11 @@
 #include <QObject>
 #include <QCloseEvent>
 
-class MainWindow : public QMainWindow {
+class MyMainWindow : public QMainWindow {
     Q_OBJECT
 
   public:
-    MainWindow( QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() )
+    MyMainWindow( QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() )
       : QMainWindow( parent, f ) {}
 
   protected:
@@ -46,4 +46,4 @@ class MainWindow : public QMainWindow {
     void closed();
 };
 
-#endif // MAINWINDOW_H
+#endif // MYMAINWINDOW_H

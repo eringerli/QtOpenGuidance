@@ -23,7 +23,7 @@
 #include <QDockWidget>
 #include <QMenu>
 
-#include "../gui/MainWindow.h"
+#include "../gui/MyMainWindow.h"
 #include "../gui/XteDock.h"
 
 #include "BlockBase.h"
@@ -32,7 +32,7 @@ class XteDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit XteDockBlock( MainWindow* mainWindow )
+    explicit XteDockBlock( MyMainWindow* mainWindow )
       : BlockBase() {
       widget = new XteDock( mainWindow );
       dock = new QDockWidget( mainWindow );
@@ -67,7 +67,7 @@ class XteDockBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    XteDockBlockFactory( MainWindow* mainWindow,
+    XteDockBlockFactory( MyMainWindow* mainWindow,
                          Qt::DockWidgetArea area,
                          Qt::DockWidgetAreas allowedAreas,
                          QDockWidget::DockWidgetFeatures features,
@@ -112,7 +112,7 @@ class XteDockBlockFactory : public BlockFactory {
     }
 
   private:
-    MainWindow* mainWindow = nullptr;
+    MyMainWindow* mainWindow = nullptr;
     Qt::DockWidgetArea area;
     Qt::DockWidgetAreas allowedAreas;
     QDockWidget::DockWidgetFeatures features;
