@@ -34,8 +34,9 @@ class ValueDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlock( MyMainWindow* mainWindow )
-      : ValueDockBlockBase( mainWindow ) {
+    explicit ValueDockBlock( const QString& uniqueName,
+                             MyMainWindow* mainWindow )
+      : ValueDockBlockBase( uniqueName ) {
       widget = new ValueDock( mainWindow );
     }
 
@@ -78,7 +79,7 @@ class ValueDockBlock : public ValueDockBlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "Value: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
       widget->setName( name );
     }
 
@@ -118,15 +119,11 @@ class ValueDockBlockFactory : public BlockFactory {
 
   public:
     ValueDockBlockFactory( MyMainWindow* mainWindow,
-                           Qt::DockWidgetArea area,
-                           Qt::DockWidgetAreas allowedAreas,
-                           QDockWidget::DockWidgetFeatures features,
+                           KDDockWidgets::Location location,
                            QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        area( area ),
-        allowedAreas( allowedAreas ),
-        features( features ),
+        location( location ),
         menu( menu ) {}
 
     QString getNameOfFactory() override {
@@ -137,24 +134,18 @@ class ValueDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new ValueDockBlock( mainWindow );
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* b = createBaseBlock( scene );
+      auto* obj = new ValueDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
+      b->object = obj;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
-
-      ValueDockBlock* object = qobject_cast<ValueDockBlock*>( obj );
+      auto* object = qobject_cast<ValueDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
-      object->dock->setFeatures( features );
-      object->dock->setAllowedAreas( allowedAreas );
-      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
 
-      object->action = object->dock->toggleViewAction();
-      menu->addAction( object->action );
+      menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( float ) ) ) );
 
@@ -163,9 +154,7 @@ class ValueDockBlockFactory : public BlockFactory {
 
   private:
     MyMainWindow* mainWindow = nullptr;
-    Qt::DockWidgetArea area;
-    Qt::DockWidgetAreas allowedAreas;
-    QDockWidget::DockWidgetFeatures features;
+    KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
 

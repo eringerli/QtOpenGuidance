@@ -28,28 +28,30 @@
 
 #include "BlockBase.h"
 
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
+
 class XteDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit XteDockBlock( MyMainWindow* mainWindow )
+    explicit XteDockBlock( const QString& uniqueName,
+                           MyMainWindow* mainWindow )
       : BlockBase() {
       widget = new XteDock( mainWindow );
-      dock = new QDockWidget( mainWindow );
-      dock->setWidget( widget );
+      dock = new KDDockWidgets::DockWidget( uniqueName );
     }
 
     ~XteDockBlock() {
       widget->deleteLater();
       dock->deleteLater();
-      action->deleteLater();
     }
 
 
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "XTE: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
       widget->setName( name );
     }
 
@@ -58,8 +60,7 @@ class XteDockBlock : public BlockBase {
     }
 
   public:
-    QDockWidget* dock = nullptr;
-    QAction* action = nullptr;
+    KDDockWidgets::DockWidget* dock = nullptr;
     XteDock* widget = nullptr;
 };
 
@@ -68,15 +69,11 @@ class XteDockBlockFactory : public BlockFactory {
 
   public:
     XteDockBlockFactory( MyMainWindow* mainWindow,
-                         Qt::DockWidgetArea area,
-                         Qt::DockWidgetAreas allowedAreas,
-                         QDockWidget::DockWidgetFeatures features,
+                         KDDockWidgets::Location location,
                          QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        area( area ),
-        allowedAreas( allowedAreas ),
-        features( features ),
+        location( location ),
         menu( menu ) {}
 
     QString getNameOfFactory() override {
@@ -87,24 +84,18 @@ class XteDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new XteDockBlock( mainWindow );
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* b = createBaseBlock( scene );
+      auto* obj = new XteDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
+      b->object = obj;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
-
-      XteDockBlock* object = qobject_cast<XteDockBlock*>( obj );
+      auto* object = qobject_cast<XteDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
-      object->dock->setFeatures( features );
-      object->dock->setAllowedAreas( allowedAreas );
-      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
 
-      object->action = object->dock->toggleViewAction();
-      menu->addAction( object->action );
+      menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
 
@@ -113,9 +104,7 @@ class XteDockBlockFactory : public BlockFactory {
 
   private:
     MyMainWindow* mainWindow = nullptr;
-    Qt::DockWidgetArea area;
-    Qt::DockWidgetAreas allowedAreas;
-    QDockWidget::DockWidgetFeatures features;
+    KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
 

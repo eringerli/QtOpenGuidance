@@ -196,11 +196,8 @@ class NmeaParserGGAFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new NmeaParserGGA();
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new NmeaParserGGA();
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );

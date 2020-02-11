@@ -36,8 +36,9 @@ class OrientationDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit OrientationDockBlock( MyMainWindow* mainWindow )
-      : ValueDockBlockBase( mainWindow ) {
+    explicit OrientationDockBlock( const QString& uniqueName,
+                                   MyMainWindow* mainWindow )
+      : ValueDockBlockBase( uniqueName ) {
       widget = new ThreeValuesDock( mainWindow );
 
       widget->setDescriptions( QStringLiteral( "R" ), QStringLiteral( "P" ), QStringLiteral( "H" ) );
@@ -82,7 +83,7 @@ class OrientationDockBlock : public ValueDockBlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "Orientation: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
       widget->setName( name );
     }
 
@@ -128,15 +129,11 @@ class OrientationDockBlockFactory : public BlockFactory {
 
   public:
     OrientationDockBlockFactory( MyMainWindow* mainWindow,
-                                 Qt::DockWidgetArea area,
-                                 Qt::DockWidgetAreas allowedAreas,
-                                 QDockWidget::DockWidgetFeatures features,
+                                 KDDockWidgets::Location location,
                                  QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        area( area ),
-        allowedAreas( allowedAreas ),
-        features( features ),
+        location( location ),
         menu( menu ) {}
 
     QString getNameOfFactory() override {
@@ -147,24 +144,18 @@ class OrientationDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new OrientationDockBlock( mainWindow );
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* b = createBaseBlock( scene );
+      auto* obj = new OrientationDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
+      b->object = obj;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
-
-      OrientationDockBlock* object = qobject_cast<OrientationDockBlock*>( obj );
+      auto* object = qobject_cast<OrientationDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
-      object->dock->setFeatures( features );
-      object->dock->setAllowedAreas( allowedAreas );
-      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
 
-      object->action = object->dock->toggleViewAction();
-      menu->addAction( object->action );
+      menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -174,9 +165,7 @@ class OrientationDockBlockFactory : public BlockFactory {
 
   private:
     MyMainWindow* mainWindow = nullptr;
-    Qt::DockWidgetArea area;
-    Qt::DockWidgetAreas allowedAreas;
-    QDockWidget::DockWidgetFeatures features;
+    KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
 

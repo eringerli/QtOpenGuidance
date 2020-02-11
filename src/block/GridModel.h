@@ -270,11 +270,8 @@ class GridModelFactory : public BlockFactory {
     virtual void addToCombobox( QComboBox* /*combobox*/ ) override {
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new GridModel( rootEntity, m_cameraEntity );
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new GridModel( rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

@@ -241,11 +241,8 @@ class CameraControllerFactory : public BlockFactory {
     virtual void addToCombobox( QComboBox* ) override {
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new CameraController( m_rootEntity, m_cameraEntity );
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, true );
 
       b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

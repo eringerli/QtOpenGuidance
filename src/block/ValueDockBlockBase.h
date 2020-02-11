@@ -20,7 +20,6 @@
 #define VALUEDOCKBLOCKBASE_H
 
 #include <QObject>
-#include <QDockWidget>
 #include <QSizePolicy>
 #include <QMenu>
 
@@ -28,13 +27,16 @@
 
 #include "BlockBase.h"
 
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
+
 class ValueDockBlockBase : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueDockBlockBase( MyMainWindow* mainWindow )
+    explicit ValueDockBlockBase( const QString& uniqueName )
       : BlockBase() {
-      dock = new QDockWidget( mainWindow );
+      dock = new KDDockWidgets::DockWidget( uniqueName );
     }
 
     virtual ~ValueDockBlockBase() {
@@ -57,8 +59,7 @@ class ValueDockBlockBase : public BlockBase {
   public slots:
 
   public:
-    QDockWidget* dock = nullptr;
-    QAction* action = nullptr;
+    KDDockWidgets::DockWidget* dock = nullptr;
 };
 
 #endif // VALUEDOCKBLOCKBASE_H

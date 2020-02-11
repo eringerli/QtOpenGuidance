@@ -29,7 +29,6 @@
 
 #include <QQuaternion>
 #include <QVector3D>
-#include <QDockWidget>
 #include <QMenu>
 
 #include "BlockBase.h"
@@ -40,16 +39,20 @@
 
 #include "../gui/MyMainWindow.h"
 
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
+
 class Implement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit Implement( MyMainWindow* mainWindow )
+    explicit Implement( QString uniqueName,
+                        MyMainWindow* mainWindow )
       : BlockBase() {
       widget = new SectionControlToolbar( this, mainWindow );
-      dock = new QDockWidget( mainWindow );
+      dock = new KDDockWidgets::DockWidget( uniqueName );
 
-      QObject::connect( dock, &QDockWidget::dockLocationChanged, widget, &SectionControlToolbar::setDockLocation );
+//      QObject::connect( dock, &QDockWidget::dockLocationChanged, widget, &SectionControlToolbar::setDockLocation );
 
       // add section 0: the section to control them all
       sections.push_back( new ImplementSection( 0, 0, 0 ) );
@@ -133,12 +136,11 @@ class Implement : public BlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "SC: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
     }
 
   public:
-    QDockWidget* dock = nullptr;
-    QAction* action = nullptr;
+    KDDockWidgets::DockWidget* dock = nullptr;
     SectionControlToolbar* widget = nullptr;
 
     std::vector<ImplementSection*> sections;
@@ -149,19 +151,13 @@ class ImplementFactory : public BlockFactory {
 
   public:
     ImplementFactory( MyMainWindow* mainWindow,
-                      Qt::DockWidgetArea area,
-                      Qt::DockWidgetAreas allowedAreas,
-                      QDockWidget::DockWidgetFeatures features,
+                      KDDockWidgets::Location location,
                       QMenu* menu,
-                      QDockWidget* dockToSplit,
                       ImplementBlockModel* model )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        area( area ),
-        allowedAreas( allowedAreas ),
-        features( features ),
+        location( location ),
         menu( menu ),
-        dockToSplit( dockToSplit ),
         model( model ) {}
 
     QString getNameOfFactory() override {
@@ -172,25 +168,19 @@ class ImplementFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new Implement( mainWindow );
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* b = createBaseBlock( scene );
+      auto* obj = new Implement( getNameOfFactory() + QString::number( b->id ),
+                                 mainWindow );
+      b->object = obj;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
-
-      Implement* object = qobject_cast<Implement*>( obj );
+      auto* object = qobject_cast<Implement*>( obj );
 
       object->dock->setWidget( object->widget );
-      object->dock->setFeatures( features );
-      object->dock->setAllowedAreas( allowedAreas );
-      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
 
-      object->action = object->dock->toggleViewAction();
-      menu->addAction( object->action );
+      menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( area, object->dock );
-      mainWindow->splitDockWidget( dockToSplit, object->dock, Qt::Vertical );
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
@@ -205,11 +195,8 @@ class ImplementFactory : public BlockFactory {
 
   private:
     MyMainWindow* mainWindow = nullptr;
-    Qt::DockWidgetArea area;
-    Qt::DockWidgetAreas allowedAreas;
-    QDockWidget::DockWidgetFeatures features;
+    KDDockWidgets::Location location;
     QMenu* menu = nullptr;
-    QDockWidget* dockToSplit = nullptr;
     ImplementBlockModel* model = nullptr;
 };
 

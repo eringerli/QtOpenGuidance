@@ -81,15 +81,8 @@ class PrintLatencyFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      BlockBase* obj = new PrintLatency;
-
-//      obj->moveToThread( &workerThread );
-
-      return obj;
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new PrintLatency;
       auto* b = createBaseBlock( scene, obj );
 
       auto printLatency = qobject_cast<PrintLatency*>( obj );

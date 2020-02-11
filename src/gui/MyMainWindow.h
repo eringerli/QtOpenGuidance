@@ -28,12 +28,18 @@
 #include <QObject>
 #include <QCloseEvent>
 
-class MyMainWindow : public QMainWindow {
+#include <kddockwidgets/MainWindow.h>
+
+class MyMainWindow : public KDDockWidgets::MainWindow {
     Q_OBJECT
 
   public:
-    MyMainWindow( QWidget* parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags() )
-      : QMainWindow( parent, f ) {}
+    explicit MyMainWindow( const QString& uniqueName, KDDockWidgets::MainWindowOptions options,
+                           const QString& affinityName = {}, // Usually not needed. Just here to show the feature.
+                           QWidget* parent = nullptr )
+      : MainWindow( uniqueName, options, parent ) {
+      setAffinityName( affinityName );
+    }
 
   protected:
     void closeEvent( QCloseEvent* event ) override {

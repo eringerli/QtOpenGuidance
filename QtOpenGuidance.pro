@@ -173,10 +173,15 @@ HEADERS += \
     src/aspect/movingaverage.h \
     src/aspect/updatefpsmonitorsjob.h
 
+include(build-paths.pri)
 
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
 include($$PWD/lib/cgal.pri)
+
+# KDDockWidgets
+INCLUDEPATH += $$KDDOCKWIDGET_PREFIX/include/
+LIBS += -L$$KDDOCKWIDGET_PREFIX/lib -lkddockwidgets
 
 unix {
 target.path = /opt/QtOpenGuidance

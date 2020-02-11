@@ -36,8 +36,9 @@ class PositionDockBlock : public ValueDockBlockBase {
     Q_OBJECT
 
   public:
-    explicit PositionDockBlock( MyMainWindow* mainWindow )
-      : ValueDockBlockBase( mainWindow ) {
+    explicit PositionDockBlock( const QString& uniqueName,
+                                MyMainWindow* mainWindow )
+      : ValueDockBlockBase( uniqueName ) {
       widget = new ThreeValuesDock( mainWindow );
 
       widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
@@ -82,7 +83,7 @@ class PositionDockBlock : public ValueDockBlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setWindowTitle( name );
-      action->setText( QStringLiteral( "Position: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
       widget->setName( name );
     }
 
@@ -136,15 +137,11 @@ class PositionDockBlockFactory : public BlockFactory {
 
   public:
     PositionDockBlockFactory( MyMainWindow* mainWindow,
-                              Qt::DockWidgetArea area,
-                              Qt::DockWidgetAreas allowedAreas,
-                              QDockWidget::DockWidgetFeatures features,
+                              KDDockWidgets::Location location,
                               QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        area( area ),
-        allowedAreas( allowedAreas ),
-        features( features ),
+        location( location ),
         menu( menu ) {}
 
     QString getNameOfFactory() override {
@@ -155,24 +152,18 @@ class PositionDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new PositionDockBlock( mainWindow );
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* b = createBaseBlock( scene );
+      auto* obj = new PositionDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
+      b->object = obj;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
-      auto* b = createBaseBlock( scene, obj );
-
-      PositionDockBlock* object = qobject_cast<PositionDockBlock*>( obj );
+      auto* object = qobject_cast<PositionDockBlock*>( obj );
 
       object->dock->setWidget( object->widget );
-      object->dock->setFeatures( features );
-      object->dock->setAllowedAreas( allowedAreas );
-      object->dock->setObjectName( getNameOfFactory() + QString::number( b->id ) );
 
-      object->action = object->dock->toggleViewAction();
-      menu->addAction( object->action );
+      menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( area, object->dock );
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -182,9 +173,7 @@ class PositionDockBlockFactory : public BlockFactory {
 
   private:
     MyMainWindow* mainWindow = nullptr;
-    Qt::DockWidgetArea area;
-    Qt::DockWidgetAreas allowedAreas;
-    QDockWidget::DockWidgetFeatures features;
+    KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
 

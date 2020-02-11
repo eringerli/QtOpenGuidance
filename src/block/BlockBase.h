@@ -59,11 +59,11 @@ class BlockFactory : public QObject {
 
     virtual void addToCombobox( QComboBox* combobox ) = 0;
 
-    virtual BlockBase* createNewObject() = 0;
+//    virtual BlockBase* createNewObject() = 0;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) = 0;
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, bool systemBlock = false ) {
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj = nullptr, bool systemBlock = false ) {
       auto* b = new QNEBlock( obj, systemBlock );
 
       scene->addItem( b );

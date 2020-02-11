@@ -76,11 +76,8 @@ class CommunicationJrkFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new CommunicationJrk();
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new CommunicationJrk();
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( float ) ) ) );

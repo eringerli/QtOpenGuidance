@@ -75,11 +75,8 @@ class NumberFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new NumberObject();
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new NumberObject();
       auto* b = createBaseBlock( scene, obj );
 
       b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( float ) ) ) );

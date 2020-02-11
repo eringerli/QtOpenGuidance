@@ -117,11 +117,8 @@ class DebugSinkFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual BlockBase* createNewObject() override {
-      return new DebugSink;
-    }
-
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, QObject* obj ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+      auto* obj = new DebugSink;
       auto* b = createBaseBlock( scene, obj );
 
       auto debugSink = qobject_cast<DebugSink*>( obj );

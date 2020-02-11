@@ -211,8 +211,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 
   // simulator
   poseSimulationFactory = new PoseSimulationFactory( geographicConvertionWrapperSimulator );
-  poseSimulation = poseSimulationFactory->createNewObject();
-  poseSimulationFactory->createBlock( ui->gvNodeEditor->scene(), poseSimulation );
+  auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
+  poseSimulation = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
 
   // SPNAV
 #ifdef SPNAV_ENABLED
@@ -226,12 +226,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 
   // guidance
   plannerGuiFactory = new PlannerGuiFactory( rootEntity );
-  plannerGui = plannerGuiFactory->createNewObject();
-  plannerGuiFactory->createBlock( ui->gvNodeEditor->scene(), plannerGui );
+  auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
+  plannerGui = qobject_cast<PlannerGui*>( plannerGuiBlock->object );
 
   globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
-  globalPlanner = globalPlannerFactory->createNewObject();
-  globalPlannerFactory->createBlock( ui->gvNodeEditor->scene(), globalPlanner );
+  auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
+  globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
 
   QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
                     globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
@@ -241,8 +241,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   xteGuidanceFactory = new XteGuidanceFactory();
 
   globalPlannerModelFactory = new GlobalPlannerModelFactory( rootEntity );
-  globalPlannerModel = globalPlannerModelFactory->createNewObject();
-  globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene(), globalPlannerModel );
+  auto* globalPlannerModelBlock = globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene() );
+  globalPlannerModel = qobject_cast<GlobalPlannerModel*>( globalPlannerModelBlock->object );
 
   QObject::connect( this, SIGNAL( globalPlannerModelSettingsChanged( int, int, float, int, int, QColor, QColor, QColor, QColor ) ),
                     globalPlannerModel, SLOT( setPlannerModelSettings( int, int, float, int, int, QColor, QColor, QColor, QColor ) ) );
@@ -660,8 +660,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
           auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
           if( factory != nullptr ) {
-            BlockBase* obj = factory->createNewObject();
-            QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
+            QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
 
             idMap.insert( id, block->id );
 
@@ -742,8 +741,7 @@ void SettingsDialog::on_pbAddBlock_clicked() {
   auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
 
   if( factory != nullptr ) {
-    BlockBase* obj = factory->createNewObject();
-    QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), obj );
+    QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
     block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
   }
 
