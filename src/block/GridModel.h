@@ -81,6 +81,17 @@ class GridModel : public BlockBase {
     }
 
     ~GridModel() {
+      m_fineLinesMesh->setEnabled( false );
+      m_coarseLinesMesh->setEnabled( false );
+      m_material->setEnabled( false );
+      m_fineGridEntity->setEnabled( false );
+      m_coarseGridEntity->setEnabled( false );
+      m_baseTransform->setEnabled( false );
+      m_baseEntity->setEnabled( false );
+      m_lod->setEnabled( false );
+      m_distanceMeasurementTransform->setEnabled( false );
+      m_distanceMeasurementEntity->setEnabled( false );
+
       m_fineLinesMesh->deleteLater();
       m_coarseLinesMesh->deleteLater();
       m_material->deleteLater();

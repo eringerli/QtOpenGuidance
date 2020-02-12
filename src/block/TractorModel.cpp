@@ -195,10 +195,14 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
 // order is important! Crashes if a parent entity is removed first!
 TractorModel::~TractorModel() {
+  m_towHookEntity->setEnabled( false );
+  m_pivotPointEntity->setEnabled( false );
+  m_towPointEntity->setEnabled( false );
+  m_rootEntity->setEnabled( false );
+
   m_towHookEntity->deleteLater();
   m_pivotPointEntity->deleteLater();
   m_towPointEntity->deleteLater();
-
   m_rootEntity->deleteLater();
 }
 

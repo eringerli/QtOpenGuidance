@@ -36,6 +36,7 @@ SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity ) {
 }
 
 SprayerModel::~SprayerModel() {
+  m_rootEntity->setEnabled( false );
   m_rootEntity->deleteLater();
 }
 

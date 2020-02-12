@@ -757,28 +757,31 @@ void SettingsDialog::on_pbZoomIn_clicked() {
 }
 
 void SettingsDialog::on_pbDeleteSelected_clicked() {
-  const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
+  {
+    const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
-  for( const auto& item : constRefOfList ) {
-    auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
+    for( int i = 0, end = constRefOfList.size(); i < end; ++i ) {
+      auto* connection = qgraphicsitem_cast<QNEConnection*>( constRefOfList.at( i ) );
+      delete connection;
+    }
+  }
 
-    delete connection;
+  {
+    const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
-    {
-      const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
+    for( int i = 0, end = constRefOfList.size(); i < end; ++i ) {
+      auto* block = qgraphicsitem_cast<const QNEBlock*>( constRefOfList.at( i ) );
 
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-        if( block != nullptr ) {
-          if( !block->systemBlock ) {
-            delete block;
-            allModelsReset();
-          }
+      if( block != nullptr ) {
+        if( !block->systemBlock ) {
+          delete block;
         }
       }
     }
   }
+
+  allModelsReset();
+
 }
 
 void SettingsDialog:: on_gbGrid_toggled( bool arg1 ) {

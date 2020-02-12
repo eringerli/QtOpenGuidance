@@ -69,11 +69,11 @@ class TractorModel : public BlockBase {
     Qt3DCore::QEntity* m_pivotPointEntity = nullptr;
     Qt3DCore::QEntity* m_towPointEntity = nullptr;
 
-    Qt3DExtras::QCuboidMesh*  m_baseMesh = nullptr;
+    Qt3DExtras::QCuboidMesh* m_baseMesh = nullptr;
     Qt3DExtras::QCylinderMesh* m_wheelFrontMesh = nullptr;
     Qt3DExtras::QCylinderMesh* m_wheelBackMesh = nullptr;
 
-    Qt3DExtras::QSphereMesh*  m_towHookMesh = nullptr;
+    Qt3DExtras::QSphereMesh* m_towHookMesh = nullptr;
     Qt3DExtras::QSphereMesh* m_pivotPointMesh = nullptr;
     Qt3DExtras::QSphereMesh* m_towPointMesh = nullptr;
 
