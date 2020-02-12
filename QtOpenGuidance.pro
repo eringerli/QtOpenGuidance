@@ -32,8 +32,10 @@ SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
     src/block/SprayerModel.cpp \
+    src/block/ValueDockBlockBase.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
+    src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/ThreeValuesDock.cpp \
     src/gui/ValueBlockModel.cpp \
@@ -105,6 +107,7 @@ HEADERS += \
     src/gui/GuidanceTurning.h \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
+    src/gui/MyFrameworkWidgetFactory.h \
     src/gui/MyMainWindow.h \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \

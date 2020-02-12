@@ -56,7 +56,7 @@ int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
 //qreal QNEBlock::gridSpacing = 20;
 
-QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
+QNEBlock::QNEBlock( QObject* object, bool systemBlock, int id, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
     systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
   QPainterPath p;
@@ -67,10 +67,14 @@ QNEBlock::QNEBlock( QObject* object, bool systemBlock, QGraphicsItem* parent )
   setFlag( QGraphicsItem::ItemIsMovable );
   setFlag( QGraphicsItem::ItemIsSelectable );
 
-  if( systemBlock ) {
-    id = getNextSystemId();
+  if( id == 0 ) {
+    if( systemBlock ) {
+      this->id = getNextSystemId();
+    } else {
+      this->id = getNextUserId();
+    }
   } else {
-    id = getNextUserId();
+    this->id = id;
   }
 }
 

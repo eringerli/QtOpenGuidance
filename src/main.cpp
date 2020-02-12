@@ -103,6 +103,8 @@
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
+#include "gui/MyFrameworkWidgetFactory.h"
+
 #if defined (Q_OS_ANDROID)
 #include <QtAndroid>
 const std::vector<QString> permissions( {"android.permission.INTERNET",
@@ -163,7 +165,11 @@ int main( int argc, char** argv ) {
   KDDockWidgets::MainWindowOptions options = KDDockWidgets::MainWindowOption_HasCentralFrame;
   auto flags = KDDockWidgets::Config::self().flags();
   flags |= KDDockWidgets::Config::Flag_AllowReorderTabs;
+  flags |= KDDockWidgets::Config::Flag_HideTitleBarWhenTabsVisible;
+  qDebug() << flags;
   KDDockWidgets::Config::self().setFlags( flags );
+
+  KDDockWidgets::Config::self().setFrameworkWidgetFactory( new CustomWidgetFactory() ); // Sets our custom factory
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
   mainWindow->setWindowTitle( "QtOpenGuidance" );
@@ -281,9 +287,6 @@ int main( int argc, char** argv ) {
   auto* guidaceToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidaceToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   guidaceToolbarDock->setWidget( guidanceToolbar );
   guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
-//  guidaceToolbarDock->setObjectName( QStringLiteral( "GuidanceToolbarDock" ) );
-//  guidaceToolbarDock->setTitleBarWidget( new QWidget( guidaceToolbarDock ) );
-//  guidaceToolbarDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
   mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
 
   // turning Toolbar
@@ -291,72 +294,48 @@ int main( int argc, char** argv ) {
   auto* turningToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "TurningToolbarDock" ) );
   turningToolbarDock->setWidget( turningToolbar );
   turningToolbarDock->setTitle( turningToolbar->windowTitle() );
-//  turningToolbarDock->setObjectName( QStringLiteral( "TurningToolbarDock" ) );
-//  turningToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( turningToolbarDock, KDDockWidgets::Location_OnTop );
   guidanceToolbar->menu->addAction( turningToolbarDock->toggleAction() );
 
   // camera Toolbar
   auto* cameraToolbar = new CameraToolbar( widget );
-  cameraToolbar->setVisible( false );
   auto* cameraToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "CameraToolbarDock" ) );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setTitle( cameraToolbar->windowTitle() );
-//  cameraToolbarDock->setObjectName( QStringLiteral( "CameraToolbarDock" ) );
-//  cameraToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( cameraToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( cameraToolbarDock->toggleAction() );
 
   // passes toolbar
   auto* passesToolbar = new PassToolbar( widget );
-  passesToolbar->setVisible( false );
   auto* passesToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "PassesToolbarDock" ) );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setTitle( passesToolbar->windowTitle() );
-//  passesToolbarDock->setObjectName( QStringLiteral( "PassesToolbarDock" ) );
-//  passesToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
   mainWindow->addDockWidget( passesToolbarDock, KDDockWidgets::Location_OnLeft );
 //  mainWindow->tabifyDockWidget( passesToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( passesToolbarDock->toggleAction() );
 
   // fields toolbar
   auto* fieldsToolbar = new FieldsToolbar( widget );
-  fieldsToolbar->setVisible( false );
   auto* fieldsToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "FieldsToolbarDock" ) );
   fieldsToolbarDock->setWidget( fieldsToolbar );
   fieldsToolbarDock->setTitle( fieldsToolbar->windowTitle() );
-//  fieldsToolbarDock->setObjectName( QStringLiteral( "FieldsToolbarDock" ) );
-//  fieldsToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
-//  fieldsToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 //  QObject::connect( fieldsToolbarDock, &QDockWidget::dockLocationChanged, fieldsToolbar, &FieldsToolbar::setDockLocation );
   mainWindow->addDockWidget( fieldsToolbarDock, KDDockWidgets::Location_OnLeft );
-//  mainWindow->tabifyDockWidget( fieldsToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( fieldsToolbarDock->toggleAction() );
 
   // fields optimition toolbar
   auto* fieldsOptimitionToolbar = new FieldsOptimitionToolbar( widget );
-  fieldsOptimitionToolbar->setVisible( false );
   auto* fieldsOptimitionToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "FieldsOptimitionToolbarDock" ) );
   fieldsOptimitionToolbarDock->setWidget( fieldsOptimitionToolbar );
   fieldsOptimitionToolbarDock->setTitle( fieldsOptimitionToolbar->windowTitle() );
-//  fieldsOptimitionToolbarDock->setObjectName( QStringLiteral( "FieldOptimitionsToolbarDock" ) );
-//  fieldsOptimitionToolbarDock->setFeatures( QDockWidget::AllDockWidgetFeatures | QDockWidget::DockWidgetVerticalTitleBar );
-//  fieldsOptimitionToolbarDock->setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
   mainWindow->addDockWidget( fieldsOptimitionToolbarDock, KDDockWidgets::Location_OnLeft );
-//  mainWindow->tabifyDockWidget( fieldsToolbarDock, fieldsOptimitionToolbarDock );
   guidanceToolbar->menu->addAction( fieldsOptimitionToolbarDock->toggleAction() );
 
   // simulator toolbar
   auto* simulatorToolbar = new SimulatorToolbar( widget );
-  simulatorToolbar->setVisible( false );
   auto* simulatorToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorToolbarDock->setWidget( simulatorToolbar );
   simulatorToolbarDock->setTitle( simulatorToolbar->windowTitle() );
-//  simulatorToolbarDock->setObjectName( QStringLiteral( "SimulatorToolbarDock" ) );
-//  simulatorToolbarDock->setFeatures( QDockWidget::DockWidgetMovable |
-//                                     QDockWidget::DockWidgetFloatable |
-//                                     QDockWidget::DockWidgetVerticalTitleBar );
-//  simulatorToolbarDock->setAllowedAreas( Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea );
   mainWindow->addDockWidget( simulatorToolbarDock, KDDockWidgets::Location_OnBottom );
 
   // XTE dock
@@ -413,7 +392,7 @@ int main( int argc, char** argv ) {
 
   // GUI -> GUI
   QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorToolbarDock, &QWidget::setVisible );
+                    simulatorToolbarDock, &QWidget::setEnabled );
   QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings,
                     settingDialog, &SettingsDialog::toggleVisibility );
 

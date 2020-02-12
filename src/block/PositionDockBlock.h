@@ -82,7 +82,7 @@ class PositionDockBlock : public ValueDockBlockBase {
 
   public slots:
     void setName( const QString& name ) override {
-      dock->setWindowTitle( name );
+      dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
       widget->setName( name );
     }
@@ -153,17 +153,22 @@ class PositionDockBlockFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      auto* b = createBaseBlock( scene );
-      auto* obj = new PositionDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
-      b->object = obj;
+      int id = QNEBlock::getNextUserId();
+      auto* object = new PositionDockBlock( getNameOfFactory() + QString::number( id ),
+                                            mainWindow );
+      auto* b = createBaseBlock( scene, object, false, id );
 
-      auto* object = qobject_cast<PositionDockBlock*>( obj );
-
+      object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
 
       menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( object->dock, location );
+      if( ValueDockBlockBase::firstThreeValuesDock == nullptr ) {
+        mainWindow->addDockWidget( object->dock, location );
+        ValueDockBlockBase::firstThreeValuesDock = object->dock;
+      } else {
+        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
+      }
 
       b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

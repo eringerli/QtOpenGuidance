@@ -82,7 +82,7 @@ class OrientationDockBlock : public ValueDockBlockBase {
 
   public slots:
     void setName( const QString& name ) override {
-      dock->setWindowTitle( name );
+      dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
       widget->setName( name );
     }
@@ -145,17 +145,22 @@ class OrientationDockBlockFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      auto* b = createBaseBlock( scene );
-      auto* obj = new OrientationDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
-      b->object = obj;
+      int id = QNEBlock::getNextUserId();
+      auto* object = new OrientationDockBlock( getNameOfFactory() + QString::number( id ),
+          mainWindow );
+      auto* b = createBaseBlock( scene, object, false, id );
 
-      auto* object = qobject_cast<OrientationDockBlock*>( obj );
-
+      object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
 
       menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( object->dock, location );
+      if( ValueDockBlockBase::firstThreeValuesDock == nullptr ) {
+        mainWindow->addDockWidget( object->dock, location );
+        ValueDockBlockBase::firstThreeValuesDock = object->dock;
+      } else {
+        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
+      }
 
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

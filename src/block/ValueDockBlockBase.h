@@ -60,6 +60,9 @@ class ValueDockBlockBase : public BlockBase {
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;
+
+    static KDDockWidgets::DockWidget* firstValueDock;
+    static KDDockWidgets::DockWidget* firstThreeValuesDock;
 };
 
 #endif // VALUEDOCKBLOCKBASE_H

@@ -30,6 +30,7 @@
 #include <QJsonObject>
 
 #include <Qt3DCore/QEntity>
+#include <Qt3DCore/QComponent>
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -59,12 +60,10 @@ class BlockFactory : public QObject {
 
     virtual void addToCombobox( QComboBox* combobox ) = 0;
 
-//    virtual BlockBase* createNewObject() = 0;
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj = nullptr, bool systemBlock = false ) {
-      auto* b = new QNEBlock( obj, systemBlock );
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj = nullptr, bool systemBlock = false, int id = 0 ) {
+      auto* b = new QNEBlock( obj, systemBlock, id );
 
       scene->addItem( b );
 

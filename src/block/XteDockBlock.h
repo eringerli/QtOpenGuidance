@@ -50,7 +50,7 @@ class XteDockBlock : public BlockBase {
 
   public slots:
     void setName( const QString& name ) override {
-      dock->setWindowTitle( name );
+      dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
       widget->setName( name );
     }
@@ -85,17 +85,22 @@ class XteDockBlockFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      auto* b = createBaseBlock( scene );
-      auto* obj = new XteDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
-      b->object = obj;
+      int id = QNEBlock::getNextUserId();
+      auto* object = new XteDockBlock( getNameOfFactory() + QString::number( id ),
+                                       mainWindow );
+      auto* b = createBaseBlock( scene, object, false, id );
 
-      auto* object = qobject_cast<XteDockBlock*>( obj );
-
+      object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
 
       menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( object->dock, location );
+      if( firstDock == nullptr ) {
+        mainWindow->addDockWidget( object->dock, location );
+        firstDock = object->dock;
+      } else {
+        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnRight, firstDock );
+      }
 
       b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
 
@@ -106,6 +111,7 @@ class XteDockBlockFactory : public BlockFactory {
     MyMainWindow* mainWindow = nullptr;
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
+    KDDockWidgets::DockWidget* firstDock = nullptr;
 };
 
 #endif // XTEDOCKBLOCK_H

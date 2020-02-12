@@ -135,7 +135,7 @@ class Implement : public BlockBase {
 
   public slots:
     void setName( const QString& name ) override {
-      dock->setWindowTitle( name );
+      dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
     }
 
@@ -169,18 +169,22 @@ class ImplementFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      auto* b = createBaseBlock( scene );
-      auto* obj = new Implement( getNameOfFactory() + QString::number( b->id ),
-                                 mainWindow );
-      b->object = obj;
+      int id = QNEBlock::getNextUserId();
+      auto* object = new Implement( getNameOfFactory() + QString::number( id ),
+                                    mainWindow );
+      auto* b = createBaseBlock( scene, object, false, id );
 
-      auto* object = qobject_cast<Implement*>( obj );
-
+      object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
 
       menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( object->dock, location );
+      if( firstDock == nullptr ) {
+        mainWindow->addDockWidget( object->dock, location );
+        firstDock = object->dock;
+      } else {
+        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstDock );
+      }
 
       b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
@@ -198,6 +202,7 @@ class ImplementFactory : public BlockFactory {
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
     ImplementBlockModel* model = nullptr;
+    KDDockWidgets::DockWidget* firstDock = nullptr;
 };
 
 #endif // IMPLEMENT_H

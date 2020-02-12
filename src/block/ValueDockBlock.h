@@ -78,7 +78,7 @@ class ValueDockBlock : public ValueDockBlockBase {
 
   public slots:
     void setName( const QString& name ) override {
-      dock->setWindowTitle( name );
+      dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
       widget->setName( name );
     }
@@ -135,17 +135,22 @@ class ValueDockBlockFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      auto* b = createBaseBlock( scene );
-      auto* obj = new ValueDockBlock( getNameOfFactory() + QString::number( b->id ), mainWindow );
-      b->object = obj;
+      int id = QNEBlock::getNextUserId();
+      auto* object = new ValueDockBlock( getNameOfFactory() + QString::number( id ),
+                                         mainWindow );
+      auto* b = createBaseBlock( scene, object, false, id );
 
-      auto* object = qobject_cast<ValueDockBlock*>( obj );
-
+      object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
 
       menu->addAction( object->dock->toggleAction() );
 
-      mainWindow->addDockWidget( object->dock, location );
+      if( ValueDockBlockBase::firstValueDock == nullptr ) {
+        mainWindow->addDockWidget( object->dock, location );
+        ValueDockBlockBase::firstValueDock = object->dock;
+      } else {
+        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
+      }
 
       b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( float ) ) ) );
 

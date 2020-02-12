@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef METERMODEL_H
-#define METERMODEL_H
+#ifndef VALUEBLOCKMODEL_H
+#define VALUEBLOCKMODEL_H
 
 #include <QObject>
 
@@ -63,4 +63,4 @@ class ValueBlockModel : public QAbstractTableModel {
     int countBuffer = 0;
 };
 
-#endif // METERMODEL_H
+#endif // VALUEBLOCKMODEL_H
