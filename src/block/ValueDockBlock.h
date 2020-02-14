@@ -92,6 +92,7 @@ class ValueDockBlock : public ValueDockBlockBase {
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
 
+      valuesObject[QStringLiteral( "CaptionEnabled" )] = widget->captionEnabled();
       valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( widget->fontOfLabel() ) );
       valuesObject[QStringLiteral( "Precision" )] = widget->precision;
       valuesObject[QStringLiteral( "Scale" )] = widget->scale;
@@ -104,10 +105,11 @@ class ValueDockBlock : public ValueDockBlockBase {
       if( json[QStringLiteral( "values" )].isObject() ) {
         QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
+        widget->setCaptionEnabled( valuesObject[QStringLiteral( "CaptionEnabled" )].toBool( true ) );
         widget->setFontOfLabel( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
-        widget->precision = valuesObject[QStringLiteral( "Precision" )].toInt();
-        widget->scale = valuesObject[QStringLiteral( "Scale" )].toDouble();
-        widget->fieldWidth = valuesObject[QStringLiteral( "FieldWitdh" )].toInt();
+        widget->precision = valuesObject[QStringLiteral( "Precision" )].toInt( 0 );
+        widget->scale = valuesObject[QStringLiteral( "Scale" )].toDouble( 1 );
+        widget->fieldWidth = valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 );
       }
     }
 
