@@ -5,6 +5,8 @@ PassToolbar::PassToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::PassToolbar ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 PassToolbar::~PassToolbar() {

@@ -26,6 +26,9 @@ GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::GuidanceToolbar ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
+
   menu = new QMenu( this );
 }
 

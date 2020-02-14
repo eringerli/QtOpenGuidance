@@ -6,6 +6,8 @@ FieldsOptimitionToolbar::FieldsOptimitionToolbar( QWidget* parent ) :
   ui( new Ui::FieldsOptimitionToolbar ) {
   ui->setupUi( this );
 
+  setContentsMargins( 0, 0, 0, 0 );
+
   emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
                                         ui->dsbAlpha->value(),
                                         ui->dsbMaxDeviation->value(),

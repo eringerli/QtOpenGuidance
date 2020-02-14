@@ -19,6 +19,7 @@
 */
 
 #include "MyFrameworkWidgetFactory.h"
+
 #include <kddockwidgets/FrameworkWidgetFactory.h>
 //#include <kddockwidgets/widgets/SeparatorWidget_p.h>
 #include <QApplication>
@@ -33,18 +34,20 @@ class MyTitleBar : public KDDockWidgets::TitleBar {
     explicit MyTitleBar( KDDockWidgets::FloatingWindow* fw )
       : KDDockWidgets::TitleBar( fw ) {
       init();
+
+      setContentsMargins( 0, 0, 0, 0 );
     }
 
     void init() {
       QFontMetrics fm( qApp->font() );
-      setFixedHeight( fm.height() );
+      setFixedHeight( fm.height() + 0 );
     }
 
     void paintEvent( QPaintEvent* ) override {
       QPainter p( this );
       QFontMetrics fm( qApp->font() );
       p.setFont( qApp->font() );
-      p.drawText( QPoint( 6, fm.height() ), title() );
+      p.drawText( QPoint( 6, fm.ascent() ), title() );
     }
 };
 
@@ -74,6 +77,11 @@ KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::Fra
 KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::FloatingWindow* fw ) const {
   return new MyTitleBar( fw );
 }
+
+//KDDockWidgets::TabWidget* CustomWidgetFactory::createTabWidget(KDDockWidgets::Frame* parent) const
+//{
+//  return new MyTabWidgetWidget(parent);
+//}
 /*
 KDDockWidgets::Separator * CustomWidgetFactory::createSeparator(KDDockWidgets::Anchor *anchor,
                                                                 KDDockWidgets::QWidgetAdapter *parent) const

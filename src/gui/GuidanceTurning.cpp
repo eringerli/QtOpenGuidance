@@ -23,6 +23,8 @@ GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::GuidanceTurning ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 GuidanceTurning::~GuidanceTurning() {

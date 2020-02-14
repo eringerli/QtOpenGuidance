@@ -29,6 +29,8 @@ ThreeValuesDock::ThreeValuesDock( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::ThreeValuesDock ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 ThreeValuesDock::~ThreeValuesDock() {

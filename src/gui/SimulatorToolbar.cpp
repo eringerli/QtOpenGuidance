@@ -23,6 +23,8 @@ SimulatorToolbar::SimulatorToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::SimulatorToolbar ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 SimulatorToolbar::~SimulatorToolbar() {

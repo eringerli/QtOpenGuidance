@@ -23,6 +23,8 @@ CameraToolbar::CameraToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::CameraToolbar ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 CameraToolbar::~CameraToolbar() {

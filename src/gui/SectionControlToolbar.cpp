@@ -26,6 +26,8 @@ SectionControlToolbar::SectionControlToolbar( Implement* implement, QWidget* par
   : QGroupBox( parent ),
     implement( implement ) {
 
+  setContentsMargins( 0, 0, 0, 0 );
+
   setMinimumSize( 60, 60 );
   buttonDefault = parent->palette();
 

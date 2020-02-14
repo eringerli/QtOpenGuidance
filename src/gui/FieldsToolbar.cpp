@@ -8,6 +8,8 @@ FieldsToolbar::FieldsToolbar( QWidget* parent ) :
   ui( new Ui::FieldsToolbar ) {
   ui->setupUi( this );
 
+  setContentsMargins( 0, 0, 0, 0 );
+
   boxLayout = new QBoxLayout( QBoxLayout::TopToBottom, this );
   boxLayout->addWidget( ui->pbOpen );
   boxLayout->addWidget( ui->pbNew );

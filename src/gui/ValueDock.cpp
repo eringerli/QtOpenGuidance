@@ -27,6 +27,8 @@ ValueDock::ValueDock( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::ValueDock ) {
   ui->setupUi( this );
+
+  setContentsMargins( 0, 0, 0, 0 );
 }
 
 ValueDock::~ValueDock() {
