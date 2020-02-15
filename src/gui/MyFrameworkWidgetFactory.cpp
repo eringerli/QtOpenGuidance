@@ -51,25 +51,6 @@ class MyTitleBar : public KDDockWidgets::TitleBar {
     }
 };
 
-/*
-// Inheriting from SeparatorWidget instead of Separator as it handles moving and mouse cursor changing
-class MySeparator : public KDDockWidgets::SeparatorWidget
-{
-public:
-    explicit MySeparator(KDDockWidgets::Anchor *anchor,
-                         KDDockWidgets::QWidgetAdapter *parent = nullptr)
-        : KDDockWidgets::SeparatorWidget(anchor, parent)
-    {
-    }
-
-    void paintEvent(QPaintEvent *) override
-    {
-        QPainter p(this);
-        p.fillRect(rect(), isStatic() ? Qt::black : Qt::cyan);
-    }
-};
-*/
-
 KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::Frame* frame ) const {
   return new MyTitleBar( frame );
 }
@@ -78,14 +59,6 @@ KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::Flo
   return new MyTitleBar( fw );
 }
 
-//KDDockWidgets::TabWidget* CustomWidgetFactory::createTabWidget(KDDockWidgets::Frame* parent) const
-//{
-//  return new MyTabWidgetWidget(parent);
-//}
-/*
-KDDockWidgets::Separator * CustomWidgetFactory::createSeparator(KDDockWidgets::Anchor *anchor,
-                                                                KDDockWidgets::QWidgetAdapter *parent) const
-{
-    return new MySeparator(anchor, parent);
+KDDockWidgets::Frame* CustomWidgetFactory::createCentralFrame( QWidgetOrQuick* parent ) const {
+  return createFrame( parent, KDDockWidgets::FrameOptions() | KDDockWidgets::FrameOption_IsCentralFrame );
 }
-*/

@@ -405,8 +405,11 @@ void SettingsDialog::onStart() {
   if( ui->cbRestoreDockPositions->isChecked() ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
-    mainWindow->restoreState( settings.value( QStringLiteral( "SavedDockPositions" ) ).toByteArray() );
-    mainWindow->restoreGeometry( settings.value( QStringLiteral( "SavedDockGeometry" ) ).toByteArray() );
+    KDDockWidgets::LayoutSaver saver;
+
+    mainWindow->restoreState( settings.value( QStringLiteral( "SavedPositions" ) ).toByteArray() );
+    mainWindow->restoreGeometry( settings.value( QStringLiteral( "SavedGeometry" ) ).toByteArray() );
+    saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
   }
 }
 
@@ -419,9 +422,11 @@ void SettingsDialog::onExit() {
   if( ui->cbSaveDockPositionsOnExit->isChecked() ) {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
+    KDDockWidgets::LayoutSaver saver;
 
-    settings.setValue( QStringLiteral( "SavedDockPositions" ), mainWindow->saveState() );
-    settings.setValue( QStringLiteral( "SavedDockGeometry" ), mainWindow->saveGeometry() );
+    settings.setValue( QStringLiteral( "SavedPositions" ), mainWindow->saveState() );
+    settings.setValue( QStringLiteral( "SavedGeometry" ), mainWindow->saveGeometry() );
+    settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
     settings.sync();
   }
 }
@@ -1423,9 +1428,11 @@ void SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
 void SettingsDialog::on_pbSaveDockPositions_clicked() {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
+  KDDockWidgets::LayoutSaver saver;
 
-  settings.setValue( QStringLiteral( "SavedDockPositions" ), mainWindow->saveState() );
-  settings.setValue( QStringLiteral( "SavedDockGeometry" ), mainWindow->saveGeometry() );
+  settings.setValue( QStringLiteral( "SavedPositions" ), mainWindow->saveState() );
+  settings.setValue( QStringLiteral( "SavedGeometry" ), mainWindow->saveGeometry() );
+  settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
   settings.sync();
 }
 

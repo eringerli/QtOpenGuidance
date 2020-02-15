@@ -170,6 +170,8 @@ int main( int argc, char** argv ) {
   KDDockWidgets::Config::self().setFlags( flags );
 
   KDDockWidgets::Config::self().setFrameworkWidgetFactory( new CustomWidgetFactory() ); // Sets our custom factory
+  KDDockWidgets::Config::self().setMinimumSizeOfWidgets( 10, 10 );
+
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
   mainWindow->setWindowTitle( "QtOpenGuidance" );
