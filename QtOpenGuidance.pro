@@ -31,6 +31,7 @@ qtCompileTest(spnav) {
 SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
+    src/block/FieldManager.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     src/block/CommunicationJrk.h \
     src/block/CommunicationPgn7FFE.h \
     src/block/DebugSink.h \
+    src/block/FieldManager.h \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
     src/block/GridModel.h \

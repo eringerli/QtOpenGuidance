@@ -456,24 +456,24 @@ int main( int argc, char** argv ) {
 
   // field docks -> global planner block
   QObject::connect( fieldsToolbar, SIGNAL( openField() ),
-                    settingDialog->globalPlanner, SLOT( openField() ) );
+                    settingDialog->fieldManager, SLOT( openField() ) );
   QObject::connect( fieldsToolbar, SIGNAL( newField() ),
-                    settingDialog->globalPlanner, SLOT( newField() ) );
+                    settingDialog->fieldManager, SLOT( newField() ) );
   QObject::connect( fieldsToolbar, SIGNAL( saveField() ),
-                    settingDialog->globalPlanner, SLOT( saveField() ) );
+                    settingDialog->fieldManager, SLOT( saveField() ) );
   QObject::connect( fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ),
-                    settingDialog->globalPlanner, SLOT( setContinousRecord( bool ) ) );
+                    settingDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
   QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ),
-                    settingDialog->globalPlanner, SLOT( recordPoint() ) );
+                    settingDialog->fieldManager, SLOT( recordPoint() ) );
   QObject::connect( fieldsToolbar, SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
-                    settingDialog->globalPlanner, SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
+                    settingDialog->fieldManager, SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
   QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType, double, double, double ) ),
-                    settingDialog->globalPlanner, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
+                    settingDialog->fieldManager, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
   QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ),
-                    settingDialog->globalPlanner, SLOT( recalculateField() ) );
-  QObject::connect( settingDialog->globalPlanner, SIGNAL( alphaChanged( double, double ) ),
+                    settingDialog->fieldManager, SLOT( recalculateField() ) );
+  QObject::connect( settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ),
                     fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
-  QObject::connect( settingDialog->globalPlanner, SIGNAL( fieldStatisticsChanged( double, double, double ) ),
+  QObject::connect( settingDialog->fieldManager, SIGNAL( fieldStatisticsChanged( double, double, double ) ),
                     fieldsOptimitionToolbar, SLOT( setFieldStatistics( double, double, double ) ) );
 
   // emit all initial signals from the settings dialog
