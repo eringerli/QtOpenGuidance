@@ -1,6 +1,6 @@
 load(configure)
 
-CONFIG += c++14
+CONFIG += c++14 ccache
 
 # enable to recheck all compile tests/find the libraries
 # CONFIG += recheck
