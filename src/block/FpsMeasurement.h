@@ -76,9 +76,9 @@ class FpsMeasurementFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FpsMeasurement( rootEntity );
-      auto* b = createBaseBlock( scene, obj, true );
+      auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( double ) ) ) );
 

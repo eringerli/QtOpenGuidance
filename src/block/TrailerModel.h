@@ -105,9 +105,9 @@ class TrailerModelFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TrailerModel( rootEntity );
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( double ) ) ) );
       b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );

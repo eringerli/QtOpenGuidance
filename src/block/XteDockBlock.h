@@ -51,7 +51,7 @@ class XteDockBlock : public BlockBase {
   public slots:
     void setName( const QString& name ) override {
       dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
+      dock->toggleAction()->setText( QStringLiteral( "XTE: " ) + name );
       widget->setName( name );
     }
 
@@ -84,11 +84,14 @@ class XteDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      int id = QNEBlock::getNextUserId();
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
+      if( id != 0 && !isIdUnique( scene, id ) ) {
+        id = QNEBlock::getNextUserId();
+      }
+
       auto* object = new XteDockBlock( getNameOfFactory() + QString::number( id ),
                                        mainWindow );
-      auto* b = createBaseBlock( scene, object, false, id );
+      auto* b = createBaseBlock( scene, object, id );
 
       object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );

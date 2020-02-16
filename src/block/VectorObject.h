@@ -91,9 +91,9 @@ class VectorFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new VectorObject();
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, id );
 
       b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( QVector3D ) ) ) );
 

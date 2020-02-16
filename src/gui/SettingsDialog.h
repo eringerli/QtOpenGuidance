@@ -195,6 +195,7 @@ class SettingsDialog : public QDialog {
   public:
     BlockBase* poseSimulation = nullptr;
 
+    BlockBase* fieldManager = nullptr;
     BlockBase* plannerGui = nullptr;
     BlockBase* globalPlanner = nullptr;
     BlockBase* localPlanner = nullptr;
@@ -237,6 +238,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* communicationPgn7ffeFactory = nullptr;
     BlockFactory* communicationJrkFactory = nullptr;
 
+    BlockFactory* fieldManagerFactory = nullptr;
     BlockFactory* plannerGuiFactory = nullptr;
     BlockFactory* globalPlannerFactory = nullptr;
     BlockFactory* localPlannerFactory = nullptr;

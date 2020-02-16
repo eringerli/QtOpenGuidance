@@ -347,9 +347,9 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new GlobalPlanner( mainWindow, rootEntity, tmw );
-      auto* b = createBaseBlock( scene, obj, true );
+      auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

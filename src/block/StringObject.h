@@ -75,9 +75,9 @@ class StringFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new StringObject();
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, id );
 
       b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( QString ) ) ) );
 

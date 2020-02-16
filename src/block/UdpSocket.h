@@ -90,9 +90,9 @@ class UdpSocketFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new UdpSocket();
-      auto* b = createBaseBlock( scene, obj );
+      auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );

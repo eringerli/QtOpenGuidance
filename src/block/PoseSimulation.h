@@ -168,9 +168,9 @@ class PoseSimulationFactory : public BlockFactory {
 
     virtual void addToCombobox( QComboBox* ) override {}
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PoseSimulation( geographicConvertionWrapper );
-      auto* b = createBaseBlock( scene, obj, true );
+      auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( QVector3D ) ) ) );
       b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );

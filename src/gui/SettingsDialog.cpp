@@ -66,6 +66,7 @@
 #include "../block/NmeaParserRMC.h"
 #include "../block/TransverseMercatorConverter.h"
 
+#include "../block/FieldManager.h"
 #include "../block/GuidancePlannerGui.h"
 #include "../block/GuidanceGlobalPlanner.h"
 #include "../block/GuidanceLocalPlanner.h"
@@ -225,6 +226,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 #endif
 
   // guidance
+  fieldManagerFactory = new FieldManagerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
+  auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
+  fieldManager = qobject_cast<FieldManager*>( fieldManagerBlock->object );
+
   plannerGuiFactory = new PlannerGuiFactory( rootEntity );
   auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
   plannerGui = qobject_cast<PlannerGui*>( plannerGuiBlock->object );
@@ -665,7 +670,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
           auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
 
           if( factory != nullptr ) {
-            QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
+            QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), id );
 
             idMap.insert( id, block->id );
 
@@ -740,6 +745,8 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 
   // rescale the tableview
   ui->twValues->resizeColumnsToContents();
+
+  qDebug() << idMap;
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {

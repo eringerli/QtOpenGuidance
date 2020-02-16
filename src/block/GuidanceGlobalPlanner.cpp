@@ -498,19 +498,24 @@ void GlobalPlanner::openFieldFromFile( QFile& file ) {
   if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
       json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
     QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
+    qDebug() << __FILE__ << __LINE__;
 
     if( featuresArray.size() >= 1 ) {
       QJsonObject featuresObject = featuresArray.first().toObject();
+      qDebug() << __FILE__ << __LINE__;
 
       if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
           featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
         QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
+        qDebug() << __FILE__ << __LINE__;
 
         if( geometryObject.contains( QStringLiteral( "type" ) ) && geometryObject[QStringLiteral( "type" )] == "Polygon" &&
             geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
           QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
+          qDebug() << __FILE__ << __LINE__;
 
           if( coordinatesArray.size() >= 1 ) {
+            qDebug() << __FILE__ << __LINE__;
 
             QJsonArray coordinateArray = coordinatesArray.first().toArray();
 
@@ -522,13 +527,17 @@ void GlobalPlanner::openFieldFromFile( QFile& file ) {
               if( coordinate.size() >= 2 ) {
                 double x, y, z;
 
+                qDebug() << coordinate.at( 0 ).toDouble() << coordinate.at( 1 ).toDouble();
+
                 tmw->Forward( coordinate.at( 0 ).toDouble(), coordinate.at( 1 ).toDouble(), x, y, z );
                 positions.push_back( QVector3D( x, y, z ) );
+                qDebug() << positions.last();
               }
             }
 
             m_segmentsMesh2->bufferUpdate( positions );
             m_segmentsEntity2->setEnabled( true );
+            qDebug() << __FILE__ << __LINE__;
           }
         }
       }

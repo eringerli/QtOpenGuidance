@@ -60,10 +60,15 @@ class BlockFactory : public QObject {
 
     virtual void addToCombobox( QComboBox* combobox ) = 0;
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) = 0;
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj = nullptr, bool systemBlock = false, int id = 0 ) {
-      auto* b = new QNEBlock( obj, systemBlock, id );
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock = false ) {
+      if( id != 0 && !isIdUnique( scene, id ) ) {
+        id = 0;
+        qDebug() << "BlockFactory::createBaseBlock: ID conflict";
+      }
+
+      auto* b = new QNEBlock( obj, id, systemBlock );
 
       scene->addItem( b );
 
@@ -73,6 +78,21 @@ class BlockFactory : public QObject {
       return b;
     }
 
+    bool isIdUnique( QGraphicsScene* scene, int id ) {
+      const auto& constRefOfList = scene->items();
+
+      for( const auto& item : constRefOfList ) {
+        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+        if( block != nullptr ) {
+          if( block->id == id ) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
 };
 
 #endif // BLOCKBASE_H

@@ -44,7 +44,7 @@ class QNEBlock : public QGraphicsPathItem {
     };
 
     // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
-    QNEBlock( QObject* object, bool systemBlock = false, int id = 0, QGraphicsItem* parent = nullptr );
+    QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
 
     ~QNEBlock();
 

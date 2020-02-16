@@ -154,11 +154,14 @@ class PositionDockBlockFactory : public BlockFactory {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene ) override {
-      int id = QNEBlock::getNextUserId();
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
+      if( id != 0 && !isIdUnique( scene, id ) ) {
+        id = QNEBlock::getNextUserId();
+      }
+
       auto* object = new PositionDockBlock( getNameOfFactory() + QString::number( id ),
                                             mainWindow );
-      auto* b = createBaseBlock( scene, object, false, id );
+      auto* b = createBaseBlock( scene, object, id );
 
       object->dock->setTitle( getNameOfFactory() );
       object->dock->setWidget( object->widget );
