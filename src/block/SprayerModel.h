@@ -48,7 +48,7 @@ class SprayerModel : public BlockBase {
     void setPose( const Point_3&, const QQuaternion, const PoseOption::Options );
     void setImplement( const QPointer<Implement>& );
     void setSections();
-    void setHeight( float );
+    void setHeight( double );
 
   private:
     void updateProprotions();
@@ -96,7 +96,7 @@ class SprayerModelFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( double ) ) ) );
       b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
       b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
 

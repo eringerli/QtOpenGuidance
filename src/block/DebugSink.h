@@ -71,7 +71,7 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setSteeringAngle( float value ) {
+    void setSteeringAngle( double value ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
       } else {
@@ -131,7 +131,7 @@ class DebugSinkFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( QVector3D ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
       return b;

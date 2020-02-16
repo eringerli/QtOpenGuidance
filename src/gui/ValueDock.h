@@ -33,7 +33,7 @@ class ValueDock : public QGroupBox {
     ~ValueDock();
 
   public slots:
-    void setMeter( float arg );
+    void setMeter( double arg );
     void setName( const QString& name );
 
     void setCaptionEnabled( bool enabled );

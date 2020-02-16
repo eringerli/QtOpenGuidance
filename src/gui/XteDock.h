@@ -33,7 +33,7 @@ class XteDock : public QGroupBox {
     ~XteDock();
 
   public slots:
-    void setXte( float xte );
+    void setXte( double xte );
     void setName( const QString& name );
 
   private:

@@ -220,8 +220,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   spaceNavigatorPollingThread = new SpaceNavigatorPollingThread( this );
   spaceNavigatorPollingThread->start();
 
-  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( float ) ), poseSimulation, SLOT( setSteerAngle( float ) ) );
-  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( float ) ), poseSimulation, SLOT( setVelocity( float ) ) );
+  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( double ) ), poseSimulation, SLOT( setSteerAngle( double ) ) );
+  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( double ) ), poseSimulation, SLOT( setVelocity( double ) ) );
 #endif
 
   // guidance
@@ -796,7 +796,7 @@ void SettingsDialog:: on_gbGrid_toggled( bool arg1 ) {
 
 void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
@@ -804,7 +804,7 @@ void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
 
 void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
@@ -812,7 +812,7 @@ void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
 
 void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
@@ -828,7 +828,7 @@ void SettingsDialog::on_pbColor_clicked() {
     ui->lbColor->setAutoFillBackground( true );
 
     saveGridValuesInSettings();
-    emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+    emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                         float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                         float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                         gridColor, gridColorCoarse );
@@ -1203,7 +1203,7 @@ void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
 }
 
 void SettingsDialog::emitGridSettings() {
-  emit setGridValues( float( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
@@ -1228,7 +1228,7 @@ void SettingsDialog::emitGlobalPlannerModelSettings() {
 }
 
 void SettingsDialog::emitLocalPlannerModelSettings() {
-  emit localPlannerModelSettingsChanged( float( ui->dsbLocalPlannerArrowSize->value() ),
+  emit localPlannerModelSettingsChanged( double( ui->dsbLocalPlannerArrowSize->value() ),
                                          float( ui->dsbLocalPlannerArrowDistance->value() ),
                                          float( ui->dsbLocalPlannerLineWidth->value() ),
                                          localPlannerLineColor, localPlannerArrowColor );
@@ -1430,9 +1430,9 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
                       QSettings::IniFormat );
   KDDockWidgets::LayoutSaver saver;
 
+  settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
   settings.setValue( QStringLiteral( "SavedPositions" ), mainWindow->saveState() );
   settings.setValue( QStringLiteral( "SavedGeometry" ), mainWindow->saveGeometry() );
-  settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
   settings.sync();
 }
 

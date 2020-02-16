@@ -206,14 +206,14 @@ TractorModel::~TractorModel() {
   m_rootEntity->deleteLater();
 }
 
-void TractorModel::setWheelbase( float wheelbase ) {
+void TractorModel::setWheelbase( double wheelbase ) {
   if( !qFuzzyIsNull( wheelbase ) ) {
     m_wheelbase = wheelbase;
     setProportions();
   }
 }
 
-void TractorModel::setTrackwidth( float trackwidth ) {
+void TractorModel::setTrackwidth( double trackwidth ) {
   if( !qFuzzyIsNull( trackwidth ) ) {
     m_trackwidth = trackwidth;
     setProportions();
@@ -270,11 +270,11 @@ void TractorModel::setPosePivotPoint( const Point_3& position, const QQuaternion
   }
 }
 
-void TractorModel::setSteeringAngleLeft( float steerAngle ) {
+void TractorModel::setSteeringAngleLeft( double steerAngle ) {
   QQuaternion rotationLeft =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
   m_wheelFrontLeftTransform->setRotation( rotationLeft );
 }
-void TractorModel::setSteeringAngleRight( float steerAngle ) {
+void TractorModel::setSteeringAngleRight( double steerAngle ) {
   QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
   m_wheelFrontRightTransform->setRotation( rotationRight );
 }

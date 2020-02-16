@@ -253,7 +253,7 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
   }
 }
 
-void SprayerModel::setHeight( float height ) {
+void SprayerModel::setHeight( double height ) {
   this->m_height = height;
   updateProprotions();
 }

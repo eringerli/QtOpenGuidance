@@ -47,7 +47,7 @@ class StanleyGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setSteeringAngle( float steeringAngle ) {
+    void setSteeringAngle( double steeringAngle ) {
       steeringAngle2Ago = steeringAngle1Ago;
       steeringAngle1Ago = this->steeringAngle;
       this->steeringAngle = double( steeringAngle );
@@ -61,11 +61,11 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setHeadingOfPath( float headingOfPath ) {
+    void setHeadingOfPath( double headingOfPath ) {
       this->headingOfPath = double( headingOfPath );
     }
 
-    void setXte( float distance ) {
+    void setXte( double distance ) {
       if( !qIsInf( distance ) ) {
         double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPath ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
         double stanleyXteCompensation = atan( ( stanleyGainK * double( -distance ) ) / ( double( velocity ) + stanleyGainKSoft ) );
@@ -90,24 +90,24 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setStanleyGainK( float stanleyGain ) {
+    void setStanleyGainK( double stanleyGain ) {
       this->stanleyGainK = double( stanleyGain );
     }
-    void setStanleyGainKSoft( float stanleyGain ) {
+    void setStanleyGainKSoft( double stanleyGain ) {
       this->stanleyGainKSoft = double( stanleyGain );
     }
-    void setStanleyGainDampeningYaw( float stanleyGain ) {
+    void setStanleyGainDampeningYaw( double stanleyGain ) {
       this->stanleyGainDampeningYaw = double( stanleyGain );
     }
-    void setStanleyGainDampeningSteering( float stanleyGain ) {
+    void setStanleyGainDampeningSteering( double stanleyGain ) {
       this->stanleyGainDampeningSteering = double( stanleyGain );
     }
 
-    void setVelocity( float velocity ) {
+    void setVelocity( double velocity ) {
       this->velocity = double( velocity );
     }
 
-    void setMaxSteeringAngle( float maxSteeringAngle ) {
+    void setMaxSteeringAngle( double maxSteeringAngle ) {
       this->maxSteeringAngle = double( maxSteeringAngle );
     }
 
@@ -116,7 +116,7 @@ class StanleyGuidance : public BlockBase {
     }
 
   signals:
-    void steerAngleChanged( float );
+    void steerAngleChanged( double );
 
   private:
 
@@ -224,17 +224,17 @@ class StanleyGuidanceFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( float ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SLOT( setHeadingOfPath( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K" ), QLatin1String( SLOT( setStanleyGainK( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K Softening" ), QLatin1String( SLOT( setStanleyGainKSoft( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningYaw( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningSteering( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SLOT( setHeadingOfPath( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K" ), QLatin1String( SLOT( setStanleyGainK( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Softening" ), QLatin1String( SLOT( setStanleyGainKSoft( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningYaw( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningSteering( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( double ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( double ) ) ) );
 
       return b;
     }

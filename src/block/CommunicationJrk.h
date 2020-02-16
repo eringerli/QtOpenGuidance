@@ -36,7 +36,7 @@ class CommunicationJrk : public BlockBase {
     void  dataReceived( const QByteArray& );
 
   public slots:
-    void setSteeringAngle( float steeringAngle ) {
+    void setSteeringAngle( double steeringAngle ) {
 
       QByteArray data;
       data.resize( 2 );
@@ -48,11 +48,11 @@ class CommunicationJrk : public BlockBase {
       emit dataReceived( data );
     }
 
-    void setSteerZero( float steerZero ) {
+    void setSteerZero( double steerZero ) {
       this->steerZero = steerZero;
     }
 
-    void setSteerCountPerDegree( float countsPerDegree ) {
+    void setSteerCountPerDegree( double countsPerDegree ) {
       this->countsPerDegree = countsPerDegree;
     }
 
@@ -80,9 +80,9 @@ class CommunicationJrkFactory : public BlockFactory {
       auto* obj = new CommunicationJrk();
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering count/°" ), QLatin1String( SLOT( setSteerCountPerDegree( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering count/°" ), QLatin1String( SLOT( setSteerCountPerDegree( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;

@@ -53,7 +53,7 @@ class NumberObject : public BlockBase {
     }
 
   signals:
-    void numberChanged( float );
+    void numberChanged( double );
 
   public:
     float number = 0;
@@ -79,7 +79,7 @@ class NumberFactory : public BlockFactory {
       auto* obj = new NumberObject();
       auto* b = createBaseBlock( scene, obj );
 
-      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
 
       model->resetModel();
 

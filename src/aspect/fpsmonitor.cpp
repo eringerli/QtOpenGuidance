@@ -7,8 +7,8 @@ FpsMonitor::FpsMonitor( Qt3DCore::QNode* parent )
   : Qt3DCore::QComponent( parent ) {
 }
 
-float FpsMonitor::framesPerSecond() const {
-  return m_framesPerSecond;
+double FpsMonitor::framesPerSecond() const {
+  return ( double )m_framesPerSecond;
 }
 
 int FpsMonitor::rollingMeanFrameCount() const {
@@ -34,7 +34,7 @@ void FpsMonitor::sceneChangeEvent( const Qt3DCore::QSceneChangePtr& change ) {
       if( !qFuzzyCompare( fps, m_framesPerSecond ) ) {
         m_framesPerSecond = fps;
         const auto wasBlocked = blockNotifications( true );
-        emit framesPerSecondChanged( fps );
+        emit framesPerSecondChanged( double( fps ) );
         blockNotifications( wasBlocked );
       }
 

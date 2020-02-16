@@ -52,8 +52,8 @@ class SimulatorToolbar : public QGroupBox {
     void on_pb_velocityReset_clicked();
 
   signals:
-    void velocityChanged( float );
-    void steerangleChanged( float );
+    void velocityChanged( double );
+    void steerangleChanged( double );
     void frequencyChanged( int );
 
   private:

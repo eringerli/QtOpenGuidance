@@ -92,8 +92,8 @@ class XteGuidance : public BlockBase {
     }
 
   signals:
-    void xteChanged( float );
-    void headingOfPathChanged( float );
+    void xteChanged( double );
+    void headingOfPathChanged( double );
 
   private:
     double normalizeAngleRadians( double angle ) {
@@ -151,8 +151,8 @@ class XteGuidanceFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( float ) ) ) );
-      b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( double ) ) ) );
 
       return b;
     }

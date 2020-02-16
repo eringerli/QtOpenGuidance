@@ -33,7 +33,7 @@ XteDock::~XteDock() {
   delete ui;
 }
 
-void XteDock::setXte( float xte ) {
+void XteDock::setXte( double xte ) {
   float xteAbsInCm = qAbs( xte * 100 );
 
   if( qIsInf( xte ) ) {

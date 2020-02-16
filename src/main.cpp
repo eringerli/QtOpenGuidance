@@ -425,12 +425,12 @@ int main( int argc, char** argv ) {
   // connect the signals of the simulator
   QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
-  QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( float ) ),
-                    settingDialog->poseSimulation, SLOT( setVelocity( float ) ) );
+  QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setVelocity( double ) ) );
   QObject::connect( simulatorToolbar, SIGNAL( frequencyChanged( int ) ),
                     settingDialog->poseSimulation, SLOT( setFrequency( int ) ) );
-  QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( float ) ),
-                    settingDialog->poseSimulation, SLOT( setSteerAngle( float ) ) );
+  QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
 
   // guidance dock -> settings dialog
   QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),

@@ -57,7 +57,7 @@ class PlannerGui : public BlockBase {
     void autosteerEnabled( bool );
     void turnLeft_clicked();
     void turnRight_clicked();
-    void xteChanged( float );
+    void xteChanged( double );
 
   public:
     Point_3 position = Point_3();
@@ -94,7 +94,7 @@ class PlannerGuiFactory : public BlockFactory {
       b->addOutputPort( QStringLiteral( "Turn Left" ), QLatin1String( SIGNAL( turnLeft_clicked() ) ) );
       b->addOutputPort( QStringLiteral( "Turn Right" ), QLatin1String( SIGNAL( turnRight_clicked() ) ) );
       b->addOutputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SIGNAL( autosteerEnabled( bool ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( float ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
 
       return b;
     }

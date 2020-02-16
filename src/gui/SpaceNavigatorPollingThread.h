@@ -45,8 +45,8 @@ class SpaceNavigatorPollingThread : public QThread {
     }
 
   signals:
-    void steerAngleChanged( float );
-    void velocityChanged( float );
+    void steerAngleChanged( double );
+    void velocityChanged( double );
 
   protected:
 

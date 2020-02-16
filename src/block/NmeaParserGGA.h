@@ -34,10 +34,10 @@ class NmeaParserGGA : public BlockBase {
 
   signals:
     void globalPositionChanged( const double, const double, const double );
-    void fixQualityChanged( const float );
-    void hdopChanged( const float );
-    void numSatelitesChanged( const float );
-    void ageOfDifferentialDataChanged( const float );
+    void fixQualityChanged( const double );
+    void hdopChanged( const double );
+    void numSatelitesChanged( const double );
+    void ageOfDifferentialDataChanged( const double );
 
   public slots:
     void setData( const QByteArray& data ) {
@@ -203,11 +203,11 @@ class NmeaParserGGAFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const float ) ) ) );
-      b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const float ) ) ) );
-      b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const float ) ) ) );
-      b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const float ) ) ) );
-      b->addOutputPort( QStringLiteral( "Age of Differential Data" ), QLatin1String( SIGNAL( ageOfDifferentialDataChanged( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Age of Differential Data" ), QLatin1String( SIGNAL( ageOfDifferentialDataChanged( const double ) ) ) );
 
       return b;
     }

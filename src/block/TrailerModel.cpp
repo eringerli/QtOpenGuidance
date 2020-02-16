@@ -226,7 +226,7 @@ void TrailerModel::setOffsetHookPointPosition( QVector3D position ) {
   setProportions();
 }
 
-void TrailerModel::setTrackwidth( float trackwidth ) {
+void TrailerModel::setTrackwidth( double trackwidth ) {
   if( !qFuzzyIsNull( trackwidth ) ) {
     m_trackwidth = trackwidth;
     setProportions();

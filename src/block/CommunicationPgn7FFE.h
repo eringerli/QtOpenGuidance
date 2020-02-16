@@ -36,7 +36,7 @@ class CommunicationPgn7ffe : public BlockBase {
     void  dataReceived( const QByteArray& );
 
   public slots:
-    void setSteeringAngle( float steeringAngle ) {
+    void setSteeringAngle( double steeringAngle ) {
       QByteArray data;
       data.resize( 8 );
       data[0] = char( 0x7f );
@@ -61,11 +61,11 @@ class CommunicationPgn7ffe : public BlockBase {
       emit dataReceived( data );
     }
 
-    void setXte( float distance ) {
+    void setXte( double distance ) {
       this->distance = distance;
     }
 
-    void setVelocity( float velocity ) {
+    void setVelocity( double velocity ) {
       this->velocity = velocity;
     }
 
@@ -93,9 +93,9 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
       auto* obj = new CommunicationPgn7ffe();
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( float ) ) ) );
-      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( float ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
       return b;

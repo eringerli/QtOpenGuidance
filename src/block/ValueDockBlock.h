@@ -83,7 +83,7 @@ class ValueDockBlock : public ValueDockBlockBase {
       widget->setName( name );
     }
 
-    void setValue( float value ) {
+    void setValue( double value ) {
       widget->setMeter( value );
     }
 
@@ -154,7 +154,7 @@ class ValueDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
       }
 
-      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( double ) ) ) );
 
       return b;
     }

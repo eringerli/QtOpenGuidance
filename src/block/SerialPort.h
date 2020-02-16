@@ -56,7 +56,7 @@ class SerialPort : public BlockBase {
       serialPort->open( QIODevice::ReadWrite );
     }
 
-    void setBaudrate( float baudrate ) {
+    void setBaudrate( double baudrate ) {
       this->baudrate = baudrate;
       serialPort->setBaudRate( qint32( baudrate ) );
     }
@@ -104,7 +104,7 @@ class SerialPortFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( QString ) ) ) );
-      b->addInputPort( QStringLiteral( "Baudrate" ), QLatin1String( SLOT( setBaudrate( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Baudrate" ), QLatin1String( SLOT( setBaudrate( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );

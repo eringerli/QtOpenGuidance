@@ -51,11 +51,11 @@ class TrailerKinematic : public BlockBase {
       m_offsetHookPoint = position;
     }
 
-    void setMaxJackknifeAngle( float maxAngle ) {
+    void setMaxJackknifeAngle( double maxAngle ) {
       m_maxJackknifeAngle = maxAngle;
     }
 
-    void setMaxAngle( float maxAngle ) {
+    void setMaxAngle( double maxAngle ) {
       m_maxAngle = maxAngle;
     }
 
@@ -156,8 +156,8 @@ class TrailerKinematicFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
       b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( float ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( float ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );

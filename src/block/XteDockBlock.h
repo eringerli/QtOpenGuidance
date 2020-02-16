@@ -55,7 +55,7 @@ class XteDockBlock : public BlockBase {
       widget->setName( name );
     }
 
-    void setXte( float xte ) {
+    void setXte( double xte ) {
       widget->setXte( xte );
     }
 
@@ -102,7 +102,7 @@ class XteDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnRight, firstDock );
       }
 
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( float ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
 
       return b;
     }

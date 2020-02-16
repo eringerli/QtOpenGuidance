@@ -51,7 +51,7 @@ class FpsMeasurement : public BlockBase {
     }
 
   signals:
-    void fpsChanged( float );
+    void fpsChanged( double );
 
   public:
     Qt3DCore::QEntity* fpsEntity = nullptr;
@@ -80,7 +80,7 @@ class FpsMeasurementFactory : public BlockFactory {
       auto* obj = new FpsMeasurement( rootEntity );
       auto* b = createBaseBlock( scene, obj, true );
 
-      b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( float ) ) ) );
+      b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( double ) ) ) );
 
       return b;
     }

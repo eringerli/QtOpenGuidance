@@ -34,7 +34,7 @@ class NmeaParserRMC : public BlockBase {
 
   signals:
     void globalPositionChanged( const double, const double, const double );
-    void velocityChanged( const float );
+    void velocityChanged( const double );
 
   public slots:
     void setData( const QByteArray& data ) {
@@ -188,7 +188,7 @@ class NmeaParserRMCFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
       b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const float ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
 
       return b;
     }

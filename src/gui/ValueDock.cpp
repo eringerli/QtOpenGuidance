@@ -35,7 +35,7 @@ ValueDock::~ValueDock() {
   delete ui;
 }
 
-void ValueDock::setMeter( float arg ) {
+void ValueDock::setMeter( double arg ) {
   auto meter = double( arg );
   meter *= scale;
 

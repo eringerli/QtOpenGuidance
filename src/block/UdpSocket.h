@@ -48,7 +48,7 @@ class UdpSocket : public BlockBase {
     void dataReceived( const QByteArray& );
 
   public slots:
-    void setPort( float port ) {
+    void setPort( double port ) {
       this->port = port;
       udpSocket->bind( quint16( port ),  QUdpSocket::DontShareAddress );
     }
@@ -94,7 +94,7 @@ class UdpSocketFactory : public BlockFactory {
       auto* obj = new UdpSocket();
       auto* b = createBaseBlock( scene, obj );
 
-      b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );

@@ -71,7 +71,7 @@ class FileStream : public BlockBase {
       }
     }
 
-    void setLinerate( float linerate ) {
+    void setLinerate( double linerate ) {
       this->linerate = linerate;
 
       if( qFuzzyIsNull( linerate ) ) {
@@ -129,7 +129,7 @@ class FileStreamFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj );
 
       b->addInputPort( QStringLiteral( "File" ), QLatin1String( SLOT( setFilename( const QString& ) ) ) );
-      b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( float ) ) ) );
+      b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
