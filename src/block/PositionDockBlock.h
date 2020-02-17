@@ -97,10 +97,10 @@ class PositionDockBlock : public ValueDockBlockBase {
 
     void setWGS84Position( double lat, double lon, double height ) {
       if( !wgs84 ) {
-        widget->setDescriptions( QStringLiteral( "Lat" ), QStringLiteral( "Lon" ), QStringLiteral( "H" ) );
+        widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
       }
 
-      widget->setValues( lat, lon, height );
+      widget->setValues( lon, lat, height );
     }
 
   public:

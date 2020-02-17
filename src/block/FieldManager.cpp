@@ -311,11 +311,9 @@ void FieldManager::openFieldFromFile( QFile& file ) {
               if( coordinate.size() >= 2 ) {
                 double x, y, z;
 
-                qDebug() << coordinate.at( 0 ).toDouble() << coordinate.at( 1 ).toDouble();
-
-                tmw->Forward( coordinate.at( 0 ).toDouble(), coordinate.at( 1 ).toDouble(), x, y, z );
+                tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), x, y, z );
                 positions.push_back( QVector3D( x, y, z ) );
-                qDebug() << positions.last();
+                qDebug() << positions.last() << coordinate;
               }
             }
 
@@ -382,8 +380,8 @@ void FieldManager::saveFieldToFile( QFile& file ) {
       tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
 
       QJsonArray coordinate;
-      coordinate.push_back( latitude );
       coordinate.push_back( longitude );
+      coordinate.push_back( latitude );
 
       coordinates.push_back( coordinate );
     }
@@ -398,8 +396,8 @@ void FieldManager::saveFieldToFile( QFile& file ) {
       tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
 
       QJsonArray coordinate;
-      coordinate.push_back( latitude );
       coordinate.push_back( longitude );
+      coordinate.push_back( latitude );
 
       coordinates.push_back( coordinate );
     }
