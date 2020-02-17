@@ -284,7 +284,8 @@ void FieldManager::openFieldFromFile( QFile& file ) {
         QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
         qDebug() << __FILE__ << __LINE__;
 
-        if( geometryObject.contains( QStringLiteral( "type" ) ) && geometryObject[QStringLiteral( "type" )] == "Polygon" &&
+        if( geometryObject.contains( QStringLiteral( "type" ) ) &&
+            ( geometryObject[QStringLiteral( "type" )] == "Polygon" || geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) &&
             geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
           QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
           qDebug() << __FILE__ << __LINE__;
@@ -292,7 +293,15 @@ void FieldManager::openFieldFromFile( QFile& file ) {
           if( coordinatesArray.size() >= 1 ) {
             qDebug() << __FILE__ << __LINE__;
 
-            QJsonArray coordinateArray = coordinatesArray.first().toArray();
+            QJsonArray coordinateArray;
+
+            if( geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) {
+              coordinateArray = coordinatesArray.first().toArray().first().toArray();
+              qDebug() << __FILE__ << __LINE__;
+            } else {
+              coordinateArray = coordinatesArray.first().toArray();
+              qDebug() << __FILE__ << __LINE__;
+            }
 
             QVector<QVector3D> positions;
 
