@@ -49,7 +49,7 @@ class FileStream : public BlockBase {
     void dataReceived( const QByteArray& );
 
   public slots:
-    void setFilename( QString& filename ) {
+    void setFilename( const QString& filename ) {
       this->filename = filename;
 
       if( file ) {

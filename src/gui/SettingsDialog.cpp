@@ -412,9 +412,9 @@ void SettingsDialog::onStart() {
                         QSettings::IniFormat );
     KDDockWidgets::LayoutSaver saver;
 
+    saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
     mainWindow->restoreState( settings.value( QStringLiteral( "SavedPositions" ) ).toByteArray() );
     mainWindow->restoreGeometry( settings.value( QStringLiteral( "SavedGeometry" ) ).toByteArray() );
-    saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
   }
 }
 
