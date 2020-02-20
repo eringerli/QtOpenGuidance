@@ -43,7 +43,7 @@ class CgalWorker : public QObject {
                                 double distanceBetweenConnectPoints );
 
   signals:
-    void alphaShapeFinished( Polygon_with_holes_2* );
+    void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>, double );
     void alphaChanged( double optimal, double solid );
     void fieldStatisticsChanged( double, double, double );
 
@@ -78,5 +78,6 @@ class CgalThread : public QThread {
 
 Q_DECLARE_METATYPE( FieldsOptimitionToolbar::AlphaType )
 Q_DECLARE_METATYPE( uint32_t )
+Q_DECLARE_METATYPE( std::shared_ptr<Polygon_with_holes_2> )
 
 #endif // CGALWORKER_H

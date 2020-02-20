@@ -155,6 +155,7 @@ FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, 
 
     qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
     qRegisterMetaType<uint32_t>( "uint32_t" );
+    qRegisterMetaType<std::shared_ptr<Polygon_with_holes_2>>( /*"std::shared_ptr<Polygon_with_holes_2>"*/ );
 
     QObject::connect( this, &FieldManager::requestNewRunNumber, threadForCgalWorker, &CgalThread::requestNewRunNumber );
     QObject::connect( threadForCgalWorker, &CgalThread::runNumberChanged, this, &FieldManager::setRunNumber );
@@ -270,93 +271,151 @@ void FieldManager::openFieldFromFile( QFile& file ) {
   QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
   QJsonObject json = loadDoc.object();
 
+  bool newField = false;
+  bool newRawPoints = false;
+
   if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
       json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
     QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
-    qDebug() << __FILE__ << __LINE__;
 
-    if( featuresArray.size() >= 1 ) {
-      QJsonObject featuresObject = featuresArray.first().toObject();
-      qDebug() << __FILE__ << __LINE__;
+    for( const auto& feature : qAsConst( featuresArray ) ) {
+
+      QJsonObject featuresObject = feature.toObject();
 
       if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
           featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
         QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
-        qDebug() << __FILE__ << __LINE__;
 
-        if( geometryObject.contains( QStringLiteral( "type" ) ) &&
-            ( geometryObject[QStringLiteral( "type" )] == "Polygon" || geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) &&
-            geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
-          QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
-          qDebug() << __FILE__ << __LINE__;
+        if( geometryObject.contains( QStringLiteral( "type" ) ) ) {
+          // processed field
+          if( ( geometryObject[QStringLiteral( "type" )] == "Polygon" || geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) &&
+              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
+            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
 
-          if( coordinatesArray.size() >= 1 ) {
-            qDebug() << __FILE__ << __LINE__;
+            if( coordinatesArray.size() >= 1 ) {
+              QJsonArray coordinateArray;
 
-            QJsonArray coordinateArray;
-
-            if( geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) {
-              coordinateArray = coordinatesArray.first().toArray().first().toArray();
-              qDebug() << __FILE__ << __LINE__;
-            } else {
-              coordinateArray = coordinatesArray.first().toArray();
-              qDebug() << __FILE__ << __LINE__;
-            }
-
-            QVector<QVector3D> positions;
-
-            for( const auto& blockIndex : qAsConst( coordinateArray ) ) {
-              QJsonArray coordinate = blockIndex.toArray();
-
-              if( coordinate.size() >= 2 ) {
-                double x, y, z;
-
-                tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), x, y, z );
-                positions.push_back( QVector3D( x, y, z ) );
-                qDebug() << positions.last() << coordinate;
+              if( geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) {
+                coordinateArray = coordinatesArray.first().toArray().first().toArray();
+              } else {
+                coordinateArray = coordinatesArray.first().toArray();
               }
-            }
 
-            m_segmentsMesh2->bufferUpdate( positions );
-            m_segmentsEntity2->setEnabled( true );
-            qDebug() << __FILE__ << __LINE__;
+              QVector<QVector3D> positions;
+              Polygon_2 poly;
+
+              for( const auto& blockIndex : qAsConst( coordinateArray ) ) {
+                QJsonArray coordinate = blockIndex.toArray();
+
+                if( coordinate.size() >= 2 ) {
+                  double x, y, z;
+
+                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), x, y, z );
+                  positions.push_back( QVector3D( x, y, z ) );
+                  poly.push_back( K::Point_2( x, y ) );
+                }
+              }
+
+              currentField = std::make_shared<Polygon_with_holes_2>( poly );
+
+              const auto& outerPoly = currentField->outer_boundary();
+              emit pointsInFieldBoundaryChanged( outerPoly.size() );
+
+              newField = true;
+
+              m_segmentsMesh2->bufferUpdate( positions );
+              m_segmentsEntity2->setEnabled( true );
+            }
+          }
+
+          // raw points
+          if( geometryObject[QStringLiteral( "type" )] == "MultiPoint" &&
+              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
+            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
+
+            if( coordinatesArray.size() >= 1 ) {
+              QVector<QVector3D> positions;
+              points.clear();
+
+              for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
+                QJsonArray coordinate = blockIndex.toArray();
+
+                if( coordinate.size() >= 2 ) {
+                  double x, y, z;
+                  double height = 0;
+
+                  if( coordinate.size() >= 3 ) {
+                    height = coordinate.at( 2 ).toDouble();
+                  };
+
+                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), height, x, y, z );
+
+                  positions.push_back( QVector3D( x, y, z ) );
+
+                  points.emplace_back( K::Point_3( x, y, z ) );
+                }
+              }
+
+              m_segmentsMesh3->bufferUpdate( positions );
+              m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
+              m_segmentsEntity3->setEnabled( true );
+
+              emit pointsGeneratedForFieldBoundaryChanged( 0 );
+              emit pointsRecordedChanged( points.size() );
+
+              newRawPoints = true;
+            }
           }
         }
       }
     }
   }
+
+  // if a file is loaded with only raw points, then recalculate() to set it as new boundary
+  if( newRawPoints && ! newField ) {
+    recalculateField();
+  }
 }
 
 void FieldManager::saveField() {
-  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-  QString dir;
-  QString fileName = QFileDialog::getSaveFileName( mainWindow,
-                     tr( "Open Saved Config" ),
-                     dir,
-                     tr( "All Files (*);;GeoJSON Files (*.geojson)" ),
-                     &selectedFilter );
+  if( currentField || !points.empty() ) {
+    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+    QString dir;
+    QString fileName = QFileDialog::getSaveFileName( mainWindow,
+                       tr( "Open Saved Config" ),
+                       dir,
+                       tr( "All Files (*);;GeoJSON Files (*.geojson)" ),
+                       &selectedFilter );
 
-  if( !fileName.isEmpty() ) {
+    if( !fileName.isEmpty() ) {
 
-    QFile saveFile( fileName );
+      QFile saveFile( fileName );
 
-    if( !saveFile.open( QIODevice::WriteOnly ) ) {
-      qWarning() << "Couldn't open save file.";
-      return;
+      if( !saveFile.open( QIODevice::WriteOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+        return;
+      }
+
+      saveFieldToFile( saveFile );
     }
-
-    saveFieldToFile( saveFile );
   }
 }
 
 void FieldManager::saveFieldToFile( QFile& file ) {
   QJsonObject jsonObject;
-  QJsonArray fields;
+  QJsonArray features;
 
   jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
 
-  {
-    QJsonObject field;
+  QJsonObject properties;
+  properties[QStringLiteral( "alpha" )] = currentAlpha;
+  properties[QStringLiteral( "connect-points-distance" )] = distanceBetweenConnectPoints;
+  properties[QStringLiteral( "simplification-max-deviation" )] = maxDeviation;
+
+
+  // processed field as Polygon
+  if( currentField ) {
+    QJsonObject feature;
 
     QJsonObject geometry;
 
@@ -367,7 +426,7 @@ void FieldManager::saveFieldToFile( QFile& file ) {
 
     typedef Polygon_2::Vertex_iterator VertexIterator;
 
-    auto outerBoundary = currentField.outer_boundary();
+    auto outerBoundary = currentField->outer_boundary();
 //    outerBoundary.reverse_orientation();
 
     for( VertexIterator vi = outerBoundary.vertices_begin(),
@@ -385,6 +444,7 @@ void FieldManager::saveFieldToFile( QFile& file ) {
 
       coordinates.push_back( coordinate );
     }
+
 
     // add the first point again
     {
@@ -405,26 +465,61 @@ void FieldManager::saveFieldToFile( QFile& file ) {
     coordinatesDummy.push_back( coordinates );
     geometry[QStringLiteral( "coordinates" )] = coordinatesDummy;
 
-    field[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
-    field[QStringLiteral( "geometry" )] = geometry;
-    fields.push_back( field );
+    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
+    feature[QStringLiteral( "geometry" )] = geometry;
+
+    properties[QStringLiteral( "name" )] = QStringLiteral( "processed polygon" );
+    feature[QStringLiteral( "properties" )] = properties;
+
+    features.push_back( feature );
   }
 
-//  field[QStringLiteral("type")] = "Feature";
-//  field[QStringLiteral("geometry")] = geometry;
+  // recorded points as MultiPoint
+  if( !points.empty() ) {
+    QJsonObject feature;
 
-  jsonObject[QStringLiteral( "features" )] = fields;
+    QJsonObject geometry;
+
+    geometry[QStringLiteral( "type" )] = QStringLiteral( "MultiPoint" );
+
+    QJsonArray coordinates;
+
+    for( const K::Point_3& point : points ) {
+
+      double latitude = 0;
+      double longitude = 0;
+      double height = 0;
+      tmw->Reverse( point.x(), point.y(), point.z(), latitude, longitude, height );
+
+      QJsonArray coordinate;
+      coordinate.push_back( longitude );
+      coordinate.push_back( latitude );
+      coordinate.push_back( height );
+
+      coordinates.push_back( coordinate );
+    }
+
+    geometry[QStringLiteral( "coordinates" )] = coordinates;
+
+    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
+    feature[QStringLiteral( "geometry" )] = geometry;
+
+    properties[QStringLiteral( "name" )] = QStringLiteral( "raw points" );
+    feature[QStringLiteral( "properties" )] = properties;
+
+    features.push_back( feature );
+  }
+
+  jsonObject[QStringLiteral( "features" )] = features;
 
   QJsonDocument jsonDocument( jsonObject );
   file.write( jsonDocument.toJson() );
 }
 
-void FieldManager::alphaShapeFinished( Polygon_with_holes_2* out_poly ) {
-  QScopedPointer<Polygon_with_holes_2> field( out_poly );
+void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double alpha ) {
+  currentField = field;
 
-  currentField = *field;
-
-  qDebug() << "FieldManager::alphaShapeFinished" << field;
+  qDebug() << "FieldManager::alphaShapeFinished" << field.get() << alpha;
 
   QVector<QVector3D> meshSegmentPoints;
   typedef Polygon_2::Vertex_iterator VertexIterator;

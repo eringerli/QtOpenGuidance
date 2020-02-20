@@ -102,6 +102,8 @@ class FieldManager : public BlockBase {
               recordNextPoint = false;
             }
           }
+
+          emit pointsRecordedChanged( points.size() );
         }
       }
     }
@@ -130,6 +132,8 @@ class FieldManager : public BlockBase {
               recordNextPoint = false;
             }
           }
+
+          emit pointsRecordedChanged( points.size() );
         }
       }
     }
@@ -173,7 +177,7 @@ class FieldManager : public BlockBase {
       this->runNumber = runNumber;
     }
 
-    void alphaShapeFinished( Polygon_with_holes_2* );
+    void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double alpha );
 
     void fieldStatisticsChanged( double pointsRecorded, double pointsGeneratedForFieldBoundary, double pointsInFieldBoundary ) {
       emit pointsRecordedChanged( pointsRecorded );
@@ -253,7 +257,8 @@ class FieldManager : public BlockBase {
     CgalWorker* cgalWorker = nullptr;
     uint32_t runNumber = 0;
 
-    Polygon_with_holes_2 currentField;
+    std::shared_ptr<Polygon_with_holes_2> currentField;
+    double currentAlpha = 0;
 
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;

@@ -350,6 +350,6 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
       emit fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
     }
 
-    emit alphaShapeFinished( out_poly );
+    emit alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
   }
 }
