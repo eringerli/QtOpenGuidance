@@ -72,9 +72,6 @@ class FieldManager : public BlockBase {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
-
-        aPointTransform->setRotation( orientation );
-        bPointTransform->setRotation( orientation );
       }
     }
 
@@ -82,13 +79,6 @@ class FieldManager : public BlockBase {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
-
-        Point_2 point2D( double( position.x() ), double( position.y() ) );
-
-        if( implementLine.source() != point2D ) {
-          implementLine = Segment_2( point2D, implementLine.target() );
-//          createPlanAB();
-        }
       } else {
         if( recordOnRightEdgeOfImplement == false ) {
           if( recordNextPoint ) {
@@ -112,13 +102,6 @@ class FieldManager : public BlockBase {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
-
-        Point_2 point2D( double( position.x() ), double( position.y() ) );
-
-        if( implementLine.target() != point2D ) {
-          implementLine = Segment_2( implementLine.source(), point2D );
-//          createPlanAB();
-        }
       } else {
         if( recordOnRightEdgeOfImplement == true ) {
           if( recordNextPoint ) {
@@ -205,19 +188,6 @@ class FieldManager : public BlockBase {
     Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
-    int pathsToGenerate = 5;
-    int pathsInReserve = 3;
-    int forwardPasses = 0;
-    int reversePasses = 0;
-    bool startRight = false;
-    bool mirror = false;
-
-    Point_3 aPoint = Point_3();
-    Point_3 bPoint = Point_3();
-    Segment_3 abLine = Segment_3();
-
-    Segment_2 implementLine = Segment_2();
-
     Point_3 positionLeftEdgeOfImplement = Point_3();
     Point_3 positionRightEdgeOfImplement = Point_3();
 
@@ -225,19 +195,6 @@ class FieldManager : public BlockBase {
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
     GeographicConvertionWrapper* tmw = nullptr;
-
-    // markers
-    Qt3DCore::QEntity* aPointEntity = nullptr;
-    Qt3DExtras::QSphereMesh* aPointMesh = nullptr;
-    Qt3DCore::QTransform* aPointTransform = nullptr;
-    Qt3DCore::QEntity* aTextEntity = nullptr;
-    Qt3DCore::QTransform* aTextTransform = nullptr;
-
-    Qt3DCore::QEntity* bPointEntity = nullptr;
-    Qt3DExtras::QSphereMesh* bPointMesh = nullptr;
-    Qt3DCore::QTransform* bPointTransform = nullptr;
-    Qt3DCore::QEntity* bTextEntity = nullptr;
-    Qt3DCore::QTransform* bTextTransform = nullptr;
 
     std::vector<K::Point_3> points;
     bool recordContinous = false;

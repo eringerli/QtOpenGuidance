@@ -64,9 +64,6 @@ class GlobalPlanner : public BlockBase {
 
     ~GlobalPlanner() {}
 
-  private:
-    void alphaShape();
-
   public slots:
     void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
@@ -89,20 +86,6 @@ class GlobalPlanner : public BlockBase {
           implementLine = Segment_2( point2D, implementLine.target() );
 //          createPlanAB();
         }
-      } else {
-        if( recordOnRightEdgeOfImplement == false ) {
-          if( recordNextPoint ) {
-            points.push_back( position );
-            recordNextPoint = false;
-            recalculateField();
-            qDebug() << "setPoseLeftEdge -> recalculateField";
-          } else {
-            if( recordContinous ) {
-              points.push_back( position );
-              recordNextPoint = false;
-            }
-          }
-        }
       }
     }
 
@@ -117,56 +100,7 @@ class GlobalPlanner : public BlockBase {
           implementLine = Segment_2( implementLine.source(), point2D );
 //          createPlanAB();
         }
-      } else {
-        if( recordOnRightEdgeOfImplement == true ) {
-          if( recordNextPoint ) {
-            points.push_back( position );
-            recordNextPoint = false;
-            recalculateField();
-            qDebug() << "setPoseRightEdge -> recalculateField";
-          } else {
-            if( recordContinous ) {
-              points.push_back( position );
-              recordNextPoint = false;
-            }
-          }
-        }
       }
-    }
-
-    void openField();
-    void openFieldFromFile( QFile& file );
-
-    void newField() {
-      points.clear();
-    }
-    void saveField();
-    void saveFieldToFile( QFile& file );
-
-    void setContinousRecord( bool enabled ) {
-      if( recordContinous == true && enabled == false ) {
-        recalculateField();
-      }
-
-      recordContinous = enabled;
-    }
-    void recordPoint() {
-      recordNextPoint = true;
-    }
-
-    void recordOnEdgeOfImplementChanged( bool right ) {
-      recordOnRightEdgeOfImplement = right;
-    }
-
-    void recalculateField() {
-      alphaShape();
-    }
-
-    void setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints ) {
-      this->alphaType = alphaType;
-      this->customAlpha = customAlpha;
-      this->maxDeviation = maxDeviation;
-      this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
     }
 
     void a_clicked() {
@@ -180,8 +114,6 @@ class GlobalPlanner : public BlockBase {
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
-    void createPlanAB();
-
     void b_clicked() {
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
@@ -191,15 +123,9 @@ class GlobalPlanner : public BlockBase {
       abLine = Segment_3( aPoint, bPoint );
 
       createPlanAB();
-
-//      optimalTransportationReconstruction();
-//      alphaShape();
     }
 
     void snap_clicked() {
-//      optimalTransportationReconstruction();
-      alphaShape();
-
       qDebug() << "snap_clicked()";
     }
 
@@ -238,20 +164,21 @@ class GlobalPlanner : public BlockBase {
       this->runNumber = runNumber;
     }
 
-    void alphaShapeFinished( Polygon_with_holes_2* );
-
   signals:
     void planChanged( QVector<QSharedPointer<PathPrimitive>> );
 
-    void alphaChanged( double optimal, double solid );
-    void fieldStatisticsChanged( double, double, double );
-    void requestFieldOptimition( uint32_t runNumber,
-                                 std::vector<K::Point_2>* points,
-                                 FieldsOptimitionToolbar::AlphaType alphaType,
-                                 double customAlpha,
-                                 double maxDeviation,
-                                 double distanceBetweenConnectPoints );
-    void requestNewRunNumber();
+//    void alphaChanged( double optimal, double solid );
+//    void fieldStatisticsChanged( double, double, double );
+//    void requestFieldOptimition( uint32_t runNumber,
+//                                 std::vector<K::Point_2>* points,
+//                                 FieldsOptimitionToolbar::AlphaType alphaType,
+//                                 double customAlpha,
+//                                 double maxDeviation,
+//                                 double distanceBetweenConnectPoints );
+//    void requestNewRunNumber();
+
+  public:
+    void createPlanAB();
 
   public:
     Point_3 position = Point_3();
@@ -291,25 +218,13 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
 
-    std::vector<K::Point_3> points;
-    bool recordContinous = false;
-    bool recordNextPoint = false;
-    bool recordOnRightEdgeOfImplement = false;
-
   private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;
     Qt3DCore::QTransform* m_baseTransform = nullptr;
 
-    FieldsOptimitionToolbar::AlphaType alphaType = FieldsOptimitionToolbar::AlphaType::Optimal;
-    double customAlpha = 10;
-    double maxDeviation = 0.1;
-    double distanceBetweenConnectPoints = 0.5;
-
     CgalThread* threadForCgalWorker = nullptr;
     CgalWorker* cgalWorker = nullptr;
     uint32_t runNumber = 0;
-
-    Polygon_with_holes_2 currentField;
 
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;
