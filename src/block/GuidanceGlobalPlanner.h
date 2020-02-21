@@ -103,6 +103,10 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
+    void setField( std::shared_ptr<Polygon_with_holes_2> field){
+      currentField = field;
+    }
+
     void a_clicked() {
       aPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
@@ -191,6 +195,8 @@ class GlobalPlanner : public BlockBase {
     bool startRight = false;
     bool mirror = false;
 
+    std::shared_ptr<Polygon_with_holes_2> currentField;
+
     Point_3 aPoint = Point_3();
     Point_3 bPoint = Point_3();
     Segment_3 abLine = Segment_3();
@@ -269,6 +275,9 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+
+      b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> )) ) );
+
       b->addInputPort( QStringLiteral( "A clicked" ), QLatin1String( SLOT( a_clicked() ) ) );
       b->addInputPort( QStringLiteral( "B clicked" ), QLatin1String( SLOT( b_clicked() ) ) );
       b->addInputPort( QStringLiteral( "Snap clicked" ), QLatin1String( SLOT( snap_clicked() ) ) );

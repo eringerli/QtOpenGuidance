@@ -169,7 +169,7 @@ class FieldManager : public BlockBase {
     }
 
   signals:
-    void fieldChanged();
+    void fieldChanged(std::shared_ptr<Polygon_with_holes_2>);
 
     void alphaChanged( double optimal, double solid );
     void requestFieldOptimition( uint32_t runNumber,
@@ -261,7 +261,7 @@ class FieldManagerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Points Generated" ), QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( double ) ) ) );

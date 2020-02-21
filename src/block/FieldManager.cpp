@@ -259,6 +259,8 @@ void FieldManager::openFieldFromFile( QFile& file ) {
 
               m_segmentsMesh2->bufferUpdate( positions );
               m_segmentsEntity2->setEnabled( true );
+
+              emit fieldChanged(currentField);
             }
           }
 
@@ -466,4 +468,6 @@ void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> fie
 
   meshSegmentPoints << meshSegmentPoints.first();
   m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
+
+  emit fieldChanged(currentField);
 }
