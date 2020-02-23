@@ -115,30 +115,38 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         break;
 
       case QEvent::KeyRelease: {
-          const auto& constRefOfList = scene->selectedItems();
 
           if( keyEvent->matches( QKeySequence::Delete ) ) {
-            for( const auto& item : constRefOfList ) {
-              const auto connection = qgraphicsitem_cast<QNEConnection*>( item );
+            {
+              const auto& constRefOfList = scene->selectedItems();
 
-              if( connection != nullptr ) {
-                delete connection;
+              for( const auto& item : constRefOfList ) {
+                delete qgraphicsitem_cast<QNEConnection*>( item );
               }
             }
 
-            for( const auto& item : constRefOfList ) {
-              const auto block = qgraphicsitem_cast<QNEBlock*>( item );
+            {
+              const auto& constRefOfList = scene->selectedItems();
+              SettingsDialog* settingsDialog = nullptr;
 
-              if( block != nullptr ) {
-                if( !block->systemBlock ) {
-                  delete block;
+              for( const auto& item : constRefOfList ) {
+                const auto block = qgraphicsitem_cast<QNEBlock*>( item );
 
-                  const auto dialog = qobject_cast<SettingsDialog*>( parent() );
+                if( block != nullptr ) {
+                  if( !block->systemBlock ) {
+                    delete block;
 
-                  if( dialog != nullptr ) {
-                    dialog->allModelsReset();
+                    const auto dialog = qobject_cast<SettingsDialog*>( parent() );
+
+                    if( dialog != nullptr ) {
+                      settingsDialog = dialog;
+                    }
                   }
                 }
+              }
+
+              if( settingsDialog ) {
+                settingsDialog->allModelsReset();
               }
             }
           }
