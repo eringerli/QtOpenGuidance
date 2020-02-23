@@ -24,7 +24,6 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include "../cgal.h"
 #include "../gui/FieldsOptimitionToolbar.h"
 
 #include <QSharedPointer>

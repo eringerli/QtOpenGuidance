@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "CgalWorker.h"
 #include "../cgal.h"
+#include "CgalWorker.h"
 
 #include <QScopedPointer>
 
@@ -353,3 +353,7 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
     emit alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
   }
 }
+
+// Without this include, qmake creates a rule to compile moc_CgalWorker.cpp standalone,
+// which doesn't include cgal.h for performance reasons
+#include "moc_CgalWorker.cpp"

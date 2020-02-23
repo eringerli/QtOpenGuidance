@@ -23,7 +23,7 @@
 
 #include "cgalKernel.h"
 
-//#ifndef __clang_analyzer__
+#ifndef __clang_analyzer__
 
 #include <QDebug>
 
@@ -118,6 +118,6 @@ namespace PS = CGAL::Polyline_simplification_2;
 
 #include <CGAL/point_generators_2.h>
 
-//#endif // not __clang_analyzer__
+#endif // not __clang_analyzer__
 
 #endif // CGAL_H

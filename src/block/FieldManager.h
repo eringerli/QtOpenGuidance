@@ -49,12 +49,14 @@
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 
-#include "../kinematic/CgalWorker.h"
 #include "../kinematic/GeographicConvertionWrapper.h"
 
 #include <QVector>
 #include <QSharedPointer>
 #include <utility>
+
+class CgalThread;
+class CgalWorker;
 
 class FieldManager : public BlockBase {
     Q_OBJECT

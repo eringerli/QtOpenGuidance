@@ -39,6 +39,8 @@ typedef K::Point_2                                          Point_2;
 typedef K::Point_3                                          Point_3;
 typedef K::Segment_2                                        Segment_2;
 typedef K::Segment_3                                        Segment_3;
+typedef K::Line_2                                           Line_2;
+typedef K::Circle_2                                         Circle_2;
 
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
@@ -46,7 +48,6 @@ typedef CGAL::Polygon_2<K>                                  Polygon_2;
 typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
 
 // basic conversions
-
 inline QVector3D convertPoint3ToQVector3D( const Point_3& point ) {
   return QVector3D( float( point.x() ), float( point.y() ), float( point.z() ) );
 }

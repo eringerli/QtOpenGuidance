@@ -129,16 +129,16 @@ HEADERS += \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h
 
-android {
-    HEADER += \
+#android {
+    HEADERS += \
         src/cgal.h \
         src/cgalKernel.h
-}
-!android {
-    PRECOMPILED_HEADER += \
-        src/cgal.h \
-        src/cgalKernel.h
-}
+#}
+#!android {
+#    PRECOMPILED_HEADER += \
+#        src/cgal.h \
+#        src/cgalKernel.h
+#}
 
 FORMS += \
     src/gui/CameraToolbar.ui \

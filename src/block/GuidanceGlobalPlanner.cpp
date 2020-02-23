@@ -22,6 +22,7 @@
 #include <QFileDialog>
 
 #include "../cgal.h"
+#include "../kinematic/CgalWorker.h"
 
 void GlobalPlanner::createPlanAB() {
 //  if( !qIsNull( abLine.squared_lenght() ) ) {
@@ -392,4 +393,11 @@ GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity
 
     threadForCgalWorker->start();
   }
+
+  Segment_2 segment(Point_2(2,2), Point_2(3,3));
+  PathPrimitiveLine line1(segment, 1,true,true,0);
+  PathPrimitiveLine line2(segment, 1,false,true,0);
+  Point_2 point(0,0);
+  qDebug()<<"line1: "<< line1.distanceToPoint(point);
+  qDebug()<<"line2: "<< line2.distanceToPoint(point);
 }
