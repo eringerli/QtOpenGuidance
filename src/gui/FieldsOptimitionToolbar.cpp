@@ -31,11 +31,6 @@ void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha )
   }
 }
 
-void FieldsOptimitionToolbar::setFieldStatistics( double pointsRecorded, double pointsCalculated, double pointsInPolygon ) {
-  ui->lbPointsRecorded->setText( QString::number( pointsRecorded ) + " | " + QString::number( pointsCalculated ) );
-  ui->lbPointsInPolygon->setNum( pointsInPolygon );
-}
-
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
   emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
                                         ui->dsbAlpha->value(),

@@ -27,8 +27,6 @@ class FieldsOptimitionToolbar : public QGroupBox {
 
   public slots:
     void setAlpha( double optimal, double solid );
-    void setFieldStatistics( double pointsRecorded, double pointsCalculated, double pointsInPolygon );
-
 
   private slots:
     void on_pbRecalculate_clicked();
