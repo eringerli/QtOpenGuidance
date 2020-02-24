@@ -50,64 +50,64 @@ class LocalPlanner : public BlockBase {
         this->orientation = orientation;
 
 
-        // get nearest line/segment
-        double distance = qInf();
-//        double headingOfABLine = 0;
+//        // get nearest line/segment
+//        double distance = qInf();
+////        double headingOfABLine = 0;
 
-        QSharedPointer<PathPrimitive> lineBuffer;
+//        QSharedPointer<PathPrimitive> lineBuffer;
 
-        for( const auto& primitive : qAsConst( plan ) ) {
-          auto* line = qobject_cast<PathPrimitiveLine*>( primitive.data() );
+//        for( const auto& primitive : qAsConst( plan ) ) {
+//          auto* line = qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-          if( line ) {
-            double distanceTmp = line->distanceToPoint( QPointF( double( position.x() ), double( position.y() ) ) );
+//          if( line ) {
+//            double distanceTmp = line->distanceToPoint( Point_2( double( position.x() ), double( position.y() ) ) );
 
-            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
-              lineBuffer = primitive;
-//              headingOfABLine = line->line.angle();
-              distance = distanceTmp;
-            }
+//            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
+//              lineBuffer = primitive;
+////              headingOfABLine = line->line.angle();
+//              distance = distanceTmp;
+//            }
 
-//            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
-          }
-        }
+////            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
+//          }
+//        }
 
-        // make a new plan with the nearest line, reverse lines that have anyDirection==true
-        auto* line = qobject_cast<PathPrimitiveLine*>( lineBuffer.data() );
+//        // make a new plan with the nearest line, reverse lines that have anyDirection==true
+//        auto* line = qobject_cast<PathPrimitiveLine*>( lineBuffer.data() );
 
-        if( line ) {
-          QVector<QSharedPointer<PathPrimitive>> planTmp;
+//        if( line ) {
+//          std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> planTmp;
 
-          if( line->anyDirection ) {
-            qreal angleToHeading = line->line.angleTo( QLineF::fromPolar( 100, -qreal( orientation.toEulerAngles().z() ) ) );
+//          if( line->anyDirection ) {
+//            qreal angleToHeading = line->line.angleTo( QLineF::fromPolar( 100, -qreal( orientation.toEulerAngles().z() ) ) );
 
-            if( !( ( angleToHeading < 80 ) || ( angleToHeading > ( 360 - 80 ) ) ) ) {
-              qDebug() << "line->reverse()";
-              line->reverse();
-            }
-          }
+//            if( !( ( angleToHeading < 80 ) || ( angleToHeading > ( 360 - 80 ) ) ) ) {
+//              qDebug() << "line->reverse()";
+//              line->reverse();
+//            }
+//          }
 
-          planTmp << lineBuffer;
-          emit planChanged( planTmp );
-        }
+//          planTmp << lineBuffer;
+//          emit planChanged( planTmp );
+//        }
       }
     }
 
-    void setPlan( const QVector<QSharedPointer<PathPrimitive>>& plan ) {
+    void setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& plan ) {
       this->plan = plan;
       emit planChanged( plan );
     }
 
 
   signals:
-    void planChanged( QVector<QSharedPointer<PathPrimitive>> );
+    void planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> );
 
   public:
     Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
-    QVector<QSharedPointer<PathPrimitive>> plan;
+    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 };
 
 class LocalPlannerFactory : public BlockFactory {
@@ -130,8 +130,8 @@ class LocalPlannerFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const QVector<QSharedPointer<PathPrimitive>>& ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& ) ) ) );
 
       return b;
     }

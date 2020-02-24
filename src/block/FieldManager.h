@@ -171,7 +171,7 @@ class FieldManager : public BlockBase {
     }
 
   signals:
-    void fieldChanged(std::shared_ptr<Polygon_with_holes_2>);
+    void fieldChanged( std::shared_ptr<Polygon_with_holes_2> );
 
     void alphaChanged( double optimal, double solid );
     void requestFieldOptimition( uint32_t runNumber,

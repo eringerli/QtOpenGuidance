@@ -105,7 +105,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setField( std::shared_ptr<Polygon_with_holes_2> field){
+    void setField( std::shared_ptr<Polygon_with_holes_2> field ) {
       currentField = field;
     }
 
@@ -128,10 +128,12 @@ class GlobalPlanner : public BlockBase {
 
       abLine = Segment_3( aPoint, bPoint );
 
+      plan-> clear();
       createPlanAB();
     }
 
     void snap_clicked() {
+      createPlanAB();
       qDebug() << "snap_clicked()";
     }
 
@@ -146,7 +148,7 @@ class GlobalPlanner : public BlockBase {
       this->pathsToGenerate = pathsToGenerate;
       this->pathsInReserve = pathsInReserve;
 
-      createPlanAB();
+//      createPlanAB();
     }
 
     void setPassSettings( int forwardPasses, int reversePasses, bool startRight, bool mirror ) {
@@ -161,7 +163,7 @@ class GlobalPlanner : public BlockBase {
       this->startRight = startRight;
       this->mirror = mirror;
 
-      createPlanAB();
+//      createPlanAB();
     }
 
     void setPassNumberTo( int /*passNumber*/ ) {}
@@ -171,7 +173,7 @@ class GlobalPlanner : public BlockBase {
     }
 
   signals:
-    void planChanged( QVector<QSharedPointer<PathPrimitive>> );
+    void planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> );
 
 //    void alphaChanged( double optimal, double solid );
 //    void fieldStatisticsChanged( double, double, double );
@@ -182,6 +184,21 @@ class GlobalPlanner : public BlockBase {
 //                                 double maxDeviation,
 //                                 double distanceBetweenConnectPoints );
 //    void requestNewRunNumber();
+
+  private:
+
+    double normalizeAngleRadians( double angle ) {
+      while( angle > M_PI ) {
+        angle -= M_PI * 2;
+      }
+
+      while( angle < -M_PI ) {
+        angle += M_PI * 2;
+      }
+
+      return angle;
+    }
+
 
   public:
     void createPlanAB();
@@ -207,6 +224,8 @@ class GlobalPlanner : public BlockBase {
 
     Point_3 positionLeftEdgeOfImplement = Point_3();
     Point_3 positionRightEdgeOfImplement = Point_3();
+
+    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 
   private:
     QWidget* mainWindow = nullptr;
@@ -278,7 +297,7 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> )) ) );
+      b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 
       b->addInputPort( QStringLiteral( "A clicked" ), QLatin1String( SLOT( a_clicked() ) ) );
       b->addInputPort( QStringLiteral( "B clicked" ), QLatin1String( SLOT( b_clicked() ) ) );
@@ -286,7 +305,7 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Turn Left" ), QLatin1String( SLOT( turnLeft_clicked() ) ) );
       b->addInputPort( QStringLiteral( "Turn Right" ), QLatin1String( SLOT( turnRight_clicked() ) ) );
 
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
 
       return b;
     }
@@ -298,4 +317,3 @@ class GlobalPlannerFactory : public BlockFactory {
 };
 
 #endif // GLOBALPLANNER_H
-

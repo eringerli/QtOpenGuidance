@@ -48,42 +48,42 @@ class XteGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    void setPose( const Point_3& /*position*/, const QQuaternion, const PoseOption::Options /*options*/ ) {
+//      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
 
-        double distance = qInf();
-        double headingOfABLine = 0;
+//        double distance = qInf();
+//        double headingOfABLine = 0;
 
-        for( const auto& primitive : qAsConst( plan ) ) {
-          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+//        for( const auto& primitive : qAsConst( plan ) ) {
+//          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-          if( line ) {
-            double distanceTmp = line->distanceToPoint( QPointF( position.x(), position.y() ) );
+//          if( line ) {
+//            double distanceTmp = line->distanceToPoint( QPointF( position.x(), position.y() ) );
 
-            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
-              headingOfABLine = line->line.angle();
-              distance = distanceTmp;
-            }
+//            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
+//              headingOfABLine = line->line.angle();
+//              distance = distanceTmp;
+//            }
 
-//            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
-          }
-        }
+////            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
+//          }
+//        }
 
-        if( !qIsInf( distance ) ) {
-          headingOfABLine *= -1;
-          headingOfABLine = normalizeAngleDegrees( headingOfABLine );
+//        if( !qIsInf( distance ) ) {
+//          headingOfABLine *= -1;
+//          headingOfABLine = normalizeAngleDegrees( headingOfABLine );
 
-          emit headingOfPathChanged( float( qDegreesToRadians( headingOfABLine ) ) );
-          emit xteChanged( float( distance ) );
-        } else {
-          emit headingOfPathChanged( qInf() );
-          emit xteChanged( qInf() );
-        }
-      }
+//          emit headingOfPathChanged( float( qDegreesToRadians( headingOfABLine ) ) );
+//          emit xteChanged( float( distance ) );
+//        } else {
+//          emit headingOfPathChanged( qInf() );
+//          emit xteChanged( qInf() );
+//        }
+//      }
     }
 
-    void setPlan( QVector<QSharedPointer<PathPrimitive>> plan ) {
-      this->plan = std::move( plan );
+    void setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan ) {
+      this->plan = plan;
     }
 
     void emitConfigSignals() override {
@@ -126,7 +126,7 @@ class XteGuidance : public BlockBase {
     QQuaternion orientation = QQuaternion();
 
   private:
-    QVector<QSharedPointer<PathPrimitive>> plan;
+    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 };
 
 class XteGuidanceFactory : public BlockFactory {
@@ -149,7 +149,7 @@ class XteGuidanceFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( QVector<QSharedPointer<PathPrimitive>> ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
 
       b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( double ) ) ) );

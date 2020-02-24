@@ -39,8 +39,14 @@ typedef K::Point_2                                          Point_2;
 typedef K::Point_3                                          Point_3;
 typedef K::Segment_2                                        Segment_2;
 typedef K::Segment_3                                        Segment_3;
+typedef K::Vector_2                                         Vector_2;
+typedef K::Vector_3                                         Vector_3;
 typedef K::Line_2                                           Line_2;
+typedef K::Line_3                                           Line_3;
 typedef K::Circle_2                                         Circle_2;
+
+#include <CGAL/Aff_transformation_2.h>
+typedef CGAL::Aff_transformation_2<K>                       Transformation_2;
 
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
@@ -48,16 +54,25 @@ typedef CGAL::Polygon_2<K>                                  Polygon_2;
 typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
 
 // basic conversions
-inline QVector3D convertPoint3ToQVector3D( const Point_3& point ) {
+inline const QVector3D convertPoint3ToQVector3D( const Point_3& point ) {
   return QVector3D( float( point.x() ), float( point.y() ), float( point.z() ) );
 }
 
-inline QVector3D convertPoint2ToQVector3D( Point_2 point ) {
+inline const QVector3D convertPoint2ToQVector3D( Point_2 point ) {
   return QVector3D( float( point.x() ), float( point.y() ), 0 );
 }
 
-inline Point_3 convertQVector3DToPoint3( QVector3D point ) {
+inline const Point_3 convertQVector3DToPoint3( QVector3D point ) {
   return Point_3( point.x(), point.y(), point.z() );
+}
+
+inline const Segment_2 to2D( const Segment_3& segment ) {
+  return Segment_2( Point_2( segment.source().x(), segment.source().y() ),
+                    Point_2( segment.target().x(), segment.target().y() ) );
+}
+
+inline const Point_2 to2D( const Point_3& point ) {
+  return Point_2( point.x(), point.y() );
 }
 
 //#endif // not __clang_analyzer__

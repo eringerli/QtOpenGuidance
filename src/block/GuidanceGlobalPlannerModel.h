@@ -177,7 +177,7 @@ class GlobalPlannerModel : public BlockBase {
       recalculateTextureCoordinates();
     }
 
-    void setPlan( const QVector<QSharedPointer<PathPrimitive>>& plan ) {
+    void setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& plan ) {
       this->plan = plan;
       recalculateMeshes();
     }
@@ -191,92 +191,92 @@ class GlobalPlannerModel : public BlockBase {
     }
 
     void recalculateMeshes() {
-      QVector<QVector3D> positions;
-      QVector<quint16> indices;
-      QVector<QVector2D> textureCoordinates;
-      bool anyDirection = false;
+//      QVector<QVector3D> positions;
+//      QVector<quint16> indices;
+//      QVector<QVector2D> textureCoordinates;
+//      bool anyDirection = false;
 
-      for( const auto& primitive : qAsConst( plan ) ) {
-        auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+//      for( const auto& primitive : qAsConst( plan ) ) {
+//        auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-        if( line ) {
-          qreal headingOfLine = line->line.angle();
-          qreal width2 = qAbs( line->width / 2 );
-          QLineF offsetLeft = QLineF::fromPolar( width2, headingOfLine + 90 );
-          QLineF offsetRight = QLineF::fromPolar( width2, headingOfLine - 90 );
+//        if( line ) {
+//          qreal headingOfLine = line->line.angle();
+//          qreal width2 = qAbs( line->width / 2 );
+//          QLineF offsetLeft = QLineF::fromPolar( width2, headingOfLine + 90 );
+//          QLineF offsetRight = QLineF::fromPolar( width2, headingOfLine - 90 );
 
-          QLineF tmpLineLeft = line->line.translated( offsetLeft.p2() );
-          QLineF tmpLineRight = line->line.translated( offsetRight.p2() );
+//          QLineF tmpLineLeft = line->line.translated( offsetLeft.p2() );
+//          QLineF tmpLineRight = line->line.translated( offsetRight.p2() );
 
-          if( line->anyDirection ) {
-            anyDirection = true;
-          }
+//          if( line->anyDirection ) {
+//            anyDirection = true;
+//          }
 
-          quint16 indexOffset = quint16( positions.size() );
+//          quint16 indexOffset = quint16( positions.size() );
 
-          positions << QVector3D( float( tmpLineLeft.x1() ), float( tmpLineLeft.y1() ), 0 );
-          positions << QVector3D( float( tmpLineLeft.x2() ), float( tmpLineLeft.y2() ), 0 );
-          positions << QVector3D( float( tmpLineRight.x1() ), float( tmpLineRight.y1() ), 0 );
-          positions << QVector3D( float( tmpLineRight.x2() ), float( tmpLineRight.y2() ), 0 );
+//          positions << QVector3D( float( tmpLineLeft.x1() ), float( tmpLineLeft.y1() ), 0 );
+//          positions << QVector3D( float( tmpLineLeft.x2() ), float( tmpLineLeft.y2() ), 0 );
+//          positions << QVector3D( float( tmpLineRight.x1() ), float( tmpLineRight.y1() ), 0 );
+//          positions << QVector3D( float( tmpLineRight.x2() ), float( tmpLineRight.y2() ), 0 );
 
-          indices << indexOffset + 2;
-          indices << indexOffset + 0;
-          indices << indexOffset + 3;
-          indices << indexOffset + 1;
-          indices << indexOffset + 3;
-          indices << indexOffset + 0;
+//          indices << indexOffset + 2;
+//          indices << indexOffset + 0;
+//          indices << indexOffset + 3;
+//          indices << indexOffset + 1;
+//          indices << indexOffset + 3;
+//          indices << indexOffset + 0;
 
-          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
-//          arrowsForegroundArrowTexture->setDimensions();
-          textureCoordinates << QVector2D( 0, 0 );
-          textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
-          textureCoordinates << QVector2D( 0, 1 );
-          textureCoordinates << QVector2D( textureCoordinateMaxY, 1 );
-        }
-      }
+//          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
+////          arrowsForegroundArrowTexture->setDimensions();
+//          textureCoordinates << QVector2D( 0, 0 );
+//          textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
+//          textureCoordinates << QVector2D( 0, 1 );
+//          textureCoordinates << QVector2D( textureCoordinateMaxY, 1 );
+//        }
+//      }
 
-      QByteArray positionsBufferData;
-      positionsBufferData.resize( positions.size() * static_cast<int>( sizeof( QVector3D ) ) );
-      memcpy( positionsBufferData.data(), positions.constData(), static_cast<size_t>( positions.size() * static_cast<int>( sizeof( QVector3D ) ) ) );
-      arrowsForegroundVertexBuffer->setData( positionsBufferData );
-      arrowsForegroundPositionAttribute->setCount( uint( positions.size() ) );
+//      QByteArray positionsBufferData;
+//      positionsBufferData.resize( positions.size() * static_cast<int>( sizeof( QVector3D ) ) );
+//      memcpy( positionsBufferData.data(), positions.constData(), static_cast<size_t>( positions.size() * static_cast<int>( sizeof( QVector3D ) ) ) );
+//      arrowsForegroundVertexBuffer->setData( positionsBufferData );
+//      arrowsForegroundPositionAttribute->setCount( uint( positions.size() ) );
 
-      QByteArray indicesBufferData;
-      indicesBufferData.resize( indices.size() * static_cast<int>( sizeof( quint16 ) ) );
-      memcpy( indicesBufferData.data(), indices.constData(), static_cast<size_t>( indices.size() * static_cast<int>( sizeof( quint16 ) ) ) );
-      arrowsForegroundIndicesBuffer->setData( indicesBufferData );
-      arrowsForegroundIndicesAttribute->setCount( uint( indices.size() ) );
-      arrowsForegroundGeometryRenderer->setVertexCount( int( indices.size() ) );
+//      QByteArray indicesBufferData;
+//      indicesBufferData.resize( indices.size() * static_cast<int>( sizeof( quint16 ) ) );
+//      memcpy( indicesBufferData.data(), indices.constData(), static_cast<size_t>( indices.size() * static_cast<int>( sizeof( quint16 ) ) ) );
+//      arrowsForegroundIndicesBuffer->setData( indicesBufferData );
+//      arrowsForegroundIndicesAttribute->setCount( uint( indices.size() ) );
+//      arrowsForegroundGeometryRenderer->setVertexCount( int( indices.size() ) );
 
-      QByteArray textureCoordinatesBufferData;
-      textureCoordinatesBufferData.resize( textureCoordinates.size() * static_cast<int>( sizeof( QVector2D ) ) );
-      memcpy( textureCoordinatesBufferData.data(), textureCoordinates.constData(), static_cast<size_t>( textureCoordinates.size() ) * sizeof( QVector2D ) );
-      arrowsForegroundTextureCoordinatesBuffer->setData( textureCoordinatesBufferData );
-      arrowsForegroundTextureCoordinatesAttribute->setCount( uint( textureCoordinates.size() ) );
+//      QByteArray textureCoordinatesBufferData;
+//      textureCoordinatesBufferData.resize( textureCoordinates.size() * static_cast<int>( sizeof( QVector2D ) ) );
+//      memcpy( textureCoordinatesBufferData.data(), textureCoordinates.constData(), static_cast<size_t>( textureCoordinates.size() ) * sizeof( QVector2D ) );
+//      arrowsForegroundTextureCoordinatesBuffer->setData( textureCoordinatesBufferData );
+//      arrowsForegroundTextureCoordinatesAttribute->setCount( uint( textureCoordinates.size() ) );
 
-      arrowsForegroundArrowTexture->setAnyDirectionArrows( anyDirection );
+//      arrowsForegroundArrowTexture->setAnyDirectionArrows( anyDirection );
     }
 
     void recalculateTextureCoordinates() {
-      QVector<QVector2D> textureCoordinates;
+//      QVector<QVector2D> textureCoordinates;
 
-      for( const auto& primitive : qAsConst( plan ) ) {
-        auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
+//      for( const auto& primitive : qAsConst( plan ) ) {
+//        auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-        if( line ) {
-          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
-          textureCoordinates << QVector2D( 0, 0 );
-          textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
-          textureCoordinates << QVector2D( 0, 1 );
-          textureCoordinates << QVector2D( textureCoordinateMaxY, 1 );
-        }
-      }
+//        if( line ) {
+//          float textureCoordinateMaxY = float( line->line.length() ) / ( textureSize + distanceBetweenArrows );
+//          textureCoordinates << QVector2D( 0, 0 );
+//          textureCoordinates << QVector2D( textureCoordinateMaxY, 0 );
+//          textureCoordinates << QVector2D( 0, 1 );
+//          textureCoordinates << QVector2D( textureCoordinateMaxY, 1 );
+//        }
+//      }
 
-      QByteArray textureCoordinatesBufferData;
-      textureCoordinatesBufferData.resize( textureCoordinates.size() * static_cast<int>( sizeof( QVector2D ) ) );
-      memcpy( textureCoordinatesBufferData.data(), textureCoordinates.constData(), static_cast<size_t>( textureCoordinates.size() ) * sizeof( QVector2D ) );
-      arrowsForegroundTextureCoordinatesBuffer->setData( textureCoordinatesBufferData );
-      arrowsForegroundTextureCoordinatesAttribute->setCount( uint( textureCoordinates.size() ) );
+//      QByteArray textureCoordinatesBufferData;
+//      textureCoordinatesBufferData.resize( textureCoordinates.size() * static_cast<int>( sizeof( QVector2D ) ) );
+//      memcpy( textureCoordinatesBufferData.data(), textureCoordinates.constData(), static_cast<size_t>( textureCoordinates.size() ) * sizeof( QVector2D ) );
+//      arrowsForegroundTextureCoordinatesBuffer->setData( textureCoordinatesBufferData );
+//      arrowsForegroundTextureCoordinatesAttribute->setCount( uint( textureCoordinates.size() ) );
     }
 
   private:
@@ -313,7 +313,7 @@ class GlobalPlannerModel : public BlockBase {
     float textureSize = 3, distanceBetweenArrows = 3;
 
   private:
-    QVector<QSharedPointer<PathPrimitive>> plan;
+    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 
 };
 
@@ -338,7 +338,7 @@ class GlobalPlannerModelFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const QVector<QSharedPointer<PathPrimitive>>& ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& ) ) ) );
 
       return b;
     }

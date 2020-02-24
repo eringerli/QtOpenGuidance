@@ -25,6 +25,82 @@
 #include "../kinematic/CgalWorker.h"
 
 void GlobalPlanner::createPlanAB() {
+  Segment_2 ab2dSegment = to2D( abLine );
+  Line_2 ab2D = ab2dSegment.supporting_line();
+  Line_3 ab3D = Segment_3( Point_3( abLine.source().x(), abLine.source().y(), 0 ), Point_3( abLine.target().x(), abLine.target().y(), 0 ) ).supporting_line();
+  Point_2 position2D = to2D( position );
+  Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
+  Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
+
+  Vector_3 north( Point_3( 0, 0, 0 ), Point_3( 1, 0, 0 ) );
+  Vector_2 north2D( Point_2( 0, 0 ), Point_2( 1, 0 ) );
+
+//std::cout << "lines: ab2D:"<<ab2D<<", position2D:"<<position2D<<", abPerpendicular:"<<abPerpendicular<<std::endl;
+//std::cout << "angles: ab2D:"<<CGAL::approximate_angle(north,ab3D.to_vector())<<", position2D:"<<position2D<<", abPerpendicular:"<<abPerpendicular<<std::endl;
+
+  double angleAB = CGAL::approximate_angle( north, ab3D.to_vector() );
+  std::cout << "CGAL::orientation(): " << CGAL::orientation( north2D, ab2D.to_vector() ) << ", has_on_positive_side:" << ab2D.has_on_positive_side( position2D ) << std::endl;
+  double angleAbRad = normalizeAngleRadians( ( M_PI - qDegreesToRadians( angleAB ) ) * -CGAL::orientation( north2D, ab2D.to_vector() ) );
+
+
+  double implementWidth = sqrt( implementLine.squared_length() );
+
+  double distanceFromAbLine = sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
+
+  double moduloDistanceFromAbLine = std::floor( distanceFromAbLine / implementWidth ) * implementWidth;
+
+  std::cout << "GlobalPlanner::createPlanAB: implementWidth:" << implementWidth << ", distanceFromAbLine:" << distanceFromAbLine <<
+            ", moduloDistanceFromAbLine:" << moduloDistanceFromAbLine << std::endl;
+
+
+  for( int offsetCount = -2 ; offsetCount < 2 ; ++offsetCount ) {
+    double offsetDistance = moduloDistanceFromAbLine + offsetCount * implementWidth;
+
+    if( ab2D.has_on_positive_side( position2D ) ) {
+      offsetDistance = -offsetDistance;
+    }
+
+    Vector_2 offsetVector( std::sin( angleAbRad )*offsetDistance, -std::cos( angleAbRad )*offsetDistance );
+
+    std::cout << "makeOffsettedSegment: offsetDistance:" << offsetDistance << ", offsetVector: " << offsetVector << ", angleAB:" << angleAB << std::endl;
+
+    auto newSegment = std::make_shared<PathPrimitiveSegment>(
+                        Segment_2( ab2dSegment.source() - offsetVector, ab2dSegment.target() - offsetVector ),
+                        implementWidth, true, offsetCount );
+
+    bool twinFound = false;
+
+    for( const auto& step : *plan ) {
+      if( const auto* pathSegment = step->castToSegment() ) {
+        if( ( *pathSegment ) == ( *newSegment ) ) {
+          twinFound = true;
+          break;
+        }
+      }
+    }
+
+    if( !twinFound ) {
+      plan->push_back( newSegment );
+    }
+
+    qDebug() << "plan->size()" << plan->size();
+  }
+
+  QVector<QVector3D> positions;
+
+  for( const auto& step : *plan ) {
+//    step->print();
+
+    if( const auto* pathSegment = step->castToSegment() ) {
+      const auto& segment = pathSegment->segment;
+      positions << QVector3D( segment.source().x(), segment.source().y(), 0 );
+      positions << QVector3D( segment.target().x(), segment.target().y(), 0 );
+    }
+  }
+
+  m_segmentsMesh->bufferUpdate( positions );
+  m_segmentsEntity->setEnabled( true );
+
 //  if( !qIsNull( abLine.squared_lenght() ) ) {
 
 //    QVector<QVector3D> linePoints;
@@ -40,7 +116,7 @@ void GlobalPlanner::createPlanAB() {
 
 //    QLineF pathLine( lineExtensionFromA.p2(), lineExtensionFromB.p2() );
 
-//    QVector<QSharedPointer<PathPrimitive>> plan;
+//    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 
 //    // the lines are generated to follow in both directions
 //    if( forwardPasses == 0 && reversePasses == 0 ) {
@@ -319,6 +395,9 @@ GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity
     bTextEntity->addComponent( material );
   }
 
+  // create plan
+  plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
+
   // test for recording
   {
     m_baseEntity = new Qt3DCore::QEntity( rootEntity );
@@ -339,7 +418,7 @@ GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity
     m_pointsEntity->addComponent( m_pointsMesh );
 
     m_segmentsMesh = new BufferMesh( m_segmentsEntity );
-    m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
+    m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
     m_segmentsEntity->addComponent( m_segmentsMesh );
 
     m_segmentsMesh2 = new BufferMesh( m_segmentsEntity2 );
@@ -394,10 +473,14 @@ GlobalPlanner::GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity
     threadForCgalWorker->start();
   }
 
-  Segment_2 segment(Point_2(2,2), Point_2(3,3));
-  PathPrimitiveLine line1(segment, 1,true,true,0);
-  PathPrimitiveLine line2(segment, 1,false,true,0);
-  Point_2 point(0,0);
-  qDebug()<<"line1: "<< line1.distanceToPoint(point);
-  qDebug()<<"line2: "<< line2.distanceToPoint(point);
+  Segment_2 segment( Point_2( 2, 2 ), Point_2( 2.2, 5 ) );
+  PathPrimitiveSegment line1( segment, 1, true, 0 );
+  PathPrimitiveLine line2( segment.supporting_line(), 1, true, 0 );
+  Point_2 point( 1, 3 );
+  qDebug() << "line1: " << line1.distanceToPoint( point );
+  qDebug() << "line2: " << line2.distanceToPoint( point );
+
+  Line_2 line3( Point_2( 2.2, 2.2 ), Point_2( 3, 3 ) );
+  Segment_2 line4( Point_2( -1, 0 ), Point_2( 3, 3 ) );
+  qDebug() << "l3:" << sqrt( CGAL::squared_distance( line3, point ) ) << "l4:" << sqrt( CGAL::squared_distance( line4, point ) );
 }
