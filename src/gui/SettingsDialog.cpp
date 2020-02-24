@@ -745,8 +745,6 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 
   // rescale the tableview
   ui->twValues->resizeColumnsToContents();
-
-  qDebug() << idMap;
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
