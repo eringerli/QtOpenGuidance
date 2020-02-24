@@ -43,6 +43,7 @@ SOURCES += \
     src/gui/ValueDock.cpp \
     src/gui/XteDock.cpp \
     src/kinematic/CgalWorker.cpp \
+    src/kinematic/PathPrimitive.cpp \
     src/main.cpp \
     src/block/GuidanceGlobalPlanner.cpp \
     src/block/PoseSimulation.cpp \

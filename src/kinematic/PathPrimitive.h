@@ -19,125 +19,128 @@
 #ifndef PATHPRIMITIVE_H
 #define PATHPRIMITIVE_H
 
-#include <QObject>
-
-#include <QLineF>
-#include <QPointF>
-#include <QtMath>
-
 #include "../cgalKernel.h"
 
 #include <QDebug>
 
-class PathPrimitive : public QObject {
-    Q_OBJECT
+class PathPrimitiveLine;
+class PathPrimitiveSegment;
+class PathPrimitiveCircle;
 
+
+class PathPrimitive {
   public:
     PathPrimitive() {}
 
-    PathPrimitive( bool anyDirection, int passNumber )
-      : anyDirection( anyDirection ), passNumber( passNumber ) {}
+    PathPrimitive( bool anyDirection, double width, int passNumber )
+      : anyDirection( anyDirection ), width( width ), passNumber( passNumber ) {}
+
+    enum class Type : uint8_t {
+      Base = 0,
+      Line,
+      Segment,
+      Circle
+    };
+
+    virtual Type getType() {
+      return Type::Base;
+    }
+
+    const PathPrimitiveLine* castToLine();
+    const PathPrimitiveSegment* castToSegment();
+//    const PathPrimitiveCircle* castToCircle();
 
   public:
-    virtual qreal distanceToPoint( const QPointF point ) = 0;
+    virtual double distanceToPoint( const Point_2& point ) = 0;
+    virtual void print();
 
   public:
     bool anyDirection = false;
+    double width = 0;
     int passNumber = 0;
 };
 
 class PathPrimitiveLine : public PathPrimitive {
-    Q_OBJECT
-
   public:
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( const QLineF& line, qreal width, bool isSegment, bool anyDirection, int passNumber )
-      : PathPrimitive( anyDirection, passNumber ), line( line ), width( width ), isSegment( isSegment ) {
+    PathPrimitiveLine( const Line_2& line, double width, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, width, passNumber ), line( line ) {}
+
+    virtual Type getType() override {
+      return Type::Line;
     }
 
   public:
-    void reverse() {
-      QLineF tmpLine = line;
-      line.setPoints( tmpLine.p2(), tmpLine.p1() );
+    bool operator==( PathPrimitiveLine& b ) {
+      return line == b.line;
+    }
+    bool operator==( const PathPrimitiveLine& b )const {
+      return line == b.line;
     }
 
   public:
-    virtual qreal distanceToPoint( const QPointF point ) override {
-      return lineToPointDistance2D(
-                     line.x1(), line.y1(),
-                     line.x2(), line.y2(),
-                     point.x(), point.y(),
-                     isSegment
-             );
-    }
+    void reverse();
 
   public:
-    QLineF line;
-    qreal width = 0;
-    bool isSegment = false;
+    virtual double distanceToPoint( const Point_2& point ) override;
+    virtual void print() override;
 
-  private:
-
-    // https://stackoverflow.com/a/4448097
-
-    // Compute the dot product AB . BC
-    double dotProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cX - bX ) + ( bY - aY ) * ( cY - bY );
-    }
-
-    // Compute the cross product AB x AC
-    double crossProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cY - aY ) - ( bY - aY ) * ( cX - aX );
-    }
-
-    // Compute the distance from A to B
-    double distance( double aX, double aY, double bX, double bY ) {
-      double d1 = aX - bX;
-      double d2 = aY - bY;
-
-      return qSqrt( d1 * d1 + d2 * d2 );
-    }
-
-    // Compute the distance from AB to C
-    // if isSegment is true, AB is a segment, not a line.
-    // if <0: left side of line
-    double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      if( isSegment ) {
-        if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
-          return distance( bX, bY, cX, cY );
-        }
-
-        if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
-          return distance( aX, aY, cX, cY );
-        }
-      }
-
-      return crossProduct( aX, aY, bX, bY, cX, cY ) / distance( aX, aY, bX, bY );
-    }
-
+  public:
+    Line_2 line;
 };
 
-class PathPrimitiveCircle : public PathPrimitive {
-    Q_OBJECT
-
+class PathPrimitiveSegment : public PathPrimitive {
   public:
-    PathPrimitiveCircle() : PathPrimitive() {}
+    PathPrimitiveSegment()
+      : PathPrimitive() {}
 
-    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection, int passNumber )
-      : PathPrimitive( anyDirection, passNumber ),
-        center( center ), start( start ), end( end ) {}
+    PathPrimitiveSegment( const Segment_2& segment, double width, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, width, passNumber ), segment( segment ) {}
 
-  public:
-    virtual qreal distanceToPoint( const QPointF ) override {
-      return 0;
+    virtual Type getType() override {
+      return Type::Segment;
     }
 
   public:
-    QPointF center;
-    QPointF start;
-    QPointF end;
+    bool operator==( PathPrimitiveSegment& b ) {
+      return segment == b.segment;
+    }
+    bool operator==( const PathPrimitiveSegment& b ) const {
+      return segment == b.segment;
+    }
+
+  public:
+    void reverse();
+
+  public:
+    virtual double distanceToPoint( const Point_2& point ) override;
+    virtual void print() override;
+
+  public:
+    Segment_2 segment;
 };
+
+//class PathPrimitiveCircle : public PathPrimitive {
+//  public:
+//    PathPrimitiveCircle() : PathPrimitive() {}
+
+//    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection, int passNumber )
+//      : PathPrimitive( anyDirection, 0, passNumber ),
+//        center( center ), start( start ), end( end ) {}
+
+//    virtual Type getType() override{
+//      return Type::Circle;
+//    }
+
+//  public:
+//    virtual double distanceToPoint( const Point_2& ) override;
+
+//  public:
+//    QPointF center;
+//    QPointF start;
+//    QPointF end;
+//};
 
 #endif // PATHPRIMITIVE_H
