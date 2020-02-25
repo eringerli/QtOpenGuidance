@@ -5,7 +5,7 @@ CONFIG += c++14 ccache
 # enable to recheck all compile tests/find the libraries
 # CONFIG += recheck
 
-QT += 3dcore 3drender 3dinput 3dextras concurrent
+QT += 3dcore 3drender 3dinput 3dlogic 3dextras concurrent
 QT += widgets core
 
 !android {
@@ -163,21 +163,6 @@ RESOURCES += \
     RESOURCES += \
         lib/oxygen-icons-png/oxygen.qrc
 }
-
-# aspect
-SOURCES += \
-    src/aspect/fpsaspect.cpp \
-    src/aspect/fpsmonitor.cpp \
-    src/aspect/fpsmonitorbackend.cpp \
-    src/aspect/movingaverage.cpp \
-    src/aspect/updatefpsmonitorsjob.cpp
-
-HEADERS += \
-    src/aspect/fpsaspect.h \
-    src/aspect/fpsmonitor.h \
-    src/aspect/fpsmonitorbackend.h \
-    src/aspect/movingaverage.h \
-    src/aspect/updatefpsmonitorsjob.h
 
 include(build-paths.pri)
 

@@ -24,10 +24,9 @@
 #include <QObject>
 
 #include <Qt3DCore/QEntity>
+#include <Qt3DLogic/QFrameAction>
 
 #include "BlockBase.h"
-
-#include "../aspect/fpsmonitor.h"
 
 class FpsMeasurement : public BlockBase {
     Q_OBJECT
@@ -35,27 +34,29 @@ class FpsMeasurement : public BlockBase {
   public:
     explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity )
       : BlockBase() {
+      fpsComponent = new Qt3DLogic::QFrameAction( rootEntity );
+      rootEntity->addComponent( fpsComponent );
+      QObject::connect( fpsComponent, &Qt3DLogic::QFrameAction::triggered, this, &FpsMeasurement::frameActionTriggered );
+    }
 
-      fpsEntity = new Qt3DCore::QEntity( rootEntity );
-      fpsComponent = new FpsMonitor( fpsEntity );
-      fpsEntity->addComponent( fpsComponent );
-      fpsComponent->setRollingMeanFrameCount( 20 );
-      QObject::connect( fpsComponent,
-                        &FpsMonitor::framesPerSecondChanged,
-                        this,
-                        &FpsMeasurement::fpsChanged );
+    ~FpsMeasurement() {
+      fpsComponent->deleteLater();
     }
 
     void emitConfigSignals() override {
       emit fpsChanged( 0 );
     }
 
+  public slots:
+    void frameActionTriggered( float dt ) {
+      emit fpsChanged( 1 / dt );
+    }
+
   signals:
     void fpsChanged( double );
 
   public:
-    Qt3DCore::QEntity* fpsEntity = nullptr;
-    FpsMonitor* fpsComponent = nullptr;
+    Qt3DLogic::QFrameAction* fpsComponent;
 };
 
 

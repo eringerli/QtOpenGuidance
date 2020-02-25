@@ -199,9 +199,6 @@ int main( int argc, char** argv ) {
   // Create setting Window
   auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, widget );
 
-  // FPS measuring: register the aspect
-  view->registerAspect( new FpsAspect );
-
 //  auto* input = new Qt3DInput::QInputAspect;
 //  view->registerAspect( input );
 
