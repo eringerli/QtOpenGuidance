@@ -92,9 +92,6 @@
 #include "kinematic/FixedKinematic.h"
 #include "kinematic/TrailerKinematic.h"
 
-#include "aspect/fpsaspect.h"
-#include "aspect/fpsmonitor.h"
-
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"

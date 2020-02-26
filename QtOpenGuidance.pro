@@ -32,6 +32,7 @@ SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
     src/block/FieldManager.cpp \
+    src/block/GlobalPlannerLines.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
@@ -45,7 +46,6 @@ SOURCES += \
     src/kinematic/CgalWorker.cpp \
     src/kinematic/PathPrimitive.cpp \
     src/main.cpp \
-    src/block/GuidanceGlobalPlanner.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
     src/block/TrailerModel.cpp \
@@ -74,8 +74,8 @@ HEADERS += \
     src/block/FieldManager.h \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
+    src/block/GlobalPlannerLines.h \
     src/block/GridModel.h \
-    src/block/GuidanceGlobalPlanner.h \
     src/block/GuidanceGlobalPlannerModel.h \
     src/block/GuidanceLocalPlanner.h \
     src/block/GuidancePlannerGui.h \

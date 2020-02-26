@@ -118,6 +118,12 @@ namespace PS = CGAL::Polyline_simplification_2;
 
 #include <CGAL/point_generators_2.h>
 
+#include <CGAL/Bbox_2.h>
+typedef CGAL::Bbox_2 Bbox_2;
+
+#include <CGAL/intersections.h>
+typedef K::Intersect_2 Intersect_2;
+
 #endif // not __clang_analyzer__
 
 #endif // CGAL_H

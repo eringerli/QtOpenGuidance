@@ -44,6 +44,7 @@ typedef K::Vector_3                                         Vector_3;
 typedef K::Line_2                                           Line_2;
 typedef K::Line_3                                           Line_3;
 typedef K::Circle_2                                         Circle_2;
+typedef K::Iso_rectangle_2                                  Iso_rectangle_2;
 
 #include <CGAL/Aff_transformation_2.h>
 typedef CGAL::Aff_transformation_2<K>                       Transformation_2;
@@ -75,6 +76,9 @@ inline const Point_2 to2D( const Point_3& point ) {
   return Point_2( point.x(), point.y() );
 }
 
+inline Vector_2 polarOffset( double angle, double distance ) {
+  return Vector_2( std::sin( angle ) * distance, -std::cos( angle ) * distance );
+}
 //#endif // not __clang_analyzer__
 
 #endif // CGALKERNEL_H

@@ -68,7 +68,7 @@
 
 #include "../block/FieldManager.h"
 #include "../block/GuidancePlannerGui.h"
-#include "../block/GuidanceGlobalPlanner.h"
+#include "../block/GlobalPlannerLines.h"
 #include "../block/GuidanceLocalPlanner.h"
 #include "../block/GuidanceStanley.h"
 #include "../block/GuidanceXte.h"
@@ -236,7 +236,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
 
   globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
-  globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
+  globalPlanner = qobject_cast<GlobalPlannerLines*>( globalPlannerBlock->object );
 
   QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
                     globalPlanner, SLOT( setPlannerSettings( int, int ) ) );

@@ -58,13 +58,13 @@
 class CgalThread;
 class CgalWorker;
 
-class GlobalPlanner : public BlockBase {
+class GlobalPlannerLines : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlanner( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
+    explicit GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
 
-    ~GlobalPlanner() {}
+    ~GlobalPlannerLines() {}
 
   public slots:
     void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
@@ -74,6 +74,9 @@ class GlobalPlanner : public BlockBase {
 
         aPointTransform->setRotation( orientation );
         bPointTransform->setRotation( orientation );
+
+        createPlanAB();
+        showPlan();
       }
     }
 
@@ -120,7 +123,10 @@ class GlobalPlanner : public BlockBase {
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
+    void clearPath();
+
     void b_clicked() {
+      qDebug() << "b_clicked()";
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
 
@@ -128,7 +134,7 @@ class GlobalPlanner : public BlockBase {
 
       abLine = Segment_3( aPoint, bPoint );
 
-      plan-> clear();
+      clearPath();
       createPlanAB();
     }
 
@@ -200,8 +206,11 @@ class GlobalPlanner : public BlockBase {
     }
 
 
-  public:
+  private:
+    bool isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line );
     void createPlanAB();
+    void sortPlan();
+    void showPlan();
 
   public:
     Point_3 position = Point_3();
@@ -281,7 +290,7 @@ class GlobalPlannerFactory : public BlockFactory {
         tmw( tmw ) {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Global Planner" );
+      return QStringLiteral( "Global Planner Lines" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -290,7 +299,7 @@ class GlobalPlannerFactory : public BlockFactory {
 
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new GlobalPlanner( mainWindow, rootEntity, tmw );
+      auto* obj = new GlobalPlannerLines( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
