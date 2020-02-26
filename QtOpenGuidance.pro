@@ -127,6 +127,7 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/GeographicConvertionWrapper.h \
     src/kinematic/PathPrimitive.h \
+    src/kinematic/Plan.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h
 

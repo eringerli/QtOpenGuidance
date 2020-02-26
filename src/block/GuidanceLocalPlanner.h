@@ -32,6 +32,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
+#include "../kinematic/Plan.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -76,7 +77,7 @@ class LocalPlanner : public BlockBase {
 //        auto* line = qobject_cast<PathPrimitiveLine*>( lineBuffer.data() );
 
 //        if( line ) {
-//          std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> planTmp;
+//          Path planTmp;
 
 //          if( line->anyDirection ) {
 //            qreal angleToHeading = line->line.angleTo( QLineF::fromPolar( 100, -qreal( orientation.toEulerAngles().z() ) ) );
@@ -93,21 +94,21 @@ class LocalPlanner : public BlockBase {
       }
     }
 
-    void setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& plan ) {
+    void setPlan( const Plan& plan ) {
       this->plan = plan;
-      emit planChanged( plan );
+//      emit planChanged( plan );
     }
 
 
   signals:
-    void planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> );
+    void planChanged( const Plan& );
 
   public:
     Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
 
   private:
-    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+    Plan plan;
 };
 
 class LocalPlannerFactory : public BlockFactory {
@@ -130,8 +131,8 @@ class LocalPlannerFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 
       return b;
     }

@@ -48,6 +48,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
+#include "../kinematic/Plan.h"
 
 #include "../3d/ArrowTexture.h"
 
@@ -177,7 +178,7 @@ class GlobalPlannerModel : public BlockBase {
       recalculateTextureCoordinates();
     }
 
-    void setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& plan ) {
+    void setPlan( const Plan& plan ) {
       this->plan = plan;
       recalculateMeshes();
     }
@@ -313,7 +314,7 @@ class GlobalPlannerModel : public BlockBase {
     float textureSize = 3, distanceBetweenArrows = 3;
 
   private:
-    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+    Plan plan;
 
 };
 
@@ -338,7 +339,7 @@ class GlobalPlannerModelFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>>& ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       return b;
     }

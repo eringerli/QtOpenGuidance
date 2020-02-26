@@ -48,6 +48,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
+#include "../kinematic/Plan.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
 
@@ -123,8 +124,6 @@ class GlobalPlannerLines : public BlockBase {
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
-    void clearPath();
-
     void b_clicked() {
       qDebug() << "b_clicked()";
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
@@ -134,7 +133,7 @@ class GlobalPlannerLines : public BlockBase {
 
       abLine = Segment_3( aPoint, bPoint );
 
-      clearPath();
+      clearPlan();
       createPlanAB();
     }
 
@@ -179,7 +178,7 @@ class GlobalPlannerLines : public BlockBase {
     }
 
   signals:
-    void planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> );
+    void planChanged( const Plan& );
 
 //    void alphaChanged( double optimal, double solid );
 //    void fieldStatisticsChanged( double, double, double );
@@ -211,6 +210,7 @@ class GlobalPlannerLines : public BlockBase {
     void createPlanAB();
     void sortPlan();
     void showPlan();
+    void clearPlan();
 
   public:
     Point_3 position = Point_3();
@@ -234,7 +234,7 @@ class GlobalPlannerLines : public BlockBase {
     Point_3 positionLeftEdgeOfImplement = Point_3();
     Point_3 positionRightEdgeOfImplement = Point_3();
 
-    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+    Plan plan;
 
   private:
     QWidget* mainWindow = nullptr;
@@ -287,7 +287,9 @@ class GlobalPlannerFactory : public BlockFactory {
       : BlockFactory(),
         mainWindow( mainWindow ),
         rootEntity( rootEntity ),
-        tmw( tmw ) {}
+        tmw( tmw ) {
+      qRegisterMetaType<Plan>();
+    }
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Global Planner Lines" );
@@ -314,7 +316,7 @@ class GlobalPlannerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Turn Left" ), QLatin1String( SLOT( turnLeft_clicked() ) ) );
       b->addInputPort( QStringLiteral( "Turn Right" ), QLatin1String( SLOT( turnRight_clicked() ) ) );
 
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
+      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 
       return b;
     }

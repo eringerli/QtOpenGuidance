@@ -32,6 +32,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
+#include "../kinematic/Plan.h"
 
 #include <QVector>
 #include <QSharedPointer>
@@ -82,7 +83,7 @@ class XteGuidance : public BlockBase {
 //      }
     }
 
-    void setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan ) {
+    void setPlan( const Plan& plan ) {
       this->plan = plan;
     }
 
@@ -126,7 +127,7 @@ class XteGuidance : public BlockBase {
     QQuaternion orientation = QQuaternion();
 
   private:
-    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+    Plan plan;
 };
 
 class XteGuidanceFactory : public BlockFactory {
@@ -149,7 +150,7 @@ class XteGuidanceFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> ) ) ) );
+      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( double ) ) ) );

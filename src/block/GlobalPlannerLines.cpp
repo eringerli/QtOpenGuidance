@@ -27,7 +27,7 @@
 bool GlobalPlannerLines::isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line ) {
   bool twinFound = false;
 
-  for( const auto& step : *plan ) {
+  for( const auto& step : * ( plan.plan ) ) {
     if( const auto* pathLine = step->castToLine() ) {
       if( ( *pathLine ) == ( *line ) ) {
         twinFound = true;
@@ -40,7 +40,7 @@ bool GlobalPlannerLines::isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiv
 }
 
 void GlobalPlannerLines::sortPlan() {
-  sort( plan->begin( ), plan->end( ), [ ]( const auto & lhs, const auto & rhs ) {
+  sort( plan.plan->begin( ), plan.plan->end( ), [ ]( const auto & lhs, const auto & rhs ) {
     const auto* lhsLine = lhs->castToLine();
     const auto* rhsLine = rhs->castToLine();
 
@@ -48,8 +48,12 @@ void GlobalPlannerLines::sortPlan() {
   } );
 }
 
+void GlobalPlannerLines::clearPlan() {
+  plan.plan->clear();
+}
+
 void GlobalPlannerLines::showPlan() {
-  if( !plan->empty() ) {
+  if( !plan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
 
     constexpr double range = 25;
@@ -57,7 +61,7 @@ void GlobalPlannerLines::showPlan() {
 
     QVector<QVector3D> positions;
 
-    for( const auto& step : *plan ) {
+    for( const auto& step : * ( plan.plan ) ) {
       if( const auto* pathLine = step->castToLine() ) {
         const auto& line = pathLine->line;
 
@@ -82,9 +86,9 @@ void GlobalPlannerLines::createPlanAB() {
   if( abLine.squared_length() > 1 ) {
     Point_2 position2D = to2D( position );
 
-    if( plan->size() >= std::vector<std::shared_ptr<PathPrimitive>>::size_type( pathsInReserve * 2 + 1 ) ) {
-      if( ( *( plan->cbegin() + ( pathsInReserve - 1 ) ) )->castToLine()->line.has_on_positive_side( position2D ) &&
-          ( *( plan->cend() - pathsInReserve ) )->castToLine()->line.has_on_negative_side( position2D ) ) {
+    if( plan.plan->size() >= std::vector<std::shared_ptr<PathPrimitive>>::size_type( pathsInReserve * 2 + 1 ) ) {
+      if( ( *( plan.plan->cbegin() + ( pathsInReserve - 1 ) ) )->castToLine()->line.has_on_positive_side( position2D ) &&
+          ( *( plan.plan->cend() - pathsInReserve ) )->castToLine()->line.has_on_negative_side( position2D ) ) {
         return;
       }
     }
@@ -133,12 +137,12 @@ void GlobalPlannerLines::createPlanAB() {
                        implementWidth, true, offsetCount );
 
       if( !isLineAlreadyInPlan( newLine ) ) {
-        plan->push_back( newLine );
+        plan.plan->push_back( newLine );
       }
 
     }
 
-    qDebug() << "plan->size()" << plan->size();
+    qDebug() << "plan->size()" << plan.plan->size();
     sortPlan();
     emit planChanged( plan );
   }
@@ -213,9 +217,6 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
     bTextEntity->addComponent( bTextMesh );
     bTextEntity->addComponent( material );
   }
-
-  // create empty plan
-  plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
 
   // test for recording
   {
@@ -302,8 +303,4 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
   Line_2 line3( Point_2( 2.2, 2.2 ), Point_2( 3, 3 ) );
   Segment_2 line4( Point_2( -1, 0 ), Point_2( 3, 3 ) );
   qDebug() << "l3:" << sqrt( CGAL::squared_distance( line3, point ) ) << "l4:" << sqrt( CGAL::squared_distance( line4, point ) );
-}
-
-void GlobalPlannerLines::clearPath() {
-  plan->clear();
 }
