@@ -472,3 +472,5 @@ void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> fie
 
   emit fieldChanged( currentField );
 }
+
+#include "moc_FieldManager.cpp"

@@ -159,3 +159,5 @@ void StringBlockModel::resetModel() {
 
   endResetModel();
 }
+
+#include "moc_StringBlockModel.cpp"

@@ -253,3 +253,5 @@ void TrailerModel::setPosePivotPoint( const Point_3& position, const QQuaternion
     m_rootEntityTransform->setRotation( rotation );
   }
 }
+
+#include "moc_TrailerModel.cpp"

@@ -180,3 +180,5 @@ void VectorBlockModel::resetModel() {
 
   endResetModel();
 }
+
+#include "moc_VectorBlockModel.cpp"

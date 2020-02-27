@@ -60,3 +60,5 @@ void BufferMeshGeometry::updatePoints( const QVector<QVector3D>& vertices ) {
   memcpy( vertexBufferData.data(), vertices.constData(), static_cast<size_t>( vertexBufferData.size() ) );
   m_vertexBuffer->setData( vertexBufferData );
 }
+
+#include "moc_BufferMeshGeometry.cpp"

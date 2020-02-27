@@ -74,4 +74,4 @@ void GuidanceToolbar::on_pbDocks_clicked() {
   menu->exec( QCursor::pos() );
 }
 
-
+#include "moc_GuidanceToolbar.cpp"

@@ -19,3 +19,5 @@
 
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstValueDock = nullptr;
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstThreeValuesDock = nullptr;
+
+#include "moc_ValueDockBlockBase.cpp"

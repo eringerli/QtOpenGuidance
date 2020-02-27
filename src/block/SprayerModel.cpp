@@ -289,3 +289,5 @@ void SprayerModel::updateProprotions() {
     }
   }
 }
+
+#include "moc_SprayerModel.cpp"

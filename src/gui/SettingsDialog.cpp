@@ -1464,3 +1464,5 @@ void SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked )
 void SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
   geographicConvertionWrapperGuidance->useTM = checked;
 }
+
+#include "moc_SettingsDialog.cpp"

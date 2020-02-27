@@ -304,3 +304,5 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
   Segment_2 line4( Point_2( -1, 0 ), Point_2( 3, 3 ) );
   qDebug() << "l3:" << sqrt( CGAL::squared_distance( line3, point ) ) << "l4:" << sqrt( CGAL::squared_distance( line4, point ) );
 }
+
+#include "moc_GlobalPlannerLines.cpp"

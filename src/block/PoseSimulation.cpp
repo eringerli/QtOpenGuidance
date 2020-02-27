@@ -85,3 +85,5 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
   }
 }
+
+#include "moc_PoseSimulation.cpp"

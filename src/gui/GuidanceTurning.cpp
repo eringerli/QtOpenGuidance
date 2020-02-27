@@ -38,3 +38,5 @@ void GuidanceTurning::on_pbLeft_clicked() {
 void GuidanceTurning::on_pbRight_clicked() {
   emit turnRight();
 }
+
+#include "moc_GuidanceTurning.cpp"

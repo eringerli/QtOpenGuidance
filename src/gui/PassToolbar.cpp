@@ -60,3 +60,5 @@ void PassToolbar::on_pbSetPassNumber_clicked() {
 void PassToolbar::on_cbMirror_stateChanged( int ) {
   emitPassSettings();
 }
+
+#include "moc_PassToolbar.cpp"

@@ -278,3 +278,5 @@ void TractorModel::setSteeringAngleRight( double steerAngle ) {
   QQuaternion rotationRight =  QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
   m_wheelFrontRightTransform->setRotation( rotationRight );
 }
+
+#include "moc_TractorModel.cpp"

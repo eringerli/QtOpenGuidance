@@ -56,3 +56,5 @@ void FieldsToolbar::setDockLocation( Qt::DockWidgetArea area ) {
     ui->pbEdgeOfImplement->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
   }
 }
+
+#include "moc_FieldsToolbar.cpp"
