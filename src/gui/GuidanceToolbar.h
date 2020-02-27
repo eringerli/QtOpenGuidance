@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GUIDANCETOOLBAR_H
-#define GUIDANCETOOLBAR_H
+#pragma once
 
 #include <QObject>
 
@@ -66,4 +65,3 @@ class GuidanceToolbar : public QGroupBox {
     Ui::GuidanceToolbar* ui = nullptr;
 };
 
-#endif // GUIDANCETOOLBAR_H

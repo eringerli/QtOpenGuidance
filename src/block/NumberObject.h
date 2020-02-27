@@ -18,8 +18,7 @@
 
 #include "../gui/NumberBlockModel.h"
 
-#ifndef NUMBEROBJECT_H
-#define NUMBEROBJECT_H
+#pragma once
 
 #include <QObject>
 
@@ -90,4 +89,3 @@ class NumberFactory : public BlockFactory {
     NumberBlockModel* model = nullptr;
 };
 
-#endif // NUMBEROBJECT_H

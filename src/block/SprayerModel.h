@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SPRAYERMODEL_H
-#define SPRAYERMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -107,4 +106,3 @@ class SprayerModelFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
-#endif // SPRAYERMODEL_H

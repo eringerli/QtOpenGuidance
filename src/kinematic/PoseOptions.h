@@ -19,8 +19,7 @@
 #include <QObject>
 #include <QFlags>
 
-#ifndef POSEOPTIONS_H
-#define POSEOPTIONS_H
+#pragma once
 
 class PoseOption {
     Q_GADGET
@@ -40,4 +39,3 @@ class PoseOption {
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( PoseOption::Options )
 
-#endif // POSEOPTIONS_H

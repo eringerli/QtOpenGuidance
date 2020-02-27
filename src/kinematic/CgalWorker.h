@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef CGALWORKER_H
-#define CGALWORKER_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -79,4 +78,3 @@ Q_DECLARE_METATYPE( FieldsOptimitionToolbar::AlphaType )
 Q_DECLARE_METATYPE( uint32_t )
 Q_DECLARE_METATYPE( std::shared_ptr<Polygon_with_holes_2> )
 
-#endif // CGALWORKER_H

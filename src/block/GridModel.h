@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GRIDMODEL_H
-#define GRIDMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -295,5 +294,4 @@ class GridModelFactory : public BlockFactory {
     Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };
 
-#endif // GRIDMODEL_H
 

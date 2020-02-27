@@ -21,8 +21,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QNEGRAPHICSVIEW_H
-#define QNEGRAPHICSVIEW_H
+#pragma once
 
 #include <QGraphicsView>
 #include <QWheelEvent>
@@ -69,4 +68,3 @@ class QNEGraphicsView : public QGraphicsView {
 
 //Q_DECLARE_METATYPE(QNEGraphicsView);
 
-#endif // QNEGRAPHICSVIEW_H

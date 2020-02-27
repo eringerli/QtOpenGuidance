@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef ACKERMANNSTEERING_H
-#define ACKERMANNSTEERING_H
+#pragma once
 
 #include <QObject>
 
@@ -129,4 +128,3 @@ class AckermannSteeringFactory : public BlockFactory {
   private:
 };
 
-#endif // ACKERMANNSTEERING_H

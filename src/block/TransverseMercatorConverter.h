@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef TRANSVERSEMERCATORCONVERTER_H
-#define TRANSVERSEMERCATORCONVERTER_H
+#pragma once
 
 #include <QObject>
 
@@ -97,4 +96,3 @@ class TransverseMercatorConverterFactory : public BlockFactory {
     GeographicConvertionWrapper* tmw = nullptr;
 };
 
-#endif // TRANSVERSEMERCATORCONVERTER_H

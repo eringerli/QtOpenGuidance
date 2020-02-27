@@ -18,8 +18,7 @@
 
 #include "../gui/StringBlockModel.h"
 
-#ifndef STRINGOBJECT_H
-#define STRINGOBJECT_H
+#pragma once
 
 #include <QObject>
 
@@ -90,4 +89,3 @@ class StringFactory : public BlockFactory {
     StringBlockModel* model = nullptr;
 };
 
-#endif // STRINGOBJECT_H

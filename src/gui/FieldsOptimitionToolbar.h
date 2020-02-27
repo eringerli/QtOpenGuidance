@@ -1,5 +1,4 @@
-#ifndef FIELDSOPTIMITION_H
-#define FIELDSOPTIMITION_H
+#pragma once
 
 #include <QGroupBox>
 
@@ -48,4 +47,3 @@ class FieldsOptimitionToolbar : public QGroupBox {
     double solidAlpha = 100;
 };
 
-#endif // FIELDSOPTIMITION_H

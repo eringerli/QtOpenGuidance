@@ -20,8 +20,7 @@
 
 #include "../gui/SectionControlToolbar.h"
 
-#ifndef IMPLEMENT_H
-#define IMPLEMENT_H
+#pragma once
 
 #include "../cgalKernel.h"
 
@@ -208,4 +207,3 @@ class ImplementFactory : public BlockFactory {
     KDDockWidgets::DockWidget* firstDock = nullptr;
 };
 
-#endif // IMPLEMENT_H

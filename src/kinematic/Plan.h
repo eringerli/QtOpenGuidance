@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef PATH_H
-#define PATH_H
+#pragma once
 
 #include "../cgalKernel.h"
 #include "PathPrimitive.h"
@@ -43,4 +42,3 @@ class Plan {
 
 Q_DECLARE_METATYPE( Plan )
 
-#endif // PATH_H

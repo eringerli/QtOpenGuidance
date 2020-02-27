@@ -25,8 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QNEBLOCK_H
-#define QNEBLOCK_H
+#pragma once
 
 #include <QGraphicsPathItem>
 
@@ -112,4 +111,3 @@ class QNEBlock : public QGraphicsPathItem {
     QString typeString;
 };
 
-#endif // QNEBLOCK_H

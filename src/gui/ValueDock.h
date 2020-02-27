@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCK_H
-#define VALUEDOCK_H
+#pragma once
 
 #include <QGroupBox>
 
@@ -51,4 +50,3 @@ class ValueDock : public QGroupBox {
     double scale = 1;
 };
 
-#endif // VALUEDOCK_H

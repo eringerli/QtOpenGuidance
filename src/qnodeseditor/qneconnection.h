@@ -25,8 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QNECONNECTION_H
-#define QNECONNECTION_H
+#pragma once
 
 #include <QObject>
 #include <QGraphicsPathItem>
@@ -67,4 +66,3 @@ class QNEConnection : public QGraphicsPathItem {
     QMetaObject::Connection connection;
 };
 
-#endif // QNECONNECTION_H

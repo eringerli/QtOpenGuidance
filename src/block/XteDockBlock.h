@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef XTEDOCKBLOCK_H
-#define XTEDOCKBLOCK_H
+#pragma once
 
 #include <QObject>
 #include <QDockWidget>
@@ -117,4 +116,3 @@ class XteDockBlockFactory : public BlockFactory {
     KDDockWidgets::DockWidget* firstDock = nullptr;
 };
 
-#endif // XTEDOCKBLOCK_H

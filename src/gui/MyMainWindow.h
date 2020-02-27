@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef MYMAINWINDOW_H
-#define MYMAINWINDOW_H
+#pragma once
 
 #include <QGuiApplication>
 #include <QMainWindow>
@@ -52,4 +51,3 @@ class MyMainWindow : public KDDockWidgets::MainWindow {
     void closed();
 };
 
-#endif // MYMAINWINDOW_H

@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef COMMUNICATIONJRK_H
-#define COMMUNICATIONJRK_H
+#pragma once
 
 #include <QObject>
 #include <QByteArray>
@@ -89,4 +88,3 @@ class CommunicationJrkFactory : public BlockFactory {
     }
 };
 
-#endif // COMMUNICATIONJRK_H

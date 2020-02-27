@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#pragma once
 
 #include <QObject>
 
@@ -282,4 +281,3 @@ class SettingsDialog : public QDialog {
     QColor localPlannerLineColor = QColor( 0x9a, 0x64, 0x77 );
 };
 
-#endif // SETTINGSDIALOG_H

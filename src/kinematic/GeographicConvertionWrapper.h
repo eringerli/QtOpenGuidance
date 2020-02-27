@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GEOGRAPHICCONVERTIONWRAPPER_H
-#define GEOGRAPHICCONVERTIONWRAPPER_H
+#pragma once
 
 #include <GeographicLib/TransverseMercator.hpp>
 #include <GeographicLib/LocalCartesian.hpp>
@@ -147,4 +146,3 @@ class GeographicConvertionWrapper {
     double height0TM = 0;
 };
 
-#endif // GEOGRAPHICCONVERTIONWRAPPER_H

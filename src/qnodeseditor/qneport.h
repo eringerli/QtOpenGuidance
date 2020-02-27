@@ -25,8 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QNEPORT_H
-#define QNEPORT_H
+#pragma once
 
 #include <QGraphicsPathItem>
 #include <QTextDocument>
@@ -117,4 +116,3 @@ class QNEPortHelper : public QObject {
     QNEPort* port = nullptr;
 };
 
-#endif // QNEPORT_H

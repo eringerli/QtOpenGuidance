@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VECTRORBLOCKMODEL_H
-#define VECTRORBLOCKMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -65,4 +64,3 @@ class VectorBlockModel : public QAbstractTableModel {
     int countBuffer = 0;
 };
 
-#endif // VECTRORBLOCKMODEL_H

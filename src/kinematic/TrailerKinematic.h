@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef TRAILERKINEMATIC_H
-#define TRAILERKINEMATIC_H
+#pragma once
 
 #include <QObject>
 
@@ -168,4 +167,3 @@ class TrailerKinematicFactory : public BlockFactory {
     }
 };
 
-#endif // TRAILERKINEMATIC_H

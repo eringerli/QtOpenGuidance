@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef TRACTORKINEMATIC_H
-#define TRACTORKINEMATIC_H
+#pragma once
 
 #include <QObject>
 
@@ -128,4 +127,3 @@ class FixedKinematicFactory : public BlockFactory {
     }
 };
 
-#endif // TRACTORKINEMATIC_H

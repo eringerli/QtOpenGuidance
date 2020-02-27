@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef COMMUNICATIONPGN7FFE_H
-#define COMMUNICATIONPGN7FFE_H
+#pragma once
 
 #include <QObject>
 #include <QByteArray>
@@ -102,4 +101,3 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
     }
 };
 
-#endif // COMMUNICATIONPGN7FFE_H

@@ -34,8 +34,7 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
-#ifndef CAMERACONTROLLER_H
-#define CAMERACONTROLLER_H
+#pragma once
 
 class CameraController : public BlockBase {
     Q_OBJECT
@@ -255,4 +254,3 @@ class CameraControllerFactory : public BlockFactory {
     Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };
 
-#endif // CAMERACONTROLLER_H

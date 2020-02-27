@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef NMEAPARSERHDT_H
-#define NMEAPARSERHDT_H
+#pragma once
 
 #include <QObject>
 
@@ -154,4 +153,3 @@ class NmeaParserHDTFactory : public BlockFactory {
     }
 };
 
-#endif // NMEAPARSERHDT_H

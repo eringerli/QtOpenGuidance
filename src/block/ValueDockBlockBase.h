@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCKBLOCKBASE_H
-#define VALUEDOCKBLOCKBASE_H
+#pragma once
 
 #include <QObject>
 #include <QSizePolicy>
@@ -65,4 +64,3 @@ class ValueDockBlockBase : public BlockBase {
     static KDDockWidgets::DockWidget* firstThreeValuesDock;
 };
 
-#endif // VALUEDOCKBLOCKBASE_H

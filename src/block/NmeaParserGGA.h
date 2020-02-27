@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef NmeaParserGGAGGA_H
-#define NmeaParserGGAGGA_H
+#pragma once
 
 #include <QObject>
 
@@ -213,4 +212,3 @@ class NmeaParserGGAFactory : public BlockFactory {
     }
 };
 
-#endif // NmeaParserGGAGGA_H

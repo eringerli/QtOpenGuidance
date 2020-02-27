@@ -1,5 +1,4 @@
-#ifndef PASSTOOLBAR_H
-#define PASSTOOLBAR_H
+#pragma once
 
 #include <QGroupBox>
 
@@ -46,4 +45,3 @@ class PassToolbar : public QGroupBox {
     Ui::PassToolbar* ui = nullptr;
 };
 
-#endif // PASSTOOLBAR_H

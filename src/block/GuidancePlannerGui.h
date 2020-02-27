@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef PLANNERGUI_H
-#define PLANNERGUI_H
+#pragma once
 
 #include <QObject>
 
@@ -103,5 +102,4 @@ class PlannerGuiFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
-#endif // PLANNERGUI_H
 

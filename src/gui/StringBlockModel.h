@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef STRINGBLOCKMODEL_H
-#define STRINGBLOCKMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -66,4 +65,3 @@ class StringBlockModel : public QAbstractTableModel {
     int countBuffer = 0;
 };
 
-#endif // STRINGBLOCKMODEL_H

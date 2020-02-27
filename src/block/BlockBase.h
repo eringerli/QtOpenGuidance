@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef BLOCKBASE_H
-#define BLOCKBASE_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -95,4 +94,3 @@ class BlockFactory : public QObject {
     }
 };
 
-#endif // BLOCKBASE_H

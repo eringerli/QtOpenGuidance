@@ -1,5 +1,4 @@
-#ifndef QNEGESTURES_H
-#define QNEGESTURES_H
+#pragma once
 
 #include <QObject>
 
@@ -131,4 +130,3 @@ class QNEGestureEventFilter : public QObject {
 
 };
 
-#endif // QNEGESTURES_H

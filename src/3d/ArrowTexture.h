@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef ARROWTEXTURE_H
-#define ARROWTEXTURE_H
+#pragma once
 
 #include <QObject>
 #include <QPaintedTextureImage>
@@ -132,4 +131,3 @@ class ArrowTexture : public Qt3DRender::QPaintedTextureImage {
     QColor backgroundColor = QColor( 0xf5, 0x9f, 0xbd, 100 );
 };
 
-#endif // ARROWTEXTURE_H

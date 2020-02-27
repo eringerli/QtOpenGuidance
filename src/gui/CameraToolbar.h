@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef CAMERACONTROL_H
-#define CAMERACONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -65,4 +64,3 @@ class CameraToolbar : public QGroupBox {
     Ui::CameraToolbar* ui = nullptr;
 };
 
-#endif // CAMERACONTROL_H

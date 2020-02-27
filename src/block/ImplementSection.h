@@ -18,8 +18,7 @@
 
 #include <QObject>
 
-#ifndef IMPLEMENTSECTION_H
-#define IMPLEMENTSECTION_H
+#pragma once
 
 class ImplementSection {
     Q_GADGET
@@ -94,4 +93,3 @@ class ImplementSection {
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( ImplementSection::States )
 
-#endif // IMPLEMENTSECTION_H

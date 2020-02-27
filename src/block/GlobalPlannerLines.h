@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GLOBALPLANNER_H
-#define GLOBALPLANNER_H
+#pragma once
 
 #include <QObject>
 
@@ -327,4 +326,3 @@ class GlobalPlannerFactory : public BlockFactory {
     GeographicConvertionWrapper* tmw = nullptr;
 };
 
-#endif // GLOBALPLANNER_H

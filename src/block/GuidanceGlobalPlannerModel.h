@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GlobalPlannerModel_H
-#define GlobalPlannerModel_H
+#pragma once
 
 #include <QObject>
 
@@ -348,5 +347,4 @@ class GlobalPlannerModelFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
-#endif // GlobalPlannerModel_H
 

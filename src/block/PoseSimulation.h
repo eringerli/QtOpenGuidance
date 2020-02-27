@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef POSESIMULATION_H
-#define POSESIMULATION_H
+#pragma once
 
 #include <QObject>
 
@@ -192,5 +191,4 @@ class PoseSimulationFactory : public BlockFactory {
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };
 
-#endif // POSESIMULATION_H
 

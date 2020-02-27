@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef LOCALPLANNER_H
-#define LOCALPLANNER_H
+#pragma once
 
 #include <QObject>
 
@@ -138,5 +137,4 @@ class LocalPlannerFactory : public BlockFactory {
     }
 };
 
-#endif // LOCALPLANNER_H
 

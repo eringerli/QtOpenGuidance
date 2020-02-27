@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef PATHPRIMITIVE_H
-#define PATHPRIMITIVE_H
+#pragma once
 
 #include "../cgalKernel.h"
 
@@ -143,4 +142,3 @@ class PathPrimitiveSegment : public PathPrimitive {
 //    QPointF end;
 //};
 
-#endif // PATHPRIMITIVE_H

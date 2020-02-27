@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef UDPSOCKET_H
-#define UDPSOCKET_H
+#pragma once
 
 #include <QObject>
 #include <QtNetwork>
@@ -103,4 +102,3 @@ class UdpSocketFactory : public BlockFactory {
     }
 };
 
-#endif // UDPSOCKET_H

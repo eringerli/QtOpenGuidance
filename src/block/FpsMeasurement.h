@@ -18,8 +18,7 @@
 
 #include "../gui/VectorBlockModel.h"
 
-#ifndef FPSMEASUREMENT_H
-#define FPSMEASUREMENT_H
+#pragma once
 
 #include <QObject>
 
@@ -90,4 +89,3 @@ class FpsMeasurementFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
-#endif // FPSMEASUREMENT_H

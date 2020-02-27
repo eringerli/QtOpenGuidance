@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SECTIONCONTROLTOOLBAR_H
-#define SECTIONCONTROLTOOLBAR_H
+#pragma once
 
 #include <QWidget>
 
@@ -67,4 +66,3 @@ class SectionControlToolbar : public QGroupBox {
     bool horizontal = true;
 };
 
-#endif // SECTIONCONTROLTOOLBAR_H

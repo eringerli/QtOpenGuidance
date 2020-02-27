@@ -25,8 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QNODESEDITOR_H
-#define QNODESEDITOR_H
+#pragma once
 
 #include <QObject>
 
@@ -59,4 +58,3 @@ class QNodesEditor : public QObject {
     bool isInPaningState = false;
 };
 
-#endif // QNODESEDITOR_H

@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SIMULATORTOOLBAR_H
-#define SIMULATORTOOLBAR_H
+#pragma once
 
 #include <QObject>
 
@@ -60,4 +59,3 @@ class SimulatorToolbar : public QGroupBox {
     Ui::SimulatorToolbar* ui = nullptr;
 };
 
-#endif // SIMULATORTOOLBAR_H

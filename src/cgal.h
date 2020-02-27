@@ -18,8 +18,7 @@
 
 // all the other CGAL-stuff here
 
-#ifndef CGAL_H
-#define CGAL_H
+#pragma once
 
 #include "cgalKernel.h"
 
@@ -126,4 +125,3 @@ typedef K::Intersect_2 Intersect_2;
 
 #endif // not __clang_analyzer__
 
-#endif // CGAL_H

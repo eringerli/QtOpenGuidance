@@ -1,5 +1,4 @@
-#ifndef FIELDSTOOLBAR_H
-#define FIELDSTOOLBAR_H
+#pragma once
 
 #include <QGroupBox>
 #include <QBoxLayout>
@@ -34,4 +33,3 @@ class FieldsToolbar : public QGroupBox {
     QBoxLayout* boxLayout = nullptr;
 };
 
-#endif // FIELDSTOOLBAR_H

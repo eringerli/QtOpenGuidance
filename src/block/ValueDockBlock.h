@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef VALUEDOCKBLOCK_H
-#define VALUEDOCKBLOCK_H
+#pragma once
 
 #include <QObject>
 #include <QDockWidget>
@@ -168,4 +167,3 @@ class ValueDockBlockFactory : public BlockFactory {
     QMenu* menu = nullptr;
 };
 
-#endif // VALUEDOCKBLOCK_H

@@ -18,8 +18,7 @@
 
 // only "lightweight" CGAL-stuff here!
 
-#ifndef CGALKERNEL_H
-#define CGALKERNEL_H
+#pragma once
 
 //#ifndef __clang_analyzer__
 
@@ -81,4 +80,3 @@ inline Vector_2 polarOffset( double angle, double distance ) {
 }
 //#endif // not __clang_analyzer__
 
-#endif // CGALKERNEL_H

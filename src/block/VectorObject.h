@@ -18,8 +18,7 @@
 
 #include "../gui/VectorBlockModel.h"
 
-#ifndef VECTOROBJECT_H
-#define VECTOROBJECT_H
+#pragma once
 
 #include <QObject>
 
@@ -106,4 +105,3 @@ class VectorFactory : public BlockFactory {
     VectorBlockModel* model = nullptr;
 };
 
-#endif // VECTOROBJECT_H

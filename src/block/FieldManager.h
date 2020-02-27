@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef FIELDMANAGER_H
-#define FIELDMANAGER_H
+#pragma once
 
 #include <QObject>
 
@@ -278,5 +277,4 @@ class FieldManagerFactory : public BlockFactory {
     GeographicConvertionWrapper* tmw = nullptr;
 };
 
-#endif // FIELDMANAGER_H
 

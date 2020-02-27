@@ -1,5 +1,4 @@
-#ifndef FONTCOMBOBOXDELEGATE_H
-#define FONTCOMBOBOXDELEGATE_H
+#pragma once
 
 #include <QStyledItemDelegate>
 
@@ -42,4 +41,3 @@ class FontComboboxDelegate : public QStyledItemDelegate {
     }
 };
 
-#endif // FONTCOMBOBOXDELEGATE_H

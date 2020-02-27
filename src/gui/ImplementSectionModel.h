@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef IMPLEMENTSECTIONMODEL_H
-#define IMPLEMENTSECTIONMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -67,4 +66,3 @@ class ImplementSectionModel : public QAbstractTableModel {
     QNEBlock* block = nullptr;
 };
 
-#endif // IMPLEMENTSECTIONMODEL_H

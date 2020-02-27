@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef GUIDANCETURNING_H
-#define GUIDANCETURNING_H
+#pragma once
 
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -45,4 +44,3 @@ class GuidanceTurning : public QGroupBox {
     Ui::GuidanceTurning* ui = nullptr;
 };
 
-#endif // GUIDANCETURNING_H

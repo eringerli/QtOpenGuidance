@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef SERIALPORT_H
-#define SERIALPORT_H
+#pragma once
 
 #include <QObject>
 #include <QByteArray>
@@ -113,4 +112,3 @@ class SerialPortFactory : public BlockFactory {
     }
 };
 
-#endif // SERIALPORT_H

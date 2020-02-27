@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef IMPLEMENTBLOCKMODEL_H
-#define IMPLEMENTBLOCKMODEL_H
+#pragma once
 
 #include <QObject>
 
@@ -65,4 +64,3 @@ class ImplementBlockModel : public QAbstractTableModel {
     int countBuffer = 0;
 };
 
-#endif // IMPLEMENTBLOCKMODEL_H

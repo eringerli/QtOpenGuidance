@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#ifndef PRINTLATENCY_H
-#define PRINTLATENCY_H
+#pragma once
 
 #include <QObject>
 
@@ -98,5 +97,4 @@ class PrintLatencyFactory : public BlockFactory {
     }
 };
 
-#endif // PRINTLATENCY_H
 
