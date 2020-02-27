@@ -49,6 +49,33 @@ class LocalPlanner : public BlockBase {
         this->position = position;
         this->orientation = orientation;
 
+        const Point_2 position2D = to2D( position );
+
+        if( !globalPlan.plan->empty() ) {
+
+          // local planner for lines: find the nearest line and put it into the local plan
+          if( globalPlan.type == Plan::Type::OnlyLines ) {
+            double distanceSquared = qInf();
+            typeof( globalPlan.plan->front() ) nearestLine;
+
+            for( const auto& pathPrimitive : *globalPlan.plan ) {
+              auto line = pathPrimitive->castToLine();
+              double currentDistanceSquared = CGAL::squared_distance( line->line, position2D );
+
+              if( currentDistanceSquared < distanceSquared ) {
+                nearestLine = pathPrimitive;
+                distanceSquared = currentDistanceSquared;
+              } else {
+                // the plan is ordered, so we can take the fast way out...
+                break;
+              }
+            }
+
+            plan.plan->clear();
+            plan.plan->push_back( nearestLine );
+            emit planChanged( plan );
+          }
+        }
 
 //        // get nearest line/segment
 //        double distance = qInf();
@@ -94,7 +121,7 @@ class LocalPlanner : public BlockBase {
     }
 
     void setPlan( const Plan& plan ) {
-      this->plan = plan;
+      this->globalPlan = plan;
 //      emit planChanged( plan );
     }
 
@@ -107,6 +134,7 @@ class LocalPlanner : public BlockBase {
     QQuaternion orientation = QQuaternion();
 
   private:
+    Plan globalPlan;
     Plan plan;
 };
 

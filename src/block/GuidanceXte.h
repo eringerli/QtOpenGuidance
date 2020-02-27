@@ -48,8 +48,10 @@ class XteGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( const Point_3& /*position*/, const QQuaternion, const PoseOption::Options /*options*/ ) {
-//      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    void setPose( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        const Point_2 position2D = to2D( position );
+
 
 //        double distance = qInf();
 //        double headingOfABLine = 0;
@@ -65,7 +67,7 @@ class XteGuidance : public BlockBase {
 //              distance = distanceTmp;
 //            }
 
-////            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
+// //            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
 //          }
 //        }
 
@@ -79,7 +81,7 @@ class XteGuidance : public BlockBase {
 //          emit headingOfPathChanged( qInf() );
 //          emit xteChanged( qInf() );
 //        }
-//      }
+      }
     }
 
     void setPlan( const Plan& plan ) {

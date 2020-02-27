@@ -24,13 +24,18 @@
 class Plan {
   public:
     enum class Type : uint8_t {
-      Lines,
-      Segments,
-      Circles,
+      OnlyLines,
+      OnlySegments,
+      OnlyCircles,
       Mixed = 100
     };
 
     Plan() {
+      plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
+    }
+
+    Plan( const Type type )
+      : type( type ) {
       plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
     }
 

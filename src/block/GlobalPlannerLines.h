@@ -233,7 +233,7 @@ class GlobalPlannerLines : public BlockBase {
     Point_3 positionLeftEdgeOfImplement = Point_3();
     Point_3 positionRightEdgeOfImplement = Point_3();
 
-    Plan plan;
+    Plan plan = Plan( Plan::Type::OnlyLines );
 
   private:
     QWidget* mainWindow = nullptr;
