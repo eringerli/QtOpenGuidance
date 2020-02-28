@@ -87,8 +87,8 @@ class GlobalPlannerLines : public BlockBase {
 
         Point_2 point2D( double( position.x() ), double( position.y() ) );
 
-        if( implementLine.source() != point2D ) {
-          implementLine = Segment_2( point2D, implementLine.target() );
+        if( implementSegment.source() != point2D ) {
+          implementSegment = Segment_2( point2D, implementSegment.target() );
 //          createPlanAB();
         }
       }
@@ -101,8 +101,8 @@ class GlobalPlannerLines : public BlockBase {
 
         Point_2 point2D( double( position.x() ), double( position.y() ) );
 
-        if( implementLine.target() != point2D ) {
-          implementLine = Segment_2( implementLine.source(), point2D );
+        if( implementSegment.target() != point2D ) {
+          implementSegment = Segment_2( implementSegment.source(), point2D );
 //          createPlanAB();
         }
       }
@@ -130,7 +130,7 @@ class GlobalPlannerLines : public BlockBase {
 
       bPoint = position;
 
-      abLine = Segment_3( aPoint, bPoint );
+      abSegment = Segment_3( aPoint, bPoint );
 
       clearPlan();
       createPlanAB();
@@ -190,21 +190,6 @@ class GlobalPlannerLines : public BlockBase {
 //    void requestNewRunNumber();
 
   private:
-
-    double normalizeAngleRadians( double angle ) {
-      while( angle > M_PI ) {
-        angle -= M_PI * 2;
-      }
-
-      while( angle < -M_PI ) {
-        angle += M_PI * 2;
-      }
-
-      return angle;
-    }
-
-
-  private:
     bool isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line );
     void createPlanAB();
     void sortPlan();
@@ -226,9 +211,9 @@ class GlobalPlannerLines : public BlockBase {
 
     Point_3 aPoint = Point_3();
     Point_3 bPoint = Point_3();
-    Segment_3 abLine = Segment_3();
+    Segment_3 abSegment = Segment_3();
 
-    Segment_2 implementLine = Segment_2();
+    Segment_2 implementSegment = Segment_2();
 
     Point_3 positionLeftEdgeOfImplement = Point_3();
     Point_3 positionRightEdgeOfImplement = Point_3();

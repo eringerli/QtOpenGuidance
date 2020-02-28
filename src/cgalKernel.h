@@ -28,6 +28,7 @@
 #include <cassert>
 #include <stdint.h>
 
+#include <QtMath>
 #include <QVector3D>
 
 // choose the kernel
@@ -53,16 +54,40 @@ typedef CGAL::Aff_transformation_2<K>                       Transformation_2;
 typedef CGAL::Polygon_2<K>                                  Polygon_2;
 typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
 
+inline double normalizeAngleRadians( double angle ) {
+  while( angle > M_PI ) {
+    angle -= M_PI * 2;
+  }
+
+  while( angle < -M_PI ) {
+    angle += M_PI * 2;
+  }
+
+  return angle;
+}
+
+inline double normalizeAngleDegrees( double angle ) {
+  while( angle > 180 ) {
+    angle -= 360;
+  }
+
+  while( angle < -180 ) {
+    angle += 360;
+  }
+
+  return angle;
+}
+
 // basic conversions
 inline const QVector3D convertPoint3ToQVector3D( const Point_3& point ) {
   return QVector3D( float( point.x() ), float( point.y() ), float( point.z() ) );
 }
 
-inline const QVector3D convertPoint2ToQVector3D( Point_2 point ) {
+inline const QVector3D convertPoint2ToQVector3D( const Point_2& point ) {
   return QVector3D( float( point.x() ), float( point.y() ), 0 );
 }
 
-inline const Point_3 convertQVector3DToPoint3( QVector3D point ) {
+inline const Point_3 convertQVector3DToPoint3( const QVector3D& point ) {
   return Point_3( point.x(), point.y(), point.z() );
 }
 
@@ -75,8 +100,31 @@ inline const Point_2 to2D( const Point_3& point ) {
   return Point_2( point.x(), point.y() );
 }
 
-inline Vector_2 polarOffset( double angle, double distance ) {
+inline const Segment_3 to3D( const Segment_2& segment ) {
+  return Segment_3( Point_3( segment.source().x(), segment.source().y(), 0 ), Point_3( segment.target().x(), segment.target().y(), 0 ) );
+}
+
+inline const Vector_3 to3D( const Vector_2& vector ) {
+  return Vector_3( vector.x(), vector.y(), 0 );
+}
+
+inline Vector_2 polarOffset( const double angle, const double distance ) {
   return Vector_2( std::sin( angle ) * distance, -std::cos( angle ) * distance );
 }
+
+inline double angleOfLineDegrees( const Line_2& line ) {
+  Vector_3 north( 1, 0, 0 );
+  Vector_2 north2D( 1, 0 );
+
+  Vector_2 lineVector = line.to_vector();
+
+  double angleAB = CGAL::approximate_angle( north, to3D( lineVector ) );
+  return normalizeAngleDegrees( ( angleAB ) * CGAL::orientation( north2D, lineVector ) );
+}
+
+inline double angleOfLineRadians( const Line_2& line ) {
+  return qDegreesToRadians( angleOfLineDegrees( line ) );
+}
+
 //#endif // not __clang_analyzer__
 

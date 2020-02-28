@@ -83,7 +83,7 @@ void GlobalPlannerLines::showPlan() {
 }
 
 void GlobalPlannerLines::createPlanAB() {
-  if( abLine.squared_length() > 1 ) {
+  if( abSegment.squared_length() > 1 ) {
     Point_2 position2D = to2D( position );
 
     if( plan.plan->size() >= std::vector<std::shared_ptr<PathPrimitive>>::size_type( pathsInReserve * 2 + 1 ) ) {
@@ -93,33 +93,24 @@ void GlobalPlannerLines::createPlanAB() {
       }
     }
 
-    qDebug() << "Long way...";
+//    qDebug() << "Long way...";
 
-    Segment_2 ab2dSegment = to2D( abLine );
+    Segment_2 ab2dSegment = to2D( abSegment );
     Line_2 ab2D = ab2dSegment.supporting_line();
-    Line_3 ab3D = Segment_3( Point_3( abLine.source().x(), abLine.source().y(), 0 ), Point_3( abLine.target().x(), abLine.target().y(), 0 ) ).supporting_line();
+//    Line_3 ab3D = to3D(abSegment ).supporting_line();
     Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
     Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
 
-    Vector_3 north( Point_3( 0, 0, 0 ), Point_3( 1, 0, 0 ) );
-    Vector_2 north2D( Point_2( 0, 0 ), Point_2( 1, 0 ) );
+    double angleAbRad = angleOfLineRadians( ab2D );
 
-    //std::cout << "lines: ab2D:"<<ab2D<<", position2D:"<<position2D<<", abPerpendicular:"<<abPerpendicular<<std::endl;
-    //std::cout << "angles: ab2D:"<<CGAL::approximate_angle(north,ab3D.to_vector())<<", position2D:"<<position2D<<", abPerpendicular:"<<abPerpendicular<<std::endl;
+    double implementWidth = std::sqrt( implementSegment.squared_length() );
 
-    double angleAB = CGAL::approximate_angle( north, ab3D.to_vector() );
-//    std::cout << "CGAL::orientation(): " << CGAL::orientation( north2D, ab2D.to_vector() ) << ", has_on_positive_side:" << ab2D.has_on_positive_side( position2D ) << std::endl;
-    double angleAbRad = normalizeAngleRadians( ( M_PI - qDegreesToRadians( angleAB ) ) * -CGAL::orientation( north2D, ab2D.to_vector() ) );
-
-    double implementWidth = sqrt( implementLine.squared_length() );
-
-    double distanceFromAbLine = sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
+    double distanceFromAbLine = std::sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
 
     double moduloDistanceFromAbLine = std::floor( distanceFromAbLine / implementWidth ) * implementWidth;
 
-    std::cout << "GlobalPlanner::createPlanAB: abLine:" << abLine << ", implementWidth:" << implementWidth << ", distanceFromAbLine:" << distanceFromAbLine <<
-              ", moduloDistanceFromAbLine:" << moduloDistanceFromAbLine << std::endl;
-
+//    std::cout << "GlobalPlanner::createPlanAB: abLine:" << abSegment << ", implementWidth:" << implementWidth << ", distanceFromAbLine:" << distanceFromAbLine <<
+//              ", moduloDistanceFromAbLine:" << moduloDistanceFromAbLine << std::endl;
 
     for( int offsetCount = -pathsToGenerate ; offsetCount <= pathsToGenerate ; ++offsetCount ) {
       double offsetDistance = moduloDistanceFromAbLine + offsetCount * implementWidth;
@@ -128,9 +119,9 @@ void GlobalPlannerLines::createPlanAB() {
         offsetDistance = -offsetDistance;
       }
 
-      auto offsetVector = polarOffset( angleAbRad, offsetDistance );
+      auto offsetVector = polarOffset( M_PI + angleAbRad, offsetDistance );
 
-      std::cout << "makeOffsettedSegment: offsetCount:" << offsetCount << ", offsetDistance:" << offsetDistance << ", offsetVector: " << offsetVector << ", angleAB:" << angleAB << std::endl;
+//      std::cout << "makeOffsettedSegment: offsetCount:" << offsetCount << ", offsetDistance:" << offsetDistance << ", offsetVector: " << offsetVector << std::endl;
 
       auto newLine = std::make_shared<PathPrimitiveLine>(
                        Line_2( ab2dSegment.source() - offsetVector, ab2dSegment.target() - offsetVector ),
@@ -142,7 +133,7 @@ void GlobalPlannerLines::createPlanAB() {
 
     }
 
-    qDebug() << "plan->size()" << plan.plan->size();
+//    qDebug() << "plan->size()" << plan.plan->size();
     sortPlan();
     emit planChanged( plan );
   }

@@ -52,35 +52,41 @@ class XteGuidance : public BlockBase {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         const Point_2 position2D = to2D( position );
 
+        if( !plan.plan->empty() ) {
 
-//        double distance = qInf();
-//        double headingOfABLine = 0;
+          // local planner for lines: find the nearest line and put it into the local plan
+          if( plan.type == Plan::Type::OnlyLines ) {
+            double distanceSquared = qInf();
+            const PathPrimitiveLine* nearestLine;
 
-//        for( const auto& primitive : qAsConst( plan ) ) {
-//          auto* line =  qobject_cast<PathPrimitiveLine*>( primitive.data() );
 
-//          if( line ) {
-//            double distanceTmp = line->distanceToPoint( QPointF( position.x(), position.y() ) );
+            for( const auto& pathPrimitive : *plan.plan ) {
+              auto line = pathPrimitive->castToLine();
+              double currentDistanceSquared = CGAL::squared_distance( line->line, position2D );
 
-//            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
-//              headingOfABLine = line->line.angle();
-//              distance = distanceTmp;
-//            }
+              if( currentDistanceSquared < distanceSquared ) {
+                nearestLine = line;
+                distanceSquared = currentDistanceSquared;
+              } else {
+                // the plan is ordered, so we can take the fast way out...
+                break;
+              }
+            }
 
-// //            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
-//          }
-//        }
+            double offsetDistance = std::sqrt( distanceSquared );
 
-//        if( !qIsInf( distance ) ) {
-//          headingOfABLine *= -1;
-//          headingOfABLine = normalizeAngleDegrees( headingOfABLine );
+            if( nearestLine->line.has_on_negative_side( position2D ) ) {
+              offsetDistance = -offsetDistance;
+            }
 
-//          emit headingOfPathChanged( float( qDegreesToRadians( headingOfABLine ) ) );
-//          emit xteChanged( float( distance ) );
-//        } else {
-//          emit headingOfPathChanged( qInf() );
-//          emit xteChanged( qInf() );
-//        }
+            emit headingOfPathChanged( angleOfLineDegrees( nearestLine->line ) );
+            emit xteChanged( offsetDistance );
+            return;
+          }
+        }
+
+        emit headingOfPathChanged( qInf() );
+        emit xteChanged( qInf() );
       }
     }
 

@@ -61,16 +61,16 @@ class StanleyGuidance : public BlockBase {
     }
 
     void setHeadingOfPath( double headingOfPath ) {
-      this->headingOfPath = double( headingOfPath );
+      this->headingOfPathRadians = qDegreesToRadians( headingOfPath );
     }
 
     void setXte( double distance ) {
       if( !qIsInf( distance ) ) {
-        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPath ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
+        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadians ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
         double stanleyXteCompensation = atan( ( stanleyGainK * double( -distance ) ) / ( double( velocity ) + stanleyGainKSoft ) );
         double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYaw *
             ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1Ago.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientation.toEulerAngles().z() ) ) ) -
-              ( yawTrajectory1Ago - headingOfPath ) ) );
+              ( yawTrajectory1Ago - headingOfPathRadians ) ) );
         double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteering * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
         double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
@@ -82,10 +82,10 @@ class StanleyGuidance : public BlockBase {
           steerAngleRequested = -maxSteeringAngle;
         }
 
-//        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfABLine ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
+//        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadians ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
 
         emit steerAngleChanged( float( steerAngleRequested ) );
-        yawTrajectory1Ago = headingOfPath;
+        yawTrajectory1Ago = headingOfPathRadians;
       }
     }
 
@@ -119,75 +119,12 @@ class StanleyGuidance : public BlockBase {
 
   private:
 
-    double normalizeAngleRadians( double angle ) {
-      while( angle > M_PI ) {
-        angle -= M_PI * 2;
-      }
-
-      while( angle < -M_PI ) {
-        angle += M_PI * 2;
-      }
-
-      return angle;
-    }
-
-    double normalizeAngleDegrees( double angle ) {
-      while( angle > 180 ) {
-        angle -= 360;
-      }
-
-      while( angle < -180 ) {
-        angle += 360;
-      }
-
-      return angle;
-    }
-
-    // https://stackoverflow.com/a/4448097
-
-    // Compute the dot product AB . BC
-    double dotProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cX - bX ) + ( bY - aY ) * ( cY - bY );
-    }
-
-    // Compute the cross product AB x AC
-    double crossProduct( double aX, double aY, double bX, double bY, double cX, double cY ) {
-      return ( bX - aX ) * ( cY - aY ) - ( bY - aY ) * ( cX - aX );
-    }
-
-    // Compute the distance from A to B
-    double distance2D( double aX, double aY, double bX, double bY ) {
-      double d1 = aX - bX;
-      double d2 = aY - bY;
-
-      return qSqrt( d1 * d1 + d2 * d2 );
-    }
-
-    // Compute the distance from AB to C
-    // if isSegment is true, AB is a segment, not a line.
-    // if <0: left side of line
-    double lineToPointDistance2D( double aX, double aY, double bX, double bY, double cX, double cY, bool isSegment ) {
-      double dist = crossProduct( aX, aY, bX, bY, cX, cY ) / distance2D( aX, aY, bX, bY );
-
-      if( isSegment ) {
-        if( dotProduct( aX, aY, bX, bY, cX, cY ) > 0 ) {
-          return distance2D( bX, bY, cX, cY );
-        }
-
-        if( dotProduct( bX, bY, aX, aY, cX, cY ) > 0 ) {
-          return distance2D( aX, aY, cX, cY );
-        }
-      }
-
-      return dist;
-    }
-
   public:
     Point_3 position = Point_3();
     QQuaternion orientation = QQuaternion();
     QQuaternion orientation1Ago = QQuaternion();
     double velocity = 0;
-    double headingOfPath = 0;
+    double headingOfPathRadians = 0;
     double distance = 0;
 
     double stanleyGainK = 1;

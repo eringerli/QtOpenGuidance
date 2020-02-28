@@ -71,52 +71,25 @@ class LocalPlanner : public BlockBase {
               }
             }
 
+            plan.type = Plan::Type::OnlyLines;
             plan.plan->clear();
+            auto line = nearestLine->castToLine();
+
+            if( line->anyDirection ) {
+              double angleNearestLine = angleOfLineDegrees( line->line );
+
+              if( ( orientation.toEulerAngles().z() - angleNearestLine ) > 95 ) {
+                nearestLine = std::make_shared<PathPrimitiveLine>(
+                                      line->line.opposite(),
+                                      line->implementWidth, line->anyDirection, line->passNumber );
+
+              }
+            }
+
             plan.plan->push_back( nearestLine );
             emit planChanged( plan );
           }
         }
-
-//        // get nearest line/segment
-//        double distance = qInf();
-////        double headingOfABLine = 0;
-
-//        QSharedPointer<PathPrimitive> lineBuffer;
-
-//        for( const auto& primitive : qAsConst( plan ) ) {
-//          auto* line = qobject_cast<PathPrimitiveLine*>( primitive.data() );
-
-//          if( line ) {
-//            double distanceTmp = line->distanceToPoint( Point_2( double( position.x() ), double( position.y() ) ) );
-
-//            if( qAbs( distanceTmp ) < qAbs( distance ) ) {
-//              lineBuffer = primitive;
-////              headingOfABLine = line->line.angle();
-//              distance = distanceTmp;
-//            }
-
-////            qDebug() << distance << distanceTmp << headingOfABLine << line->line;
-//          }
-//        }
-
-//        // make a new plan with the nearest line, reverse lines that have anyDirection==true
-//        auto* line = qobject_cast<PathPrimitiveLine*>( lineBuffer.data() );
-
-//        if( line ) {
-//          Path planTmp;
-
-//          if( line->anyDirection ) {
-//            qreal angleToHeading = line->line.angleTo( QLineF::fromPolar( 100, -qreal( orientation.toEulerAngles().z() ) ) );
-
-//            if( !( ( angleToHeading < 80 ) || ( angleToHeading > ( 360 - 80 ) ) ) ) {
-//              qDebug() << "line->reverse()";
-//              line->reverse();
-//            }
-//          }
-
-//          planTmp << lineBuffer;
-//          emit planChanged( planTmp );
-//        }
       }
     }
 

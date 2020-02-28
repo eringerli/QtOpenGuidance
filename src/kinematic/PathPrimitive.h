@@ -31,8 +31,8 @@ class PathPrimitive {
   public:
     PathPrimitive() {}
 
-    PathPrimitive( bool anyDirection, double width, int passNumber )
-      : anyDirection( anyDirection ), width( width ), passNumber( passNumber ) {}
+    PathPrimitive( bool anyDirection, double implementWidth, int passNumber )
+      : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
 
     enum class Type : uint8_t {
       Base = 0,
@@ -55,7 +55,7 @@ class PathPrimitive {
 
   public:
     bool anyDirection = false;
-    double width = 0;
+    double implementWidth = 0;
     int passNumber = 0;
 };
 
@@ -64,8 +64,8 @@ class PathPrimitiveLine : public PathPrimitive {
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( const Line_2& line, double width, bool anyDirection, int passNumber )
-      : PathPrimitive( anyDirection, width, passNumber ), line( line ) {}
+    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, implementWidth, passNumber ), line( line ) {}
 
     virtual Type getType() override {
       return Type::Line;
@@ -95,8 +95,8 @@ class PathPrimitiveSegment : public PathPrimitive {
     PathPrimitiveSegment()
       : PathPrimitive() {}
 
-    PathPrimitiveSegment( const Segment_2& segment, double width, bool anyDirection, int passNumber )
-      : PathPrimitive( anyDirection, width, passNumber ), segment( segment ) {}
+    PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int passNumber )
+      : PathPrimitive( anyDirection, implementWidth, passNumber ), segment( segment ) {}
 
     virtual Type getType() override {
       return Type::Segment;

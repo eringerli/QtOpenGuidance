@@ -574,7 +574,7 @@
         {
             "id": 1033,
             "name": "Front Axle",
-            "positionX": 2363,
+            "positionX": 2057,
             "positionY": 68,
             "type": "Fixed Kinematic"
         },
@@ -605,7 +605,7 @@
         {
             "id": 1021,
             "name": "Offset Pivot/Front Axle",
-            "positionX": 2159,
+            "positionX": 1853,
             "positionY": 17,
             "type": "Vector3D",
             "values": {
@@ -651,7 +651,7 @@
         {
             "id": 1011,
             "name": "Local Planner",
-            "positionX": 2431,
+            "positionX": 2533,
             "positionY": 527,
             "type": "Local Planner"
         },
@@ -661,6 +661,20 @@
             "positionX": 1224,
             "positionY": 1242,
             "type": "Fixed Kinematic"
+        },
+        {
+            "id": 1054,
+            "name": "H. of Path",
+            "positionX": 3094,
+            "positionY": 578,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
+                "Precision": 2,
+                "Scale": 1
+            }
         },
         {
             "id": 8,
@@ -720,6 +734,12 @@
         }
     ],
     "connections": [
+        {
+            "idFrom": 1033,
+            "idTo": 1011,
+            "portFrom": "Pose Pivot Point",
+            "portTo": "Pose"
+        },
         {
             "idFrom": 1041,
             "idTo": 4,
@@ -987,12 +1007,6 @@
         {
             "idFrom": 1046,
             "idTo": 3,
-            "portFrom": "Pose Pivot Point",
-            "portTo": "Pose"
-        },
-        {
-            "idFrom": 1046,
-            "idTo": 1011,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose"
         },
@@ -1312,6 +1326,12 @@
             "idFrom": 2,
             "idTo": 1048,
             "portFrom": "Points Boundary",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1042,
+            "idTo": 1054,
+            "portFrom": "Heading of Path",
             "portTo": "Number"
         }
     ]
