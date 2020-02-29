@@ -75,10 +75,10 @@ class PathPrimitiveLine : public PathPrimitive {
 
   public:
     bool operator==( PathPrimitiveLine& b ) {
-      return line == b.line;
+      return passNumber == b.passNumber;
     }
     bool operator==( const PathPrimitiveLine& b )const {
-      return line == b.line;
+      return passNumber == b.passNumber;
     }
 
   public:
