@@ -17,13 +17,6 @@ qtCompileTest(serialport) {
     CONFIG += precompile_header
 }
 
-android {
-    INCLUDEPATH += android/arm64-v8a//include/boost-1_70/
-    LIBS += -Landroid/arm64-v8a/lib/
-    QMAKE_CXXFLAGS += -fexceptions
-    QMAKE_CXXFLAGS += -frtti
-}
-
 qtCompileTest(spnav) {
     DEFINES += SPNAV_ENABLED
     HEADERS += src/gui/SpaceNavigatorPollingThread.h
