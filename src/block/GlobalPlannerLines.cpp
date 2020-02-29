@@ -97,7 +97,6 @@ void GlobalPlannerLines::createPlanAB() {
 
     Segment_2 ab2dSegment = to2D( abSegment );
     Line_2 ab2D = ab2dSegment.supporting_line();
-//    Line_3 ab3D = to3D(abSegment ).supporting_line();
     Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
     Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
 
@@ -107,25 +106,22 @@ void GlobalPlannerLines::createPlanAB() {
 
     double distanceFromAbLine = std::sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
 
-    double moduloDistanceFromAbLine = std::floor( distanceFromAbLine / implementWidth ) * implementWidth;
+    if( ab2D.has_on_positive_side( position2D ) ) {
+      distanceFromAbLine = -distanceFromAbLine;
+    }
 
-//    std::cout << "GlobalPlanner::createPlanAB: abLine:" << abSegment << ", implementWidth:" << implementWidth << ", distanceFromAbLine:" << distanceFromAbLine <<
-//              ", moduloDistanceFromAbLine:" << moduloDistanceFromAbLine << std::endl;
+    int32_t passNumber = std::floor( distanceFromAbLine / implementWidth );
+
+    double moduloDistanceFromAbLine = passNumber * implementWidth;
 
     for( int offsetCount = -pathsToGenerate ; offsetCount <= pathsToGenerate ; ++offsetCount ) {
       double offsetDistance = moduloDistanceFromAbLine + offsetCount * implementWidth;
 
-      if( ab2D.has_on_positive_side( position2D ) ) {
-        offsetDistance = -offsetDistance;
-      }
-
       auto offsetVector = polarOffset( M_PI + angleAbRad, offsetDistance );
-
-//      std::cout << "makeOffsettedSegment: offsetCount:" << offsetCount << ", offsetDistance:" << offsetDistance << ", offsetVector: " << offsetVector << std::endl;
 
       auto newLine = std::make_shared<PathPrimitiveLine>(
                        Line_2( ab2dSegment.source() - offsetVector, ab2dSegment.target() - offsetVector ),
-                       implementWidth, true, offsetCount );
+                       implementWidth, true, passNumber + offsetCount );
 
       if( !isLineAlreadyInPlan( newLine ) ) {
         plan.plan->push_back( newLine );
@@ -136,6 +132,39 @@ void GlobalPlannerLines::createPlanAB() {
 //    qDebug() << "plan->size()" << plan.plan->size();
     sortPlan();
     emit planChanged( plan );
+  }
+}
+
+void GlobalPlannerLines::snapPlanAB() {
+  if( abSegment.squared_length() > 1 ) {
+    Point_2 position2D = to2D( position );
+
+    Segment_2 ab2dSegment = to2D( abSegment );
+    Line_2 ab2D = ab2dSegment.supporting_line();
+    Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
+    Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
+
+    double angleAbRad = angleOfLineRadians( ab2D );
+
+    double implementWidth = std::sqrt( implementSegment.squared_length() );
+
+    double distanceFromAbLine = std::sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
+
+    if( ab2D.has_on_positive_side( position2D ) ) {
+      distanceFromAbLine = -distanceFromAbLine;
+    }
+
+    int32_t passNumber = std::round( distanceFromAbLine / implementWidth );
+
+    double moduloDistanceFromAbLine = passNumber * implementWidth;
+
+    auto offsetVector = polarOffset( M_PI + angleAbRad, distanceFromAbLine - moduloDistanceFromAbLine );
+    auto offsetVector3D = to3D( offsetVector );
+
+    abSegment = Segment_3( abSegment.source() - offsetVector3D, abSegment.target() - offsetVector3D );
+
+    clearPlan();
+    createPlanAB();
   }
 }
 
@@ -283,17 +312,6 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
 
     threadForCgalWorker->start();
   }
-
-  Segment_2 segment( Point_2( 2, 2 ), Point_2( 2.2, 5 ) );
-  PathPrimitiveSegment line1( segment, 1, true, 0 );
-  PathPrimitiveLine line2( segment.supporting_line(), 1, true, 0 );
-  Point_2 point( 1, 3 );
-  qDebug() << "line1: " << line1.distanceToPoint( point );
-  qDebug() << "line2: " << line2.distanceToPoint( point );
-
-  Line_2 line3( Point_2( 2.2, 2.2 ), Point_2( 3, 3 ) );
-  Segment_2 line4( Point_2( -1, 0 ), Point_2( 3, 3 ) );
-  qDebug() << "l3:" << sqrt( CGAL::squared_distance( line3, point ) ) << "l4:" << sqrt( CGAL::squared_distance( line4, point ) );
 }
 
 #include "moc_GlobalPlannerLines.cpp"

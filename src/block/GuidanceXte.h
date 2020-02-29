@@ -57,7 +57,7 @@ class XteGuidance : public BlockBase {
           // local planner for lines: find the nearest line and put it into the local plan
           if( plan.type == Plan::Type::OnlyLines ) {
             double distanceSquared = qInf();
-            const PathPrimitiveLine* nearestLine;
+            const PathPrimitiveLine* nearestLine = nullptr;
 
 
             for( const auto& pathPrimitive : *plan.plan ) {
@@ -81,12 +81,14 @@ class XteGuidance : public BlockBase {
 
             emit headingOfPathChanged( angleOfLineDegrees( nearestLine->line ) );
             emit xteChanged( offsetDistance );
+            emit passNumberChanged( nearestLine->passNumber );
             return;
           }
         }
 
         emit headingOfPathChanged( qInf() );
         emit xteChanged( qInf() );
+        emit passNumberChanged( qInf() );
       }
     }
 
@@ -95,13 +97,15 @@ class XteGuidance : public BlockBase {
     }
 
     void emitConfigSignals() override {
-//      emit xteChanged( 0 );
-//      emit headingOfPathChanged(0);
+      emit xteChanged( qInf() );
+      emit headingOfPathChanged( qInf() );
+      emit passNumberChanged( qInf() );
     }
 
   signals:
     void xteChanged( double );
     void headingOfPathChanged( double );
+    void passNumberChanged( double );
 
   private:
     double normalizeAngleRadians( double angle ) {
@@ -161,6 +165,7 @@ class XteGuidanceFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( double ) ) ) );
 
       return b;
     }

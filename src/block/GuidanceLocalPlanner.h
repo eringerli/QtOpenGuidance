@@ -78,7 +78,7 @@ class LocalPlanner : public BlockBase {
             if( line->anyDirection ) {
               double angleNearestLine = angleOfLineDegrees( line->line );
 
-              if( ( orientation.toEulerAngles().z() - angleNearestLine ) > 95 ) {
+              if( std::abs( orientation.toEulerAngles().z() - angleNearestLine ) > 95 ) {
                 nearestLine = std::make_shared<PathPrimitiveLine>(
                                       line->line.opposite(),
                                       line->implementWidth, line->anyDirection, line->passNumber );

@@ -137,7 +137,7 @@ class GlobalPlannerLines : public BlockBase {
     }
 
     void snap_clicked() {
-      createPlanAB();
+      snapPlanAB();
       qDebug() << "snap_clicked()";
     }
 
@@ -192,6 +192,7 @@ class GlobalPlannerLines : public BlockBase {
   private:
     bool isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line );
     void createPlanAB();
+    void snapPlanAB();
     void sortPlan();
     void showPlan();
     void clearPlan();

@@ -31,7 +31,7 @@ class PathPrimitive {
   public:
     PathPrimitive() {}
 
-    PathPrimitive( bool anyDirection, double implementWidth, int passNumber )
+    PathPrimitive( bool anyDirection, double implementWidth, int32_t passNumber )
       : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
 
     enum class Type : uint8_t {
@@ -56,7 +56,7 @@ class PathPrimitive {
   public:
     bool anyDirection = false;
     double implementWidth = 0;
-    int passNumber = 0;
+    int32_t passNumber = 0;
 };
 
 class PathPrimitiveLine : public PathPrimitive {
@@ -64,7 +64,7 @@ class PathPrimitiveLine : public PathPrimitive {
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int passNumber )
+    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int32_t passNumber )
       : PathPrimitive( anyDirection, implementWidth, passNumber ), line( line ) {}
 
     virtual Type getType() override {
@@ -95,7 +95,7 @@ class PathPrimitiveSegment : public PathPrimitive {
     PathPrimitiveSegment()
       : PathPrimitive() {}
 
-    PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int passNumber )
+    PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int32_t passNumber )
       : PathPrimitive( anyDirection, implementWidth, passNumber ), segment( segment ) {}
 
     virtual Type getType() override {
