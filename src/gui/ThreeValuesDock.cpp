@@ -88,5 +88,3 @@ const QFont& ThreeValuesDock::fontOfLabel() {
 bool ThreeValuesDock::captionEnabled() {
   return ui->lbName->isVisible();
 }
-
-#include "moc_ThreeValuesDock.cpp"

@@ -224,5 +224,3 @@ void ImplementSectionModel::setDatasource( QNEBlock* block ) {
   this->block = block;
   endResetModel();
 }
-
-#include "moc_ImplementSectionModel.cpp"

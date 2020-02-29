@@ -147,5 +147,3 @@ void ImplementBlockModel::resetModel() {
 
   endResetModel();
 }
-
-#include "moc_ImplementBlockModel.cpp"

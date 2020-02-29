@@ -76,5 +76,3 @@ void XteDock::setXte( double xte ) {
 void XteDock::setName( const QString& name ) {
   ui->lbName->setText( name );
 }
-
-#include "moc_XteDock.cpp"

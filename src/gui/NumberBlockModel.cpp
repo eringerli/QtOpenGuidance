@@ -159,5 +159,3 @@ void NumberBlockModel::resetModel() {
 
   endResetModel();
 }
-
-#include "moc_NumberBlockModel.cpp"

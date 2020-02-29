@@ -70,5 +70,3 @@ const QFont& ValueDock::fontOfLabel() {
 bool ValueDock::captionEnabled() {
   return ui->lbName->isVisible();
 }
-
-#include "moc_ValueDock.cpp"

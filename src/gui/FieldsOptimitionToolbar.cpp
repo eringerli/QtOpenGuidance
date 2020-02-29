@@ -84,5 +84,3 @@ void FieldsOptimitionToolbar::on_dsbMaxDeviation_valueChanged( double ) {
                                         ui->dsbMaxDeviation->value(),
                                         ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
-
-#include "moc_FieldsOptimitionToolbar.cpp"

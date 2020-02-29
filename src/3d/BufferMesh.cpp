@@ -46,5 +46,3 @@ void BufferMesh::bufferUpdate( const QVector<QVector3D>& pos ) {
   setVertexCount( m_bufferMeshGeo->vertexCount() );
   setGeometry( m_bufferMeshGeo );
 }
-
-#include "moc_BufferMesh.cpp"

@@ -80,5 +80,3 @@ void SimulatorToolbar::on_pb_velocityReset_clicked() {
   ui->sl_velocity->setValue( 0 );
   emit velocityChanged( 0.0f );
 }
-
-#include "moc_SimulatorToolbar.cpp"

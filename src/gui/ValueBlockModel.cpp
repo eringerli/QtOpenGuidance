@@ -255,5 +255,3 @@ void ValueBlockModel::resetModel() {
 
   endResetModel();
 }
-
-#include "moc_ValueBlockModel.cpp"

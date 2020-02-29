@@ -313,5 +313,3 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
     threadForCgalWorker->start();
   }
 }
-
-#include "moc_GlobalPlannerLines.cpp"

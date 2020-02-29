@@ -236,5 +236,3 @@ void SectionControlToolbar::autoToggled( bool checked ) {
     implement->emitSectionsChanged();
   }
 }
-
-#include "moc_SectionControlToolbar.cpp"

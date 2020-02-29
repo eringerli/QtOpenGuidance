@@ -62,5 +62,3 @@ void CameraToolbar::on_pbReset_clicked() {
 void CameraToolbar::on_comboBox_currentIndexChanged( int index ) {
   emit setMode( index );
 }
-
-#include "moc_CameraToolbar.cpp"

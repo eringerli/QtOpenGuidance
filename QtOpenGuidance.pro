@@ -208,3 +208,9 @@ contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_PACKAGE_SOURCE_DIR = \
         $$PWD/android
 }
+
+SOURCES += \
+    src/3d/3d-moc.cpp \
+    src/block/block-moc.cpp \
+    src/gui/gui-moc.cpp \
+    src/kinematic/kinematic-moc.cpp

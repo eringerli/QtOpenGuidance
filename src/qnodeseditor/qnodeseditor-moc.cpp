@@ -1,0 +1,5 @@
+#include "moc_qneblock.cpp"
+#include "moc_qnegestures.cpp"
+#include "moc_qnegraphicsview.cpp"
+#include "moc_qneport.cpp"
+#include "moc_qnodeseditor.cpp"

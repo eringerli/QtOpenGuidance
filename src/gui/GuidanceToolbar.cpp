@@ -73,5 +73,3 @@ void GuidanceToolbar::on_btn_autosteer_clicked( bool checked ) {
 void GuidanceToolbar::on_pbDocks_clicked() {
   menu->exec( QCursor::pos() );
 }
-
-#include "moc_GuidanceToolbar.cpp"
