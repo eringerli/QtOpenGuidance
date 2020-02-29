@@ -58,7 +58,7 @@ class PlannerGui : public BlockBase {
     void turnRight_clicked();
 
   public:
-    Point_3 position = Point_3();
+    Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
 
   private:

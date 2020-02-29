@@ -186,11 +186,11 @@ class FieldManager : public BlockBase {
     void pointsInFieldBoundaryChanged( double );
 
   public:
-    Point_3 position = Point_3();
+    Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
 
-    Point_3 positionLeftEdgeOfImplement = Point_3();
-    Point_3 positionRightEdgeOfImplement = Point_3();
+    Point_3 positionLeftEdgeOfImplement = Point_3(0, 0, 0);
+    Point_3 positionRightEdgeOfImplement = Point_3(0, 0, 0);
 
   private:
     QWidget* mainWindow = nullptr;

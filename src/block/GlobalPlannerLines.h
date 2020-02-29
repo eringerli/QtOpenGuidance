@@ -85,7 +85,7 @@ class GlobalPlannerLines : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
 
-        Point_2 point2D( double( position.x() ), double( position.y() ) );
+        auto point2D = to2D(position);
 
         if( implementSegment.source() != point2D ) {
           implementSegment = Segment_2( point2D, implementSegment.target() );
@@ -99,7 +99,7 @@ class GlobalPlannerLines : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
 
-        Point_2 point2D( double( position.x() ), double( position.y() ) );
+        auto point2D = to2D(position);
 
         if( implementSegment.target() != point2D ) {
           implementSegment = Segment_2( implementSegment.source(), point2D );
@@ -198,7 +198,7 @@ class GlobalPlannerLines : public BlockBase {
     void clearPlan();
 
   public:
-    Point_3 position = Point_3();
+    Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
 
     int pathsToGenerate = 5;
@@ -210,14 +210,14 @@ class GlobalPlannerLines : public BlockBase {
 
     std::shared_ptr<Polygon_with_holes_2> currentField;
 
-    Point_3 aPoint = Point_3();
-    Point_3 bPoint = Point_3();
-    Segment_3 abSegment = Segment_3();
+    Point_3 aPoint = Point_3( 0, 0, 0 );
+    Point_3 bPoint = Point_3( 0, 0, 0 );
+    Segment_3 abSegment = Segment_3( Point_3( 0, 0, 0 ), Point_3( 0, 0, 0 ) );
 
-    Segment_2 implementSegment = Segment_2();
+    Segment_2 implementSegment = Segment_2( Point_2( 0, 0 ), Point_2( 0, 0 ) );
 
-    Point_3 positionLeftEdgeOfImplement = Point_3();
-    Point_3 positionRightEdgeOfImplement = Point_3();
+    Point_3 positionLeftEdgeOfImplement = Point_3( 0, 0, 0 );
+    Point_3 positionRightEdgeOfImplement = Point_3( 0, 0, 0 );
 
     Plan plan = Plan( Plan::Type::OnlyLines );
 

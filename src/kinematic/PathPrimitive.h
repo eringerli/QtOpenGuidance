@@ -34,6 +34,8 @@ class PathPrimitive {
     PathPrimitive( bool anyDirection, double implementWidth, int32_t passNumber )
       : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
 
+    virtual ~PathPrimitive(){}
+
     enum class Type : uint8_t {
       Base = 0,
       Line,

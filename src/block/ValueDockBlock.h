@@ -43,7 +43,7 @@ class ValueDockBlock : public ValueDockBlockBase {
       widget->deleteLater();
     }
 
-    virtual const QFont& getFont() {
+    virtual const QFont& getFont() override {
       return widget->fontOfLabel();
     }
     virtual int getPrecision() override {
@@ -55,11 +55,11 @@ class ValueDockBlock : public ValueDockBlockBase {
     virtual double getScale() override {
       return widget->scale;
     }
-    virtual bool captionEnabled() {
+    virtual bool captionEnabled() override {
       return widget->captionEnabled();
     }
 
-    virtual void setFont( const QFont& font ) {
+    virtual void setFont( const QFont& font ) override {
       widget->setFontOfLabel( font );
     }
     virtual void setPrecision( int precision ) override {
