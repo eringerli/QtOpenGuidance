@@ -2,6 +2,8 @@ load(configure)
 
 CONFIG += c++14 ccache
 
+include(build-paths.pri)
+
 # enable to recheck all compile tests/find the libraries
 # CONFIG += recheck
 
@@ -165,15 +167,17 @@ RESOURCES += \
         lib/oxygen-icons-png/oxygen.qrc
 }
 
-include(build-paths.pri)
-
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
 include($$PWD/lib/cgal.pri)
 
 # KDDockWidgets
-INCLUDEPATH += $$KDDOCKWIDGET_PREFIX/include/
-LIBS += -L$$KDDOCKWIDGET_PREFIX/lib -lkddockwidgets
+INCLUDEPATH += $$KDDOCKWIDGET_INCLUDE
+LIBS += -L$$KDDOCKWIDGET_LIBPATH -l$$KDDOCKWIDGET_LIBRARY
+
+android {
+ANDROID_EXTRA_LIBS += $${KDDOCKWIDGET_LIBPATH}/lib$${KDDOCKWIDGET_LIBRARY}.so
+}
 
 unix {
 target.path = /opt/QtOpenGuidance
