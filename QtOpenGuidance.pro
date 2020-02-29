@@ -10,7 +10,7 @@ include(build-paths.pri)
 QT += 3dcore 3drender 3dinput 3dlogic 3dextras concurrent
 QT += widgets core
 
-!android {
+qtCompileTest(serialport) {
     QT += serialport
     DEFINES += SERIALPORT_ENABLED
     HEADERS += src/block/SerialPort.h

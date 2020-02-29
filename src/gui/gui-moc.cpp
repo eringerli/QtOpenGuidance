@@ -12,10 +12,13 @@
 #include "moc_SectionControlToolbar.cpp"
 #include "moc_SettingsDialog.cpp"
 #include "moc_SimulatorToolbar.cpp"
-#include "moc_SpaceNavigatorPollingThread.cpp"
 #include "moc_StringBlockModel.cpp"
 #include "moc_ThreeValuesDock.cpp"
 #include "moc_ValueBlockModel.cpp"
 #include "moc_ValueDock.cpp"
 #include "moc_VectorBlockModel.cpp"
 #include "moc_XteDock.cpp"
+
+#ifdef SPNAV_ENABLED
+#include "moc_SpaceNavigatorPollingThread.cpp"
+#endif

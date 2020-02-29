@@ -25,7 +25,6 @@
 #include "moc_PoseSynchroniser.cpp"
 #include "moc_PositionDockBlock.cpp"
 #include "moc_PrintLatency.cpp"
-#include "moc_SerialPort.cpp"
 #include "moc_SprayerModel.cpp"
 #include "moc_StringObject.cpp"
 #include "moc_TractorModel.cpp"
@@ -36,3 +35,7 @@
 #include "moc_ValueDockBlock.cpp"
 #include "moc_VectorObject.cpp"
 #include "moc_XteDockBlock.cpp"
+
+#ifdef SERIALPORT_ENABLED
+#include "moc_SerialPort.cpp"
+#endif
