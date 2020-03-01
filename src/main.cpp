@@ -496,9 +496,14 @@ int main( int argc, char** argv ) {
   QObject::connect( mainWindow, SIGNAL( closed() ),
                     cameraController, SLOT( saveValuesToConfig() ) );
 
+  mainWindow->layout()->update();
+  mainWindow->layout()->activate();
+  mainWindow->layout()->update();
+
   // Show window
 #ifdef Q_OS_ANDROID
   mainWindow->showMaximized();
+  mainWindow->resize( mainWindow->screen()->availableSize() / mainWindow->screen()->devicePixelRatio() );
 #else
   mainWindow->show();
   mainWindow->resize( 1200, 800 );
