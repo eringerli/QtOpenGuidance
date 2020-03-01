@@ -42,8 +42,8 @@
 
 #include "qneconnection.h"
 
-QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent ):
-  QGraphicsPathItem( parent ) {
+QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded )
+  : QGraphicsPathItem( parent ) {
 
   this->slotSignalSignature = slotSignalSignature;
   label = new QGraphicsTextItem( this );
@@ -52,8 +52,13 @@ QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent ):
   p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
   setPath( p );
 
-  setPen( QPen( Qt::darkRed ) );
-  setBrush( Qt::red );
+  if( embedded ) {
+    setBrush( QColor( "plum" ) );
+    setPen( QPen( QColor( "purple" ) ) );
+  } else {
+    setBrush( Qt::red );
+    setPen( QPen( Qt::darkRed ) );
+  }
 
   setFlag( QGraphicsItem::ItemSendsScenePositionChanges );
 }

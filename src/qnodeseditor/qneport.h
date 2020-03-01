@@ -44,7 +44,7 @@ class QNEPort : public QGraphicsPathItem {
     enum { Type = QGraphicsItem::UserType + 1 };
     enum { NamePort = 1, TypePort = 2, SystemBlock = 4 };
 
-    QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr );
+    QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
     ~QNEPort();
 
     void setNEBlock( QNEBlock* );

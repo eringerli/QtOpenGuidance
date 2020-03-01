@@ -80,7 +80,6 @@ QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, Flags flags, QGra
       } else {
         // normal color
         setBrush( normalColor );
-
       }
     } else if( flags.testFlag( Embedded ) ) {
       // embedded color
@@ -116,8 +115,8 @@ QNEBlock::~QNEBlock() {
   object->deleteLater();
 }
 
-QNEPort* QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags ) {
-  auto* port = new QNEPort( signalSlotSignature, this );
+QNEPort* QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags, bool embedded ) {
+  auto* port = new QNEPort( signalSlotSignature, this, embedded );
   port->setName( name );
   port->setIsOutput( isOutput );
   port->setNEBlock( this );
@@ -143,12 +142,12 @@ QNEPort* QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignatu
   return port;
 }
 
-void QNEBlock::addInputPort( const QString& name, QLatin1String signalSlotSignature ) {
-  addPort( name, signalSlotSignature, false );
+void QNEBlock::addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded ) {
+  addPort( name, signalSlotSignature, false, 0, embedded );
 }
 
-void QNEBlock::addOutputPort( const QString& name, QLatin1String signalSlotSignature ) {
-  addPort( name, signalSlotSignature, true );
+void QNEBlock::addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded ) {
+  addPort( name, signalSlotSignature, true, 0, embedded );
 }
 
 void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {

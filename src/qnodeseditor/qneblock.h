@@ -55,9 +55,9 @@ class QNEBlock : public QGraphicsPathItem {
 
     ~QNEBlock();
 
-    QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0 );
-    void addInputPort( const QString& name, QLatin1String signalSlotSignature );
-    void addOutputPort( const QString& name, QLatin1String signalSlotSignature );
+    QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0, bool embedded = false );
+    void addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
+    void addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
 
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
