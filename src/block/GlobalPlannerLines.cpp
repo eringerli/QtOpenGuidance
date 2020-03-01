@@ -83,9 +83,8 @@ void GlobalPlannerLines::showPlan() {
 }
 
 void GlobalPlannerLines::createPlanAB() {
-  qDebug()<<implementSegment.squared_length();
   if( abSegment.squared_length() > 1 &&
-      implementSegment.squared_length() > 1) {
+      implementSegment.squared_length() > 1 ) {
     Point_2 position2D = to2D( position );
 
     if( plan.plan->size() >= std::vector<std::shared_ptr<PathPrimitive>>::size_type( pathsInReserve * 2 + 1 ) ) {
@@ -128,10 +127,8 @@ void GlobalPlannerLines::createPlanAB() {
       if( !isLineAlreadyInPlan( newLine ) ) {
         plan.plan->push_back( newLine );
       }
-
     }
 
-//    qDebug() << "plan->size()" << plan.plan->size();
     sortPlan();
     emit planChanged( plan );
   }

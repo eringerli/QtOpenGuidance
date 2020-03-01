@@ -57,7 +57,7 @@ class TransverseMercatorConverter : public BlockBase {
 
   public:
     virtual void emitConfigSignals() override {
-      auto dummyPoint = Point_3(0, 0, 0);
+      auto dummyPoint = Point_3( 0, 0, 0 );
       emit positionChanged( dummyPoint );
     }
 

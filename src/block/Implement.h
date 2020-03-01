@@ -71,7 +71,7 @@ class Implement : public BlockBase {
 
       emit leftEdgeChanged( QVector3D( 0, float( -width / 2 ), 0 ) );
       emit rightEdgeChanged( QVector3D( 0, float( width / 2 ), 0 ) );
-      auto dummyPoint = Point_3(0, 0, 0);
+      auto dummyPoint = Point_3( 0, 0, 0 );
       auto dummyQuaternion = QQuaternion();
       auto dummyFlags = PoseOption::CalculateLocalOffsets |
                         PoseOption::CalculateWithoutOrientation |

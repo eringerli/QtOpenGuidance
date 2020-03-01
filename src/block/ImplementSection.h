@@ -17,6 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include <QObject>
+#include <QFlags>
 
 #pragma once
 
@@ -92,4 +93,3 @@ class ImplementSection {
     States stateOfSection = State::None;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS( ImplementSection::States )
-

@@ -85,11 +85,11 @@ class GlobalPlannerLines : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
 
-        auto point2D = to2D(position);
+        auto point2D = to2D( position );
 
         if( implementSegment.source() != point2D ) {
           implementSegment = Segment_2( point2D, implementSegment.target() );
-//          createPlanAB();
+          createPlanAB();
         }
       }
     }
@@ -99,11 +99,11 @@ class GlobalPlannerLines : public BlockBase {
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
 
-        auto point2D = to2D(position);
+        auto point2D = to2D( position );
 
         if( implementSegment.target() != point2D ) {
           implementSegment = Segment_2( implementSegment.source(), point2D );
-//          createPlanAB();
+          createPlanAB();
         }
       }
     }
