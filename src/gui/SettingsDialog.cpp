@@ -82,6 +82,8 @@
 #include "../block/CommunicationPgn7FFE.h"
 #include "../block/CommunicationJrk.h"
 
+#include "../block/ValueTransmitNumber.h"
+
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
@@ -279,6 +281,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
 
+  valueTransmitNumberFactory = new ValueTransmitNumberFactory();
+
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
   stringFactory->addToCombobox( ui->cbNodeType );
@@ -297,6 +301,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserHDTFactory->addToCombobox( ui->cbNodeType );
   nmeaParserRMCFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
+
+  valueTransmitNumberFactory->addToCombobox( ui->cbNodeType );
+
   udpSocketFactory->addToCombobox( ui->cbNodeType );
 
 #ifdef SERIALPORT_ENABLED

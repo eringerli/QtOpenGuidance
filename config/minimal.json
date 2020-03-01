@@ -1,6 +1,161 @@
 {
     "blocks": [
         {
+            "id": 1055,
+            "name": "Value Transmit Number",
+            "positionX": 2975,
+            "positionY": 918,
+            "type": "Value Transmit Number"
+        },
+        {
+            "id": 1043,
+            "name": "NMEA Parser HDT",
+            "positionX": -748,
+            "positionY": 638.7030013850028,
+            "type": "NMEA Parser HDT"
+        },
+        {
+            "id": 1040,
+            "name": "Antenna Position",
+            "positionX": -726,
+            "positionY": -374,
+            "type": "Vector3D",
+            "values": {
+                "X": 3,
+                "Y": 0,
+                "Z": 1.5
+            }
+        },
+        {
+            "id": 1039,
+            "name": "Wheelbase Tractor",
+            "positionX": -748,
+            "positionY": -286,
+            "type": "Number",
+            "values": {
+                "Number": 2.5
+            }
+        },
+        {
+            "id": 1030,
+            "name": "Track Width Tractor",
+            "positionX": -748,
+            "positionY": -198.86818985839142,
+            "type": "Number",
+            "values": {
+                "Number": 1.7999999523162842
+            }
+        },
+        {
+            "id": 1027,
+            "name": "HDOP",
+            "positionX": -396,
+            "positionY": 440,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
+                "Precision": 3,
+                "Scale": 1
+            }
+        },
+        {
+            "id": 1025,
+            "name": "NMEA Parser GGA/GNS",
+            "positionX": -726,
+            "positionY": 484.4541880461554,
+            "type": "NMEA Parser GGA/GNS"
+        },
+        {
+            "id": 1024,
+            "name": "FPS",
+            "positionX": -396,
+            "positionY": 1056,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
+                "Precision": 0,
+                "Scale": 1
+            }
+        },
+        {
+            "id": 1022,
+            "name": "Age Diff Data",
+            "positionX": -396,
+            "positionY": 616,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
+                "Precision": 1,
+                "Scale": 1
+            }
+        },
+        {
+            "id": 1020,
+            "name": "Initial WGS84 Position",
+            "positionX": -697,
+            "positionY": -51,
+            "type": "Vector3D",
+            "values": {
+                "X": 47.21976852416992,
+                "Y": 7.526630878448486,
+                "Z": 488
+            }
+        },
+        {
+            "id": 1019,
+            "name": "Satelites",
+            "positionX": -396,
+            "positionY": 528,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
+                "Precision": 0,
+                "Scale": 1
+            }
+        },
+        {
+            "id": 1008,
+            "name": "NMEA Parser RMC",
+            "positionX": -748,
+            "positionY": 770.4541880461554,
+            "type": "NMEA Parser RMC"
+        },
+        {
+            "id": 1051,
+            "name": "File Stream",
+            "positionX": -935,
+            "positionY": 391,
+            "type": "File Stream"
+        },
+        {
+            "id": 1052,
+            "name": "Filename",
+            "positionX": -1088,
+            "positionY": 323,
+            "type": "String",
+            "values": {
+                "String": "/home/christian/Documents/PlatformIO/Projects/QtOpenGuidance/testdata/GPS-2020-02-17.txt"
+            }
+        },
+        {
+            "id": 1053,
+            "name": "Linerate",
+            "positionX": -1088,
+            "positionY": 391,
+            "type": "Number",
+            "values": {
+                "Number": 0
+            }
+        },
+        {
             "id": 1002,
             "name": "WGS84",
             "positionX": -187,
@@ -115,35 +270,6 @@
                 "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
                 "Precision": 1,
                 "Scale": 1
-            }
-        },
-        {
-            "id": 1043,
-            "name": "NMEA Parser HDT",
-            "positionX": -748,
-            "positionY": 638.7030013850028,
-            "type": "NMEA Parser HDT"
-        },
-        {
-            "id": 1040,
-            "name": "Antenna Position",
-            "positionX": -726,
-            "positionY": -374,
-            "type": "Vector3D",
-            "values": {
-                "X": 3,
-                "Y": 0,
-                "Z": 1.5
-            }
-        },
-        {
-            "id": 1039,
-            "name": "Wheelbase Tractor",
-            "positionX": -748,
-            "positionY": -286,
-            "type": "Number",
-            "values": {
-                "Number": 2.5
             }
         },
         {
@@ -292,16 +418,6 @@
             "type": "Trailer Model"
         },
         {
-            "id": 1030,
-            "name": "Track Width Tractor",
-            "positionX": -748,
-            "positionY": -198.86818985839142,
-            "type": "Number",
-            "values": {
-                "Number": 1.7999999523162842
-            }
-        },
-        {
             "id": 1029,
             "name": "Position Hook Trailer",
             "positionX": 484,
@@ -314,20 +430,6 @@
             }
         },
         {
-            "id": 1027,
-            "name": "HDOP",
-            "positionX": -396,
-            "positionY": 440,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
-                "Precision": 3,
-                "Scale": 1
-            }
-        },
-        {
             "id": 1026,
             "name": "Max Jackknife Angle Trailer",
             "positionX": 462,
@@ -335,67 +437,6 @@
             "type": "Number",
             "values": {
                 "Number": 120
-            }
-        },
-        {
-            "id": 1025,
-            "name": "NMEA Parser GGA/GNS",
-            "positionX": -726,
-            "positionY": 484.4541880461554,
-            "type": "NMEA Parser GGA/GNS"
-        },
-        {
-            "id": 1024,
-            "name": "FPS",
-            "positionX": -396,
-            "positionY": 1056,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
-                "Precision": 0,
-                "Scale": 1
-            }
-        },
-        {
-            "id": 1022,
-            "name": "Age Diff Data",
-            "positionX": -396,
-            "positionY": 616,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
-                "Precision": 1,
-                "Scale": 1
-            }
-        },
-        {
-            "id": 1020,
-            "name": "Initial WGS84 Position",
-            "positionX": -697,
-            "positionY": -51,
-            "type": "Vector3D",
-            "values": {
-                "X": 47.21976852416992,
-                "Y": 7.526630878448486,
-                "Z": 488
-            }
-        },
-        {
-            "id": 1019,
-            "name": "Satelites",
-            "positionX": -396,
-            "positionY": 528,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,0,75,0,0,0,0,0,Regular",
-                "Precision": 0,
-                "Scale": 1
             }
         },
         {
@@ -448,13 +489,6 @@
             "type": "Sprayer Model"
         },
         {
-            "id": 1008,
-            "name": "NMEA Parser RMC",
-            "positionX": -748,
-            "positionY": 770.4541880461554,
-            "type": "NMEA Parser RMC"
-        },
-        {
             "id": 1007,
             "name": "Orientation Trailer",
             "positionX": 1224,
@@ -466,33 +500,6 @@
                 "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
                 "Precision": 2,
                 "Scale": 1
-            }
-        },
-        {
-            "id": 1051,
-            "name": "File Stream",
-            "positionX": -935,
-            "positionY": 391,
-            "type": "File Stream"
-        },
-        {
-            "id": 1052,
-            "name": "Filename",
-            "positionX": -1088,
-            "positionY": 323,
-            "type": "String",
-            "values": {
-                "String": "/home/christian/Documents/PlatformIO/Projects/QtOpenGuidance/testdata/GPS-2020-02-17.txt"
-            }
-        },
-        {
-            "id": 1053,
-            "name": "Linerate",
-            "positionX": -1088,
-            "positionY": 391,
-            "type": "Number",
-            "values": {
-                "Number": 0
             }
         },
         {
@@ -630,15 +637,15 @@
         {
             "id": 1037,
             "name": "Trailer",
-            "positionX": 3077,
-            "positionY": 748,
+            "positionX": 3213,
+            "positionY": 952,
             "type": "XteDockBlock"
         },
         {
             "id": 1032,
             "name": "Cross Track Error",
-            "positionX": 2737,
-            "positionY": 731,
+            "positionX": 2720.698226875905,
+            "positionY": 901,
             "type": "Cross Track Error"
         },
         {
@@ -680,7 +687,7 @@
             "id": 1054,
             "name": "Pass #",
             "positionX": 3094,
-            "positionY": 816,
+            "positionY": 748,
             "type": "ValueDockBlock",
             "values": {
                 "CaptionEnabled": false,
@@ -748,6 +755,90 @@
         }
     ],
     "connections": [
+        {
+            "idFrom": 1055,
+            "idTo": 1037,
+            "portFrom": "Number",
+            "portTo": "XTE"
+        },
+        {
+            "idFrom": 1055,
+            "idTo": 1055,
+            "portFrom": "Data",
+            "portTo": "Data"
+        },
+        {
+            "idFrom": 1032,
+            "idTo": 1055,
+            "portFrom": "XTE",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1052,
+            "idTo": 1051,
+            "portFrom": "String",
+            "portTo": "File"
+        },
+        {
+            "idFrom": 1040,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Antenna Position"
+        },
+        {
+            "idFrom": 1025,
+            "idTo": 1019,
+            "portFrom": "Num Satelites",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1020,
+            "idTo": 1,
+            "portFrom": "Position",
+            "portTo": "Initial WGS84 Position"
+        },
+        {
+            "idFrom": 1039,
+            "idTo": 1,
+            "portFrom": "Number",
+            "portTo": "Length Wheelbase"
+        },
+        {
+            "idFrom": 1025,
+            "idTo": 1027,
+            "portFrom": "HDOP",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1025,
+            "idTo": 1022,
+            "portFrom": "Age of Differential Data",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 8,
+            "idTo": 1024,
+            "portFrom": "FPS",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1051,
+            "idTo": 1025,
+            "portFrom": "Data",
+            "portTo": "Data"
+        },
+        {
+            "idFrom": 1051,
+            "idTo": 1008,
+            "portFrom": "Data",
+            "portTo": "Data"
+        },
+        {
+            "idFrom": 1053,
+            "idTo": 1051,
+            "portFrom": "Number",
+            "portTo": "Linerate"
+        },
         {
             "idFrom": 1025,
             "idTo": 1002,
@@ -881,12 +972,6 @@
             "portTo": "Orientation"
         },
         {
-            "idFrom": 1052,
-            "idTo": 1051,
-            "portFrom": "String",
-            "portTo": "File"
-        },
-        {
             "idFrom": 1023,
             "idTo": 2,
             "portFrom": "Pose Tow Point",
@@ -959,24 +1044,6 @@
             "portTo": "OffsetHookPoint"
         },
         {
-            "idFrom": 1040,
-            "idTo": 1,
-            "portFrom": "Position",
-            "portTo": "Antenna Position"
-        },
-        {
-            "idFrom": 1025,
-            "idTo": 1019,
-            "portFrom": "Num Satelites",
-            "portTo": "Number"
-        },
-        {
-            "idFrom": 1020,
-            "idTo": 1,
-            "portFrom": "Position",
-            "portTo": "Initial WGS84 Position"
-        },
-        {
             "idFrom": 1029,
             "idTo": 1031,
             "portFrom": "Position",
@@ -1019,12 +1086,6 @@
             "portTo": "OffsetTowPoint"
         },
         {
-            "idFrom": 1039,
-            "idTo": 1,
-            "portFrom": "Number",
-            "portTo": "Length Wheelbase"
-        },
-        {
             "idFrom": 1034,
             "idTo": 1023,
             "portFrom": "Pose Tow Point",
@@ -1035,18 +1096,6 @@
             "idTo": 1031,
             "portFrom": "Pose Tow Point",
             "portTo": "Pose Tow Point"
-        },
-        {
-            "idFrom": 1025,
-            "idTo": 1027,
-            "portFrom": "HDOP",
-            "portTo": "Number"
-        },
-        {
-            "idFrom": 1025,
-            "idTo": 1022,
-            "portFrom": "Age of Differential Data",
-            "portTo": "Number"
         },
         {
             "idFrom": 1035,
@@ -1079,34 +1128,10 @@
             "portTo": "Section Control Data"
         },
         {
-            "idFrom": 8,
-            "idTo": 1024,
-            "portFrom": "FPS",
-            "portTo": "Number"
-        },
-        {
             "idFrom": 1034,
             "idTo": 1007,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose"
-        },
-        {
-            "idFrom": 1051,
-            "idTo": 1025,
-            "portFrom": "Data",
-            "portTo": "Data"
-        },
-        {
-            "idFrom": 1051,
-            "idTo": 1008,
-            "portFrom": "Data",
-            "portTo": "Data"
-        },
-        {
-            "idFrom": 1053,
-            "idTo": 1051,
-            "portFrom": "Number",
-            "portTo": "Linerate"
         },
         {
             "idFrom": 1021,
@@ -1287,12 +1312,6 @@
             "idTo": 1012,
             "portFrom": "Pose Pivot Point",
             "portTo": "Pose"
-        },
-        {
-            "idFrom": 1032,
-            "idTo": 1037,
-            "portFrom": "XTE",
-            "portTo": "XTE"
         },
         {
             "idFrom": 1042,

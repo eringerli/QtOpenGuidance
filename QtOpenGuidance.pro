@@ -48,6 +48,7 @@ SOURCES += \
     src/block/GlobalPlannerLines.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
+    src/block/ValueTransmitBase.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
@@ -113,6 +114,8 @@ HEADERS += \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
+    src/block/ValueTransmitBase.h \
+    src/block/ValueTransmitNumber.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \
