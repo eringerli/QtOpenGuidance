@@ -65,8 +65,6 @@ class QNEBlock : public QGraphicsPathItem {
     void fromJSON( QJsonObject& json );
     void emitConfigSignals();
 
-//    const std::vector<QNEPort*> ports();
-
     int type() const override {
       return Type;
     }

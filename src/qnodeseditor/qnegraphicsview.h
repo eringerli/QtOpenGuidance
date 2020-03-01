@@ -69,6 +69,3 @@ class QNEGraphicsView : public QGraphicsView {
       setTransformationAnchor( anchor );
     }
 };
-
-//Q_DECLARE_METATYPE(QNEGraphicsView);
-
