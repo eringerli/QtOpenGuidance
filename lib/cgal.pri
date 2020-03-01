@@ -1,12 +1,12 @@
 DEPENDPATH      += $$PWD
 
-INCLUDEPATH     += $$PWD/CGAL-5.0/include
+INCLUDEPATH     += $$PWD/CGAL-5.0.2/include
 
 #DEFINES += "CGAL_DIR=$$PWD/cgal"
 
 SOURCES +=
 
-HEADERS  += $$PWD/CGAL-5.0/include/CGAL/*
+HEADERS  += $$PWD/CGAL-5.0.2/include/CGAL/*
 
 # GPM/MPFR
 !android {
@@ -23,8 +23,8 @@ ANDROID_EXTRA_LIBS += $${GMPMPFR_LIBPATH}/libgmp.so $${GMPMPFR_LIBPATH}/libmpfr.
 
 # boost
 android {
-    INCLUDEPATH += android/arm64-v8a//include/boost-1_70/
-    LIBS += -Landroid/arm64-v8a/lib/
+    INCLUDEPATH += android/armeabi-v7a/include/boost-1_70/
+    LIBS += -Landroid/armeabi-v7aa/lib/
     QMAKE_CXXFLAGS += -fexceptions
     QMAKE_CXXFLAGS += -frtti
 }
