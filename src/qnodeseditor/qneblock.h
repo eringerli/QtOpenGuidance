@@ -42,8 +42,16 @@ class QNEBlock : public QGraphicsPathItem {
       UserIdStart = 1000
     };
 
+    enum Flag {
+      None = 0x0,
+      Normal = 0x1,
+      Embedded = 0x2
+    };
+    Q_DECLARE_FLAGS( Flags, Flag )
+    Q_FLAG( Flags )
+
     // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
-    QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
+    QNEBlock( QObject* object, int id, bool systemBlock = false, Flags flags = QNEBlock::Normal, QGraphicsItem* parent = nullptr );
 
     ~QNEBlock();
 
@@ -83,10 +91,18 @@ class QNEBlock : public QGraphicsPathItem {
 
   public:
     int id = 0;
+    Flags flags;
+
+    // https://www.w3.org/TR/SVG11/types.html#ColorKeywords
+    // palegreen
+    static constexpr QColor normalColor = QColor( 152, 251, 152 );
+    // lightblue
+    static constexpr QColor embeddedColor = QColor( 173, 216, 230 );
 
     static constexpr qreal horizontalMargin = 20;
     static constexpr qreal verticalMargin = 5;
     static constexpr qreal cornerRadius = 5;
+    static constexpr qreal gradientHeight = 10;
 
   private:
     static int m_nextSystemId;
@@ -111,3 +127,4 @@ class QNEBlock : public QGraphicsPathItem {
     QString typeString;
 };
 
+Q_DECLARE_OPERATORS_FOR_FLAGS( QNEBlock::Flags )

@@ -54,16 +54,40 @@
 
 int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
-//qreal QNEBlock::gridSpacing = 20;
 
-QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* parent )
+constexpr QColor QNEBlock::normalColor;
+constexpr QColor QNEBlock::embeddedColor;
+
+QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, Flags flags, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
+    systemBlock( systemBlock ), flags( flags ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, cornerRadius, cornerRadius );
   setPath( p );
   setPen( QPen( Qt::darkGreen ) );
-  setBrush( Qt::green );
+
+  if( systemBlock ) {
+    setBrush( Qt::lightGray );
+  } else {
+    if( flags.testFlag( Normal ) ) {
+      if( flags.testFlag( Embedded ) ) {
+        // gradient
+        QLinearGradient blackGradient = QLinearGradient( 0, 0, 0, gradientHeight );
+        blackGradient.setSpread( QGradient::ReflectSpread );
+        blackGradient.setColorAt( 0, normalColor );
+        blackGradient.setColorAt( 1, embeddedColor );
+        setBrush( blackGradient );
+      } else {
+        // normal color
+        setBrush( normalColor );
+
+      }
+    } else if( flags.testFlag( Embedded ) ) {
+      // embedded color
+      setBrush( embeddedColor );
+    }
+  }
+
   setFlag( QGraphicsItem::ItemIsMovable );
   setFlag( QGraphicsItem::ItemIsSelectable );
 
@@ -142,35 +166,14 @@ void QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option,
 
     setZValue( 1 );
   } else {
-    painter->setPen( QPen( Qt::darkGreen ) );
-
-    if( systemBlock ) {
-      painter->setBrush( Qt::lightGray );
-    } else {
-      painter->setBrush( Qt::green );
-    }
+    painter->setPen( pen() );
+    painter->setBrush( brush() );
 
     setZValue( 0.5 );
   }
 
   painter->drawPath( path() );
 }
-
-//const std::vector<QNEPort*> QNEBlock::ports() {
-//  std::vector<QNEPort*> res;
-
-//  const auto& constRefOfList = childItems();
-
-//  for( const auto& item : constRefOfList ) {
-//    auto* port = qgraphicsitem_cast<QNEPort*>( item );
-
-//    if( port != nullptr ) {
-//      res.push_back( port );
-//    }
-//  }
-
-//  return res;
-//}
 
 void QNEBlock::setName( const QString& name, bool setFromLabel ) {
   if( !setFromLabel ) {
