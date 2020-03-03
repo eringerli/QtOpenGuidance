@@ -147,6 +147,8 @@ int main( int argc, char** argv ) {
 
 #endif
 
+  qRegisterMetaType<EmbeddedBlockDummy>();
+
   auto* view = new Qt3DExtras::Qt3DWindow();
 
   qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();

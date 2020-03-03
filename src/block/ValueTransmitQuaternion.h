@@ -41,6 +41,7 @@ class ValueTransmitQuaternion : public ValueTransmitBase {
 
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
+    void setQuaternionEmbedded( EmbeddedBlockDummy, const QQuaternion ) {}
 
     void dataReceive( const QByteArray& data ) {
       reader.addData( data );
@@ -61,6 +62,7 @@ class ValueTransmitQuaternion : public ValueTransmitBase {
   signals:
     void dataToSend( const QByteArray& );
     void quaternionChanged( const QQuaternion );
+    void quaternionChangedEmbedded( EmbeddedBlockDummy, const QQuaternion );
 
   private:
     QCborStreamReader reader;
@@ -88,10 +90,10 @@ class ValueTransmitQuaternionFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const QQuaternion ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( quaternionChanged( const QQuaternion ) ) ), true );
+      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( quaternionChangedEmbedded( EmbeddedBlockDummy, const QQuaternion ) ) ), true );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( quaternionChanged( const QQuaternion ) ) ), true );
+      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setQuaternionEmbedded( EmbeddedBlockDummy, const QQuaternion ) ) ), true );
       b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( const QQuaternion ) ) ), false );
 
       return b;

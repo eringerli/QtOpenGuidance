@@ -38,6 +38,7 @@ class ValueTransmitData : public ValueTransmitBase {
 
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
+    void setDataEmbedded( EmbeddedBlockDummy, const QByteArray ) {}
 
     void dataReceive( const QByteArray& data ) {
       reader.addData( data );
@@ -52,6 +53,7 @@ class ValueTransmitData : public ValueTransmitBase {
   signals:
     void dataToSend( const QByteArray& );
     void dataChanged( const QByteArray& );
+    void dataChangedEmbedded( EmbeddedBlockDummy, const QByteArray );
 
   private:
     QCborStreamReader reader;
@@ -78,10 +80,10 @@ class ValueTransmitDataFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), true );
+      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( dataChangedEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ), true );
+      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setDataEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
       b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );
 
       return b;
