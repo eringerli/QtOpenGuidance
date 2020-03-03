@@ -1,11 +1,67 @@
 {
     "blocks": [
         {
+            "id": 1057,
+            "name": "Value Transmit Data",
+            "positionX": 2958,
+            "positionY": 1139,
+            "type": "Value Transmit Data"
+        },
+        {
             "id": 1055,
             "name": "Value Transmit Number",
             "positionX": 2975,
-            "positionY": 918,
+            "positionY": 935,
             "type": "Value Transmit Number"
+        },
+        {
+            "id": 1037,
+            "name": "Trailer",
+            "positionX": 3213,
+            "positionY": 986,
+            "type": "XteDockBlock"
+        },
+        {
+            "id": 1014,
+            "name": "Front",
+            "positionX": 3077,
+            "positionY": 680,
+            "type": "XteDockBlock"
+        },
+        {
+            "id": 1012,
+            "name": "Stanley Path Follower",
+            "positionX": 3128,
+            "positionY": 425,
+            "type": "Stanley Path Follower"
+        },
+        {
+            "id": 1056,
+            "name": "H. of Path",
+            "positionX": 3094,
+            "positionY": 578,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
+                "Precision": 2,
+                "Scale": 1
+            }
+        },
+        {
+            "id": 1054,
+            "name": "Pass #",
+            "positionX": 3094,
+            "positionY": 748,
+            "type": "ValueDockBlock",
+            "values": {
+                "CaptionEnabled": false,
+                "FieldWitdh": 0,
+                "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
+                "Precision": 0,
+                "Scale": 1
+            }
         },
         {
             "id": 1043,
@@ -159,7 +215,7 @@
             "id": 1002,
             "name": "WGS84",
             "positionX": -187,
-            "positionY": -136,
+            "positionY": -119,
             "type": "PositionDockBlock",
             "values": {
                 "CaptionEnabled": false,
@@ -212,8 +268,8 @@
         {
             "id": 1001,
             "name": "Transverse Mercator",
-            "positionX": -198,
-            "positionY": -44,
+            "positionX": -187,
+            "positionY": -34,
             "type": "Transverse Mercator"
         },
         {
@@ -635,32 +691,11 @@
             "type": "Cross Track Error"
         },
         {
-            "id": 1037,
-            "name": "Trailer",
-            "positionX": 3213,
-            "positionY": 952,
-            "type": "XteDockBlock"
-        },
-        {
             "id": 1032,
             "name": "Cross Track Error",
             "positionX": 2720.698226875905,
             "positionY": 901,
             "type": "Cross Track Error"
-        },
-        {
-            "id": 1014,
-            "name": "Front",
-            "positionX": 3077,
-            "positionY": 680,
-            "type": "XteDockBlock"
-        },
-        {
-            "id": 1012,
-            "name": "Stanley Path Follower",
-            "positionX": 3128,
-            "positionY": 425,
-            "type": "Stanley Path Follower"
         },
         {
             "id": 1011,
@@ -670,32 +705,11 @@
             "type": "Local Planner"
         },
         {
-            "id": 1055,
-            "name": "H. of Path",
-            "positionX": 3094,
-            "positionY": 578,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
-                "Precision": 2,
-                "Scale": 1
-            }
-        },
-        {
-            "id": 1054,
-            "name": "Pass #",
-            "positionX": 3094,
-            "positionY": 748,
-            "type": "ValueDockBlock",
-            "values": {
-                "CaptionEnabled": false,
-                "FieldWitdh": 0,
-                "Font": "Monospace,20,-1,5,75,0,0,0,0,0,Regular",
-                "Precision": 0,
-                "Scale": 1
-            }
+            "id": 1058,
+            "name": "Value Transmit Quaternion",
+            "positionX": -204,
+            "positionY": 85,
+            "type": "Value Transmit Quaternion"
         },
         {
             "id": 8,
@@ -756,20 +770,62 @@
     ],
     "connections": [
         {
-            "idFrom": 1055,
-            "idTo": 1037,
-            "portFrom": "Number",
-            "portTo": "XTE"
+            "idFrom": 1057,
+            "idTo": 1057,
+            "portFrom": "CBOR Out",
+            "portTo": "CBOR In"
+        },
+        {
+            "idFrom": 1057,
+            "idTo": 1055,
+            "portFrom": "Out",
+            "portTo": "CBOR In"
         },
         {
             "idFrom": 1055,
-            "idTo": 1055,
-            "portFrom": "Data",
-            "portTo": "Data"
+            "idTo": 1057,
+            "portFrom": "CBOR Out",
+            "portTo": "In"
+        },
+        {
+            "idFrom": 1058,
+            "idTo": 1058,
+            "portFrom": "CBOR Out",
+            "portTo": "CBOR In"
+        },
+        {
+            "idFrom": 1028,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain Steering Dampening"
+        },
+        {
+            "idFrom": 1013,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain Yaw Dampening"
+        },
+        {
+            "idFrom": 1038,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain K Softening"
+        },
+        {
+            "idFrom": 1018,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Max Steering Angle"
+        },
+        {
+            "idFrom": 1036,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain K"
         },
         {
             "idFrom": 1032,
-            "idTo": 1055,
+            "idTo": 1056,
             "portFrom": "XTE",
             "portTo": "Number"
         },
@@ -949,12 +1005,6 @@
         },
         {
             "idFrom": 1,
-            "idTo": 1005,
-            "portFrom": "Orientation",
-            "portTo": "Orientation"
-        },
-        {
-            "idFrom": 1,
             "idTo": 1047,
             "portFrom": "Velocity",
             "portTo": "Number"
@@ -962,12 +1012,6 @@
         {
             "idFrom": 1043,
             "idTo": 1005,
-            "portFrom": "Orientation",
-            "portTo": "Orientation"
-        },
-        {
-            "idFrom": 1,
-            "idTo": 1000,
             "portFrom": "Orientation",
             "portTo": "Orientation"
         },
@@ -1284,24 +1328,6 @@
             "portTo": "Pose"
         },
         {
-            "idFrom": 1028,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain Steering Dampening"
-        },
-        {
-            "idFrom": 1013,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain Yaw Dampening"
-        },
-        {
-            "idFrom": 1038,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain K Softening"
-        },
-        {
             "idFrom": 1042,
             "idTo": 1012,
             "portFrom": "XTE",
@@ -1332,12 +1358,6 @@
             "portTo": "Plan"
         },
         {
-            "idFrom": 1018,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Max Steering Angle"
-        },
-        {
             "idFrom": 1033,
             "idTo": 1042,
             "portFrom": "Pose Pivot Point",
@@ -1350,14 +1370,8 @@
             "portTo": "Heading of Path"
         },
         {
-            "idFrom": 1036,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Stanley Gain K"
-        },
-        {
             "idFrom": 1042,
-            "idTo": 1055,
+            "idTo": 1056,
             "portFrom": "Heading of Path",
             "portTo": "Number"
         },
@@ -1366,6 +1380,30 @@
             "idTo": 1054,
             "portFrom": "Pass #",
             "portTo": "Number"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1058,
+            "portFrom": "Orientation",
+            "portTo": "In"
+        },
+        {
+            "idFrom": 1058,
+            "idTo": 1005,
+            "portFrom": "Out",
+            "portTo": "Orientation"
+        },
+        {
+            "idFrom": 1032,
+            "idTo": 1055,
+            "portFrom": "XTE",
+            "portTo": "In"
+        },
+        {
+            "idFrom": 1055,
+            "idTo": 1037,
+            "portFrom": "Out",
+            "portTo": "XTE"
         }
     ]
 }

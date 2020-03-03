@@ -246,6 +246,8 @@ class SettingsDialog : public QDialog {
     BlockFactory* globalPlannerModelFactory = nullptr;
 
     BlockFactory* valueTransmitNumberFactory = nullptr;
+    BlockFactory* valueTransmitQuaternionFactory = nullptr;
+    BlockFactory* valueTransmitDataFactory = nullptr;
 
     BlockFactory* vectorFactory = nullptr;
     BlockFactory* numberFactory = nullptr;

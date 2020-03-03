@@ -25,16 +25,19 @@
 
 #include "ValueTransmitBase.h"
 
-class ValueTransmitNumber : public ValueTransmitBase {
+class ValueTransmitQuaternion : public ValueTransmitBase {
     Q_OBJECT
   public:
-    explicit ValueTransmitNumber( int id ) : ValueTransmitBase( id ) {}
+    explicit ValueTransmitQuaternion( int id ) : ValueTransmitBase( id ) {}
 
   public slots:
-    void setNumber( const double number ) {
+    void setQuaternion( const QQuaternion quaternion ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "number" )] = number;
+      map[QStringLiteral( "x" )] = quaternion.x();
+      map[QStringLiteral( "y" )] = quaternion.y();
+      map[QStringLiteral( "z" )] = quaternion.z();
+      map[QStringLiteral( "w" )] = quaternion.scalar();
 
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
@@ -45,27 +48,33 @@ class ValueTransmitNumber : public ValueTransmitBase {
       auto cbor = QCborValue::fromCbor( reader );
 
       if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        emit numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ) );
+
+        auto x = cbor[QStringLiteral( "x" )].toDouble( 0 );
+        auto y = cbor[QStringLiteral( "y" )].toDouble( 0 );
+        auto z = cbor[QStringLiteral( "z" )].toDouble( 0 );
+        auto w = cbor[QStringLiteral( "w" )].toDouble( 0 );
+
+        emit quaternionChanged( QQuaternion( float( w ), float( x ), float( y ), float( z ) ) );
       }
     }
 
   signals:
     void dataToSend( const QByteArray& );
-    void numberChanged( const double );
+    void quaternionChanged( const QQuaternion );
 
   private:
     QCborStreamReader reader;
 };
 
-class ValueTransmitNumberFactory : public BlockFactory {
+class ValueTransmitQuaternionFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueTransmitNumberFactory()
+    ValueTransmitQuaternionFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Value Transmit Number" );
+      return QStringLiteral( "Value Transmit Quaternion" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -73,17 +82,17 @@ class ValueTransmitNumberFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmitNumber( id );
+      auto* obj = new ValueTransmitQuaternion( id );
       auto* b = createBaseBlock( scene, obj, id, false, QNEBlock::Flag::Normal | QNEBlock::Flag::Embedded );
 
 
-      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( const double ) ) ), false );
+      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const QQuaternion ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ), true );
+      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( quaternionChanged( const QQuaternion ) ) ), true );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( numberChanged( const double ) ) ), true );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ), false );
+      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( quaternionChanged( const QQuaternion ) ) ), true );
+      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( const QQuaternion ) ) ), false );
 
       return b;
     }

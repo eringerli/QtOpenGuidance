@@ -115,7 +115,9 @@ HEADERS += \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
     src/block/ValueTransmitBase.h \
+    src/block/ValueTransmitData.h \
     src/block/ValueTransmitNumber.h \
+    src/block/ValueTransmitQuaternion.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \

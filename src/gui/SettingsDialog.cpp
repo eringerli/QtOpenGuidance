@@ -83,6 +83,8 @@
 #include "../block/CommunicationJrk.h"
 
 #include "../block/ValueTransmitNumber.h"
+#include "../block/ValueTransmitQuaternion.h"
+#include "../block/ValueTransmitData.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
@@ -282,6 +284,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   ackermannSteeringFactory = new AckermannSteeringFactory();
 
   valueTransmitNumberFactory = new ValueTransmitNumberFactory();
+  valueTransmitQuaternionFactory = new ValueTransmitQuaternionFactory();
+  valueTransmitDataFactory = new ValueTransmitDataFactory();
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -303,6 +307,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   debugSinkFactory->addToCombobox( ui->cbNodeType );
 
   valueTransmitNumberFactory->addToCombobox( ui->cbNodeType );
+  valueTransmitQuaternionFactory->addToCombobox( ui->cbNodeType );
+  valueTransmitDataFactory->addToCombobox( ui->cbNodeType );
 
   udpSocketFactory->addToCombobox( ui->cbNodeType );
 

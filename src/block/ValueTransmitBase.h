@@ -52,10 +52,6 @@ class ValueTransmitBase : public BlockBase {
 
     }
 
-    void setChannelIdToJson( QJsonObject& json ) {
-      json[QStringLiteral( "channelId" )] = id;
-    }
-
   public:
     int id = 0;
     int timeoutTimeMs = 1000;
