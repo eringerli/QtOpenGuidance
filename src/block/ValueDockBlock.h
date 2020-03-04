@@ -87,31 +87,6 @@ class ValueDockBlock : public ValueDockBlockBase {
     }
 
   public:
-
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-
-      valuesObject[QStringLiteral( "CaptionEnabled" )] = widget->captionEnabled();
-      valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( widget->fontOfLabel() ) );
-      valuesObject[QStringLiteral( "Precision" )] = widget->precision;
-      valuesObject[QStringLiteral( "Scale" )] = widget->scale;
-      valuesObject[QStringLiteral( "FieldWitdh" )] = widget->fieldWidth;
-
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        widget->setCaptionEnabled( valuesObject[QStringLiteral( "CaptionEnabled" )].toBool( true ) );
-        widget->setFontOfLabel( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
-        widget->precision = valuesObject[QStringLiteral( "Precision" )].toInt( 0 );
-        widget->scale = valuesObject[QStringLiteral( "Scale" )].toDouble( 1 );
-        widget->fieldWidth = valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 );
-      }
-    }
-
     ValueDock* widget = nullptr;
 };
 
@@ -166,4 +141,3 @@ class ValueDockBlockFactory : public BlockFactory {
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
-

@@ -1473,7 +1473,7 @@ void SettingsDialog::on_pbMeterDefaults_clicked() {
     ui->tvMeter->model()->setData( index.siblingAtColumn( 3 ), 1 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 4 ), 0 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), QFont( QStringLiteral( "Monospace" ) ) );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 30 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 20 );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), true );
   }
 }

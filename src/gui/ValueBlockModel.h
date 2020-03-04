@@ -28,8 +28,6 @@
 
 #include <QGraphicsScene>
 
-#include "../block/Implement.h"
-
 class ValueBlockModel : public QAbstractTableModel {
     Q_OBJECT
 

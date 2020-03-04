@@ -42,6 +42,30 @@ class ValueDockBlockBase : public BlockBase {
       dock->deleteLater();
     }
 
+    void toJSON( QJsonObject& json ) override {
+      QJsonObject valuesObject;
+
+      valuesObject[QStringLiteral( "CaptionEnabled" )] = captionEnabled();
+      valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( getFont() ) );
+      valuesObject[QStringLiteral( "Precision" )] = getPrecision();
+      valuesObject[QStringLiteral( "Scale" )] = getScale();
+      valuesObject[QStringLiteral( "FieldWitdh" )] = getFieldWidth();
+
+      json[QStringLiteral( "values" )] = valuesObject;
+    }
+
+    void fromJSON( QJsonObject& json ) override {
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+
+        setCaptionEnabled( valuesObject[QStringLiteral( "CaptionEnabled" )].toBool( true ) );
+        setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
+        setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ));
+        setScale(valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ));
+        setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ));
+      }
+    }
+
   public:
     virtual const QFont& getFont() = 0;
     virtual int getPrecision() = 0;

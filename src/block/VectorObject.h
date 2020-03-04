@@ -60,7 +60,6 @@ class VectorObject : public BlockBase {
 
         if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
           vector.setZ( float( valuesObject[QStringLiteral( "Z" )].toDouble() ) );
-
         }
       }
     }

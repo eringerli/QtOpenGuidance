@@ -46,9 +46,9 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>30</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
+       <pointsize>20</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
       </font>
      </property>
      <property name="focusPolicy">
