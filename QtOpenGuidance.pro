@@ -173,9 +173,7 @@ FORMS += \
     src/gui/SimulatorToolbar.ui \
     src/gui/ThreeValuesDock.ui \
     src/gui/ValueDock.ui \
-    src/gui/XteDock.ui \
-    src/gui/lengthwidget.ui \
-    src/gui/vectorwidget.ui
+    src/gui/XteDock.ui
 
 RESOURCES += \
     res/ressources.qrc
