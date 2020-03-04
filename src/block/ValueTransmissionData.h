@@ -78,13 +78,13 @@ class ValueTransmissionDataFactory : public BlockFactory {
       auto* obj = new ValueTransmissionData( id );
       auto* b = createBaseBlock( scene, obj, id, false, QNEBlock::Flag::Normal | QNEBlock::Flag::Embedded );
 
+      b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
+//      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setDataEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
+      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );
+
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( dataChangedEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
-
-      b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setDataEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );
+//      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( dataChangedEmbedded( EmbeddedBlockDummy, const QByteArray ) ) ), true );
 
       return b;
     }

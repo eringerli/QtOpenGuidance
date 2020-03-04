@@ -69,21 +69,29 @@ QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, Flags flags, QGra
   if( systemBlock ) {
     setBrush( Qt::lightGray );
   } else {
-    if( flags.testFlag( Normal ) ) {
-      if( flags.testFlag( Embedded ) ) {
-        // gradient
-        QLinearGradient blackGradient = QLinearGradient( 0, 0, 0, gradientHeight );
-        blackGradient.setSpread( QGradient::ReflectSpread );
-        blackGradient.setColorAt( 0, normalColor );
-        blackGradient.setColorAt( 1, embeddedColor );
-        setBrush( blackGradient );
-      } else {
-        // normal color
-        setBrush( normalColor );
-      }
-    } else if( flags.testFlag( Embedded ) ) {
+//    if( flags.testFlag( Normal ) ) {
+//      if( flags.testFlag( Embedded ) ) {
+//        // gradient
+//        QLinearGradient blackGradient = QLinearGradient( 0, 0, 0, gradientHeight );
+//        blackGradient.setSpread( QGradient::ReflectSpread );
+//        blackGradient.setColorAt( 0, normalColor );
+//        blackGradient.setColorAt( 1, embeddedColor );
+//        setBrush( blackGradient );
+//      } else {
+//        // normal color
+//        setBrush( normalColor );
+//      }
+//    } else if( flags.testFlag( Embedded ) ) {
+//      // embedded color
+//      setBrush( embeddedColor );
+//    }
+
+    if( flags.testFlag( Embedded ) ) {
       // embedded color
       setBrush( embeddedColor );
+    } else {
+      // normal color
+      setBrush( normalColor );
     }
   }
 

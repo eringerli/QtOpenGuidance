@@ -32,7 +32,7 @@ class ValueTransmissionBase : public BlockBase {
     virtual ~ValueTransmissionBase() {
     }
 
-    void toJSON(QJsonObject & json) override {
+    void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
       valuesObject[QStringLiteral( "id" )] = id;
       valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
