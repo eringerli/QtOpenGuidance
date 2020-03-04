@@ -23,12 +23,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "ValueTransmitBase.h"
+#include "ValueTransmissionBase.h"
 
-class ValueTransmitQuaternion : public ValueTransmitBase {
+class ValueTransmissionQuaternion : public ValueTransmissionBase {
     Q_OBJECT
   public:
-    explicit ValueTransmitQuaternion( int id ) : ValueTransmitBase( id ) {}
+    explicit ValueTransmissionQuaternion( int id ) : ValueTransmissionBase( id ) {}
 
   public slots:
     void setQuaternion( const QQuaternion quaternion ) {
@@ -68,11 +68,11 @@ class ValueTransmitQuaternion : public ValueTransmitBase {
     QCborStreamReader reader;
 };
 
-class ValueTransmitQuaternionFactory : public BlockFactory {
+class ValueTransmissionQuaternionFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueTransmitQuaternionFactory()
+    ValueTransmissionQuaternionFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
@@ -84,7 +84,7 @@ class ValueTransmitQuaternionFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmitQuaternion( id );
+      auto* obj = new ValueTransmissionQuaternion( id );
       auto* b = createBaseBlock( scene, obj, id, false, QNEBlock::Flag::Normal | QNEBlock::Flag::Embedded );
 
 

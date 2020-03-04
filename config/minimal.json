@@ -5,14 +5,24 @@
             "name": "Value Transmit Data",
             "positionX": 2958,
             "positionY": 1139,
-            "type": "Value Transmit Data"
+            "type": "Value Transmit Data",
+            "values": {
+                "id": 2000,
+                "repeatTimeMs": 0,
+                "timeoutTimeMs": 1000
+            }
         },
         {
             "id": 1055,
             "name": "Value Transmit Number",
             "positionX": 2975,
             "positionY": 935,
-            "type": "Value Transmit Number"
+            "type": "Value Transmit Number",
+            "values": {
+                "id": 3000,
+                "repeatTimeMs": 0,
+                "timeoutTimeMs": 1000
+            }
         },
         {
             "id": 1037,
@@ -709,7 +719,12 @@
             "name": "Value Transmit Quaternion",
             "positionX": -204,
             "positionY": 85,
-            "type": "Value Transmit Quaternion"
+            "type": "Value Transmit Quaternion",
+            "values": {
+                "id": 1000,
+                "repeatTimeMs": 0,
+                "timeoutTimeMs": 1000
+            }
         },
         {
             "id": 8,

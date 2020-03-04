@@ -36,6 +36,7 @@
 #include "ImplementSectionModel.h"
 #include "ValueBlockModel.h"
 #include "FontComboboxDelegate.h"
+#include "TransmissionBlockModel.h"
 
 #include "../cgalKernel.h"
 
@@ -161,7 +162,6 @@ class SettingsDialog : public QDialog {
 
     void on_sbPathsInReserve_valueChanged( int arg1 );
 
-
     void on_cbRestoreDockPositions_toggled( bool checked );
     void on_cbSaveDockPositionsOnExit_toggled( bool checked );
     void on_pbSaveDockPositions_clicked();
@@ -266,6 +266,9 @@ class SettingsDialog : public QDialog {
     ValueBlockModel* meterModel = nullptr;
     QSortFilterProxyModel* filterModelMeter = nullptr;
     FontComboboxDelegate* meterModelFontDelegate = nullptr;
+
+    TransmissionBlockModel* transmissionBlockModel = nullptr;
+    QSortFilterProxyModel* filterTtransmissionBlockModel = nullptr;
 
   private:
     QNEBlock* getBlockWithId( int id );

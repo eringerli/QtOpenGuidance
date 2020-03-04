@@ -22,14 +22,40 @@
 
 #include "BlockBase.h"
 
-class ValueTransmitBase : public BlockBase {
+class ValueTransmissionBase : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueTransmitBase( const int id )
+    explicit ValueTransmissionBase( const int id )
       : BlockBase(), id( id ) {}
 
-    virtual ~ValueTransmitBase() {
+    virtual ~ValueTransmissionBase() {
+    }
+
+    void toJSON(QJsonObject & json) override {
+      QJsonObject valuesObject;
+      valuesObject[QStringLiteral( "id" )] = id;
+      valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
+      valuesObject[QStringLiteral( "repeatTimeMs" )] = repeatTimeMs;
+      json[QStringLiteral( "values" )] = valuesObject;
+    }
+
+    void fromJSON( QJsonObject& json ) override {
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+
+        if( valuesObject[QStringLiteral( "id" )].isDouble() ) {
+          id = valuesObject[QStringLiteral( "id" )].toInt();
+        }
+
+        if( valuesObject[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
+          timeoutTimeMs = valuesObject[QStringLiteral( "timeoutTimeMs" )].toInt();
+        }
+
+        if( valuesObject[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
+          repeatTimeMs = valuesObject[QStringLiteral( "repeatTimeMs" )].toInt();
+        }
+      }
     }
 
   public slots:
@@ -38,6 +64,10 @@ class ValueTransmitBase : public BlockBase {
     }
     void setRepeatTimeMs( int value ) {
       repeatTimeMs = value;
+    }
+
+    void setTransmissionId( int id ) {
+      this->id = id;
     }
 
   signals:

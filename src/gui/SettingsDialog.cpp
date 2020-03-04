@@ -82,9 +82,9 @@
 #include "../block/CommunicationPgn7FFE.h"
 #include "../block/CommunicationJrk.h"
 
-#include "../block/ValueTransmitNumber.h"
-#include "../block/ValueTransmitQuaternion.h"
-#include "../block/ValueTransmitData.h"
+#include "../block/ValueTransmissionNumber.h"
+#include "../block/ValueTransmissionQuaternion.h"
+#include "../block/ValueTransmissionData.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
@@ -214,6 +214,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
 
+  transmissionBlockModel = new TransmissionBlockModel( scene );
+  filterTtransmissionBlockModel = new QSortFilterProxyModel( scene );
+  filterTtransmissionBlockModel->setDynamicSortFilter( true );
+  filterTtransmissionBlockModel->setSourceModel( transmissionBlockModel );
+  filterTtransmissionBlockModel->sort( 0, Qt::AscendingOrder );
+  ui->tvTransmission->setModel( filterTtransmissionBlockModel );
+
   // simulator
   poseSimulationFactory = new PoseSimulationFactory( geographicConvertionWrapperSimulator );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
@@ -283,9 +290,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
 
-  valueTransmitNumberFactory = new ValueTransmitNumberFactory();
-  valueTransmitQuaternionFactory = new ValueTransmitQuaternionFactory();
-  valueTransmitDataFactory = new ValueTransmitDataFactory();
+  valueTransmitNumberFactory = new ValueTransmissionNumberFactory();
+  valueTransmitQuaternionFactory = new ValueTransmissionQuaternionFactory();
+  valueTransmitDataFactory = new ValueTransmissionDataFactory();
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -1111,6 +1118,7 @@ void SettingsDialog::allModelsReset() {
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();
   meterModel->resetModel();
+  transmissionBlockModel->resetModel();
 }
 
 void SettingsDialog::on_btnSectionAdd_clicked() {

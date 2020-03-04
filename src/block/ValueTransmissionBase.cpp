@@ -16,9 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "ValueTransmitBase.h"
+#include "ValueTransmissionBase.h"
 
-void ValueTransmitBase::timerEvent( QTimerEvent* event ) {
+void ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == timeoutTimer.timerId() ) {
     emit timedOut( id );
   }

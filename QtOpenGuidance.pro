@@ -48,12 +48,13 @@ SOURCES += \
     src/block/GlobalPlannerLines.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
-    src/block/ValueTransmitBase.cpp \
+    src/block/ValueTransmissionBase.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/ThreeValuesDock.cpp \
+    src/gui/TransmissionBlockModel.cpp \
     src/gui/ValueBlockModel.cpp \
     src/gui/ValueDock.cpp \
     src/gui/XteDock.cpp \
@@ -114,10 +115,10 @@ HEADERS += \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
-    src/block/ValueTransmitBase.h \
-    src/block/ValueTransmitData.h \
-    src/block/ValueTransmitNumber.h \
-    src/block/ValueTransmitQuaternion.h \
+    src/block/ValueTransmissionBase.h \
+    src/block/ValueTransmissionData.h \
+    src/block/ValueTransmissionNumber.h \
+    src/block/ValueTransmissionQuaternion.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \
@@ -137,6 +138,7 @@ HEADERS += \
     src/gui/SimulatorToolbar.h \
     src/gui/StringBlockModel.h \
     src/gui/ThreeValuesDock.h \
+    src/gui/TransmissionBlockModel.h \
     src/gui/ValueBlockModel.h \
     src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \

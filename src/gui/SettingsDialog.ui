@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>944</width>
-    <height>745</height>
+    <width>946</width>
+    <height>753</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
@@ -265,6 +265,230 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabGeneral">
+        <attribute name="title">
+         <string>General</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="title">
+            <string>Configuration</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="cbLoadConfigOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Load last configuration on start</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QPushButton" name="pbSaveAsDefault">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Save current config as default</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-save">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="cbSaveConfigOnExit">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Save current configuration on exit</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pbLoadSavedConfig">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Load saved default config</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-revert">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_8">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="title">
+            <string>Main Window</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="cbOpenSettingsDialogOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Open setting dialog on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbRunSimulatorOnStart">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Run Simulator on start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbRestoreDockPositions">
+              <property name="text">
+               <string>Restore positions of the Docks on Start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cbSaveDockPositionsOnExit">
+              <property name="text">
+               <string>Save positions of the Docks on Exit</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pbSaveDockPositions">
+              <property name="text">
+               <string>Save current Positions of the Docks</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-save">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_2">
+           <property name="title">
+            <string>Global Planner</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Additional Paths to generate</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>Minimum of Paths in Reserve</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="sbPathsToGenerate">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string> Paths</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>1</number>
+              </property>
+              <property name="value">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="sbPathsInReserve">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string> Paths</string>
+              </property>
+              <property name="prefix">
+               <string>±</string>
+              </property>
+              <property name="minimum">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbDeleteSettings">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="text">
+            <string>Delete Settings</string>
+           </property>
+           <property name="icon">
+            <iconset theme="edit-clear">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>258</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabValues">
         <attribute name="title">
          <string>Values</string>
@@ -472,6 +696,37 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabMeter">
+        <attribute name="title">
+         <string>Value Docks</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_15">
+         <item>
+          <widget class="QTableView" name="tvMeter">
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pbMeterDefaults">
+           <property name="text">
+            <string>Defaults</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabTransmission">
+        <attribute name="title">
+         <string>Transmission</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QTableView" name="tvTransmission"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabImplements">
         <attribute name="title">
          <string>Implement/Sections</string>
@@ -651,27 +906,6 @@
              </widget>
             </item>
            </layout>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tabMeter">
-        <attribute name="title">
-         <string>Value Docks</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_15">
-         <item>
-          <widget class="QTableView" name="tvMeter">
-           <property name="sortingEnabled">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pbMeterDefaults">
-           <property name="text">
-            <string>Defaults</string>
-           </property>
           </widget>
          </item>
         </layout>
@@ -1739,230 +1973,6 @@
             </layout>
            </widget>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tabGeneral">
-        <attribute name="title">
-         <string>General</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_10">
-         <item>
-          <widget class="QGroupBox" name="groupBox">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="title">
-            <string>Configuration</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout">
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="cbLoadConfigOnStart">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Load last configuration on start</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QPushButton" name="pbSaveAsDefault">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Save current config as default</string>
-              </property>
-              <property name="icon">
-               <iconset theme="document-save">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="cbSaveConfigOnExit">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Save current configuration on exit</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QPushButton" name="pbLoadSavedConfig">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Load saved default config</string>
-              </property>
-              <property name="icon">
-               <iconset theme="document-revert">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBox_8">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="title">
-            <string>Main Window</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
-            <item>
-             <widget class="QCheckBox" name="cbOpenSettingsDialogOnStart">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Open setting dialog on start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="cbRunSimulatorOnStart">
-              <property name="focusPolicy">
-               <enum>Qt::NoFocus</enum>
-              </property>
-              <property name="text">
-               <string>Run Simulator on start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="cbRestoreDockPositions">
-              <property name="text">
-               <string>Restore positions of the Docks on Start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="cbSaveDockPositionsOnExit">
-              <property name="text">
-               <string>Save positions of the Docks on Exit</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pbSaveDockPositions">
-              <property name="text">
-               <string>Save current Positions of the Docks</string>
-              </property>
-              <property name="icon">
-               <iconset theme="document-save">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBox_2">
-           <property name="title">
-            <string>Global Planner</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>Additional Paths to generate</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_26">
-              <property name="text">
-               <string>Minimum of Paths in Reserve</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="sbPathsToGenerate">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="suffix">
-               <string> Paths</string>
-              </property>
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="value">
-               <number>5</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="sbPathsInReserve">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="suffix">
-               <string> Paths</string>
-              </property>
-              <property name="prefix">
-               <string>±</string>
-              </property>
-              <property name="minimum">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pbDeleteSettings">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>Delete Settings</string>
-           </property>
-           <property name="icon">
-            <iconset theme="edit-clear">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_3">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>258</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
