@@ -762,9 +762,6 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   }
 
   allModelsReset();
-
-  // rescale the tableview
-  ui->twValues->resizeColumnsToContents();
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
@@ -1119,6 +1116,12 @@ void SettingsDialog::allModelsReset() {
   implementBlockModel->resetModel();
   meterModel->resetModel();
   transmissionBlockModel->resetModel();
+
+
+  ui->twValues->resizeColumnsToContents();
+  ui->tvMeter->resizeColumnsToContents();
+  ui->tvTransmission->resizeColumnsToContents();
+  ui->twSections->resizeColumnsToContents();
 }
 
 void SettingsDialog::on_btnSectionAdd_clicked() {

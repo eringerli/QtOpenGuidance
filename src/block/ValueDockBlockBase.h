@@ -60,9 +60,9 @@ class ValueDockBlockBase : public BlockBase {
 
         setCaptionEnabled( valuesObject[QStringLiteral( "CaptionEnabled" )].toBool( true ) );
         setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
-        setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ));
-        setScale(valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ));
-        setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ));
+        setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
+        setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
+        setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );
       }
     }
 
