@@ -95,6 +95,8 @@ class VectorFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( QVector3D ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "gold" ) ) );
+
       model->resetModel();
 
       return b;

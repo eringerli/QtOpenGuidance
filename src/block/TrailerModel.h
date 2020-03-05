@@ -114,6 +114,8 @@ class TrailerModelFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "moccasin" ) ) );
+
       return b;
     }
 

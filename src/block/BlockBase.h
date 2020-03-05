@@ -61,15 +61,13 @@ class BlockFactory : public QObject {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj,
-                               int id, bool systemBlock = false,
-                               QNEBlock::Flags flags = QNEBlock::Normal ) {
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock = false ) {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = 0;
         qDebug() << "BlockFactory::createBaseBlock: ID conflict";
       }
 
-      auto* b = new QNEBlock( obj, id, systemBlock, flags );
+      auto* b = new QNEBlock( obj, id, systemBlock );
 
       scene->addItem( b );
 

@@ -55,12 +55,9 @@
 int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );
 
-constexpr QColor QNEBlock::normalColor;
-constexpr QColor QNEBlock::embeddedColor;
-
-QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, Flags flags, QGraphicsItem* parent )
+QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* parent )
   : QGraphicsPathItem( parent ),
-    systemBlock( systemBlock ), flags( flags ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
+    systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, cornerRadius, cornerRadius );
   setPath( p );
@@ -69,30 +66,7 @@ QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, Flags flags, QGra
   if( systemBlock ) {
     setBrush( Qt::lightGray );
   } else {
-//    if( flags.testFlag( Normal ) ) {
-//      if( flags.testFlag( Embedded ) ) {
-//        // gradient
-//        QLinearGradient blackGradient = QLinearGradient( 0, 0, 0, gradientHeight );
-//        blackGradient.setSpread( QGradient::ReflectSpread );
-//        blackGradient.setColorAt( 0, normalColor );
-//        blackGradient.setColorAt( 1, embeddedColor );
-//        setBrush( blackGradient );
-//      } else {
-//        // normal color
-//        setBrush( normalColor );
-//      }
-//    } else if( flags.testFlag( Embedded ) ) {
-//      // embedded color
-//      setBrush( embeddedColor );
-//    }
-
-    if( flags.testFlag( Embedded ) ) {
-      // embedded color
-      setBrush( embeddedColor );
-    } else {
-      // normal color
-      setBrush( normalColor );
-    }
+    setBrush( QColor( "palegreen" ) );
   }
 
   setFlag( QGraphicsItem::ItemIsMovable );

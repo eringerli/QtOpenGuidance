@@ -133,6 +133,8 @@ class FileStreamFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "gold" ) ) );
+
       return b;
     }
 };

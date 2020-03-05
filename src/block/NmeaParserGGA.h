@@ -208,6 +208,8 @@ class NmeaParserGGAFactory : public BlockFactory {
       b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Age of Differential Data" ), QLatin1String( SIGNAL( ageOfDifferentialDataChanged( const double ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "mediumaquamarine" ) ) );
+
       return b;
     }
 };

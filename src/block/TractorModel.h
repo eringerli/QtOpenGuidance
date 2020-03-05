@@ -121,6 +121,8 @@ class TractorModelFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( double ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( double ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "moccasin" ) ) );
+
       return b;
     }
 

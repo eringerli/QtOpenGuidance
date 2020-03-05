@@ -149,6 +149,8 @@ class NmeaParserHDTFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
       b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const QQuaternion& ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "mediumaquamarine" ) ) );
+
       return b;
     }
 };

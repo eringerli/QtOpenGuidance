@@ -85,7 +85,7 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionQuaternion( id );
-      auto* b = createBaseBlock( scene, obj, id, false, QNEBlock::Flag::Normal | QNEBlock::Flag::Embedded );
+      auto* b = createBaseBlock( scene, obj, id, false );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
 //      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setQuaternionEmbedded( EmbeddedBlockDummy, const QQuaternion ) ) ), true );
@@ -94,6 +94,8 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const QQuaternion ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 //      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( quaternionChangedEmbedded( EmbeddedBlockDummy, const QQuaternion ) ) ), true );
+
+      b->setBrush( QColor( QStringLiteral( "lightblue" ) ) );
 
       return b;
     }

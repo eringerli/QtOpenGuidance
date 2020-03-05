@@ -51,6 +51,10 @@
 #include "moc_UdpSocket.cpp"
 #include "moc_ValueDockBlockBase.cpp"
 #include "moc_ValueDockBlock.cpp"
+#include "moc_ValueTransmissionBase.cpp"
+#include "moc_ValueTransmissionData.cpp"
+#include "moc_ValueTransmissionNumber.cpp"
+#include "moc_ValueTransmissionQuaternion.cpp"
 #include "moc_VectorObject.cpp"
 #include "moc_XteDockBlock.cpp"
 

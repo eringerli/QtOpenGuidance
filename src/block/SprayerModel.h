@@ -99,6 +99,8 @@ class SprayerModelFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
       b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "moccasin" ) ) );
+
       return b;
     }
 

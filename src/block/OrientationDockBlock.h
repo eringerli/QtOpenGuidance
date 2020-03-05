@@ -146,6 +146,8 @@ class OrientationDockBlockFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "lightsalmon" ) ) );
+
       return b;
     }
 

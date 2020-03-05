@@ -97,6 +97,8 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
+      b->setBrush( QColor( QStringLiteral( "mediumaquamarine" ) ) );
+
       return b;
     }
 };
