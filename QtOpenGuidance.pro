@@ -119,6 +119,7 @@ HEADERS += \
     src/block/ValueTransmissionData.h \
     src/block/ValueTransmissionNumber.h \
     src/block/ValueTransmissionQuaternion.h \
+    src/block/ValueTransmissionState.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/gui/CameraToolbar.h \

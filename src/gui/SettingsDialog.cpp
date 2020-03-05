@@ -85,6 +85,7 @@
 #include "../block/ValueTransmissionNumber.h"
 #include "../block/ValueTransmissionQuaternion.h"
 #include "../block/ValueTransmissionData.h"
+#include "../block/ValueTransmissionState.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
@@ -290,9 +291,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
 
-  valueTransmitNumberFactory = new ValueTransmissionNumberFactory();
-  valueTransmitQuaternionFactory = new ValueTransmissionQuaternionFactory();
-  valueTransmitDataFactory = new ValueTransmissionDataFactory();
+  valueTransmissionNumberFactory = new ValueTransmissionNumberFactory();
+  valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory();
+  valueTransmissionStateFactory = new ValueTransmissionStateFactory();
+  valueTransmissionDataFactory = new ValueTransmissionDataFactory();
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -313,9 +315,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   nmeaParserRMCFactory->addToCombobox( ui->cbNodeType );
   debugSinkFactory->addToCombobox( ui->cbNodeType );
 
-  valueTransmitNumberFactory->addToCombobox( ui->cbNodeType );
-  valueTransmitQuaternionFactory->addToCombobox( ui->cbNodeType );
-  valueTransmitDataFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionNumberFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionQuaternionFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionStateFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionDataFactory->addToCombobox( ui->cbNodeType );
 
   udpSocketFactory->addToCombobox( ui->cbNodeType );
 
