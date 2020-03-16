@@ -93,8 +93,3 @@ class BlockFactory : public QObject {
       return true;
     }
 };
-
-class EmbeddedBlockDummy {
-};
-
-Q_DECLARE_METATYPE( EmbeddedBlockDummy )

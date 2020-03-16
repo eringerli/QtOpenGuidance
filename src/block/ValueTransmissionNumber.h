@@ -39,8 +39,6 @@ class ValueTransmissionNumber : public ValueTransmissionBase {
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
 
-    void setNumberEmbedded( EmbeddedBlockDummy, const double ) {}
-
     void dataReceive( const QByteArray& data ) {
       reader.addData( data );
 
@@ -54,7 +52,6 @@ class ValueTransmissionNumber : public ValueTransmissionBase {
   signals:
     void dataToSend( const QByteArray& );
     void numberChanged( const double );
-    void numberChangedEmbedded( EmbeddedBlockDummy, const double );
 
   private:
     QCborStreamReader reader;
@@ -80,12 +77,10 @@ class ValueTransmissionNumberFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id, false );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-//      b->addInputPort( QStringLiteral( "Embedded In" ), QLatin1String( SLOT( setNumberEmbedded( EmbeddedBlockDummy, const double ) ) ), true );
       b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ), false );
 
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( const double ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-//      b->addOutputPort( QStringLiteral( "Embedded Out" ), QLatin1String( SIGNAL( numberChangedEmbedded( EmbeddedBlockDummy, const double ) ) ), true );
 
       b->setBrush( QColor( QStringLiteral( "lightblue" ) ) );
 
