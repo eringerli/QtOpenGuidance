@@ -231,6 +231,7 @@ class SettingsDialog : public QDialog {
 
     BlockFactory* fileStreamFactory = nullptr;
     BlockFactory* ackermannSteeringFactory = nullptr;
+    BlockFactory* ubxParserFactory = nullptr;
     BlockFactory* nmeaParserGGAFactory = nullptr;
     BlockFactory* nmeaParserHDTFactory = nullptr;
     BlockFactory* nmeaParserRMCFactory = nullptr;

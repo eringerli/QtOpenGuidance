@@ -4,3 +4,6 @@
 [submodule "lib/oxygen-icons-png"]
 	path = lib/oxygen-icons-png
 	url = https://github.com/rogovsky/oxygen-icons-png.git
+[submodule "lib/UBX_Parser"]
+	path = lib/UBX_Parser
+	url = https://github.com/eringerli/UBX_Parser.git

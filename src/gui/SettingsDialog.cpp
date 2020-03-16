@@ -61,6 +61,7 @@
 
 #include "../block/PoseSynchroniser.h"
 
+#include "../block/UbxParser.h"
 #include "../block/NmeaParserGGA.h"
 #include "../block/NmeaParserHDT.h"
 #include "../block/NmeaParserRMC.h"
@@ -286,6 +287,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   fileStreamFactory = new FileStreamFactory();
   communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
   communicationJrkFactory = new CommunicationJrkFactory();
+  ubxParserFactory = new UbxParserFactory();
   nmeaParserGGAFactory = new NmeaParserGGAFactory();
   nmeaParserHDTFactory = new NmeaParserHDTFactory();
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
@@ -310,6 +312,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
   localPlannerFactory->addToCombobox( ui->cbNodeType );
+  ubxParserFactory->addToCombobox( ui->cbNodeType );
   nmeaParserGGAFactory->addToCombobox( ui->cbNodeType );
   nmeaParserHDTFactory->addToCombobox( ui->cbNodeType );
   nmeaParserRMCFactory->addToCombobox( ui->cbNodeType );

@@ -112,6 +112,7 @@ HEADERS += \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
     src/block/TransverseMercatorConverter.h \
+    src/block/UbxParser.h \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
@@ -187,6 +188,7 @@ RESOURCES += \
 include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
 include($$PWD/lib/cgal.pri)
+include($$PWD/lib/UBX_Parser.pri)
 
 # KDDockWidgets
 INCLUDEPATH += $$KDDOCKWIDGET_INCLUDE
