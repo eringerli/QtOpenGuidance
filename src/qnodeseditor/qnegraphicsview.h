@@ -44,10 +44,10 @@ class QNEGraphicsView : public QGraphicsView {
 
   public slots:
     void zoomIn() {
-      scale( 1.1, 1.1 );
+      scale( 1 + zoomFactor, 1 + zoomFactor );
     }
     void zoomOut() {
-      scale( 0.9, 0.9 );
+      scale( 1 - zoomFactor, 1 - zoomFactor );
     }
 
   protected:
@@ -60,12 +60,15 @@ class QNEGraphicsView : public QGraphicsView {
       qreal factor;
 
       if( angle > 0 ) {
-        factor = 1.1;
+        factor = 1 + zoomFactor;
       } else {
-        factor = 0.9;
+        factor = 1 - zoomFactor;
       }
 
       scale( factor, factor );
       setTransformationAnchor( anchor );
     }
+
+  private:
+    static constexpr qreal zoomFactor = 0.2;
 };

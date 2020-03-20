@@ -468,6 +468,10 @@ void SettingsDialog::loadDefaultConfig() {
   if( saveFile.open( QIODevice::ReadOnly ) ) {
     loadConfigFromFile( saveFile );
   }
+
+  ui->gvNodeEditor->fitInView( ui->gvNodeEditor->scene()->itemsBoundingRect(), Qt::KeepAspectRatio );
+
+  ui->gvNodeEditor->scene()->clearSelection();
 }
 
 void SettingsDialog::saveDefaultConfig() {
