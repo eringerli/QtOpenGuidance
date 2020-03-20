@@ -32,6 +32,7 @@
 #include "moc_SimulatorToolbar.cpp"
 #include "moc_StringBlockModel.cpp"
 #include "moc_ThreeValuesDock.cpp"
+#include "moc_TransmissionBlockModel.cpp"
 #include "moc_ValueBlockModel.cpp"
 #include "moc_ValueDock.cpp"
 #include "moc_VectorBlockModel.cpp"
