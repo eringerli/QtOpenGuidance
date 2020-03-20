@@ -18,7 +18,7 @@
 
 load(configure)
 
-CONFIG += c++14 ccache
+CONFIG += c++14 ccache precompile_header
 
 include(build-paths.pri)
 
@@ -152,6 +152,8 @@ HEADERS += \
     src/kinematic/Plan.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h
+
+PRECOMPILED_HEADER  = src/pch.h
 
 #android {
     HEADERS += \
