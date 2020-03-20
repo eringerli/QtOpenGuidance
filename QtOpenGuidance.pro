@@ -117,7 +117,7 @@ HEADERS += \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
     src/block/ValueTransmissionBase.h \
-    src/block/ValueTransmissionData.h \
+    src/block/ValueTransmissionBase64Data.h \
     src/block/ValueTransmissionNumber.h \
     src/block/ValueTransmissionQuaternion.h \
     src/block/ValueTransmissionState.h \

@@ -24,7 +24,7 @@
 #include "../qnodeseditor/qneblock.h"
 
 #include "../block/ValueTransmissionBase.h"
-#include "../block/ValueTransmissionData.h"
+#include "../block/ValueTransmissionBase64Data.h"
 #include "../block/ValueTransmissionNumber.h"
 #include "../block/ValueTransmissionQuaternion.h"
 
@@ -109,7 +109,7 @@ QVariant TransmissionBlockModel::data( const QModelIndex& index, int role ) cons
                   return block->getName();
 
                 case 1: {
-                    if( qobject_cast<ValueTransmissionData*>( object ) ) {
+                    if( qobject_cast<ValueTransmissionBase64Data*>( object ) ) {
                       return QStringLiteral( "Data" );
                     }
 

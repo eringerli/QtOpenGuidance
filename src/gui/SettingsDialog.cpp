@@ -85,7 +85,7 @@
 
 #include "../block/ValueTransmissionNumber.h"
 #include "../block/ValueTransmissionQuaternion.h"
-#include "../block/ValueTransmissionData.h"
+#include "../block/ValueTransmissionBase64Data.h"
 #include "../block/ValueTransmissionState.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
@@ -296,7 +296,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   valueTransmissionNumberFactory = new ValueTransmissionNumberFactory();
   valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory();
   valueTransmissionStateFactory = new ValueTransmissionStateFactory();
-  valueTransmissionDataFactory = new ValueTransmissionDataFactory();
+  valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory();
 
   vectorFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
@@ -321,7 +321,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   valueTransmissionNumberFactory->addToCombobox( ui->cbNodeType );
   valueTransmissionQuaternionFactory->addToCombobox( ui->cbNodeType );
   valueTransmissionStateFactory->addToCombobox( ui->cbNodeType );
-  valueTransmissionDataFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionBase64DataFactory->addToCombobox( ui->cbNodeType );
 
   udpSocketFactory->addToCombobox( ui->cbNodeType );
 
@@ -364,6 +364,11 @@ SettingsDialog::~SettingsDialog() {
   debugSinkFactory->deleteLater();
   printLatencyFactory->deleteLater();
   udpSocketFactory->deleteLater();
+
+  valueTransmissionNumberFactory->deleteLater();
+  valueTransmissionQuaternionFactory->deleteLater();
+  valueTransmissionStateFactory->deleteLater();
+  valueTransmissionBase64DataFactory->deleteLater();
 
 #ifdef SERIALPORT_ENABLED
   serialPortFactory->deleteLater();

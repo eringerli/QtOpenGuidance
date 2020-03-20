@@ -25,16 +25,16 @@
 
 #include "ValueTransmissionBase.h"
 
-class ValueTransmissionData : public ValueTransmissionBase {
+class ValueTransmissionBase64Data : public ValueTransmissionBase {
     Q_OBJECT
   public:
-    explicit ValueTransmissionData( int id ) : ValueTransmissionBase( id ) {}
+    explicit ValueTransmissionBase64Data( int id ) : ValueTransmissionBase( id ) {}
 
   public slots:
     void setData( const QByteArray& data ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "data" )] = data;
+      map[QStringLiteral( "data" )] = QString(data.toBase64(QByteArray::OmitTrailingEquals));
 
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
@@ -45,7 +45,7 @@ class ValueTransmissionData : public ValueTransmissionBase {
       auto cbor = QCborValue::fromCbor( reader );
 
       if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        emit dataChanged( cbor[QStringLiteral( "data" )].toByteArray() );
+        emit dataChanged( QByteArray::fromBase64(cbor[QStringLiteral( "data" )].toByteArray()) );
       }
     }
 
@@ -57,15 +57,15 @@ class ValueTransmissionData : public ValueTransmissionBase {
     QCborStreamReader reader;
 };
 
-class ValueTransmissionDataFactory : public BlockFactory {
+class ValueTransmissionBase64DataFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ValueTransmissionDataFactory()
+    ValueTransmissionBase64DataFactory()
       : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Value Transmit Data" );
+      return QStringLiteral( "Value Transmit Base64 Data" );
     }
 
     virtual void addToCombobox( QComboBox* combobox ) override {
@@ -73,7 +73,7 @@ class ValueTransmissionDataFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmissionData( id );
+      auto* obj = new ValueTransmissionBase64Data( id );
       auto* b = createBaseBlock( scene, obj, id, false );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
