@@ -20,7 +20,6 @@
 
 #include <QGroupBox>
 #include <QBoxLayout>
-#include <QDockWidget>
 
 namespace Ui {
   class FieldsToolbar;

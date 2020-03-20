@@ -20,7 +20,6 @@
 
 #include <QObject>
 
-
 #include "BlockBase.h"
 
 class NmeaParserHDT : public BlockBase {

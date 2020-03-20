@@ -127,11 +127,11 @@ class UbxParser : public BlockBase {
 
   protected slots:
     void ubxNavHpPosLLH(
-            uint32_t iTOW,
+            uint32_t /*iTOW*/,
             double lon,
             double lat,
             double height,
-            double hMSL,
+            double /*hMSL*/,
             uint32_t hAcc,
             uint32_t vAcc ) {
       emit globalPositionChanged( lon, lat, height );
@@ -140,9 +140,9 @@ class UbxParser : public BlockBase {
     }
 
     void ubxNavRelPosNed(
-            uint32_t iTOW,
-            double relPosN,
-            double relPosE,
+            uint32_t /*iTOW*/,
+            double /*relPosN*/,
+            double /*relPosE*/,
             double relPosD,
             double relPosLenght,
             double relPosHeading ) {
@@ -160,9 +160,9 @@ class UbxParser : public BlockBase {
     }
 
     void UbxNavPvt(
-            uint32_t iTOW,
-            bool rtkFix,
-            bool rtkFloat,
+            uint32_t /*iTOW*/,
+            bool /*rtkFix*/,
+            bool /*rtkFloat*/,
             uint8_t numSatelites,
             double speed,
             double headingOfMotion,
