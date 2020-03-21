@@ -47,7 +47,7 @@ For the diehards out there who use git bash (like me), you have to ```git submod
 ## Dependecies
 
 ### CGAL
-Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases
+Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases (download CGAL-{VERSION}-library file).
 
 ### Android
 You have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
