@@ -47,7 +47,7 @@ For the diehards out there who use git bash (like me), you have to ```git submod
 ## Dependecies
 
 ### CGAL
-Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases (download CGAL-{VERSION}-library file).
+Download CGAL and extract it in `lib/`. Use the Version `5.0.2` from https://github.com/CGAL/cgal/releases (download CGAL-{VERSION}-library file).
 
 ### KDDockWidgets
 Clone KDDockWidgets:
