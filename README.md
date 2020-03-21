@@ -49,6 +49,18 @@ For the diehards out there who use git bash (like me), you have to ```git submod
 ### CGAL
 Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases (download CGAL-{VERSION}-library file).
 
+### KDDockWidgets
+Clone KDDockWidgets:
+`git clone https://github.com/eringerli/KDDockWidgets.git`
+
+And build:
+```
+mkdir KDDockWidgets.build; cd KDDockWidgets.build
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/opt/KDAB ../KDDockWidgets
+ninja
+ninja install
+```
+
 ### Android
 You have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
 
