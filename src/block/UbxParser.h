@@ -38,8 +38,8 @@ class UBX_Parser_Helper : public QObject, public UBX_Parser {
             double lat,
             double height,
             double hMSL,
-            uint32_t hAcc,
-            uint32_t vAcc ) override {
+            double hAcc,
+            double vAcc ) override {
       emit ubxNavHpPosLlhChanged( iTOW, lon, lat, height, hMSL, hAcc, vAcc );
     }
 
@@ -72,8 +72,8 @@ class UBX_Parser_Helper : public QObject, public UBX_Parser {
             double lat,
             double height,
             double hMSL,
-            uint32_t hAcc,
-            uint32_t vAcc );
+            double hAcc,
+            double vAcc );
 
     void ubxNavRelPosNedChanged(
             uint32_t iTOW,
@@ -113,6 +113,7 @@ class UbxParser : public BlockBase {
     void orientationVehicleChanged( const QQuaternion& );
     void orientationMotionChanged( const QQuaternion& );
 
+    void distanceBetweenAntennasChanged( const double );
     void numSatelitesChanged( const double );
     void hdopChanged( const double );
     void horizontalAccuracyChanged( const double );
@@ -120,7 +121,7 @@ class UbxParser : public BlockBase {
 
   public slots:
     void setData( const QByteArray& data ) {
-      for( const char c : data ) {
+      for( const uint8_t c : data ) {
         ubxParser.parse( c );
       }
     }
@@ -132,8 +133,8 @@ class UbxParser : public BlockBase {
             double lat,
             double height,
             double /*hMSL*/,
-            uint32_t hAcc,
-            uint32_t vAcc ) {
+            double hAcc,
+            double vAcc ) {
       emit globalPositionChanged( lon, lat, height );
       emit horizontalAccuracyChanged( hAcc );
       emit verticalAccuracyChanged( vAcc );
@@ -157,6 +158,7 @@ class UbxParser : public BlockBase {
                       QVector3D( 0.0f, 0.0f, 1.0f ),
                       float( ( relPosHeading - rollOffset )*rollFactor ) )
       );
+      emit distanceBetweenAntennasChanged( relPosLenght );
     }
 
     void UbxNavPvt(
@@ -235,6 +237,7 @@ class UbxParserFactory : public BlockFactory {
       b->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ), QLatin1String( SIGNAL( orientationVehicleChanged( const QQuaternion& ) ) ) );
       b->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ), QLatin1String( SIGNAL( orientationMotionChanged( const QQuaternion& ) ) ) );
 
+      b->addOutputPort( QStringLiteral( "Dist Antennas" ), QLatin1String( SIGNAL( distanceBetweenAntennasChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Horizontal Accuracy" ), QLatin1String( SIGNAL( horizontalAccuracyChanged( const double ) ) ) );
