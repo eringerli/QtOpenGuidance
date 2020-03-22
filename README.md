@@ -1,9 +1,12 @@
 # QtOpenGuidance
 
-A software to do a GPS-based guidance of farming equipment. It uses a principle called "dataflow programming": basicaly this means 
-every module of the software receives, modifies and then sends data. These modules are then connected in a meaningful way, so a 
-calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on the screen and 
-finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
+A software to do a GPS-based guidance of farming equipment. It uses a principle called "dataflow programming": basicaly this
+means every module of the software receives, modifies and then sends data. These modules are then connected in a meaningfull 
+way, so a calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on
+the screen and finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
+
+It is pre-alpha now and the development is quite fast. I encourage other devs to add functionality to QtOpenGuidance, but
+please contact me first (@eringerli on Telegram) for coordinating the effort. There's no sense in doing work twice.
 
 ## Word to the Wise
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
@@ -13,10 +16,11 @@ As clearly in the file LICENSE stated (especialy Section 15 through 17), there a
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
 that's your thing.
 
-## Installing QT
+## Dependecies
 
-### Install on Linux
-Use your distributions packet management system. Make sure to install a compiler, all the modules (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (```-dev```, ```-dbg```), if your distribution splits them into different packages. If you get an error about not found components, first make shure you have them installed.
+### QT
+#### Linux
+Use your distributions packet management system. Make sure to install a git, a compiler, QT5 (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (`-dev`, `-dbg`), if your distribution splits them into different packages. If you get an error about not found components, first make sure you have them installed.
 
 #### Ubuntu
 Use Ubuntu 19.04, as 18.04 LTS has an ancient version of QT (QT5.9.3), which does't work with QtOpenGuidance.
@@ -24,55 +28,78 @@ Use Ubuntu 19.04, as 18.04 LTS has an ancient version of QT (QT5.9.3), which doe
 To install the dependencies, open a terminal and execute the following commands:
 ```sudo apt-get install build-essential qt3d5-dev qt3d5-dev-tools qt3d5-examples qtcreator qt5-default qt5-qmake libqt5serialport5 libqt5serialport5-dev git gitk```
 
-### Install QT on Windows
-Use the normal installer of QT from this [link](https://www.qt.io/download). Make sure to also install a compiler too. Use matching options: check under the newest QT-Version the runtime for MingW and also the the same compiler under "Developer and Designer Tools". Qt3D is automaticaly installed as part of QT. If you know what you do, you can enable other runtimes. The source or multiple versions are not needed and saves you a lot of space.
-You have to install git too: download it [here](https://git-scm.com).
+#### If it doesn't work
+Install the binaries from https://qt.io on linux and use the bundled QtCreator. This ensures, that the right version of QT is used.
 
-Use options similar to these, but normaly you don't need 32 __and__ 64bit versions:
-![QT Runtime Selection](doc/Screenshot_20190718_221100.png)
-![QT Compile Selection](doc/Screenshot_20190718_221126.png)
+#### Windows
+Use the normal installer of QT from this [link](https://www.qt.io/download-qt-installer). As were are installing Qt and all other dependencies with MSYS2, basicaly all you need from this installer is QtCreator, which is automatically selected.
 
-Use options similar to these, but normaly you don't need 32 __and__ 64bit versions:
-![QT Runtime Selection](doc/Screenshot_20190718_221100.png)
-![QT Compile Selection](doc/Screenshot_20190718_221126.png)
-
-### Other platforms
-If you have a guide to install QT on another platforms/distributions, add it to this readme and send me a pull request.
-
-## Cloning
-You can use qtcreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and make sure to enable "recursive". Hit "Import". qtcreator should help you from here on out.
-
-For the diehards out there who use git bash (like me), you have to ```git submodule init``` and then ```git submodule update```.
-
-## Dependecies
+### Git
+#### Linux
+Most likely, git is already installed. If not, search for it in the package repositories of your system.
+#### Windows
+Install git from https://git-scm.com.
 
 ### CGAL
+#### Linux & Windows
+Download CGAL (the zip, not the setup) and extract it in `lib/`. Use the Version `5.0.2` from https://github.com/CGAL/cgal/releases
+
+### MSYS2
 #### Linux
-Download CGAL and extract it in `lib/`. Use the Version `5.0.2` from https://github.com/CGAL/cgal/releases
+Not needed.
 #### Windows
-Download the installer from https://github.com/CGAL/cgal/releases and install to the default location. Make sure to install the mpfr and gmp too.
+On Windows, it is much simpler to use MSYS2 instead of the bundled MinGW in Qt. This takes also care of GMP/MPFR (needed by CGAL), Boost (also needed by CGAL) and QT itself. Also you get a recent compiler and everything works pretty much out of the box.
+To install all the required packages, follow the instructions below.
+
+1. Download from https://www.msys2.org/. Make sure to use the 64bit-version.
+1. Run the installer
+1. Execute the following commands (change the path to your QT path) in an MSYS2-console:
+```
+pacman -Syu
+```
+1. close the window
+1. open a new MSYS2-console and execute the following commands:
+```
+pacman -Syu
+pacman -S base-devel mingw-w64-x86_64-qt5 git mingw-w64-x86_64-clang mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-make mingw-w64-x86_64-gdb mingw-w64-x86_64-gmp mingw-w64-x86_64-mpfr mingw-w64-x86_64-boost
+```
+
+After that, you have to register the newly installed toolchain in QtCreator (save the changes everytime before you change the tab with a click in `Apply`). Choose wise names to find the stuff later on.
+1. Open `Tools->Options` and go to the tab `Qt Versions`. Add the toolchain by clicking on `Add` and selecting the program
+   `qmake.exe`. If you installed everything in the default localtions, you find it in `C:\msys64\mingw64\bin`.
+1. Go to the tab `Compiler`. Here you add a new MinGW-C++-Compiler and set the path to `C:\msys64\mingw64\bin\g++.exe`. Do the same for a new MinGW-C-Compiler, but choose `C:\msys64\mingw64\bin\gcc.exe`
+1. Go to the tab `Debuger` and add new one. Select `C:\msys64\mingw64\bin\gdb.exe`
+1. Go to the tab `CMake` and add new one. Select `C:\msys64\mingw64\bin\cmake.exe`
+1. Finnaly go to the tab `Kits`, make a new one and select all the newly added stuff.
+1. Change `CMake Generator` to `MinGW Makefiles` (scroll all the way down and click in `Change`).
+1. Close the dialog
+
+**Attention:** to actually use the new kit, you have add new build-settings by clicking first on `Projects` and then on the name of the newly added kit.
 
 ### KDAB KDockWidgets
 In QtCreator, create a new project with the git repository https://github.com/eringerli/KDDockWidgets. Change the build to Release and build it.
 #### Linux
-Adjust the cmake-Variable `CMAKE_INSTALL_PREFIX` to `/opt/KDAB/`. Make sure to apply the changes. Open a console, change to the build-directory and execute `sudo make install`.
+Adjust the cmake-Variable `CMAKE_INSTALL_PREFIX` to `/opt/KDAB/`. Make sure to apply the changes and run CMake a second time. Open a console, change to the build-directory and execute `sudo make install`.
 #### Windows
-Open QtCreator as Admin and do a deployment. If you haven't got admin-rights, then this step fails.
-
-### Boost
-#### Linux
-On linux, boost should be installed by the package system. Make sure you hhave all the `-dev` and `-dbg` packets installed too.
-#### Windows
-1. Get boost from the website https://www.boost.org/users/download/.
-1. Add the compiler of QtCreator to your PATH: open the system settings and search for "variable". Open the dialog and double-click on "Path". Add the compiler to it, by adding a new entry and selecting the folder `Tools/mingw730_64/bin` in the install foolder of QT. 
-3. Open a console in the extracted boost-folder and execute the  folowing commands:
+The same as for Linux, but change `CMAKE_INSTALL_PREFIX` to `C:\msys64\mingw64`. The enter the following commands in a MSYS2-console (change `build-folder` to the folder printed in the `Compile Output` dock on the bottom of QtCreator):
 ```
-./bootstrap.bat gcc
-./b2 link=shared toolset=gcc
+cd build-folder
+ /c/msys64/mingw64/bin/mingw32-make.exe install
 ```
 
 ### Android
-You have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
+It works kind of stable, but you have to jump through many hoops. Some hints:
+* install all the SDK/NDK-stuff
+* compile QT for android
+* compile KDockWidget for Android
+* you have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
+* install GMP and MPFR (search for "install CGAL on android")
+* dance around a fire on a new moon on midnight and hope, that it works...
+
+## Cloning
+The easiest way is to use QtCreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and **make sure to enable "recursive"**. Hit "Import". qtcreator should help you from here on out.
+
+For the diehards out there who use git bash (like me), you have to `git submodule init` and then `git submodule update`.
 
 ## Compiling
 Open the project in qtcreator, change the buildtype to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). If the buttons are grayed out, do as suggested by qtcreator.
@@ -80,21 +107,30 @@ Open the project in qtcreator, change the buildtype to "Release" (the small scre
 It is developed on linux, but should work on any platform supported by QT and Qt3D.
 
 ## Running
-To make something useful with the software and to test its functions, open the setup dialog and load a configuration out of the ```config/``` folder. ```minimal.json``` should work everytime, the others should too, but are sometimes not kept up to date with the development. Click on the checkbox for the simulator and you can steer the GPS-source.
+To make something useful with the software and to test its functions, open the setup dialog and load a configuration out of the `config/` folder. `minimal.json` should work everytime, the others should too, but are sometimes not kept up to date with the development. Click on the checkbox for the simulator and you can steer the GPS-source.
 
-You get the structure of the configuration quite fast if you look at the different configurations. Don't try to edit them by hand, as it is possible, but not at all comfortable. You can do all the editing in the setup dialog. Deleting works by either hit the ```del```-key or the button. Zooming works with the mousewheel or the buttons, paning by right-click and drag.
+You get the structure of the configuration quite fast if you look at the different configurations. Don't try to edit them by hand, as it is possible, but not at all comfortable. You can do all the editing in the setup dialog. Deleting works by either hit the `del`-key or the button. Zooming works with the mousewheel or the buttons, paning by right-click and drag.
 
 To add new connections drag from a red circle to another. If the two ports are compatible, the connection is made instantly and data is transfered. To alter a value of a block, you can edit that in the next tab by double-clicking on a cell in the table view.
 
 If it crashes on start, try to use another build type.
 
+## Keeping it up to date
+1. **Don't fork it**
+1. open a Git Bash Console
+1. `git pull`
+1. `git submodule init`
+1. `git submodule update`
+
 ## Issues and Bugs
 If you find an issue or a bug, report them on github.
 
 ## Forking
-It is possible to run this software without forking. So if you're not interested in making changes yourself, don't. A normal clone (not
-with the function "download ZIP") can be easily kept up-to-date with a periodical ```git pull```. To keep a fork synchronised with the
-forked from repository, more work is needed. A downloaded ZIP lacks the nessesary data for git and cannot be actualised with ```git pull```.
+It is possible to run this software without forking. So if you're not interested in making changes yourself, don't. To just 
+remember the repository, there's a small star.
+
+A normal clone (not with the function "download ZIP") can be easily kept up-to-date. To keep a fork synchronised with the
+forked from repository, more work is needed. A downloaded ZIP lacks the nessesary data for git.
 
 ## Contributing
 
