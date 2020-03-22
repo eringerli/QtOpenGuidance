@@ -47,7 +47,29 @@ For the diehards out there who use git bash (like me), you have to ```git submod
 ## Dependecies
 
 ### CGAL
-Download CGAL and extract it in `lib/`. Use the Version `5.0` from https://github.com/CGAL/cgal/releases
+#### Linux
+Download CGAL and extract it in `lib/`. Use the Version `5.0.2` from https://github.com/CGAL/cgal/releases
+#### Windows
+Download the installer from https://github.com/CGAL/cgal/releases and install to the default location. Make sure to install the mpfr and gmp too.
+
+### KDAB KDockWidgets
+In QtCreator, create a new project with the git repository https://github.com/eringerli/KDDockWidgets. Change the build to Release and build it.
+#### Linux
+Adjust the cmake-Variable `CMAKE_INSTALL_PREFIX` to `/opt/KDAB/`. Make sure to apply the changes. Open a console, change to the build-directory and execute `sudo make install`.
+#### Windows
+Open QtCreator as Admin and do a deployment. If you haven't got admin-rights, then this step fails.
+
+### Boost
+#### Linux
+On linux, boost should be installed by the package system. Make sure you hhave all the `-dev` and `-dbg` packets installed too.
+#### Windows
+1. Get boost from the website https://www.boost.org/users/download/.
+1. Add the compiler of QtCreator to your PATH: open the system settings and search for "variable". Open the dialog and double-click on "Path". Add the compiler to it, by adding a new entry and selecting the folder `Tools/mingw730_64/bin` in the install foolder of QT. 
+3. Open a console in the extracted boost-folder and execute the  folowing commands:
+```
+./bootstrap.bat gcc
+./b2 link=shared toolset=gcc
+```
 
 ### Android
 You have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
