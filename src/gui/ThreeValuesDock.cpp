@@ -37,15 +37,6 @@ ThreeValuesDock::~ThreeValuesDock() {
   delete ui;
 }
 
-void ThreeValuesDock::setName( const QString& name ) {
-  ui->lbName->setText( name );
-}
-
-void ThreeValuesDock::setCaptionEnabled( bool enabled ) {
-  ui->lbName->setVisible( enabled );
-  ui->lbName->setEnabled( enabled );
-}
-
 void ThreeValuesDock::setFontOfLabel( const QFont& font ) {
   ui->lbFirst->setFont( font );
   ui->lbSecond->setFont( font );
@@ -76,15 +67,17 @@ void ThreeValuesDock::setValues( const double first, const double second, const 
     val *= scale;
   }
 
-  ui->lbFirst->setText( QStringLiteral( "%1" ).arg( values[0], fieldWidth, 'f', precision, ' ' ) );
-  ui->lbSecond->setText( QStringLiteral( "%1" ).arg( values[1], fieldWidth, 'f', precision, ' ' ) );
-  ui->lbThird->setText( QStringLiteral( "%1" ).arg( values[2], fieldWidth, 'f', precision, ' ' ) );
+  if( unitEnabled ) {
+    ui->lbFirst->setText( QStringLiteral( "%1%2" ).arg( values[0], fieldWidth, 'f', precision, ' ' ).arg( unit ) );
+    ui->lbSecond->setText( QStringLiteral( "%1%2" ).arg( values[1], fieldWidth, 'f', precision, ' ' ).arg( unit ) );
+    ui->lbThird->setText( QStringLiteral( "%1%2" ).arg( values[2], fieldWidth, 'f', precision, ' ' ).arg( unit ) );
+  } else {
+    ui->lbFirst->setText( QStringLiteral( "%1" ).arg( values[0], fieldWidth, 'f', precision, ' ' ) );
+    ui->lbSecond->setText( QStringLiteral( "%1" ).arg( values[1], fieldWidth, 'f', precision, ' ' ) );
+    ui->lbThird->setText( QStringLiteral( "%1" ).arg( values[2], fieldWidth, 'f', precision, ' ' ) );
+  }
 }
 
 const QFont& ThreeValuesDock::fontOfLabel() {
   return ui->lbFirst->font();
-}
-
-bool ThreeValuesDock::captionEnabled() {
-  return ui->lbName->isVisible();
 }

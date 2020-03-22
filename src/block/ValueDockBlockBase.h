@@ -45,11 +45,13 @@ class ValueDockBlockBase : public BlockBase {
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
 
-      valuesObject[QStringLiteral( "CaptionEnabled" )] = captionEnabled();
       valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( getFont() ) );
       valuesObject[QStringLiteral( "Precision" )] = getPrecision();
       valuesObject[QStringLiteral( "Scale" )] = getScale();
       valuesObject[QStringLiteral( "FieldWitdh" )] = getFieldWidth();
+      valuesObject[QStringLiteral( "Unit" )] = getUnit();
+      valuesObject[QStringLiteral( "UnitVisible" )] = unitVisible();
+
 
       json[QStringLiteral( "values" )] = valuesObject;
     }
@@ -58,11 +60,12 @@ class ValueDockBlockBase : public BlockBase {
       if( json[QStringLiteral( "values" )].isObject() ) {
         QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-        setCaptionEnabled( valuesObject[QStringLiteral( "CaptionEnabled" )].toBool( true ) );
         setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
         setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
         setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
         setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );
+        setUnit( valuesObject[QStringLiteral( "Unit" )].toString( QString() ) );
+        setUnitVisible( valuesObject[QStringLiteral( "UnitVisible" )].toBool( false ) );
       }
     }
 
@@ -71,13 +74,15 @@ class ValueDockBlockBase : public BlockBase {
     virtual int getPrecision() = 0;
     virtual int getFieldWidth() = 0;
     virtual double getScale() = 0;
-    virtual bool captionEnabled() = 0;
+    virtual bool unitVisible() = 0;
+    virtual const QString& getUnit() = 0;
 
     virtual void setFont( const QFont& ) = 0;
     virtual void setPrecision( int ) = 0;
     virtual void setFieldWidth( int ) = 0;
     virtual void setScale( double ) = 0;
-    virtual void setCaptionEnabled( bool ) = 0;
+    virtual void setUnitVisible( bool ) = 0;
+    virtual void setUnit( const QString& ) = 0;
 
   public slots:
 

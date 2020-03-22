@@ -55,8 +55,11 @@ class ValueDockBlock : public ValueDockBlockBase {
     virtual double getScale() override {
       return widget->scale;
     }
-    virtual bool captionEnabled() override {
-      return widget->captionEnabled();
+    virtual bool unitVisible() override {
+      return widget->unitEnabled;
+    }
+    virtual const QString& getUnit() override {
+      return widget->unit;
     }
 
     virtual void setFont( const QFont& font ) override {
@@ -71,15 +74,17 @@ class ValueDockBlock : public ValueDockBlockBase {
     virtual void setScale( double scale ) override {
       widget->scale = scale;
     }
-    virtual void setCaptionEnabled( bool enabled ) override {
-      widget->setCaptionEnabled( enabled );
+    virtual void setUnitVisible( bool enabled ) override {
+      widget->unitEnabled = enabled;
+    }
+    virtual void setUnit( const QString& unit ) override {
+      widget->unit = unit;
     }
 
   public slots:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
-      widget->setName( name );
     }
 
     void setValue( double value ) {

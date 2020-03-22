@@ -33,20 +33,18 @@ class ValueDock : public QGroupBox {
 
   public slots:
     void setMeter( double arg );
-    void setName( const QString& name );
-
-    void setCaptionEnabled( bool enabled );
     void setFontOfLabel( const QFont& font );
-
-  private:
-    Ui::ValueDock* ui = nullptr;
 
   public:
     const QFont& fontOfLabel();
-    bool captionEnabled();
 
     int precision = 0;
     int fieldWidth = 0;
     double scale = 1;
+    QString unit;
+    bool unitEnabled = false;
+
+  private:
+    Ui::ValueDock* ui = nullptr;
 };
 

@@ -47,16 +47,11 @@ void ValueDock::setMeter( double arg ) {
     meter = 0;
   }
 
-  ui->lbMeter->setText( QStringLiteral( "%1" ).arg( meter, fieldWidth, 'f', precision, ' ' ) );
-}
-
-void ValueDock::setName( const QString& name ) {
-  ui->lbName->setText( name );
-}
-
-void ValueDock::setCaptionEnabled( bool enabled ) {
-  ui->lbName->setVisible( enabled );
-  ui->lbName->setEnabled( enabled );
+  if( unitEnabled ) {
+    ui->lbMeter->setText( QStringLiteral( "%1%2" ).arg( meter, fieldWidth, 'f', precision, ' ' ).arg( unit ) );
+  } else {
+    ui->lbMeter->setText( QStringLiteral( "%1" ).arg( meter, fieldWidth, 'f', precision, ' ' ) );
+  }
 }
 
 void ValueDock::setFontOfLabel( const QFont& font ) {
@@ -65,8 +60,4 @@ void ValueDock::setFontOfLabel( const QFont& font ) {
 
 const QFont& ValueDock::fontOfLabel() {
   return ui->lbMeter->font();
-}
-
-bool ValueDock::captionEnabled() {
-  return ui->lbName->isVisible();
 }

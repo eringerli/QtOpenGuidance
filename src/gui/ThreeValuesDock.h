@@ -32,23 +32,21 @@ class ThreeValuesDock : public QGroupBox {
     ~ThreeValuesDock();
 
   public slots:
-    void setName( const QString& name );
-
-    void setCaptionEnabled( bool enabled );
     void setFontOfLabel( const QFont& font );
 
     void setValues( const double first, const double second, const double third );
     void setDescriptions( const QString& first, const QString& second, const QString& third );
 
-  private:
-    Ui::ThreeValuesDock* ui = nullptr;
-
   public:
     const QFont& fontOfLabel();
-    bool captionEnabled();
 
     int precision = 0;
     int fieldWidth = 0;
     double scale = 1;
+    QString unit;
+    bool unitEnabled = false;
+
+  private:
+    Ui::ThreeValuesDock* ui = nullptr;
 };
 

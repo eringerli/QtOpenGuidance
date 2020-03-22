@@ -214,7 +214,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   filterModelMeter->sort( 0, Qt::AscendingOrder );
   ui->tvMeter->setModel( filterModelMeter );
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
-  ui->tvMeter->setItemDelegateForColumn( 5, meterModelFontDelegate );
+  ui->tvMeter->setItemDelegateForColumn( 6, meterModelFontDelegate );
 
   transmissionBlockModel = new TransmissionBlockModel( scene );
   filterTtransmissionBlockModel = new QSortFilterProxyModel( scene );

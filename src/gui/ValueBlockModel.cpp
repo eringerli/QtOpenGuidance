@@ -38,24 +38,27 @@ QVariant ValueBlockModel::headerData( int section, Qt::Orientation orientation, 
         return QStringLiteral( "Name" );
 
       case 1:
-        return QStringLiteral( "Name Visible" );
+        return QStringLiteral( "Unit Visible" );
 
       case 2:
-        return QStringLiteral( "Precision" );
+        return QStringLiteral( "Unit" );
 
       case 3:
-        return QStringLiteral( "Scale" );
+        return QStringLiteral( "Precision" );
 
       case 4:
-        return QStringLiteral( "Field Width" );
+        return QStringLiteral( "Scale" );
 
       case 5:
-        return QStringLiteral( "Font Family" );
+        return QStringLiteral( "Field Width" );
 
       case 6:
-        return QStringLiteral( "Font Size" );
+        return QStringLiteral( "Font Family" );
 
       case 7:
+        return QStringLiteral( "Font Size" );
+
+      case 8:
         return QStringLiteral( "Bold Font" );
 
       default:
@@ -71,7 +74,7 @@ Qt::ItemFlags ValueBlockModel::flags( const QModelIndex& index ) const {
     return Qt::NoItemFlags;
   }
 
-  if( index.column() == 1 || index.column() == 7 ) {
+  if( index.column() == 1 || index.column() == 8 ) {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
   }
 
@@ -94,7 +97,7 @@ int ValueBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
 }
 
 int ValueBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
-  return 8;
+  return 9;
 }
 
 QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
@@ -114,9 +117,9 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 1:
-                  return object->captionEnabled() ? Qt::Checked : Qt::Unchecked;
+                  return object->unitVisible() ? Qt::Checked : Qt::Unchecked;
 
-                case 7:
+                case 8:
                   return object->getFont().bold() ? Qt::Checked : Qt::Unchecked;
               }
             }
@@ -142,18 +145,21 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
                   return block->getName();
 
                 case 2:
-                  return object->getPrecision();
+                  return object->getUnit();
 
                 case 3:
-                  return object->getScale();
+                  return object->getPrecision();
 
                 case 4:
-                  return object->getFieldWidth();
+                  return object->getScale();
 
                 case 5:
-                  return object->getFont();
+                  return object->getFieldWidth();
 
                 case 6:
+                  return object->getFont();
+
+                case 7:
                   return object->getFont().pointSize();
               }
             }
@@ -184,26 +190,31 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
               return true;
 
             case 1:
-              object->setCaptionEnabled( value.toBool() );
+              object->setUnitVisible( value.toBool() );
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
-              object->setPrecision( value.toString().toInt() );
+              object->setUnit( qvariant_cast<QString>( value ) );
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
-              object->setScale( value.toString().toFloat() );
+              object->setPrecision( value.toString().toInt() );
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 4:
+              object->setScale( value.toString().toFloat() );
+              emit dataChanged( index, index, QVector<int>() << role );
+              return true;
+
+            case 5:
               object->setFieldWidth( value.toString().toInt() );
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
-            case 5: {
+            case 6: {
                 QFont font = value.value<QFont>();
                 QFont oldFont = object->getFont();
                 font.setBold( oldFont.bold() );
@@ -213,7 +224,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
                 return true;
               }
 
-            case 6: {
+            case 7: {
                 QFont font = object->getFont();
                 font.setPointSize( value.toInt() );
                 object->setFont( font );
@@ -221,7 +232,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
                 return true;
               }
 
-            case 7: {
+            case 8: {
                 QFont font = object->getFont();
                 font.setBold( value.toBool() );
                 object->setFont( font );
