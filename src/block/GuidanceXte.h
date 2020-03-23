@@ -53,37 +53,29 @@ class XteGuidance : public BlockBase {
         const Point_2 position2D = to2D( position );
 
         if( !plan.plan->empty() ) {
+          double distanceSquared = qInf();
+          std::shared_ptr<PathPrimitive> nearestPrimitive = nullptr;
 
-          // local planner for lines: find the nearest line and put it into the local plan
-          if( plan.type == Plan::Type::OnlyLines ) {
-            double distanceSquared = qInf();
-            const PathPrimitiveLine* nearestLine = nullptr;
+          for( const auto& pathPrimitive : *plan.plan ) {
+            double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
 
-
-            for( const auto& pathPrimitive : *plan.plan ) {
-              auto line = pathPrimitive->castToLine();
-              double currentDistanceSquared = CGAL::squared_distance( line->line, position2D );
-
-              if( currentDistanceSquared < distanceSquared ) {
-                nearestLine = line;
-                distanceSquared = currentDistanceSquared;
-              } else {
+            if( currentDistanceSquared < distanceSquared ) {
+              nearestPrimitive = pathPrimitive;
+              distanceSquared = currentDistanceSquared;
+            } else {
+              if( plan.type == Plan::Type::OnlyLines ) {
                 // the plan is ordered, so we can take the fast way out...
                 break;
               }
             }
-
-            double offsetDistance = std::sqrt( distanceSquared );
-
-            if( nearestLine->line.has_on_negative_side( position2D ) ) {
-              offsetDistance = -offsetDistance;
-            }
-
-            emit headingOfPathChanged( angleOfLineDegrees( nearestLine->line ) );
-            emit xteChanged( offsetDistance );
-            emit passNumberChanged( nearestLine->passNumber );
-            return;
           }
+
+          double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
+
+          emit headingOfPathChanged( nearestPrimitive->angleAtPoint( position2D ) );
+          emit xteChanged( offsetDistance );
+          emit passNumberChanged( nearestPrimitive->passNumber );
+          return;
         }
 
         emit headingOfPathChanged( qInf() );

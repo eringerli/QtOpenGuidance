@@ -54,39 +54,35 @@ class LocalPlanner : public BlockBase {
         if( !globalPlan.plan->empty() ) {
 
           // local planner for lines: find the nearest line and put it into the local plan
-          if( globalPlan.type == Plan::Type::OnlyLines ) {
-            double distanceSquared = qInf();
-            typeof( globalPlan.plan->front() ) nearestLine;
+          double distanceSquared = qInf();
+          std::shared_ptr<PathPrimitive> nearestPrimitive = nullptr;
 
-            for( const auto& pathPrimitive : *globalPlan.plan ) {
-              auto line = pathPrimitive->castToLine();
-              double currentDistanceSquared = CGAL::squared_distance( line->line, position2D );
 
-              if( currentDistanceSquared < distanceSquared ) {
-                nearestLine = pathPrimitive;
-                distanceSquared = currentDistanceSquared;
-              } else {
+          for( const auto& pathPrimitive : *globalPlan.plan ) {
+            double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
+
+            if( currentDistanceSquared < distanceSquared ) {
+              nearestPrimitive = pathPrimitive;
+              distanceSquared = currentDistanceSquared;
+            } else {
+              if( globalPlan.type == Plan::Type::OnlyLines ) {
                 // the plan is ordered, so we can take the fast way out...
                 break;
               }
             }
+          }
 
-            plan.type = Plan::Type::OnlyLines;
-            plan.plan->clear();
-            auto line = nearestLine->castToLine();
+          plan.type = Plan::Type::OnlyLines;
+          plan.plan->clear();
 
-            if( line->anyDirection ) {
-              double angleNearestLine = angleOfLineDegrees( line->line );
+          if( nearestPrimitive->anyDirection ) {
+            double angleNearestPrimitive = nearestPrimitive->angleAtPoint( position2D );
 
-              if( std::abs( orientation.toEulerAngles().z() - angleNearestLine ) > 95 ) {
-                nearestLine = std::make_shared<PathPrimitiveLine>(
-                                      line->line.opposite(),
-                                      line->implementWidth, line->anyDirection, line->passNumber );
-
-              }
+            if( std::abs( orientation.toEulerAngles().z() - angleNearestPrimitive ) > 95 ) {
+              nearestPrimitive = nearestPrimitive->createReverse();
             }
 
-            plan.plan->push_back( nearestLine );
+            plan.plan->push_back( nearestPrimitive );
             emit planChanged( plan );
           }
         }

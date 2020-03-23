@@ -28,63 +28,6 @@
 
 #include <QDebug>
 
-void PathPrimitive::print() {
-  std::cout << "PathPrimitive" << std::endl;
-}
-
-void PathPrimitiveLine::reverse() {
-  line = line.opposite();
-}
-void PathPrimitiveSegment::reverse() {
-  segment = segment.opposite();
-}
-
-double PathPrimitiveSegment::distanceToPoint( const Point_2& point ) {
-  Point_2 ortogonalProjection = segment.supporting_line().projection( point );
-  double distance = sqrt( CGAL::squared_distance( ortogonalProjection, point ) );
-
-  std::cout << "s:" << segment << "p:" << point << "op:" << ortogonalProjection << std::endl;
-
-  qDebug() << "Distance:" << distance;
-
-  if( segment.collinear_has_on( ortogonalProjection ) ) {
-    qDebug() << "segment.has_on";
-    return distance;
-  } else {
-    double distToSource = CGAL::squared_distance( point, segment.source() );
-    double distToTarget = CGAL::squared_distance( point, segment.target() );
-    qDebug() << distToSource << distToTarget;
-
-    if( distToSource < distToTarget ) {
-      return sqrt( distToSource );
-    } else {
-      return sqrt( distToTarget );
-    }
-  }
-}
-
-void PathPrimitiveSegment::print() {
-  std::cout << "PathPrimitiveSegment: " << segment << std::endl;
-}
-
-double PathPrimitiveLine::distanceToPoint( const Point_2& point ) {
-  Point_2 ortogonalProjection = line.projection( point );
-  double distance = sqrt( CGAL::squared_distance( ortogonalProjection, point ) );
-
-  std::cout << "l:" << line << "p:" << point << "op:" << ortogonalProjection << std::endl;
-
-  qDebug() << "Distance:" << distance;
-
-  return distance;
-}
-
-void PathPrimitiveLine::print() {
-  std::cout << "PathPrimitiveLine: " << line << std::endl;
-}
-
-//qreal PathPrimitiveCircle::distanceToPoint( const Point_2& ) {
-//  return 0;
-//}
 
 const PathPrimitiveLine* PathPrimitive::castToLine() {
   if( getType() == Type::Line ) {
@@ -93,7 +36,6 @@ const PathPrimitiveLine* PathPrimitive::castToLine() {
     return nullptr;
   }
 }
-
 const PathPrimitiveSegment* PathPrimitive::castToSegment() {
   if( getType() == Type::Segment ) {
     return static_cast<PathPrimitiveSegment*>( this );
@@ -102,10 +44,64 @@ const PathPrimitiveSegment* PathPrimitive::castToSegment() {
   }
 }
 
-//const PathPrimitiveCircle* PathPrimitive::castToCircle() {
-//  if( getType() == Type::Circle ) {
-//    return static_cast<PathPrimitiveCircle*>( this );
-//  } else {
-//    return nullptr;
-//  }
-//}
+
+std::shared_ptr<PathPrimitive> PathPrimitiveLine::createReverse() {
+  return std::make_shared<PathPrimitiveLine> (
+           line.opposite(),
+           implementWidth, anyDirection, passNumber );
+}
+
+double PathPrimitiveLine::distanceToPointSquared( const Point_2& point ) {
+  Point_2 ortogonalProjection = line.projection( point );
+
+  return CGAL::squared_distance( ortogonalProjection, point );
+}
+
+double PathPrimitiveLine::offsetSign( const Point_2& point ) {
+  if( line.has_on_negative_side( point ) ) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+double PathPrimitiveLine::angleAtPoint( const Point_2& ) {
+  return angleOfLineDegrees( line );
+}
+
+
+std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
+  return std::make_shared<PathPrimitiveSegment> (
+           segment.opposite(),
+           implementWidth, anyDirection, passNumber );
+}
+
+double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
+  Point_2 ortogonalProjection = segment.supporting_line().projection( point );
+  double distance = CGAL::squared_distance( ortogonalProjection, point );
+
+  if( segment.collinear_has_on( ortogonalProjection ) ) {
+    return distance;
+  } else {
+    double distToSource = CGAL::squared_distance( point, segment.source() );
+    double distToTarget = CGAL::squared_distance( point, segment.target() );
+
+    if( distToSource < distToTarget ) {
+      return distToSource;
+    } else {
+      return distToTarget;
+    }
+  }
+}
+
+double PathPrimitiveSegment::offsetSign( const Point_2& point ) {
+  if( segment.supporting_line().has_on_negative_side( point ) ) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+double PathPrimitiveSegment::angleAtPoint( const Point_2& ) {
+  return angleOfLineDegrees( segment.supporting_line() );
+}

@@ -52,8 +52,21 @@ class PathPrimitive {
 //    const PathPrimitiveCircle* castToCircle();
 
   public:
-    virtual double distanceToPoint( const Point_2& point ) = 0;
-    virtual void print();
+    virtual double distanceToPointSquared( const Point_2& point ) = 0;
+    virtual double offsetSign( const Point_2& point ) = 0;
+    virtual double angleAtPoint( const Point_2& point ) = 0;
+
+    virtual void print() {
+      std::cout << "PathPrimitive" << std::endl;
+    }
+
+    virtual std::shared_ptr<PathPrimitive> createReverse() {
+      return nullptr;
+    }
+
+    double distanceToPoint( const Point_2& point ) {
+      return std::sqrt( distanceToPointSquared( point ) );
+    }
 
   public:
     bool anyDirection = false;
@@ -82,11 +95,16 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
-    void reverse();
+    virtual std::shared_ptr<PathPrimitive> createReverse() override;
 
   public:
-    virtual double distanceToPoint( const Point_2& point ) override;
-    virtual void print() override;
+    virtual double distanceToPointSquared( const Point_2& point ) override;
+    virtual double offsetSign( const Point_2& point ) override;
+    virtual double angleAtPoint( const Point_2& ) override;
+
+    virtual void print() override {
+      std::cout << "PathPrimitiveLine: " << line << std::endl;
+    }
 
   public:
     Line_2 line;
@@ -113,11 +131,16 @@ class PathPrimitiveSegment : public PathPrimitive {
     }
 
   public:
-    void reverse();
+    virtual std::shared_ptr<PathPrimitive> createReverse() override;
 
   public:
-    virtual double distanceToPoint( const Point_2& point ) override;
-    virtual void print() override;
+    virtual double distanceToPointSquared( const Point_2& point ) override;
+    virtual double offsetSign( const Point_2& point ) override;
+    virtual double angleAtPoint( const Point_2& point ) override;
+
+    virtual void print() override {
+      std::cout << "PathPrimitiveSegment: " << segment << std::endl;
+    }
 
   public:
     Segment_2 segment;
@@ -143,4 +166,3 @@ class PathPrimitiveSegment : public PathPrimitive {
 //    QPointF start;
 //    QPointF end;
 //};
-
