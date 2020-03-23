@@ -16,7 +16,62 @@ As clearly in the file LICENSE stated (especialy Section 15 through 17), there a
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
 that's your thing.
 
+## [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Installing
+Install and run [Manjaro Linux](https://manjaro.org/) on your machine, then enter in a console:
+```
+# update the system and install various needed packages
+sudo pacman -Suy --needed base-devel bash-completion qt5 qtcreator gmp mpfr git
+# delete the downloaded packages again, helps on small SSDs/HDs
+sudo pacman -Scc --noconfirm
+
+# download, build and install KDDockWidgets
+cd
+git clone https://github.com/eringerli/KDDockWidgets.git
+mkdir build-KDDockWidgets ; cd build-KDDockWidgets
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr ../KDDockWidgets
+make -j4
+sudo make install
+
+# get QtOpenGuidance
+cd
+git clone https://github.com/eringerli/QtOpenGuidance.git --recursive
+
+# get CGAL
+cd QtOpenGuidance/lib/
+wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
+tar xf CGAL-5.0.2.tar.xz
+
+# build QtOpenGuidance
+cd
+mkdir build-QtOpenGuidance ; cd build-QtOpenGuidance
+qmake -makefile -Wall ../QtOpenGuidance/QtOpenGuidance.pro -after CONFIG-=ccache KDDOCKWIDGET_LIBPATH=/usr
+make -j4
+
+# add a symlink to the desktop, replace "Schreibtisch" with the equivalent in your language
+cd ~/Schreibtisch
+ln -s ../build-QtOpenGuidance/QtOpenGuidance
+```
+Your set: double-click on the icon on the desktop and load a config. `config/minimal.json` in the QtOpenGuidance-repository 
+should provide a good start. Don't forget to save the config as default in the tab "General". Enable the checkbox for the
+simulator and start playing around.
+
 ## Dependecies
+
+### General advice about Windows
+[TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Install linux, especially if you want a stable,
+fast and dataplan-saving system without required and unconvenient maintenance and general frickle-ness.
+
+_Seriously, install Linux_. You have nothing to loose: it takes about 30 minutes on a resonably fast computer, from which
+about 20 you can do other stuff. It takes on an average system (without Office) less than 20GB (_for everything_, not just
+the bare system). [Manjaro](https://manjaro.org/) is a good distribution to start, also for Linux-beginners. Ubuntu is not
+a good choice, as it differs too much from eringerlis system (Arch Linux), has generally too old versions installed and is
+not overly development friendly: Manjaro installs the files for linking with each library (headers and debug-info) per default. 
+Also, as we generally use weaker systems in our tractors (like the Dell 7130/7139/7140 or even slower tablets), the 
+performance boost of having a lean system without all the Microsoft/Windows/Manufacturer clutter and background processes 
+is quite noticable: the fan is not running anymore all time and the battery lasts forever. You never have to worry 
+about automatic background downloads/updates and generally no control over your system (like no option to cancel a
+reboot or update) ever again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown
+is also not possible.
 
 ### QT
 #### Linux
@@ -77,14 +132,26 @@ After that, you have to register the newly installed toolchain in QtCreator (sav
 **Attention:** to actually use the new kit, you have add new build-settings by clicking first on `Projects` and then on the name of the newly added kit.
 
 ### KDAB KDockWidgets
-In QtCreator, create a new project with the git repository https://github.com/eringerli/KDDockWidgets. Change the build to Release and build it.
 #### Linux
-Adjust the cmake-Variable `CMAKE_INSTALL_PREFIX` to `/opt/KDAB/`. Make sure to apply the changes and run CMake a second time. Open a console, change to the build-directory and execute `sudo make install`.
-#### Windows
-The same as for Linux, but change `CMAKE_INSTALL_PREFIX` to `C:\msys64\mingw64`. The enter the following commands in a MSYS2-console (change `build-folder` to the folder printed in the `Compile Output` dock on the bottom of QtCreator):
+Open a terminal and clone KDDockWidgets:
+```git clone https://github.com/eringerli/KDDockWidgets.git```
+And build/install:
 ```
-cd build-folder
- /c/msys64/mingw64/bin/mingw32-make.exe install
+mkdir KDDockWidgets.build && cd KDDockWidgets.build
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/opt/KDAB ../KDDockWidgets
+make
+sudo make install
+```
+
+#### Windows
+Open a msys2-mingw64-terminal and clone KDDockWidgets:
+`git clone https://github.com/eringerli/KDDockWidgets.git`
+And build/install:
+```
+mkdir KDDockWidgets.build && cd KDDockWidgets.build
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/c/msys64/mingw64/ ../KDDockWidgets
+/c/msys64/mingw64/bin/mingw32-make.exe
+/c/msys64/mingw64/bin/mingw32-make.exe install
 ```
 
 ### Android
