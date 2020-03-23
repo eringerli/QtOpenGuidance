@@ -7,3 +7,6 @@
 [submodule "lib/UBX_Parser"]
 	path = lib/UBX_Parser
 	url = https://github.com/eringerli/UBX_Parser.git
+[submodule "lib/dubins_curves"]
+	path = lib/dubins_curves
+	url = https://github.com/rxdu/dubins_curves.git

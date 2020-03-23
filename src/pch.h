@@ -18,6 +18,8 @@
 
 // command to make the headers unique and sorted: cat pch.h | sort -u
 
+#ifdef __cplusplus
+
 #include <algorithm>
 #include "cgal.h"
 #include <climits>
@@ -113,3 +115,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#endif
+
+#include "dubins/dubins.h"

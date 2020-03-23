@@ -191,6 +191,7 @@ include($$PWD/src/qnodeseditor/qnodeeditor.pri)
 include($$PWD/lib/geographiclib.pri)
 include($$PWD/lib/cgal.pri)
 include($$PWD/lib/UBX_Parser.pri)
+include($$PWD/lib/dubins_curves.pri)
 
 # KDDockWidgets
 INCLUDEPATH += $$KDDOCKWIDGET_INCLUDE
