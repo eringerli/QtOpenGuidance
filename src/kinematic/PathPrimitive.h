@@ -26,7 +26,6 @@ class PathPrimitiveLine;
 class PathPrimitiveSegment;
 class PathPrimitiveCircle;
 
-
 class PathPrimitive {
   public:
     PathPrimitive() {}

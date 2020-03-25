@@ -39,23 +39,18 @@ class SimulatorToolbar : public QGroupBox {
     void on_sl_frequency_valueChanged( int value );
 
     void on_dsb_velocity_valueChanged( double val );
-
     void on_dsb_steerangle_valueChanged( double val );
-
     void on_dsb_frequency_valueChanged( double val );
 
-    void on_pb_frequencyReset_clicked();
-
-    void on_pb_steerangleReset_clicked();
-
     void on_pb_velocityReset_clicked();
+    void on_pb_steerangleReset_clicked();
+    void on_pb_frequencyReset_clicked();
 
   signals:
     void velocityChanged( double );
     void steerangleChanged( double );
-    void frequencyChanged( int );
+    void frequencyChanged( double );
 
   private:
     Ui::SimulatorToolbar* ui = nullptr;
 };
-

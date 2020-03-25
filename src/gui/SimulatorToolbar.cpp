@@ -32,13 +32,13 @@ SimulatorToolbar::~SimulatorToolbar() {
 }
 
 void SimulatorToolbar::on_sl_velocity_valueChanged( int value ) {
-  float val = float( value ) / 10;
+  double val = double( value ) / 10;
   ui->dsb_velocity->setValue( double( val ) );
   emit velocityChanged( val );
 }
 
 void SimulatorToolbar::on_sl_steerangle_valueChanged( int value ) {
-  float val = float( value ) / 10;
+  double val = double( value ) / 10;
   ui->dsb_steerangle->setValue( double( val ) );
   emit steerangleChanged( val );
 }
@@ -50,12 +50,12 @@ void SimulatorToolbar::on_sl_frequency_valueChanged( int value ) {
 
 void SimulatorToolbar::on_dsb_velocity_valueChanged( double val ) {
   ui->sl_velocity->setValue( int( val * 10 ) );
-  emit velocityChanged( float( val ) );
+  emit velocityChanged( val );
 }
 
 void SimulatorToolbar::on_dsb_steerangle_valueChanged( double val ) {
   ui->sl_steerangle->setValue( int( val * 10 ) );
-  emit steerangleChanged( float( val ) );
+  emit steerangleChanged( val );
 }
 
 void SimulatorToolbar::on_dsb_frequency_valueChanged( double val ) {
@@ -66,17 +66,17 @@ void SimulatorToolbar::on_dsb_frequency_valueChanged( double val ) {
 void SimulatorToolbar::on_pb_frequencyReset_clicked() {
   ui->dsb_frequency->setValue( 20 );
   ui->sl_frequency->setValue( 20 );
-  emit frequencyChanged( 20.0f );
+  emit frequencyChanged( 20.0 );
 }
 
 void SimulatorToolbar::on_pb_steerangleReset_clicked() {
   ui->dsb_steerangle->setValue( 0 );
   ui->sl_steerangle->setValue( 0 );
-  emit steerangleChanged( 0.0f );
+  emit steerangleChanged( 0.0 );
 }
 
 void SimulatorToolbar::on_pb_velocityReset_clicked() {
   ui->dsb_velocity->setValue( 0 );
   ui->sl_velocity->setValue( 0 );
-  emit velocityChanged( 0.0f );
+  emit velocityChanged( 0.0 );
 }

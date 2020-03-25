@@ -103,7 +103,6 @@ int ValueBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
 QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
 
   if( index.isValid() ) {
-
     if( role == Qt::CheckStateRole ) {
       int countRow = 0;
 
@@ -129,7 +128,6 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
     }
 
     if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-
       int countRow = 0;
 
       const auto& constRefOfList = scene->items();

@@ -37,7 +37,7 @@ class NumberObject : public BlockBase {
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "Number" )] = double( number );
+      valuesObject[QStringLiteral( "Number" )] = number;
       json[QStringLiteral( "values" )] = valuesObject;
     }
 
@@ -46,7 +46,7 @@ class NumberObject : public BlockBase {
         QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
         if( valuesObject[QStringLiteral( "Number" )].isDouble() ) {
-          number = float( valuesObject[QStringLiteral( "Number" )].toDouble() );
+          number = valuesObject[QStringLiteral( "Number" )].toDouble();
         }
       }
     }
@@ -55,7 +55,7 @@ class NumberObject : public BlockBase {
     void numberChanged( double );
 
   public:
-    float number = 0;
+    double number = 0;
 };
 
 class NumberFactory : public BlockFactory {

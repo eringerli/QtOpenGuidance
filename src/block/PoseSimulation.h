@@ -57,10 +57,6 @@ class PoseSimulation : public BlockBase {
       emit intervalChanged( m_interval );
     }
 
-    void setFrequency( int frequency ) {
-      setInterval( 1000 / frequency );
-    }
-
     void setSimulation( bool enabled ) {
       m_enabled = enabled;
 
@@ -74,17 +70,23 @@ class PoseSimulation : public BlockBase {
       emit simulationChanged( m_enabled );
     }
 
+
+    void setFrequency( double frequency ) {
+      setInterval( 1000 / frequency );
+    }
+
     void setSteerAngle( double steerAngle ) {
       m_steerAngle = steerAngle;
+    }
+
+    void setVelocity( double velocity ) {
+      m_velocity = velocity;
     }
 
     void setSteerAngleFromAutosteer( double steerAngle ) {
       m_steerAngleFromAutosteer = steerAngle;
     }
 
-    void setVelocity( double velocity ) {
-      m_velocity = velocity;
-    }
 
     void setWheelbase( double wheelbase ) {
       if( !qFuzzyIsNull( wheelbase ) ) {
