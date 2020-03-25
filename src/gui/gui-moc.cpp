@@ -29,7 +29,6 @@
 #include "moc_PassToolbar.cpp"
 #include "moc_SectionControlToolbar.cpp"
 #include "moc_SettingsDialog.cpp"
-#include "moc_SimulatorToolbar.cpp"
 #include "moc_SliderDock.cpp"
 #include "moc_SliderBlockModel.cpp"
 #include "moc_StringBlockModel.cpp"

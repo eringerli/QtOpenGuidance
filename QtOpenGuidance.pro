@@ -76,7 +76,6 @@ SOURCES += \
     src/gui/NumberBlockModel.cpp \
     src/gui/PassToolbar.cpp \
     src/gui/SettingsDialog.cpp \
-    src/gui/SimulatorToolbar.cpp \
     src/gui/StringBlockModel.cpp \
     src/gui/VectorBlockModel.cpp
     
@@ -142,7 +141,6 @@ HEADERS += \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
-    src/gui/SimulatorToolbar.h \
     src/gui/SliderBlockModel.h \
     src/gui/SliderDock.h \
     src/gui/StringBlockModel.h \
@@ -181,7 +179,6 @@ FORMS += \
     src/gui/GuidanceTurning.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
-    src/gui/SimulatorToolbar.ui \
     src/gui/SliderDock.ui \
     src/gui/ThreeValuesDock.ui \
     src/gui/ValueDock.ui \

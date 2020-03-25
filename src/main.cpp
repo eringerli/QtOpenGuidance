@@ -70,7 +70,6 @@
 #include "gui/SettingsDialog.h"
 #include "gui/GuidanceToolbar.h"
 #include "gui/GuidanceTurning.h"
-#include "gui/SimulatorToolbar.h"
 #include "gui/SliderDock.h"
 #include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
