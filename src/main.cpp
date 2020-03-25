@@ -71,6 +71,7 @@
 #include "gui/GuidanceToolbar.h"
 #include "gui/GuidanceTurning.h"
 #include "gui/SimulatorToolbar.h"
+#include "gui/SliderDock.h"
 #include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
 #include "gui/FieldsToolbar.h"
@@ -83,8 +84,10 @@
 #include "block/GridModel.h"
 #include "block/XteDockBlock.h"
 #include "block/ValueDockBlock.h"
-#include "block/PositionDockBlock.h"
 #include "block/OrientationDockBlock.h"
+#include "block/PositionDockBlock.h"
+#include "block/SliderDockBlock.h"
+
 
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
@@ -327,12 +330,43 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( fieldsOptimitionToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( fieldsOptimitionToolbarDock->toggleAction() );
 
-  // simulator toolbar
-  auto* simulatorToolbar = new SimulatorToolbar( widget );
-  auto* simulatorToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  simulatorToolbarDock->setWidget( simulatorToolbar );
-  simulatorToolbarDock->setTitle( simulatorToolbar->windowTitle() );
-  mainWindow->addDockWidget( simulatorToolbarDock, KDDockWidgets::Location_OnBottom );
+  // simulator docks
+  auto simulatorVelocity = new SliderDock( widget );
+  auto simulatorVelocityDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorVelocityDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorVelocityDock->setWidget( simulatorVelocity );
+  simulatorVelocityDock->setTitle( QStringLiteral( "Simulator Velocity" ) );
+  simulatorVelocity->setDecimals( 1 );
+  simulatorVelocity->setMaximum( 15 );
+  simulatorVelocity->setMinimum( -15 );
+  simulatorVelocity->setDefaultValue( 0 );
+  simulatorVelocity->setUnit( QStringLiteral( " m/s" ) );
+  mainWindow->addDockWidget( simulatorVelocityDock, KDDockWidgets::Location_OnBottom );
+  guidanceToolbar->menu->addAction( simulatorVelocityDock->toggleAction() );
+
+  auto simulatorSteeringAngle = new SliderDock( widget );
+  auto simulatorSteeringAngleDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteeringAngleDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorSteeringAngleDock->setWidget( simulatorSteeringAngle );
+  simulatorSteeringAngleDock->setTitle( QStringLiteral( "Simulator Steering Angle" ) );
+  simulatorSteeringAngle->setDecimals( 1 );
+  simulatorSteeringAngle->setMaximum( 40 );
+  simulatorSteeringAngle->setMinimum( -40 );
+  simulatorSteeringAngle->setDefaultValue( 0 );
+  simulatorSteeringAngle->setUnit( QStringLiteral( " °" ) );
+  simulatorSteeringAngle->setSliderInverted( true );
+  mainWindow->addDockWidget( simulatorSteeringAngleDock, KDDockWidgets::Location_OnRight, simulatorVelocityDock );
+  guidanceToolbar->menu->addAction( simulatorSteeringAngleDock->toggleAction() );
+
+  auto simulatorFrequency = new SliderDock( widget );
+  auto simulatorFrequencyDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorFrequencyDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorFrequencyDock->setWidget( simulatorFrequency );
+  simulatorFrequencyDock->setTitle( QStringLiteral( "Simulator Frequency" ) );
+  simulatorFrequency->setDecimals( 0 );
+  simulatorFrequency->setMaximum( 100 );
+  simulatorFrequency->setMinimum( 1 );
+  simulatorFrequency->setDefaultValue( 20 );
+  simulatorFrequency->setUnit( QStringLiteral( " Hz" ) );
+  mainWindow->addDockWidget( simulatorFrequencyDock, KDDockWidgets::Location_OnRight, simulatorSteeringAngleDock );
+  guidanceToolbar->menu->addAction( simulatorFrequencyDock->toggleAction() );
 
   // XTE dock
   BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
@@ -355,12 +389,20 @@ int main( int argc, char** argv ) {
     guidanceToolbar->menu );
   orientationDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
-  // orientation dock
+  // position dock
   BlockFactory* positionDockBlockFactory = new PositionDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
   positionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // slider dock
+  BlockFactory* sliderDockBlockFactory = new SliderDockBlockFactory(
+    mainWindow,
+    KDDockWidgets::Location_OnRight,
+    guidanceToolbar->menu );
+  sliderDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
 
   // implements
   auto* implementFactory = new ImplementFactory(
@@ -386,9 +428,8 @@ int main( int argc, char** argv ) {
   BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( rootEntity );
   fpsMeasurementFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
 
-  // GUI -> GUI
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorToolbarDock, &QWidget::setEnabled );
+
+  // Setting Dialog
   QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings,
                     settingDialog, &SettingsDialog::toggleVisibility );
 
@@ -416,15 +457,23 @@ int main( int argc, char** argv ) {
   QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
                     gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
 
+  // Simulator Docks
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorVelocity, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorSteeringAngle, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorFrequency, &QWidget::setEnabled );
+
   // connect the signals of the simulator
   QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
                     settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
-  QObject::connect( simulatorToolbar, SIGNAL( velocityChanged( double ) ),
+  QObject::connect( simulatorVelocity, SIGNAL( valueChanged( double ) ),
                     settingDialog->poseSimulation, SLOT( setVelocity( double ) ) );
-  QObject::connect( simulatorToolbar, SIGNAL( frequencyChanged( int ) ),
-                    settingDialog->poseSimulation, SLOT( setFrequency( int ) ) );
-  QObject::connect( simulatorToolbar, SIGNAL( steerangleChanged( double ) ),
+  QObject::connect( simulatorSteeringAngle, SIGNAL( valueChanged( double ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
+  QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setFrequency( double ) ) );
 
   // guidance dock -> settings dialog
   QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),
@@ -470,6 +519,11 @@ int main( int argc, char** argv ) {
   QObject::connect( settingDialog->fieldManager, SIGNAL( fieldStatisticsChanged( double, double, double ) ),
                     fieldsOptimitionToolbar, SLOT( setFieldStatistics( double, double, double ) ) );
 
+  // set the defaults for the simulator
+  simulatorVelocity->setValue( 0 );
+  simulatorSteeringAngle->setValue( 0 );
+  simulatorFrequency->setValue( 20 );
+
   // emit all initial signals from the settings dialog
   settingDialog->emitAllConfigSignals();
 
@@ -480,7 +534,9 @@ int main( int argc, char** argv ) {
 
     bool simulatorEnabled = settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool();
     guidanceToolbar->cbSimulatorSetChecked( simulatorEnabled );
-    simulatorToolbarDock->setVisible( simulatorEnabled );
+    simulatorVelocity->setEnabled( simulatorEnabled );
+    simulatorSteeringAngle->setEnabled( simulatorEnabled );
+    simulatorFrequency->setEnabled( simulatorEnabled );
 
     if( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ) {
       settingDialog->show();

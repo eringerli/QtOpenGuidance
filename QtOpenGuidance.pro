@@ -46,6 +46,7 @@ SOURCES += \
     src/3d/BufferMeshGeometry.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlannerLines.cpp \
+    src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
     src/block/ValueTransmissionBase.cpp \
@@ -53,6 +54,8 @@ SOURCES += \
     src/gui/FieldsToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/SectionControlToolbar.cpp \
+    src/gui/SliderBlockModel.cpp \
+    src/gui/SliderDock.cpp \
     src/gui/ThreeValuesDock.cpp \
     src/gui/TransmissionBlockModel.cpp \
     src/gui/ValueBlockModel.cpp \
@@ -107,6 +110,7 @@ HEADERS += \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
     src/block/PrintLatency.h \
+    src/block/SliderDockBlock.h \
     src/block/SprayerModel.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
@@ -138,6 +142,8 @@ HEADERS += \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SimulatorToolbar.h \
+    src/gui/SliderBlockModel.h \
+    src/gui/SliderDock.h \
     src/gui/StringBlockModel.h \
     src/gui/ThreeValuesDock.h \
     src/gui/TransmissionBlockModel.h \
@@ -175,6 +181,7 @@ FORMS += \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SimulatorToolbar.ui \
+    src/gui/SliderDock.ui \
     src/gui/ThreeValuesDock.ui \
     src/gui/ValueDock.ui \
     src/gui/XteDock.ui

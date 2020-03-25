@@ -31,6 +31,7 @@
 
 #include "VectorBlockModel.h"
 #include "NumberBlockModel.h"
+#include "SliderBlockModel.h"
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
 #include "ImplementSectionModel.h"
@@ -254,9 +255,11 @@ class SettingsDialog : public QDialog {
     BlockFactory* vectorFactory = nullptr;
     BlockFactory* numberFactory = nullptr;
     BlockFactory* stringFactory = nullptr;
+
     QSortFilterProxyModel* filterModelValues = nullptr;
     VectorBlockModel* vectorBlockModel = nullptr;
     NumberBlockModel* numberBlockModel = nullptr;
+    SliderBlockModel* sliderBlockModel = nullptr;
     StringBlockModel* stringBlockModel = nullptr;
 
     QSortFilterProxyModel* filterModelImplements = nullptr;

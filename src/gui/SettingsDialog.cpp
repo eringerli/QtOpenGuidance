@@ -185,10 +185,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   filterModelValues = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
   numberBlockModel = new NumberBlockModel( scene );
+  sliderBlockModel = new SliderBlockModel( scene );
   stringBlockModel = new StringBlockModel( scene );
 
   vectorBlockModel->addToCombobox( ui->cbValues );
   numberBlockModel->addToCombobox( ui->cbValues );
+  sliderBlockModel->addToCombobox( ui->cbValues );
   stringBlockModel->addToCombobox( ui->cbValues );
   filterModelValues->setSourceModel( vectorBlockModel );
   filterModelValues->sort( 0, Qt::AscendingOrder );
@@ -1127,6 +1129,7 @@ void SettingsDialog::implementModelReset() {
 void SettingsDialog::allModelsReset() {
   vectorBlockModel->resetModel();
   numberBlockModel->resetModel();
+  sliderBlockModel->resetModel();
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();
   meterModel->resetModel();

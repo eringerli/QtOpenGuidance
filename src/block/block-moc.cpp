@@ -43,6 +43,7 @@
 #include "moc_PoseSynchroniser.cpp"
 #include "moc_PositionDockBlock.cpp"
 #include "moc_PrintLatency.cpp"
+#include "moc_SliderDockBlock.cpp"
 #include "moc_SprayerModel.cpp"
 #include "moc_StringObject.cpp"
 #include "moc_TractorModel.cpp"
