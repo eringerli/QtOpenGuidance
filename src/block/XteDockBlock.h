@@ -41,10 +41,7 @@ class XteDockBlock : public BlockBase {
       dock = new KDDockWidgets::DockWidget( uniqueName );
     }
 
-    ~XteDockBlock() {
-      widget->deleteLater();
-      dock->deleteLater();
-    }
+    ~XteDockBlock();
 
 
   public slots:
@@ -115,6 +112,8 @@ class XteDockBlockFactory : public BlockFactory {
     MyMainWindow* mainWindow = nullptr;
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
-    KDDockWidgets::DockWidget* firstDock = nullptr;
+
+  public:
+    static KDDockWidgets::DockWidget* firstDock;
 };
 

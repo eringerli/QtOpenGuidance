@@ -41,6 +41,10 @@ class ValueDockBlock : public ValueDockBlockBase {
 
     ~ValueDockBlock() {
       widget->deleteLater();
+
+      if( ValueDockBlockBase::firstValueDock == dock ) {
+        ValueDockBlockBase::firstValueDock = nullptr;
+      }
     }
 
     virtual const QFont& getFont() override {

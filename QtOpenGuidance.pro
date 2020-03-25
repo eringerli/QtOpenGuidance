@@ -50,6 +50,7 @@ SOURCES += \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
     src/block/ValueTransmissionBase.cpp \
+    src/block/XteDockBlock.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
