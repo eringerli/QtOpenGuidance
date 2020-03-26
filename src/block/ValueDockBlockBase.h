@@ -22,8 +22,6 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-
 #include "BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>

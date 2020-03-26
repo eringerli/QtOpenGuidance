@@ -33,6 +33,12 @@
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/Plan.h"
 
+#include "../gui/GuidanceTurning.h"
+
+#include "../gui/MyMainWindow.h"
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
+
 #include <QVector>
 #include <QSharedPointer>
 
@@ -40,54 +46,20 @@ class LocalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit LocalPlanner()
-      : BlockBase() {}
+    explicit LocalPlanner(const QString& uniqueName,
+                          MyMainWindow* mainWindow)
+      : BlockBase() {
+      widget = new GuidanceTurning( mainWindow );
+      dock = new KDDockWidgets::DockWidget( uniqueName );
+    }
+
+    ~LocalPlanner(){
+      dock->deleteLater();
+      widget->deleteLater();
+    }
 
   public slots:
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
-        this->orientation = orientation;
-
-        const Point_2 position2D = to2D( position );
-
-        if( !globalPlan.plan->empty() ) {
-
-          // local planner for lines: find the nearest line and put it into the local plan
-          double distanceSquared = qInf();
-          std::shared_ptr<PathPrimitive> nearestPrimitive = nullptr;
-
-
-          for( const auto& pathPrimitive : *globalPlan.plan ) {
-            double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
-
-            if( currentDistanceSquared < distanceSquared ) {
-              nearestPrimitive = pathPrimitive;
-              distanceSquared = currentDistanceSquared;
-            } else {
-              if( globalPlan.type == Plan::Type::OnlyLines ) {
-                // the plan is ordered, so we can take the fast way out...
-                break;
-              }
-            }
-          }
-
-          plan.type = Plan::Type::OnlyLines;
-          plan.plan->clear();
-
-          if( nearestPrimitive->anyDirection ) {
-            double angleNearestPrimitive = nearestPrimitive->angleAtPoint( position2D );
-
-            if( std::abs( orientation.toEulerAngles().z() - angleNearestPrimitive ) > 95 ) {
-              nearestPrimitive = nearestPrimitive->createReverse();
-            }
-
-            plan.plan->push_back( nearestPrimitive );
-            emit planChanged( plan );
-          }
-        }
-      }
-    }
+    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
 
     void setPlan( const Plan& plan ) {
       this->globalPlan = plan;
@@ -102,6 +74,9 @@ class LocalPlanner : public BlockBase {
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
 
+    GuidanceTurning* widget = nullptr;
+KDDockWidgets::DockWidget* dock = nullptr;
+
   private:
     Plan globalPlan;
     Plan plan;
@@ -111,8 +86,13 @@ class LocalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    LocalPlannerFactory()
-      : BlockFactory() {}
+    LocalPlannerFactory(MyMainWindow* mainWindow,
+                        KDDockWidgets::Location location,
+                        QMenu* menu)
+      : BlockFactory(),
+        mainWindow( mainWindow ),
+        location( location ),
+        menu( menu ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Local Planner" );
@@ -123,8 +103,16 @@ class LocalPlannerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new LocalPlanner();
-      auto* b = createBaseBlock( scene, obj, id );
+      auto* object = new LocalPlanner(getNameOfFactory() + QString::number( id ),
+                                   mainWindow);
+      auto* b = createBaseBlock( scene, object, id );
+
+      object->dock->setTitle( getNameOfFactory() );
+      object->dock->setWidget( object->widget );
+
+      menu->addAction( object->dock->toggleAction() );
+
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
@@ -132,6 +120,9 @@ class LocalPlannerFactory : public BlockFactory {
 
       return b;
     }
+
+  private:
+    MyMainWindow* mainWindow = nullptr;
+    KDDockWidgets::Location location;
+    QMenu* menu = nullptr;
 };
-
-

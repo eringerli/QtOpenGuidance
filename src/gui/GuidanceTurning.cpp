@@ -25,16 +25,49 @@ GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
+
+  ui->pbRight->setText( QString::number( skipRight ) );
+  ui->pbLeft->setText( QString::number( skipLeft ) );
+  emit numSkipChanged( skipLeft, skipRight );
 }
 
 GuidanceTurning::~GuidanceTurning() {
   delete ui;
 }
 
-void GuidanceTurning::on_pbLeft_clicked() {
-  emit turnLeft();
+void GuidanceTurning::on_pbLeft_toggled( bool checked ) {
+  emit turnLeft( checked );
 }
 
-void GuidanceTurning::on_pbRight_clicked() {
-  emit turnRight();
+void GuidanceTurning::on_pbRight_toggled( bool checked ) {
+  emit turnRight( checked );
 }
+
+void GuidanceTurning::on_pbPlusRight_clicked() {
+  ++skipRight;
+  ui->pbRight->setText( QString::number( skipRight ) );
+  emit numSkipChanged( skipLeft, skipRight );
+}
+
+void GuidanceTurning::on_pbPlusLeft_clicked() {
+  ++skipLeft;
+  ui->pbLeft->setText( QString::number( skipLeft ) );
+  emit numSkipChanged( skipLeft, skipRight );
+}
+
+void GuidanceTurning::on_pbMinusRight_clicked() {
+  if( skipRight >= 2 ) {
+    --skipRight;
+    ui->pbRight->setText( QString::number( skipRight ) );
+    emit numSkipChanged( skipLeft, skipRight );
+  }
+}
+
+void GuidanceTurning::on_pbMinusLeft_clicked() {
+  if( skipLeft >= 2 ) {
+    --skipLeft;
+    ui->pbLeft->setText( QString::number( skipLeft ) );
+    emit numSkipChanged( skipLeft, skipRight );
+  }
+}
+

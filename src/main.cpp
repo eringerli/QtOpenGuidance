@@ -195,8 +195,15 @@ int main( int argc, char** argv ) {
   // Root entity for Qt3D
   auto rootEntity = new Qt3DCore::QEntity();
 
+  // guidance toolbar
+  auto* guidanceToolbar = new GuidanceToolbar( widget );
+  auto* guidaceToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidaceToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  guidaceToolbarDock->setWidget( guidanceToolbar );
+  guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
+  mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
+
   // Create setting Window
-  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, widget );
+  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, guidanceToolbar->menu, widget );
 
 //  auto* input = new Qt3DInput::QInputAspect;
 //  view->registerAspect( input );
@@ -279,21 +286,6 @@ int main( int argc, char** argv ) {
 //  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
 //  sortPolicy->setSortTypes( sortTypes );
 //  view->setActiveFrameGraph( sortPolicy );
-
-  // guidance toolbar
-  auto* guidanceToolbar = new GuidanceToolbar( widget );
-  auto* guidaceToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidaceToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  guidaceToolbarDock->setWidget( guidanceToolbar );
-  guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
-  mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
-
-  // turning Toolbar
-  auto* turningToolbar = new GuidanceTurning( mainWindow );
-  auto* turningToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "TurningToolbarDock" ) );
-  turningToolbarDock->setWidget( turningToolbar );
-  turningToolbarDock->setTitle( turningToolbar->windowTitle() );
-  mainWindow->addDockWidget( turningToolbarDock, KDDockWidgets::Location_OnTop );
-  guidanceToolbar->menu->addAction( turningToolbarDock->toggleAction() );
 
   // camera Toolbar
   auto* cameraToolbar = new CameraToolbar( widget );
@@ -483,12 +475,6 @@ int main( int argc, char** argv ) {
                     settingDialog->plannerGui, SIGNAL( snap_clicked() ) );
   QObject::connect( guidanceToolbar, SIGNAL( autosteerEnabled( bool ) ),
                     settingDialog->plannerGui, SIGNAL( autosteerEnabled( bool ) ) );
-
-  // turning dock -> planner gui block
-  QObject::connect( turningToolbar, SIGNAL( turnLeft() ),
-                    settingDialog->plannerGui, SIGNAL( turnLeft_clicked() ) );
-  QObject::connect( turningToolbar, SIGNAL( turnRight() ),
-                    settingDialog->plannerGui, SIGNAL( turnRight_clicked() ) );
 
   // passes dock -> global planner block
   QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),

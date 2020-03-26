@@ -46,6 +46,7 @@ SOURCES += \
     src/3d/BufferMeshGeometry.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlannerLines.cpp \
+    src/block/LocalPlanner.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \

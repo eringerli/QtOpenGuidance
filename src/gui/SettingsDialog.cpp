@@ -39,6 +39,8 @@
 #include "SettingsDialog.h"
 #include "ui_SettingsDialog.h"
 
+#include "MyMainWindow.h"
+
 #include "../block/VectorObject.h"
 #include "../block/NumberObject.h"
 #include "../block/StringObject.h"
@@ -94,7 +96,7 @@
 
 #include "../cgalKernel.h"
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* mainWindow, QWidget* parent ) :
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* menu, QWidget* parent ) :
   QDialog( parent ),
   mainWindow( mainWindow ),
   ui( new Ui::SettingsDialog ) {
@@ -256,7 +258,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* main
   QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
                     globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
 
-  localPlannerFactory = new LocalPlannerFactory();
+  localPlannerFactory = new LocalPlannerFactory(mainWindow,
+                                                KDDockWidgets::Location_OnRight,
+                                                menu);
   stanleyGuidanceFactory = new StanleyGuidanceFactory();
   xteGuidanceFactory = new XteGuidanceFactory();
 

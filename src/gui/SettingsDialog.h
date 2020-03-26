@@ -48,11 +48,13 @@ namespace Ui {
   class SettingsDialog;
 }
 
+class MyMainWindow;
+
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, QMainWindow* mainWindow, QWidget* parent = nullptr );
+    explicit SettingsDialog(Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* menu, QWidget* parent = nullptr);
     ~SettingsDialog();
 
     QGraphicsScene* getSceneOfConfigGraphicsView();

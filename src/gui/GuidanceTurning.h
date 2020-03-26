@@ -33,14 +33,22 @@ class GuidanceTurning : public QGroupBox {
     ~GuidanceTurning();
 
   private slots:
-    void on_pbLeft_clicked();
-    void on_pbRight_clicked();
+    void on_pbLeft_toggled( bool checked );
+    void on_pbRight_toggled( bool checked );
+    void on_pbPlusRight_clicked();
+    void on_pbPlusLeft_clicked();
+    void on_pbMinusRight_clicked();
+    void on_pbMinusLeft_clicked();
+
 
   signals:
-    void turnLeft();
-    void turnRight();
+    void turnLeft( bool state );
+    void turnRight( bool state );
+    void numSkipChanged( int left, int right );
 
   private:
     Ui::GuidanceTurning* ui = nullptr;
+    int skipLeft = 1;
+    int skipRight = 1;
 };
 
