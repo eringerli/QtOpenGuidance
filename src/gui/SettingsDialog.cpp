@@ -68,12 +68,12 @@
 #include "../block/TransverseMercatorConverter.h"
 
 #include "../block/FieldManager.h"
-#include "../block/GuidancePlannerGui.h"
+#include "../block/GuiBlock.h"
 #include "../block/GlobalPlannerLines.h"
-#include "../block/GuidanceLocalPlanner.h"
-#include "../block/GuidanceStanley.h"
-#include "../block/GuidanceXte.h"
-#include "../block/GuidanceGlobalPlannerModel.h"
+#include "../block/LocalPlanner.h"
+#include "../block/StanleyGuidance.h"
+#include "../block/XteGuidance.h"
+#include "../block/GlobalPlannerModel.h"
 
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"

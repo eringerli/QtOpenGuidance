@@ -93,14 +93,12 @@ HEADERS += \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
     src/block/GlobalPlannerLines.h \
+    src/block/GlobalPlannerModel.h \
     src/block/GridModel.h \
-    src/block/GuidanceGlobalPlannerModel.h \
-    src/block/GuidanceLocalPlanner.h \
-    src/block/GuidancePlannerGui.h \
-    src/block/GuidanceStanley.h \
-    src/block/GuidanceXte.h \
+    src/block/GuiBlock.h \
     src/block/Implement.h \
     src/block/ImplementSection.h \
+    src/block/LocalPlanner.h \
     src/block/NmeaParserGGA.h \
     src/block/NmeaParserHDT.h \
     src/block/NmeaParserRMC.h \
@@ -112,6 +110,7 @@ HEADERS += \
     src/block/PrintLatency.h \
     src/block/SliderDockBlock.h \
     src/block/SprayerModel.h \
+    src/block/StanleyGuidance.h \
     src/block/StringObject.h \
     src/block/TractorModel.h \
     src/block/TrailerModel.h \
@@ -127,6 +126,7 @@ HEADERS += \
     src/block/ValueTransmissionState.h \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
+    src/block/XteGuidance.h \
     src/gui/CameraToolbar.h \
     src/gui/FieldsOptimitionToolbar.h \
     src/gui/FieldsToolbar.h \
