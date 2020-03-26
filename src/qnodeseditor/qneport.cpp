@@ -64,8 +64,9 @@ QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool
 }
 
 QNEPort::~QNEPort() {
-  for( auto conn : qAsConst( m_connections ) ) {
-    delete conn;
+  // as m_connections is also changed by the destructor of the connection, test in each iteration
+  while( m_connections.size() ) {
+    delete m_connections.back();
   }
 
   label->deleteLater();

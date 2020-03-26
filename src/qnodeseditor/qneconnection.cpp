@@ -52,7 +52,8 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
 QNEConnection::~QNEConnection() {
   if( m_port1 != nullptr ) {
     for( auto it = m_port1->connections().cbegin(), end = m_port1->connections().cend();
-         it != end; ++it ) {
+         it != end;
+         ++it ) {
       if( ( *it ) == this ) {
         m_port1->connections().erase( it );
         break;
@@ -62,7 +63,8 @@ QNEConnection::~QNEConnection() {
 
   if( m_port2 != nullptr ) {
     for( auto it = m_port2->connections().cbegin(), end =  m_port2->connections().cend();
-         it != end; ++it ) {
+         it != end;
+         ++it ) {
       if( ( *it ) == this ) {
         m_port2->connections().erase( it );
         break;
