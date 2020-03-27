@@ -46,7 +46,6 @@ class GuidanceToolbar : public QGroupBox {
     void on_btn_snap_clicked();
 
     void on_btn_autosteer_clicked( bool checked );
-    void on_pbDocks_clicked();
 
   signals:
     void toggleSettings();

@@ -30,6 +30,9 @@ GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
   setContentsMargins( 0, 0, 0, 0 );
 
   menu = new QMenu( this );
+
+  ui->pbDocks->setMenu( menu );
+  ui->pbDocks->setPopupMode( QToolButton::InstantPopup );
 }
 
 GuidanceToolbar::~GuidanceToolbar() {
@@ -68,8 +71,4 @@ void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
 
 void GuidanceToolbar::on_btn_autosteer_clicked( bool checked ) {
   emit autosteerEnabled( checked );
-}
-
-void GuidanceToolbar::on_pbDocks_clicked() {
-  menu->exec( QCursor::pos() );
 }
