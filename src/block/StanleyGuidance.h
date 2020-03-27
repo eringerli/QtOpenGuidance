@@ -151,10 +151,6 @@ class StanleyGuidanceFactory : public BlockFactory {
       return QStringLiteral( "Stanley Path Follower" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new StanleyGuidance();
       auto* b = createBaseBlock( scene, obj, id );

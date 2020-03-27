@@ -100,10 +100,6 @@ class TrailerModelFactory : public BlockFactory {
       return QStringLiteral( "Trailer Model" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TrailerModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );

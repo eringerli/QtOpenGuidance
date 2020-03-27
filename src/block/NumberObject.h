@@ -70,10 +70,6 @@ class NumberFactory : public BlockFactory {
       return QStringLiteral( "Number" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new NumberObject();
       auto* b = createBaseBlock( scene, obj, id );

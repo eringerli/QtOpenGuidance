@@ -85,10 +85,6 @@ class VectorFactory : public BlockFactory {
       return QStringLiteral( "Vector3D" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new VectorObject();
       auto* b = createBaseBlock( scene, obj, id );

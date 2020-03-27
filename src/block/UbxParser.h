@@ -217,10 +217,6 @@ class UbxParserFactory : public BlockFactory {
       return QStringLiteral( "UBX Parser" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new UbxParser();
       auto* b = createBaseBlock( scene, obj, id );

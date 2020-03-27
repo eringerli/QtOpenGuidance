@@ -70,10 +70,6 @@ class StringFactory : public BlockFactory {
       return QStringLiteral( "String" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new StringObject();
       auto* b = createBaseBlock( scene, obj, id );

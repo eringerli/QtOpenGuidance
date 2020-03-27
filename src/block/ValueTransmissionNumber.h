@@ -68,10 +68,6 @@ class ValueTransmissionNumberFactory : public BlockFactory {
       return QStringLiteral( "Value Transmit Number" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionNumber( id );
       auto* b = createBaseBlock( scene, obj, id, false );

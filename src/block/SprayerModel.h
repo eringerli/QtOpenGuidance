@@ -86,10 +86,6 @@ class SprayerModelFactory : public BlockFactory {
       return QStringLiteral( "Sprayer Model" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new SprayerModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );

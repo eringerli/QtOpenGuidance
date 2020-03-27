@@ -167,8 +167,6 @@ class PoseSimulationFactory : public BlockFactory {
       return QStringLiteral( "Pose Simulation" );
     }
 
-    virtual void addToCombobox( QComboBox* ) override {}
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PoseSimulation( geographicConvertionWrapper );
       auto* b = createBaseBlock( scene, obj, id, true );

@@ -280,11 +280,6 @@ class GlobalPlannerFactory : public BlockFactory {
       return QStringLiteral( "Global Planner Lines" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new GlobalPlannerLines( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );

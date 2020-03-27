@@ -72,10 +72,6 @@ class FpsMeasurementFactory : public BlockFactory {
       return QStringLiteral( "Fps Measurement" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FpsMeasurement( rootEntity );
       auto* b = createBaseBlock( scene, obj, id, true );

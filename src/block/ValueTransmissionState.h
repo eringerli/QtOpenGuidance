@@ -68,10 +68,6 @@ class ValueTransmissionStateFactory : public BlockFactory {
       return QStringLiteral( "Value Transmit State" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionState( id );
       auto* b = createBaseBlock( scene, obj, id, false );

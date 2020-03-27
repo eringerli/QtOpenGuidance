@@ -249,11 +249,6 @@ class FieldManagerFactory : public BlockFactory {
       return QStringLiteral( "Field Manager" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );

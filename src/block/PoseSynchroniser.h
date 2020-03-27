@@ -75,10 +75,6 @@ class PoseSynchroniserFactory : public BlockFactory {
       return QStringLiteral( "Pose Synchroniser" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PoseSynchroniser();
       auto* b = createBaseBlock( scene, obj, id );

@@ -144,10 +144,6 @@ class XteGuidanceFactory : public BlockFactory {
       return QStringLiteral( "Cross Track Error" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new XteGuidance();
       auto* b = createBaseBlock( scene, obj, id );

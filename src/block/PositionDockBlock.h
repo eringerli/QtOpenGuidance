@@ -135,10 +135,6 @@ class PositionDockBlockFactory : public BlockFactory {
       return QStringLiteral( "PositionDockBlock" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

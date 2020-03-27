@@ -237,9 +237,6 @@ class CameraControllerFactory : public BlockFactory {
       return QStringLiteral( "Camera Controller" );
     }
 
-    virtual void addToCombobox( QComboBox* ) override {
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );

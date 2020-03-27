@@ -107,10 +107,6 @@ class FixedKinematicFactory : public BlockFactory {
       return QStringLiteral( "Fixed Kinematic" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FixedKinematic;
       auto* b = createBaseBlock( scene, obj, id );

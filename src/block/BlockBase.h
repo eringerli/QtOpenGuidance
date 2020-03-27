@@ -57,7 +57,9 @@ class BlockFactory : public QObject {
 
     virtual QString getNameOfFactory() = 0;
 
-    virtual void addToCombobox( QComboBox* combobox ) = 0;
+    void addToCombobox( QComboBox* combobox ){
+      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
+    }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 

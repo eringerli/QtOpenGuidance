@@ -119,10 +119,6 @@ class FileStreamFactory : public BlockFactory {
       return QStringLiteral( "File Stream" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FileStream();
       auto* b = createBaseBlock( scene, obj, id );

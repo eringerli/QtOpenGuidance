@@ -277,9 +277,6 @@ class GridModelFactory : public BlockFactory {
       return QStringLiteral( "Grid Model" );
     }
 
-    virtual void addToCombobox( QComboBox* /*combobox*/ ) override {
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new GridModel( rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );

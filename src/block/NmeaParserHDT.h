@@ -137,10 +137,6 @@ class NmeaParserHDTFactory : public BlockFactory {
       return QStringLiteral( "NMEA Parser HDT" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new NmeaParserHDT();
       auto* b = createBaseBlock( scene, obj, id );

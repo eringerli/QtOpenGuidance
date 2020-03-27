@@ -96,7 +96,6 @@ HEADERS += \
     src/block/GlobalPlannerLines.h \
     src/block/GlobalPlannerModel.h \
     src/block/GridModel.h \
-    src/block/GuiBlock.h \
     src/block/Implement.h \
     src/block/ImplementSection.h \
     src/block/LocalPlanner.h \
@@ -105,6 +104,7 @@ HEADERS += \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
     src/block/OrientationDockBlock.h \
+    src/block/PlannerGuiBlock.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \

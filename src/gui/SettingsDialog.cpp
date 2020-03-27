@@ -70,7 +70,7 @@
 #include "../block/TransverseMercatorConverter.h"
 
 #include "../block/FieldManager.h"
-#include "../block/GuiBlock.h"
+#include "../block/PlannerGuiBlock.h"
 #include "../block/GlobalPlannerLines.h"
 #include "../block/LocalPlanner.h"
 #include "../block/StanleyGuidance.h"
@@ -247,9 +247,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
   fieldManager = qobject_cast<FieldManager*>( fieldManagerBlock->object );
 
-  plannerGuiFactory = new PlannerGuiFactory( rootEntity );
+  plannerGuiFactory = new PlannerGuiBlockFactory();
   auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
-  plannerGui = qobject_cast<PlannerGui*>( plannerGuiBlock->object );
+  plannerGui = qobject_cast<PlannerGuiBlock*>( plannerGuiBlock->object );
 
   globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );

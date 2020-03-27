@@ -103,10 +103,6 @@ class TractorModelFactory : public BlockFactory {
       return QStringLiteral( "Tractor Model" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
-
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TractorModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );

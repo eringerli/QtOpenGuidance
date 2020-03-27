@@ -33,13 +33,12 @@
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
-class PlannerGui : public BlockBase {
+class PlannerGuiBlock : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PlannerGui( Qt3DCore::QEntity* rootEntity )
-      : BlockBase(),
-        rootEntity( rootEntity ) {}
+    explicit PlannerGuiBlock()
+      : BlockBase() {}
 
   public slots:
     void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
@@ -60,29 +59,21 @@ class PlannerGui : public BlockBase {
   public:
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
-
-  private:
-    Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
-class PlannerGuiFactory : public BlockFactory {
+class PlannerGuiBlockFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PlannerGuiFactory( Qt3DCore::QEntity* rootEntity )
-      : BlockFactory(),
-        rootEntity( rootEntity ) {}
+    PlannerGuiBlockFactory()
+      : BlockFactory() {}
 
     QString getNameOfFactory() override {
-      return QStringLiteral( "Planner GUI" );
-    }
-
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
+      return QStringLiteral( "Planner GUI Block" );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new PlannerGui( rootEntity );
+      auto* obj = new PlannerGuiBlock();
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -95,9 +86,6 @@ class PlannerGuiFactory : public BlockFactory {
 
       return b;
     }
-
-  private:
-    Qt3DCore::QEntity* rootEntity = nullptr;
 };
 
 
