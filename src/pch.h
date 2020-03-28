@@ -36,6 +36,7 @@
 #include <memory>
 #include <QBasicTimer>
 #include <QBoxLayout>
+#include <QButtonGroup>
 #include <QByteArray>
 #include <QCloseEvent>
 #include <QColor>
@@ -70,6 +71,7 @@
 #include <QPalette>
 #include <QPointF>
 #include <QPolygonF>
+#include <QPushButton>
 #include <QQuaternion>
 #include <QSettings>
 #include <QSharedPointer>

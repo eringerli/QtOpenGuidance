@@ -78,7 +78,17 @@
       </size>
      </property>
      <property name="icon">
-      <iconset theme="list-add"/>
+      <iconset theme="list-add">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
+     <property name="autoRepeatInterval">
+      <number>250</number>
      </property>
     </widget>
    </item>
@@ -97,7 +107,17 @@
       </size>
      </property>
      <property name="icon">
-      <iconset theme="list-add"/>
+      <iconset theme="list-add">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
+     <property name="autoRepeatInterval">
+      <number>250</number>
      </property>
     </widget>
    </item>
@@ -159,7 +179,17 @@
       </size>
      </property>
      <property name="icon">
-      <iconset theme="list-remove"/>
+      <iconset theme="list-remove">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
+     <property name="autoRepeatInterval">
+      <number>250</number>
      </property>
     </widget>
    </item>
@@ -178,7 +208,17 @@
       </size>
      </property>
      <property name="icon">
-      <iconset theme="list-remove"/>
+      <iconset theme="list-remove">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="autoRepeat">
+      <bool>true</bool>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>500</number>
+     </property>
+     <property name="autoRepeatInterval">
+      <number>250</number>
      </property>
     </widget>
    </item>

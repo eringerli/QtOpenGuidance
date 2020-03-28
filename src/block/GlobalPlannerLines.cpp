@@ -25,18 +25,15 @@
 #include "../kinematic/CgalWorker.h"
 
 bool GlobalPlannerLines::isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line ) {
-  bool twinFound = false;
-
   for( const auto& step : * ( plan.plan ) ) {
     if( const auto* pathLine = step->castToLine() ) {
       if( ( *pathLine ) == ( *line ) ) {
-        twinFound = true;
-        break;
+        return true;
       }
     }
   }
 
-  return twinFound;
+  return false;
 }
 
 void GlobalPlannerLines::sortPlan() {
@@ -167,9 +164,10 @@ void GlobalPlannerLines::snapPlanAB() {
   }
 }
 
-GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
+GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity )
   : BlockBase(),
-    mainWindow( mainWindow ), tmw( tmw ) {
+    mainWindow( mainWindow ),
+    rootEntity( rootEntity ) {
   // a point marker -> orange
   {
     aPointEntity = new Qt3DCore::QEntity( rootEntity );

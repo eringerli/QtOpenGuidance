@@ -57,25 +57,29 @@ class XteGuidance : public BlockBase {
           std::shared_ptr<PathPrimitive> nearestPrimitive = nullptr;
 
           for( const auto& pathPrimitive : *plan.plan ) {
-            double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
+            if( plan.type == Plan::Type::OnlyLines || pathPrimitive->isOn( position2D ) ) {
+              double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
 
-            if( currentDistanceSquared < distanceSquared ) {
-              nearestPrimitive = pathPrimitive;
-              distanceSquared = currentDistanceSquared;
-            } else {
-              if( plan.type == Plan::Type::OnlyLines ) {
-                // the plan is ordered, so we can take the fast way out...
-                break;
+              if( currentDistanceSquared < distanceSquared ) {
+                nearestPrimitive = pathPrimitive;
+                distanceSquared = currentDistanceSquared;
+              } else {
+                if( plan.type == Plan::Type::OnlyLines ) {
+                  // the plan is ordered, so we can take the fast way out...
+                  break;
+                }
               }
             }
           }
 
-          double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
+          if( nearestPrimitive ) {
+            double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
 
-          emit headingOfPathChanged( nearestPrimitive->angleAtPoint( position2D ) );
-          emit xteChanged( offsetDistance );
-          emit passNumberChanged( nearestPrimitive->passNumber );
-          return;
+            emit headingOfPathChanged( nearestPrimitive->angleAtPoint( position2D ) );
+            emit xteChanged( offsetDistance );
+            emit passNumberChanged( nearestPrimitive->passNumber );
+            return;
+          }
         }
 
         emit headingOfPathChanged( qInf() );

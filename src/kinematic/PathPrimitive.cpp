@@ -57,16 +57,29 @@ double PathPrimitiveLine::distanceToPointSquared( const Point_2& point ) {
   return CGAL::squared_distance( ortogonalProjection, point );
 }
 
-double PathPrimitiveLine::offsetSign( const Point_2& point ) {
-  if( line.has_on_negative_side( point ) ) {
-    return -1;
-  } else {
-    return 1;
-  }
+bool PathPrimitiveLine::isOn( const Point_2& point ) {
+  return true;
+}
+
+bool PathPrimitiveLine::leftOf( const Point_2& point ) {
+  return line.has_on_negative_side( point );
 }
 
 double PathPrimitiveLine::angleAtPoint( const Point_2& ) {
   return angleOfLineDegrees( line );
+}
+
+bool PathPrimitiveLine::intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) {
+  auto result = CGAL::intersection( line, lineToIntersect );
+
+  if( result ) {
+    if( const Point_2* point = boost::get<Point_2>( &*result ) ) {
+      resultingPoint = *point;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 
@@ -94,14 +107,29 @@ double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
   }
 }
 
-double PathPrimitiveSegment::offsetSign( const Point_2& point ) {
-  if( segment.supporting_line().has_on_negative_side( point ) ) {
-    return -1;
-  } else {
-    return 1;
-  }
+bool PathPrimitiveSegment::isOn( const Point_2& point ) {
+  Point_2 ortogonalProjection = segment.supporting_line().projection( point );
+
+  return segment.collinear_has_on( ortogonalProjection );
+}
+
+bool PathPrimitiveSegment::leftOf( const Point_2& point ) {
+  return segment.supporting_line().has_on_negative_side( point );
 }
 
 double PathPrimitiveSegment::angleAtPoint( const Point_2& ) {
   return angleOfLineDegrees( segment.supporting_line() );
+}
+
+bool PathPrimitiveSegment::intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) {
+  auto result = CGAL::intersection( lineToIntersect, segment );
+
+  if( result ) {
+    if( const Point_2* point = boost::get<Point_2>( &*result ) ) {
+      resultingPoint = *point;
+      return true;
+    }
+  }
+
+  return false;
 }

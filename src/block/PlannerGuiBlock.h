@@ -41,12 +41,6 @@ class PlannerGuiBlock : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
-        this->orientation = orientation;
-      }
-    }
 
   signals:
     void a_clicked();
@@ -55,10 +49,6 @@ class PlannerGuiBlock : public BlockBase {
     void autosteerEnabled( bool );
     void turnLeft_clicked();
     void turnRight_clicked();
-
-  public:
-    Point_3 position = Point_3( 0, 0, 0 );
-    QQuaternion orientation = QQuaternion();
 };
 
 class PlannerGuiBlockFactory : public BlockFactory {
@@ -76,7 +66,6 @@ class PlannerGuiBlockFactory : public BlockFactory {
       auto* obj = new PlannerGuiBlock();
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "A clicked" ), QLatin1String( SIGNAL( a_clicked() ) ) );
       b->addOutputPort( QStringLiteral( "B clicked" ), QLatin1String( SIGNAL( b_clicked() ) ) );
       b->addOutputPort( QStringLiteral( "Snap clicked" ), QLatin1String( SIGNAL( snap_clicked() ) ) );

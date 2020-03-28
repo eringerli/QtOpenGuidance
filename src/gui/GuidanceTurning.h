@@ -21,6 +21,8 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 
+#include <QButtonGroup>
+
 namespace Ui {
   class GuidanceTurning;
 }
@@ -40,15 +42,19 @@ class GuidanceTurning : public QGroupBox {
     void on_pbMinusRight_clicked();
     void on_pbMinusLeft_clicked();
 
+    void on_pbLeft_pressed();
+
+    void on_pbRight_pressed();
 
   signals:
-    void turnLeft( bool state );
-    void turnRight( bool state );
+    void turnLeftToggled( bool state );
+    void turnRightToggled( bool state );
     void numSkipChanged( int left, int right );
 
   private:
     Ui::GuidanceTurning* ui = nullptr;
     int skipLeft = 1;
     int skipRight = 1;
-};
 
+    QButtonGroup buttonGroupTurn;
+};

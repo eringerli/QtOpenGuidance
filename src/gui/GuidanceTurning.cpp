@@ -19,6 +19,8 @@
 #include "GuidanceTurning.h"
 #include "ui_GuidanceTurning.h"
 
+#include <QAbstractButton>
+
 GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::GuidanceTurning ) {
@@ -28,6 +30,11 @@ GuidanceTurning::GuidanceTurning( QWidget* parent ) :
 
   ui->pbRight->setText( QString::number( skipRight ) );
   ui->pbLeft->setText( QString::number( skipLeft ) );
+
+  buttonGroupTurn.addButton( ui->pbRight );
+  buttonGroupTurn.addButton( ui->pbLeft );
+  buttonGroupTurn.setExclusive( false );
+
   emit numSkipChanged( skipLeft, skipRight );
 }
 
@@ -36,11 +43,11 @@ GuidanceTurning::~GuidanceTurning() {
 }
 
 void GuidanceTurning::on_pbLeft_toggled( bool checked ) {
-  emit turnLeft( checked );
+  emit turnLeftToggled( checked );
 }
 
 void GuidanceTurning::on_pbRight_toggled( bool checked ) {
-  emit turnRight( checked );
+  emit turnRightToggled( checked );
 }
 
 void GuidanceTurning::on_pbPlusRight_clicked() {
@@ -71,3 +78,18 @@ void GuidanceTurning::on_pbMinusLeft_clicked() {
   }
 }
 
+void GuidanceTurning::on_pbLeft_pressed() {
+  if( ui->pbLeft->isChecked() ) {
+    buttonGroupTurn.setExclusive( false );
+  } else {
+    buttonGroupTurn.setExclusive( true );
+  }
+}
+
+void GuidanceTurning::on_pbRight_pressed() {
+  if( ui->pbRight->isChecked() ) {
+    buttonGroupTurn.setExclusive( false );
+  } else {
+    buttonGroupTurn.setExclusive( true );
+  }
+}

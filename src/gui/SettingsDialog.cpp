@@ -251,16 +251,17 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
   plannerGui = qobject_cast<PlannerGuiBlock*>( plannerGuiBlock->object );
 
-  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
+  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
   globalPlanner = qobject_cast<GlobalPlannerLines*>( globalPlannerBlock->object );
 
   QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
                     globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
 
-  localPlannerFactory = new LocalPlannerFactory(mainWindow,
-                                                KDDockWidgets::Location_OnRight,
-                                                menu);
+  localPlannerFactory = new LocalPlannerFactory( mainWindow,
+      KDDockWidgets::Location_OnRight,
+      menu,
+      rootEntity );
   stanleyGuidanceFactory = new StanleyGuidanceFactory();
   xteGuidanceFactory = new XteGuidanceFactory();
 

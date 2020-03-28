@@ -62,7 +62,7 @@ class GlobalPlannerLines : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
+    explicit GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity );
 
     ~GlobalPlannerLines() {}
 
@@ -224,7 +224,6 @@ class GlobalPlannerLines : public BlockBase {
   private:
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
-    GeographicConvertionWrapper* tmw = nullptr;
 
     // markers
     Qt3DCore::QEntity* aPointEntity = nullptr;
@@ -268,11 +267,10 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
+    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        rootEntity( rootEntity ),
-        tmw( tmw ) {
+        rootEntity( rootEntity ) {
       qRegisterMetaType<Plan>();
     }
 
@@ -281,7 +279,7 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new GlobalPlannerLines( mainWindow, rootEntity, tmw );
+      auto* obj = new GlobalPlannerLines( mainWindow, rootEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -304,6 +302,5 @@ class GlobalPlannerFactory : public BlockFactory {
   private:
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
-    GeographicConvertionWrapper* tmw = nullptr;
 };
 

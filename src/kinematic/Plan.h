@@ -43,7 +43,9 @@ class Plan {
   public:
     Type type = Type::Mixed;
     std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+
+    typedef decltype( plan->begin() ) PrimitiveIterator;
+    typedef decltype( plan->cbegin() ) ConstPrimitiveIterator;
 };
 
 Q_DECLARE_METATYPE( Plan )
-

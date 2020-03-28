@@ -57,7 +57,7 @@ class BlockFactory : public QObject {
 
     virtual QString getNameOfFactory() = 0;
 
-    void addToCombobox( QComboBox* combobox ){
+    void addToCombobox( QComboBox* combobox ) {
       combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
     }
 

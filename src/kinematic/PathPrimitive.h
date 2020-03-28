@@ -52,8 +52,10 @@ class PathPrimitive {
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) = 0;
-    virtual double offsetSign( const Point_2& point ) = 0;
+    virtual bool isOn( const Point_2& point ) = 0;
+    virtual bool leftOf( const Point_2& point ) = 0;
     virtual double angleAtPoint( const Point_2& point ) = 0;
+    virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
 
     virtual void print() {
       std::cout << "PathPrimitive" << std::endl;
@@ -61,6 +63,10 @@ class PathPrimitive {
 
     virtual std::shared_ptr<PathPrimitive> createReverse() {
       return nullptr;
+    }
+
+    double offsetSign( const Point_2& point ) {
+      return leftOf( point ) ? -1 : 1;
     }
 
     double distanceToPoint( const Point_2& point ) {
@@ -89,7 +95,7 @@ class PathPrimitiveLine : public PathPrimitive {
     bool operator==( PathPrimitiveLine& b ) {
       return passNumber == b.passNumber;
     }
-    bool operator==( const PathPrimitiveLine& b )const {
+    bool operator==( const PathPrimitiveLine& b ) const {
       return passNumber == b.passNumber;
     }
 
@@ -98,8 +104,10 @@ class PathPrimitiveLine : public PathPrimitive {
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual double offsetSign( const Point_2& point ) override;
+    virtual bool isOn( const Point_2& point ) override;
+    virtual bool leftOf( const Point_2& point ) override;
     virtual double angleAtPoint( const Point_2& ) override;
+    virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveLine: " << line << std::endl;
@@ -134,8 +142,10 @@ class PathPrimitiveSegment : public PathPrimitive {
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual double offsetSign( const Point_2& point ) override;
+    virtual bool isOn( const Point_2& point ) override;
+    virtual bool leftOf( const Point_2& point ) override;
     virtual double angleAtPoint( const Point_2& point ) override;
+    virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveSegment: " << segment << std::endl;
