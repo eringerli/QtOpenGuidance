@@ -65,6 +65,7 @@ SOURCES += \
     src/gui/XteDock.cpp \
     src/kinematic/CgalWorker.cpp \
     src/kinematic/PathPrimitive.cpp \
+    src/kinematic/Plan.cpp \
     src/main.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \

@@ -93,3 +93,9 @@ void GuidanceTurning::on_pbRight_pressed() {
     buttonGroupTurn.setExclusive( true );
   }
 }
+
+void GuidanceTurning::resetTurningState() {
+  buttonGroupTurn.setExclusive( false );
+  ui->pbLeft->setChecked( false );
+  ui->pbRight->setChecked( false );
+}

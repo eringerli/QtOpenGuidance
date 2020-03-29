@@ -39,13 +39,16 @@ class Plan {
       plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
     }
 
-
   public:
     Type type = Type::Mixed;
     std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
 
     typedef decltype( plan->begin() ) PrimitiveIterator;
     typedef decltype( plan->cbegin() ) ConstPrimitiveIterator;
+    typedef std::shared_ptr<PathPrimitive> PrimitivePointer;
+
+  public:
+    ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, double& distanceSquared );
 };
 
 Q_DECLARE_METATYPE( Plan )

@@ -22,57 +22,60 @@
 
 #include <dubins/dubins.h>
 
-Plan::ConstPrimitiveIterator LocalPlanner::getNearestPrimitive( const Point_2& position2D, Plan plan, double& distanceSquared ) {
-  Plan::ConstPrimitiveIterator nearestPrimitive = plan.plan->cend();
-  distanceSquared = qInf();
-
-  for( auto it = plan.plan->cbegin(), end = plan.plan->cend(); it != end; ++it ) {
-    double currentDistanceSquared = ( *it )->distanceToPointSquared( position2D );
-
-    if( currentDistanceSquared < distanceSquared ) {
-      nearestPrimitive = it;
-      distanceSquared = currentDistanceSquared;
-    } else {
-      if( globalPlan.type == Plan::Type::OnlyLines ) {
-        // the plan is ordered, so we can take the fast way out...
-        break;
-      }
-    }
-  }
-
-  return nearestPrimitive;
-}
-
 void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;
 
+    const Point_2 position2D = to2D( position );
+
     if( !turningLeft && !turningRight ) {
-
-      const Point_2 position2D = to2D( position );
-
       if( !globalPlan.plan->empty() ) {
 
         // local planner for lines: find the nearest line and put it into the local plan
         double distanceSquared = qInf();
-        auto nearestPrimitive = getNearestPrimitive( position2D, globalPlan, distanceSquared );
+        auto nearestPrimitive = globalPlan.getNearestPrimitive( position2D, distanceSquared );
+        double distance = std::sqrt( distanceSquared );
 
-        plan.type = Plan::Type::OnlyLines;
-        plan.plan->clear();
+        if( lastPrimitive ) {
+        }
 
-        if( ( *nearestPrimitive )->anyDirection ) {
-          double angleNearestPrimitive = ( *nearestPrimitive )->angleAtPoint( position2D );
+        if( !lastPrimitive || distance < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) {
+          lastPrimitive = *nearestPrimitive;
 
-          if( std::abs( orientation.toEulerAngles().z() - angleNearestPrimitive ) > 95 ) {
-            auto reverse = ( *nearestPrimitive )->createReverse();
-            plan.plan->push_back( reverse );
-          } else {
-            plan.plan->push_back( *nearestPrimitive );
+          plan.type = globalPlan.type;
+          plan.plan->clear();
+
+          if( ( *nearestPrimitive )->anyDirection ) {
+            double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+
+            if( std::abs( orientation.toEulerAngles().z() - angleNearestPrimitiveDegrees ) > 95 ) {
+              auto reverse = ( *nearestPrimitive )->createReverse();
+              plan.plan->push_back( reverse );
+              emit planChanged( plan );
+              return;
+            }
           }
 
+          plan.plan->push_back( *nearestPrimitive );
           emit planChanged( plan );
+          return;
         }
+      }
+    } else {
+      if( std::distance( lastSegmentOfTurn, targetSegmentOfTurn ) < 3 && ( *targetSegmentOfTurn )->isOn( position2D ) ) {
+        turningLeft = false;
+        turningRight = false;
+        emit resetTurningStateOfDock();
+
+        m_segmentsEntity->setEnabled( false );
+
+        setPose( position, orientation, options );
+      }
+
+      {
+        double squaredDistance = 0;
+        lastSegmentOfTurn = plan.getNearestPrimitive( position2D, squaredDistance );
       }
     }
   }
@@ -81,38 +84,101 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
 void LocalPlanner::turnLeftToggled( bool state ) {
   qDebug() << "LocalPlanner::turnLeftToggled" << state << turningLeft;
 
-//if(turningLeft)
   if( state == true ) {
+    turningLeft = true;
+    turningRight = false;
+    calculateTurning( false );
+  } else {
+    turningLeft = false;
+    turningRight = false;
+  }
+}
+
+void LocalPlanner::turnRightToggled( bool state ) {
+  qDebug() << "LocalPlanner::turnRightToggled" << state << turningRight;
+
+  if( state == true ) {
+    turningRight = true;
+    turningLeft = false;
+    calculateTurning( false );
+  } else {
+    turningLeft = false;
+    turningRight = false;
+  }
+}
+
+void LocalPlanner::numSkipChanged( int left, int right ) {
+  qDebug() << "LocalPlanner::numSkipChanged" << left << right;
+  bool existingTurn = turningLeft | turningRight;
+  leftSkip = left;
+  rightSkip = right;
+
+  if( existingTurn ) {
+    calculateTurning( true );
+  }
+}
+
+void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
+  if( !globalPlan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
+    const double heading = orientation.toEulerAngles().z();
+
+    if( !changeExistingTurn ) {
+      positionTurnStart = position2D;
+      headingTurnStart = heading;
+    }
 
     double distanceSquared = qInf();
-    auto nearestPrimitive = getNearestPrimitive( position2D, globalPlan, distanceSquared );
+    auto nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
 
-    double angleNearestPrimitive = ( *nearestPrimitive )->angleAtPoint( position2D );
-    bool searchUp = true;
+    double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+    bool searchUp = turningLeft;
 
-    double heading = orientation.toEulerAngles().z();
+    bool reversedLine = std::abs( headingTurnStart - angleNearestPrimitiveDegrees ) > 90;
 
-    if( std::abs( heading - angleNearestPrimitive ) > 90 ) {
-      searchUp = false;
+    if( reversedLine ) {
+      searchUp = !searchUp;
     }
 
     if( const auto line = ( *nearestPrimitive )->castToLine() ) {
+
+      // trigger the calculation of the plan
+      double angleOffsetRad = qDegreesToRadians( angleNearestPrimitiveDegrees );
+      auto offset = polarOffsetRad( angleOffsetRad - M_PI, ( *nearestPrimitive )->implementWidth * ( turningLeft ? leftSkip : rightSkip ) );
+
+      if( turningRight ) {
+        offset = -offset;
+      }
+
+      if( reversedLine ) {
+        offset = -offset;
+      }
+
+      emit triggerPlanPose( position + to3D( offset ), orientation, PoseOption::Options() );
+
+      nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
+
       auto perpendicularLine = line->line.perpendicular( position2D );
 
-      auto targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
+      Plan::ConstPrimitiveIterator targetLineIt;
+
+      if( turningLeft ) {
+        targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
+      } else {
+        targetLineIt = nearestPrimitive + ( searchUp ? rightSkip : -rightSkip );
+      }
 
       if( targetLineIt < globalPlan.plan->cend() ) {
         Point_2 resultingPoint;
 
         if( ( *targetLineIt )->intersectWithLine( perpendicularLine, resultingPoint ) ) {
-          double headingAtTarget = ( *targetLineIt )->angleAtPoint( resultingPoint );
+          double headingAtTargetRad = qDegreesToRadians( ( *targetLineIt )->angleAtPointDegrees( resultingPoint ) ) + ( reversedLine ? M_PI : 0 );
 
-          std::cout << "LocalPlanner::turnLeftToggled position2D:" << position2D << ", resultingPoint:" << resultingPoint << ", angleNearestPrimitive:" << angleNearestPrimitive << "headingAtTarget" << headingAtTarget << std::endl;
+          std::cout << "LocalPlanner::turnLeftToggled position2D:" << position2D << ", resultingPoint:" << resultingPoint << ", angleNearestPrimitive:" << angleNearestPrimitiveDegrees << "headingAtTarget" << headingAtTargetRad << std::endl;
 
           DubinsPath dubinsPath;
           double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( heading )};
-          double q1[] = {resultingPoint.x(), resultingPoint.y(), qDegreesToRadians( headingAtTarget - 180 )};
+          double q1[] = {resultingPoint.x(), resultingPoint.y(), headingAtTargetRad - M_PI};
 
           dubins_shortest_path( &dubinsPath, q0, q1, 15 );
 
@@ -128,18 +194,6 @@ void LocalPlanner::turnLeftToggled( bool state ) {
           PS::Squared_distance_cost cost;
           PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.01 ), std::back_inserter( optimizedPolyline ) );
 
-          qDebug() << "sizes: " << polyline.size() << optimizedPolyline.size();
-
-          QVector<QVector3D> positions;
-
-          for( auto point : optimizedPolyline ) {
-            positions << QVector3D( float( point.x() ), float( point.y() ), 0 );
-          }
-
-          m_segmentsMesh->bufferUpdate( positions );
-          m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
-          m_segmentsEntity->setEnabled( true );
-
           if( optimizedPolyline.size() ) {
             plan.plan->clear();
             auto lastPoint = optimizedPolyline.cbegin();
@@ -151,24 +205,34 @@ void LocalPlanner::turnLeftToggled( bool state ) {
               lastPoint = point;
             }
 
-            turningLeft = true;
+            auto offset = polarOffsetRad( headingAtTargetRad - M_PI_2 - M_PI, 100 );
+            plan.plan->push_back( std::make_shared<PathPrimitiveSegment>(
+                                    Segment_2( *lastPoint, ( *lastPoint ) - offset ),
+                                    0, false, 0 ) );
+
+            lastSegmentOfTurn = plan.plan->cbegin();
+            targetSegmentOfTurn = --plan.plan->cend();
+
+            {
+              QVector<QVector3D> positions;
+
+              for( auto primitive : *plan.plan ) {
+                auto segment = primitive->castToSegment();
+
+                positions << QVector3D( float( segment->segment.source().x() ), float( segment->segment.source().y() ), 1 );
+                positions << QVector3D( float( segment->segment.target().x() ), float( segment->segment.target().y() ), 1 );
+              }
+
+              m_segmentsMesh->bufferUpdate( positions );
+              m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
+              m_segmentsEntity->setEnabled( true );
+            }
+
             plan.type = Plan::Type::Mixed;
-            qDebug() << "planChanged(plan)";
             emit planChanged( plan );
           }
         }
       }
     }
   }
-}
-
-void LocalPlanner::turnRightToggled( bool state ) {
-  qDebug() << "LocalPlanner::turnRightToggled" << state << turningRight;
-
-}
-
-void LocalPlanner::numSkipChanged( int left, int right ) {
-  qDebug() << "LocalPlanner::numSkipChanged" << left << right;
-  leftSkip = left;
-  rightSkip = right;
 }

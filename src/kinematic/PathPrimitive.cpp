@@ -52,9 +52,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveLine::createReverse() {
 }
 
 double PathPrimitiveLine::distanceToPointSquared( const Point_2& point ) {
-  Point_2 ortogonalProjection = line.projection( point );
-
-  return CGAL::squared_distance( ortogonalProjection, point );
+  return CGAL::squared_distance( orthogonalProjection( point ), point );
 }
 
 bool PathPrimitiveLine::isOn( const Point_2& point ) {
@@ -65,7 +63,7 @@ bool PathPrimitiveLine::leftOf( const Point_2& point ) {
   return line.has_on_negative_side( point );
 }
 
-double PathPrimitiveLine::angleAtPoint( const Point_2& ) {
+double PathPrimitiveLine::angleAtPointDegrees( const Point_2& ) {
   return angleOfLineDegrees( line );
 }
 
@@ -82,6 +80,14 @@ bool PathPrimitiveLine::intersectWithLine( const Line_2& lineToIntersect, Point_
   return false;
 }
 
+Line_2 PathPrimitiveLine::perpendicularAtPoint( const Point_2 point ) {
+  return line.perpendicular( point );
+}
+
+Point_2 PathPrimitiveLine::orthogonalProjection( const Point_2 point ) {
+  return line.projection( point );
+}
+
 
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
   return std::make_shared<PathPrimitiveSegment> (
@@ -90,7 +96,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
 }
 
 double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
-  Point_2 ortogonalProjection = segment.supporting_line().projection( point );
+  Point_2 ortogonalProjection = orthogonalProjection( point );
   double distance = CGAL::squared_distance( ortogonalProjection, point );
 
   if( segment.collinear_has_on( ortogonalProjection ) ) {
@@ -117,7 +123,7 @@ bool PathPrimitiveSegment::leftOf( const Point_2& point ) {
   return segment.supporting_line().has_on_negative_side( point );
 }
 
-double PathPrimitiveSegment::angleAtPoint( const Point_2& ) {
+double PathPrimitiveSegment::angleAtPointDegrees( const Point_2& ) {
   return angleOfLineDegrees( segment.supporting_line() );
 }
 
@@ -132,4 +138,12 @@ bool PathPrimitiveSegment::intersectWithLine( const Line_2& lineToIntersect, Poi
   }
 
   return false;
+}
+
+Line_2 PathPrimitiveSegment::perpendicularAtPoint( const Point_2 point ) {
+  return segment.supporting_line().perpendicular( point );
+}
+
+Point_2 PathPrimitiveSegment::orthogonalProjection( const Point_2 point ) {
+  return segment.supporting_line().projection( point );
 }

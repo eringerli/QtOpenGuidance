@@ -75,7 +75,7 @@ class XteGuidance : public BlockBase {
           if( nearestPrimitive ) {
             double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
 
-            emit headingOfPathChanged( nearestPrimitive->angleAtPoint( position2D ) );
+            emit headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ) );
             emit xteChanged( offsetDistance );
             emit passNumberChanged( nearestPrimitive->passNumber );
             return;

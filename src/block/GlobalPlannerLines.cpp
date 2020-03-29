@@ -115,7 +115,7 @@ void GlobalPlannerLines::createPlanAB() {
     for( int offsetCount = -pathsToGenerate ; offsetCount <= pathsToGenerate ; ++offsetCount ) {
       double offsetDistance = moduloDistanceFromAbLine + offsetCount * implementWidth;
 
-      auto offsetVector = polarOffset( M_PI + angleAbRad, offsetDistance );
+      auto offsetVector = polarOffsetRad( angleAbRad + M_PI, offsetDistance );
 
       auto newLine = std::make_shared<PathPrimitiveLine>(
                        Line_2( ab2dSegment.source() - offsetVector, ab2dSegment.target() - offsetVector ),
@@ -154,7 +154,7 @@ void GlobalPlannerLines::snapPlanAB() {
 
     double moduloDistanceFromAbLine = passNumber * implementWidth;
 
-    auto offsetVector = polarOffset( M_PI + angleAbRad, distanceFromAbLine - moduloDistanceFromAbLine );
+    auto offsetVector = polarOffsetRad( M_PI + angleAbRad, distanceFromAbLine - moduloDistanceFromAbLine );
     auto offsetVector3D = to3D( offsetVector );
 
     abSegment = Segment_3( abSegment.source() - offsetVector3D, abSegment.target() - offsetVector3D );

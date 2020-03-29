@@ -64,9 +64,8 @@ class LocalPlanner : public BlockBase {
       QObject::connect( widget, &GuidanceTurning::turnLeftToggled, this, &LocalPlanner::turnLeftToggled );
       QObject::connect( widget, &GuidanceTurning::turnRightToggled, this, &LocalPlanner::turnRightToggled );
       QObject::connect( widget, &GuidanceTurning::numSkipChanged, this, &LocalPlanner::numSkipChanged );
+      QObject::connect( this, &LocalPlanner::resetTurningStateOfDock, widget, &GuidanceTurning::resetTurningState );
 
-
-      // test for recording
       {
         m_baseEntity = new Qt3DCore::QEntity( rootEntity );
         m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
@@ -82,7 +81,6 @@ class LocalPlanner : public BlockBase {
         m_segmentsMaterial->setAmbient( Qt::red );
         m_segmentsEntity->addComponent( m_segmentsMaterial );
       }
-
     }
 
     ~LocalPlanner() {
@@ -95,40 +93,47 @@ class LocalPlanner : public BlockBase {
 
     void setPlan( const Plan& plan ) {
       this->globalPlan = plan;
+      lastPrimitive = nullptr;
 //      emit planChanged( plan );
+    }
+
+    void setPathHysteresis( const double pathHysteresis ) {
+      this->pathHysteresis = pathHysteresis;
     }
 
     void turnLeftToggled( bool state );
     void turnRightToggled( bool state );
     void numSkipChanged( int left, int right );
 
-
   signals:
     void planChanged( const Plan& );
     void triggerPlanPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
+    void resetTurningStateOfDock();
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
+    double pathHysteresis = 0.5;
 
     GuidanceTurning* widget = nullptr;
     KDDockWidgets::DockWidget* dock = nullptr;
 
   private:
-    Plan::ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, Plan plan, double& distanceSquared );
+    void calculateTurning( bool changeExistingTurn );
 
     Plan globalPlan;
     Plan plan;
+
+    Plan::PrimitivePointer lastPrimitive = nullptr;
 
     bool turningLeft = false;
     bool turningRight = false;
     int leftSkip = 1;
     int rightSkip = 1;
-    Point_3 positionTurnStart = Point_3( 0, 0, 0 );
-    Segment_2 targetSegment = Segment_2( Point_2( 0, 0 ), Point_2( 0, 0 ) );
-
-
-
+    Point_2 positionTurnStart = Point_2( 0, 0 );
+    double headingTurnStart = 0;
+    Plan::ConstPrimitiveIterator lastSegmentOfTurn;
+    Plan::ConstPrimitiveIterator targetSegmentOfTurn;
 
 
     Qt3DCore::QEntity* rootEntity = nullptr;
@@ -172,6 +177,7 @@ class LocalPlannerFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+      b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 

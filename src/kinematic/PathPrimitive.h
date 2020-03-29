@@ -54,8 +54,10 @@ class PathPrimitive {
     virtual double distanceToPointSquared( const Point_2& point ) = 0;
     virtual bool isOn( const Point_2& point ) = 0;
     virtual bool leftOf( const Point_2& point ) = 0;
-    virtual double angleAtPoint( const Point_2& point ) = 0;
+    virtual double angleAtPointDegrees( const Point_2& point ) = 0;
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
+    virtual Line_2 perpendicularAtPoint( const Point_2 point ) = 0;
+    virtual Point_2 orthogonalProjection( const Point_2 point ) = 0;
 
     virtual void print() {
       std::cout << "PathPrimitive" << std::endl;
@@ -106,8 +108,10 @@ class PathPrimitiveLine : public PathPrimitive {
     virtual double distanceToPointSquared( const Point_2& point ) override;
     virtual bool isOn( const Point_2& point ) override;
     virtual bool leftOf( const Point_2& point ) override;
-    virtual double angleAtPoint( const Point_2& ) override;
+    virtual double angleAtPointDegrees( const Point_2& ) override;
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
+    virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
+    virtual Point_2 orthogonalProjection( const Point_2 point )override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveLine: " << line << std::endl;
@@ -144,8 +148,10 @@ class PathPrimitiveSegment : public PathPrimitive {
     virtual double distanceToPointSquared( const Point_2& point ) override;
     virtual bool isOn( const Point_2& point ) override;
     virtual bool leftOf( const Point_2& point ) override;
-    virtual double angleAtPoint( const Point_2& point ) override;
+    virtual double angleAtPointDegrees( const Point_2& point ) override;
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
+    virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
+    virtual Point_2 orthogonalProjection( const Point_2 point )override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveSegment: " << segment << std::endl;

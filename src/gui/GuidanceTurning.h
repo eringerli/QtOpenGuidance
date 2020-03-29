@@ -43,8 +43,10 @@ class GuidanceTurning : public QGroupBox {
     void on_pbMinusLeft_clicked();
 
     void on_pbLeft_pressed();
-
     void on_pbRight_pressed();
+
+  public slots:
+    void resetTurningState();
 
   signals:
     void turnLeftToggled( bool state );

@@ -100,6 +100,10 @@ inline const Point_2 to2D( const Point_3& point ) {
   return Point_2( point.x(), point.y() );
 }
 
+inline const Point_3 to3D( const Point_2& point ) {
+  return Point_3( point.x(), point.y(), 0 );
+}
+
 inline const Segment_3 to3D( const Segment_2& segment ) {
   return Segment_3( Point_3( segment.source().x(), segment.source().y(), 0 ), Point_3( segment.target().x(), segment.target().y(), 0 ) );
 }
@@ -108,7 +112,7 @@ inline const Vector_3 to3D( const Vector_2& vector ) {
   return Vector_3( vector.x(), vector.y(), 0 );
 }
 
-inline Vector_2 polarOffset( const double angle, const double distance ) {
+inline Vector_2 polarOffsetRad( const double angle, const double distance ) {
   return Vector_2( std::sin( angle ) * distance, -std::cos( angle ) * distance );
 }
 
