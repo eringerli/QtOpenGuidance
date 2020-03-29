@@ -134,4 +134,3 @@ class FileStreamFactory : public BlockFactory {
       return b;
     }
 };
-

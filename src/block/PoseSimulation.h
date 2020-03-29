@@ -191,5 +191,3 @@ class PoseSimulationFactory : public BlockFactory {
   private:
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };
-
-

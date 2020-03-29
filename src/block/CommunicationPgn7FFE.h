@@ -98,4 +98,3 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
       return b;
     }
 };
-

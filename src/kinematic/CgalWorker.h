@@ -78,4 +78,3 @@ class CgalThread : public QThread {
 Q_DECLARE_METATYPE( FieldsOptimitionToolbar::AlphaType )
 Q_DECLARE_METATYPE( uint32_t )
 Q_DECLARE_METATYPE( std::shared_ptr<Polygon_with_holes_2> )
-

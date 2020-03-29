@@ -250,4 +250,3 @@ class CameraControllerFactory : public BlockFactory {
     Qt3DCore::QEntity* m_rootEntity = nullptr;
     Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };
-

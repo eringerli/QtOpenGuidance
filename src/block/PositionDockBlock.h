@@ -169,4 +169,3 @@ class PositionDockBlockFactory : public BlockFactory {
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
-

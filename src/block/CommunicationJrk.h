@@ -85,4 +85,3 @@ class CommunicationJrkFactory : public BlockFactory {
       return b;
     }
 };
-

@@ -162,4 +162,3 @@ class TrailerKinematicFactory : public BlockFactory {
       return b;
     }
 };
-

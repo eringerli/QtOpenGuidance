@@ -63,4 +63,3 @@ class ImplementBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

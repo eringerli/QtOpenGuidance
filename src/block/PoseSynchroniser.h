@@ -87,5 +87,3 @@ class PoseSynchroniserFactory : public BlockFactory {
       return b;
     }
 };
-
-

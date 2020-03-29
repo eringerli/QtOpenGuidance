@@ -86,4 +86,3 @@ class StringFactory : public BlockFactory {
   private:
     StringBlockModel* model = nullptr;
 };
-

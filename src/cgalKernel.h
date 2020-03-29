@@ -131,4 +131,3 @@ inline double angleOfLineRadians( const Line_2& line ) {
 }
 
 //#endif // not __clang_analyzer__
-

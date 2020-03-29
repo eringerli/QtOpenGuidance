@@ -63,4 +63,3 @@ class SliderBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

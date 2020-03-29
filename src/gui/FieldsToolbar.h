@@ -49,4 +49,3 @@ class FieldsToolbar : public QGroupBox {
     Ui::FieldsToolbar* ui = nullptr;
     QBoxLayout* boxLayout = nullptr;
 };
-

@@ -101,4 +101,3 @@ class VectorFactory : public BlockFactory {
   private:
     VectorBlockModel* model = nullptr;
 };
-

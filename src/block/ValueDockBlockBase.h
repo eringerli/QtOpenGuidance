@@ -90,4 +90,3 @@ class ValueDockBlockBase : public BlockBase {
     static KDDockWidgets::DockWidget* firstValueDock;
     static KDDockWidgets::DockWidget* firstThreeValuesDock;
 };
-

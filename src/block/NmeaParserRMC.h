@@ -189,4 +189,3 @@ class NmeaParserRMCFactory : public BlockFactory {
       return b;
     }
 };
-

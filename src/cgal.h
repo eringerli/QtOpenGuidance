@@ -124,4 +124,3 @@ typedef CGAL::Bbox_2 Bbox_2;
 typedef K::Intersect_2 Intersect_2;
 
 #endif // not __clang_analyzer__
-

@@ -171,5 +171,3 @@ class StanleyGuidanceFactory : public BlockFactory {
       return b;
     }
 };
-
-

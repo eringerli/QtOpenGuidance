@@ -132,5 +132,3 @@ class DebugSinkFactory : public BlockFactory {
       return b;
     }
 };
-
-

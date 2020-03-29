@@ -112,4 +112,3 @@ class XteDockBlockFactory : public BlockFactory {
   public:
     static KDDockWidgets::DockWidget* firstDock;
 };
-

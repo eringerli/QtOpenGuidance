@@ -212,4 +212,3 @@ class ImplementFactory : public BlockFactory {
     ImplementBlockModel* model = nullptr;
     KDDockWidgets::DockWidget* firstDock = nullptr;
 };
-

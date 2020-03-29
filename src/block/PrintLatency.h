@@ -92,5 +92,3 @@ class PrintLatencyFactory : public BlockFactory {
       return b;
     }
 };
-
-

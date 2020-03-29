@@ -342,5 +342,3 @@ class GlobalPlannerModelFactory : public BlockFactory {
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
-
-

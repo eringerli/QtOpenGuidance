@@ -63,4 +63,3 @@ class VectorBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

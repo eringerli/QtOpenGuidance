@@ -122,4 +122,3 @@ class FixedKinematicFactory : public BlockFactory {
       return b;
     }
 };
-

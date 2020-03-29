@@ -113,4 +113,3 @@ class SerialPortFactory : public BlockFactory {
       return b;
     }
 };
-

@@ -47,4 +47,3 @@ class ValueDock : public QGroupBox {
   private:
     Ui::ValueDock* ui = nullptr;
 };
-

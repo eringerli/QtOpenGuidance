@@ -58,4 +58,3 @@ class FontComboboxDelegate : public QStyledItemDelegate {
       editor->setGeometry( option.rect );
     }
 };
-

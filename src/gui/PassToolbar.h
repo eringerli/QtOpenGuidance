@@ -62,4 +62,3 @@ class PassToolbar : public QGroupBox {
   private:
     Ui::PassToolbar* ui = nullptr;
 };
-

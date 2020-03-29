@@ -271,5 +271,3 @@ class FieldManagerFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
     GeographicConvertionWrapper* tmw = nullptr;
 };
-
-

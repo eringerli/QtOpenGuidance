@@ -303,4 +303,3 @@ class GlobalPlannerFactory : public BlockFactory {
     QWidget* mainWindow = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
-

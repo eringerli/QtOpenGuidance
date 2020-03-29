@@ -63,4 +63,3 @@ class GuidanceToolbar : public QGroupBox {
   private:
     Ui::GuidanceToolbar* ui = nullptr;
 };
-

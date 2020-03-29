@@ -123,4 +123,3 @@ class AckermannSteeringFactory : public BlockFactory {
 
   private:
 };
-

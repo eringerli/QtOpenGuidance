@@ -290,5 +290,3 @@ class GridModelFactory : public BlockFactory {
     Qt3DCore::QEntity* rootEntity = nullptr;
     Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };
-
-

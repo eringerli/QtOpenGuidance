@@ -162,5 +162,3 @@ class XteGuidanceFactory : public BlockFactory {
       return b;
     }
 };
-
-

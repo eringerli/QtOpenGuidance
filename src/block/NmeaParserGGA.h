@@ -208,4 +208,3 @@ class NmeaParserGGAFactory : public BlockFactory {
       return b;
     }
 };
-

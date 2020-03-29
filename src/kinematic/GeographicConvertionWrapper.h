@@ -145,4 +145,3 @@ class GeographicConvertionWrapper {
     double lon0TM = 0;
     double height0TM = 0;
 };
-

@@ -49,4 +49,3 @@ class ThreeValuesDock : public QGroupBox {
   private:
     Ui::ThreeValuesDock* ui = nullptr;
 };
-

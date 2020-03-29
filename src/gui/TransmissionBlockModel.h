@@ -59,4 +59,3 @@ class TransmissionBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

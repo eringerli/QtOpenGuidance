@@ -296,4 +296,3 @@ class SettingsDialog : public QDialog {
     QColor localPlannerArrowColor = QColor( 0x90, 0x90, 0 );
     QColor localPlannerLineColor = QColor( 0x9a, 0x64, 0x77 );
 };
-

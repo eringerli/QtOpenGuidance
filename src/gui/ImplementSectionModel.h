@@ -65,4 +65,3 @@ class ImplementSectionModel : public QAbstractTableModel {
   private:
     QNEBlock* block = nullptr;
 };
-

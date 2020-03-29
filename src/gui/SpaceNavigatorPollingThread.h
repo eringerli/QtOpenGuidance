@@ -87,4 +87,3 @@ class SpaceNavigatorPollingThread : public QThread {
   private:
     bool m_stopped;
 };
-

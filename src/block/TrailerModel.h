@@ -118,4 +118,3 @@ class TrailerModelFactory : public BlockFactory {
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
 };
-

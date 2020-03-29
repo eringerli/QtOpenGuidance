@@ -64,4 +64,3 @@ class FieldsOptimitionToolbar : public QGroupBox {
     double optimalAlpha = 20;
     double solidAlpha = 100;
 };
-

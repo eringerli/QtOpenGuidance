@@ -91,4 +91,3 @@ class TransverseMercatorConverterFactory : public BlockFactory {
   private:
     GeographicConvertionWrapper* tmw = nullptr;
 };
-

@@ -65,4 +65,3 @@ class SectionControlToolbar : public QGroupBox {
 
     bool horizontal = true;
 };
-

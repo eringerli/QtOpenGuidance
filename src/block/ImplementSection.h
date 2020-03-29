@@ -92,4 +92,5 @@ class ImplementSection {
   private:
     States stateOfSection = State::None;
 };
+
 Q_DECLARE_OPERATORS_FOR_FLAGS( ImplementSection::States )

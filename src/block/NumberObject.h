@@ -86,4 +86,3 @@ class NumberFactory : public BlockFactory {
   private:
     NumberBlockModel* model = nullptr;
 };
-

@@ -59,4 +59,3 @@ class ValueBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

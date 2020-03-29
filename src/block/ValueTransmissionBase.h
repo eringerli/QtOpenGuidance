@@ -91,4 +91,3 @@ class ValueTransmissionBase : public BlockBase {
     QBasicTimer timeoutTimer;
     QBasicTimer repeatTimer;
 };
-

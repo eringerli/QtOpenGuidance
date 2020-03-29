@@ -161,4 +161,3 @@ class OrientationDockBlockFactory : public BlockFactory {
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
 };
-

@@ -38,4 +38,3 @@ class XteDock : public QGroupBox {
   private:
     Ui::XteDock* ui = nullptr;
 };
-

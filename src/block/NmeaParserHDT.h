@@ -149,4 +149,3 @@ class NmeaParserHDTFactory : public BlockFactory {
       return b;
     }
 };
-

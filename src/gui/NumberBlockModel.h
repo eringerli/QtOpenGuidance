@@ -63,4 +63,3 @@ class NumberBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

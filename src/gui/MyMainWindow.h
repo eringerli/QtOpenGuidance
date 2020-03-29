@@ -50,4 +50,3 @@ class MyMainWindow : public KDDockWidgets::MainWindow {
   signals:
     void closed();
 };
-

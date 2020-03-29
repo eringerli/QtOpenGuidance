@@ -76,5 +76,3 @@ class PlannerGuiBlockFactory : public BlockFactory {
       return b;
     }
 };
-
-

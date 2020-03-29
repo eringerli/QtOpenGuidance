@@ -64,4 +64,3 @@ class StringBlockModel : public QAbstractTableModel {
 
     int countBuffer = 0;
 };
-

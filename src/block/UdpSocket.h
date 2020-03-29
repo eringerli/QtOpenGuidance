@@ -99,4 +99,3 @@ class UdpSocketFactory : public BlockFactory {
       return b;
     }
 };
-
