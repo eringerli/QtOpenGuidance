@@ -11,6 +11,9 @@ please contact me first (@eringerli on Telegram) for coordinating the effort. Th
 ## Word to the Wise
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
 
+## If it doesn't compile
+Please update your repository to the most recent version. I sometimes do a force-push, `git reset --hard origin/master` is neccessary in this case. **This removes all local changes, so be carefull!**
+
 ## Warning
 As clearly in the file LICENSE stated (especialy Section 15 through 17), there are no guaranties of any kind. You're responsible to
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
