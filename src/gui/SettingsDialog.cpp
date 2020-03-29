@@ -1511,3 +1511,25 @@ void SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked )
 void SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
   geographicConvertionWrapperGuidance->useTM = checked;
 }
+
+void SettingsDialog::on_pbSaveAll_clicked() {
+  // select all items, so everything gets saved
+  {
+    const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+    for( const auto& item : constRefOfList ) {
+      item->setSelected( true );
+    }
+  }
+
+  on_pbSaveSelected_clicked();
+
+  // deselect all items
+  {
+    const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
+
+    for( const auto& item : constRefOfList ) {
+      item->setSelected( false );
+    }
+  }
+}

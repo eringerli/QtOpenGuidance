@@ -174,6 +174,8 @@ class SettingsDialog : public QDialog {
     void on_rbCrsSimulatorTransverseMercator_toggled( bool checked );
     void on_rbCrsGuidanceTransverseMercator_toggled( bool checked );
 
+    void on_pbSaveAll_clicked();
+
   private:
     void saveGridValuesInSettings();
     void savePlannerValuesInSettings();
