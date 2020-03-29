@@ -49,7 +49,7 @@ class StanleyGuidance : public BlockBase {
     void setSteeringAngle( double steeringAngle ) {
       steeringAngle2Ago = steeringAngle1Ago;
       steeringAngle1Ago = this->steeringAngle;
-      this->steeringAngle = double( steeringAngle );
+      this->steeringAngle = steeringAngle;
     }
 
     void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
@@ -67,7 +67,7 @@ class StanleyGuidance : public BlockBase {
     void setXte( double distance ) {
       if( !qIsInf( distance ) ) {
         double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadians ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
-        double stanleyXteCompensation = atan( ( stanleyGainK * double( -distance ) ) / ( double( velocity ) + stanleyGainKSoft ) );
+        double stanleyXteCompensation = atan( ( stanleyGainK * -distance ) / ( velocity + stanleyGainKSoft ) );
         double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYaw *
             ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1Ago.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientation.toEulerAngles().z() ) ) ) -
               ( yawTrajectory1Ago - headingOfPathRadians ) ) );
@@ -84,30 +84,30 @@ class StanleyGuidance : public BlockBase {
 
 //        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadians ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
 
-        emit steerAngleChanged( float( steerAngleRequested ) );
+        emit steerAngleChanged( steerAngleRequested );
         yawTrajectory1Ago = headingOfPathRadians;
       }
     }
 
     void setStanleyGainK( double stanleyGain ) {
-      this->stanleyGainK = double( stanleyGain );
+      this->stanleyGainK = stanleyGain;
     }
     void setStanleyGainKSoft( double stanleyGain ) {
-      this->stanleyGainKSoft = double( stanleyGain );
+      this->stanleyGainKSoft = stanleyGain;
     }
     void setStanleyGainDampeningYaw( double stanleyGain ) {
-      this->stanleyGainDampeningYaw = double( stanleyGain );
+      this->stanleyGainDampeningYaw = stanleyGain;
     }
     void setStanleyGainDampeningSteering( double stanleyGain ) {
-      this->stanleyGainDampeningSteering = double( stanleyGain );
+      this->stanleyGainDampeningSteering = stanleyGain;
     }
 
     void setVelocity( double velocity ) {
-      this->velocity = double( velocity );
+      this->velocity = velocity;
     }
 
     void setMaxSteeringAngle( double maxSteeringAngle ) {
-      this->maxSteeringAngle = double( maxSteeringAngle );
+      this->maxSteeringAngle = maxSteeringAngle;
     }
 
     void emitConfigSignals() override {

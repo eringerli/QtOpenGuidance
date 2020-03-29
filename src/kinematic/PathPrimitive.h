@@ -106,7 +106,7 @@ class PathPrimitiveLine : public PathPrimitive {
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual bool isOn( const Point_2& point ) override;
+    virtual bool isOn( const Point_2& ) override;
     virtual bool leftOf( const Point_2& point ) override;
     virtual double angleAtPointDegrees( const Point_2& ) override;
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;

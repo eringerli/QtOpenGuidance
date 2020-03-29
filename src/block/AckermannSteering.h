@@ -33,11 +33,11 @@ class AckermannSteering : public BlockBase {
   public slots:
     void setWheelbase( double wheelbase ) {
       m_wheelbase = wheelbase;
-      m_correction = qreal( m_trackWidth / ( 2.0f * m_wheelbase ) );
+      m_correction = m_trackWidth / ( 2.0f * m_wheelbase );
     }
     void setTrackwidth( double trackWidth ) {
       m_trackWidth = trackWidth;
-      m_correction = qreal( m_trackWidth / ( 2.0f * m_wheelbase ) );
+      m_correction = m_trackWidth / ( 2.0f * m_wheelbase );
     }
 
     void setSteeringAngle( double steerAngle ) {
@@ -48,8 +48,8 @@ class AckermannSteering : public BlockBase {
         emit steeringAngleChangedRight( 0 );
       } else {
         emit steeringAngleChanged( steerAngle );
-        emit steeringAngleChangedLeft( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) - m_correction ) ) ) ) );
-        emit steeringAngleChangedRight( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) + m_correction ) ) ) ) );
+        emit steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
+        emit steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
       }
     }
 
@@ -61,8 +61,8 @@ class AckermannSteering : public BlockBase {
         emit steeringAngleChangedRight( 0 );
       } else {
         emit steeringAngleChangedLeft( steerAngle );
-        emit steeringAngleChanged( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) + m_correction ) ) ) ) );
-        emit steeringAngleChangedRight( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) + ( 2 * m_correction ) ) ) ) ) );
+        emit steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
+        emit steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + ( 2 * m_correction ) ) ) ) );
       }
     }
 
@@ -74,8 +74,8 @@ class AckermannSteering : public BlockBase {
         emit steeringAngleChangedRight( 0 );
       } else {
         emit steeringAngleChangedRight( steerAngle );
-        emit steeringAngleChangedLeft( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) - ( 2 * m_correction ) ) ) ) ) );
-        emit steeringAngleChanged( double( qRadiansToDegrees( qAtan( 1 / ( ( 1 / qTan( qDegreesToRadians( qreal( steerAngle ) ) ) ) - m_correction ) ) ) ) );
+        emit steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - ( 2 * m_correction ) ) ) ) );
+        emit steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
       }
     }
 
@@ -85,8 +85,8 @@ class AckermannSteering : public BlockBase {
     void steeringAngleChangedRight( double );
 
   private:
-    float m_wheelbase = 2.4f;
-    float m_trackWidth = 2.0f;
+    double m_wheelbase = 2.4f;
+    double m_trackWidth = 2.0f;
 
     // formula: m_trackWidth / ( 2.0f * m_wheelbase )
     qreal m_correction = 2 / ( 2 * 2.4 );

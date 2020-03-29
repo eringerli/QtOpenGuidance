@@ -55,7 +55,7 @@ double PathPrimitiveLine::distanceToPointSquared( const Point_2& point ) {
   return CGAL::squared_distance( orthogonalProjection( point ), point );
 }
 
-bool PathPrimitiveLine::isOn( const Point_2& point ) {
+bool PathPrimitiveLine::isOn( const Point_2& ) {
   return true;
 }
 
