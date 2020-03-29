@@ -193,7 +193,7 @@ If it crashes on start, try to use another build type.
 1. `git submodule update`
 
 ## Issues and Bugs
-If you find an issue or a bug, report them on github.
+If you find an issue or a bug, report them on github. Also, there's a Telegram group: https://t.me/QtOpenGuidance.
 
 ## Forking
 It is possible to run this software without forking. So if you're not interested in making changes yourself, don't. To just 
