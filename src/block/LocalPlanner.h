@@ -91,14 +91,18 @@ class LocalPlanner : public BlockBase {
   public slots:
     void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
 
-    void setPlan( const Plan& plan ) {
-      this->globalPlan = plan;
-      lastPrimitive = nullptr;
-//      emit planChanged( plan );
+    void setPlan( const Plan& plan );
+
+    void setSteeringAngle( double steeringAngle ) {
+      this->steeringAngleDegrees = steeringAngle;
     }
 
     void setPathHysteresis( const double pathHysteresis ) {
       this->pathHysteresis = pathHysteresis;
+    }
+
+    void setMinRadius( const double minRadius ) {
+      this->minRadius = minRadius;
     }
 
     void turnLeftToggled( bool state );
@@ -113,7 +117,9 @@ class LocalPlanner : public BlockBase {
   public:
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
+    double steeringAngleDegrees = 0;
     double pathHysteresis = 0.5;
+    double minRadius = 10;
 
     GuidanceTurning* widget = nullptr;
     KDDockWidgets::DockWidget* dock = nullptr;
@@ -177,7 +183,10 @@ class LocalPlannerFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( const double ) ) ) );
+
       b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 

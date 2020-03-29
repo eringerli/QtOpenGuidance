@@ -35,31 +35,33 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
         // local planner for lines: find the nearest line and put it into the local plan
         double distanceSquared = qInf();
         auto nearestPrimitive = globalPlan.getNearestPrimitive( position2D, distanceSquared );
-        double distance = std::sqrt( distanceSquared );
+        double distanceNearestPrimitive = std::sqrt( distanceSquared );
 
-        if( lastPrimitive ) {
-        }
-
-        if( !lastPrimitive || distance < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) {
+        if( !lastPrimitive || distanceNearestPrimitive < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) {
           lastPrimitive = *nearestPrimitive;
-
           plan.type = globalPlan.type;
           plan.plan->clear();
+        }
 
-          if( ( *nearestPrimitive )->anyDirection ) {
-            double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+        if( lastPrimitive->anyDirection ) {
+          double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
+          double steerAngleAbsoluteDegrees = steeringAngleDegrees + orientation.toEulerAngles().z();
 
-            if( std::abs( orientation.toEulerAngles().z() - angleNearestPrimitiveDegrees ) > 95 ) {
-              auto reverse = ( *nearestPrimitive )->createReverse();
-              plan.plan->push_back( reverse );
-              emit planChanged( plan );
-              return;
-            }
+          qDebug() << angleLastPrimitiveDegrees << steerAngleAbsoluteDegrees << std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) );
+
+          if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
+            qDebug() << "std::abs(std::abs";
+            auto reverse = lastPrimitive->createReverse();
+            reverse->anyDirection = false;
+            lastPrimitive = reverse;
+            plan.type = globalPlan.type;
+            plan.plan->clear();
           }
+        }
 
-          plan.plan->push_back( *nearestPrimitive );
+        if( plan.plan->empty() ) {
+          plan.plan->push_back( lastPrimitive );
           emit planChanged( plan );
-          return;
         }
       }
     } else {
@@ -81,13 +83,19 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
   }
 }
 
+void LocalPlanner::setPlan( const Plan& plan ) {
+  this->globalPlan = plan;
+  lastPrimitive = nullptr;
+}
+
 void LocalPlanner::turnLeftToggled( bool state ) {
   qDebug() << "LocalPlanner::turnLeftToggled" << state << turningLeft;
 
   if( state == true ) {
+    bool existingTurn = turningLeft | turningRight;
     turningLeft = true;
     turningRight = false;
-    calculateTurning( false );
+    calculateTurning( existingTurn );
   } else {
     turningLeft = false;
     turningRight = false;
@@ -98,9 +106,10 @@ void LocalPlanner::turnRightToggled( bool state ) {
   qDebug() << "LocalPlanner::turnRightToggled" << state << turningRight;
 
   if( state == true ) {
+    bool existingTurn = turningLeft | turningRight;
     turningRight = true;
     turningLeft = false;
-    calculateTurning( false );
+    calculateTurning( existingTurn );
   } else {
     turningLeft = false;
     turningRight = false;
@@ -131,7 +140,7 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
     double distanceSquared = qInf();
     auto nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
 
-    double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+    double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( positionTurnStart );
     bool searchUp = turningLeft;
 
     bool reversedLine = std::abs( headingTurnStart - angleNearestPrimitiveDegrees ) > 90;
@@ -154,13 +163,13 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
         offset = -offset;
       }
 
-      emit triggerPlanPose( position + to3D( offset ), orientation, PoseOption::Options() );
+      emit triggerPlanPose( to3D( positionTurnStart + offset ), orientation, PoseOption::Options() );
 
       nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
 
-      auto perpendicularLine = line->line.perpendicular( position2D );
+      auto perpendicularLine = line->line.perpendicular( positionTurnStart );
 
-      Plan::ConstPrimitiveIterator targetLineIt;
+      Plan::ConstPrimitiveIterator targetLineIt = globalPlan.plan->cend();
 
       if( turningLeft ) {
         targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
@@ -168,19 +177,19 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
         targetLineIt = nearestPrimitive + ( searchUp ? rightSkip : -rightSkip );
       }
 
-      if( targetLineIt < globalPlan.plan->cend() ) {
+      if( targetLineIt != globalPlan.plan->cend() ) {
         Point_2 resultingPoint;
 
         if( ( *targetLineIt )->intersectWithLine( perpendicularLine, resultingPoint ) ) {
           double headingAtTargetRad = qDegreesToRadians( ( *targetLineIt )->angleAtPointDegrees( resultingPoint ) ) + ( reversedLine ? M_PI : 0 );
 
-          std::cout << "LocalPlanner::turnLeftToggled position2D:" << position2D << ", resultingPoint:" << resultingPoint << ", angleNearestPrimitive:" << angleNearestPrimitiveDegrees << "headingAtTarget" << headingAtTargetRad << std::endl;
+//          std::cout << "LocalPlanner::turnLeftToggled position2D:" << position2D << ", resultingPoint:" << resultingPoint << ", angleNearestPrimitive:" << angleNearestPrimitiveDegrees << "headingAtTarget" << headingAtTargetRad << std::endl;
 
           DubinsPath dubinsPath;
           double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( heading )};
           double q1[] = {resultingPoint.x(), resultingPoint.y(), headingAtTargetRad - M_PI};
 
-          dubins_shortest_path( &dubinsPath, q0, q1, 15 );
+          dubins_shortest_path( &dubinsPath, q0, q1, minRadius );
 
           std::vector<Point_2> polyline;
 
@@ -192,7 +201,7 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
 
           std::vector<Point_2> optimizedPolyline;
           PS::Squared_distance_cost cost;
-          PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.01 ), std::back_inserter( optimizedPolyline ) );
+          PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.008 ), std::back_inserter( optimizedPolyline ) );
 
           if( optimizedPolyline.size() ) {
             plan.plan->clear();
