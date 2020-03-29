@@ -46,8 +46,10 @@ class Implement : public BlockBase {
 
   public:
     explicit Implement( QString uniqueName,
-                        MyMainWindow* mainWindow )
-      : BlockBase() {
+                        MyMainWindow* mainWindow,
+                        KDDockWidgets::DockWidget** firstDock )
+      : BlockBase(),
+        firstDock( firstDock ) {
       widget = new SectionControlToolbar( this, mainWindow );
       dock = new KDDockWidgets::DockWidget( uniqueName );
 
@@ -58,6 +60,10 @@ class Implement : public BlockBase {
     }
 
     ~Implement() override {
+      if( *firstDock == dock ) {
+        *firstDock = nullptr;
+      }
+
       widget->deleteLater();
       dock->deleteLater();
     }
@@ -143,6 +149,9 @@ class Implement : public BlockBase {
     SectionControlToolbar* widget = nullptr;
 
     std::vector<ImplementSection*> sections;
+
+  private:
+    KDDockWidgets::DockWidget** firstDock = nullptr;
 };
 
 class ImplementFactory : public BlockFactory {
@@ -169,7 +178,8 @@ class ImplementFactory : public BlockFactory {
       }
 
       auto* object = new Implement( getNameOfFactory() + QString::number( id ),
-                                    mainWindow );
+                                    mainWindow,
+                                    &firstDock );
       auto* b = createBaseBlock( scene, object, id );
 
       object->dock->setTitle( getNameOfFactory() );
