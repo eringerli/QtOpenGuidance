@@ -141,10 +141,10 @@ class PoseSimulation : public BlockBase {
     int m_timerId;
     QElapsedTimer m_time;
 
-    float m_steerAngle = 0;
-    float m_steerAngleFromAutosteer = 0;
-    float m_velocity = 0;
-    float m_wheelbase = 2.4f;
+    double m_steerAngle = 0;
+    double m_steerAngleFromAutosteer = 0;
+    double m_velocity = 0;
+    double m_wheelbase = 2.4f;
 
     QVector3D m_antennaPosition = QVector3D();
     QQuaternion m_orientation = QQuaternion();
@@ -152,6 +152,7 @@ class PoseSimulation : public BlockBase {
     double x = 0;
     double y = 0;
     double height = 0;
+    double lastHeading = 0;
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };
 

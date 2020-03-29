@@ -31,9 +31,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
     constexpr double msPerS = 1000;
     double elapsedTime = double ( m_time.restart() ) / msPerS;
-    QQuaternion lastOrientation = m_orientation;
-
-    float steerAngle = 0;
+    double steerAngle = 0;
 
     if( m_autosteerEnabled ) {
       steerAngle = m_steerAngleFromAutosteer;
@@ -44,29 +42,29 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     emit steeringAngleChanged( steerAngle );
     emit velocityChanged( m_velocity );
 
-    // heading
-    {
-      QQuaternion difference = QQuaternion::fromEulerAngles( QVector3D(
-                                 0,
-                                 0,
-                                 float( qRadiansToDegrees( elapsedTime * ( qTan( qDegreesToRadians( steerAngle ) / m_wheelbase * m_velocity ) ) ) )
-                               ) );
-      m_orientation *=  difference;
-      emit orientationChanged( m_orientation );
-    }
-
     // local position
     {
-      double headingRad = qDegreesToRadians( double( lastOrientation.toEulerAngles().z() ) );
       double elapsedTimeVelocity = elapsedTime * double( m_velocity );
-      x +=  elapsedTimeVelocity * qCos( headingRad );
-      y += elapsedTimeVelocity * qSin( headingRad );
+      x +=  elapsedTimeVelocity * std::cos( lastHeading );
+      y += elapsedTimeVelocity * std::sin( lastHeading );
+      lastHeading += elapsedTime * ( std::tan( qDegreesToRadians( steerAngle ) ) / m_wheelbase * m_velocity );
+    }
+
+    // orientation
+    {
+      m_orientation = QQuaternion::fromEulerAngles( QVector3D(
+                        0,
+                        0,
+                        float( qRadiansToDegrees( lastHeading ) )
+                      ) );
+      emit orientationChanged( m_orientation );
     }
     QVector3D antenna =  m_orientation * m_antennaPosition;
 
     double xWithAntennaOffset = x + double( antenna.x() );
     double yWithAntennaOffset = y + double( antenna.y() );
     double zWithAntennaOffset = height + double( antenna.z() );
+
 
     // emit signal with antenna offset
     emit positionChanged( QVector3D( float( xWithAntennaOffset ), float( yWithAntennaOffset ), float( zWithAntennaOffset ) ) );
