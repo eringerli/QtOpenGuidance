@@ -86,6 +86,7 @@ HEADERS += \
     src/3d/BufferMesh.h \
     src/3d/BufferMeshGeometry.h \
     src/block/AckermannSteering.h \
+    src/block/AngularVelocityLimiter.h \
     src/block/BlockBase.h \
     src/block/CameraController.h \
     src/block/CommunicationJrk.h \

@@ -1,13 +1,52 @@
 {
     "blocks": [
         {
+            "id": 1079,
+            "name": "Max Angular Velocity",
+            "positionX": -306.76684638265704,
+            "positionY": -459,
+            "type": "SliderDockBlock",
+            "values": {
+                "Decimals": 2,
+                "DefaultValue": 0,
+                "Maximum": 100,
+                "Minimum": 1,
+                "ResetOnStart": false,
+                "SliderInverted": false,
+                "Unit": "",
+                "Value": 54.35
+            }
+        },
+        {
+            "id": 1081,
+            "name": "Max Steering Angle",
+            "positionX": 374,
+            "positionY": -357,
+            "type": "ValueDockBlock",
+            "values": {
+                "FieldWitdh": 5,
+                "Font": "Monospace,20,-1,5,50,0,0,0,0,0,Regular",
+                "Precision": 2,
+                "Scale": 1,
+                "Unit": "°",
+                "UnitVisible": true
+            }
+        },
+        {
+            "id": 1077,
+            "name": "Angular Velocity Limiter",
+            "positionX": -17,
+            "positionY": -374,
+            "type": "Angular Velocity Limiter"
+        },
+        {
             "id": 1075,
             "name": "Local Planner Hysteresis",
             "positionX": 2261,
             "positionY": 612,
             "type": "Number",
             "values": {
-                "Number": 0.5
+                "Number": 1
             }
         },
         {
@@ -120,9 +159,9 @@
         },
         {
             "id": 1018,
-            "name": "Stanley Maximal Steering Angle",
-            "positionX": 2737,
-            "positionY": 170,
+            "name": "Maximal Steering Angle",
+            "positionX": -323,
+            "positionY": -391,
             "type": "Number",
             "values": {
                 "Number": 35
@@ -505,8 +544,8 @@
         {
             "id": 1030,
             "name": "Track Width Tractor",
-            "positionX": -748,
-            "positionY": -198.86818985839142,
+            "positionX": -731,
+            "positionY": -238,
             "type": "Number",
             "values": {
                 "Number": 1.7999999523162842
@@ -515,17 +554,17 @@
         {
             "id": 1039,
             "name": "Wheelbase Tractor",
-            "positionX": -748,
-            "positionY": -286,
+            "positionX": -731,
+            "positionY": -306,
             "type": "Number",
             "values": {
-                "Number": 2.5
+                "Number": 2.4000000953674316
             }
         },
         {
             "id": 1040,
             "name": "Antenna Position",
-            "positionX": -726,
+            "positionX": -731,
             "positionY": -374,
             "type": "Vector3D",
             "values": {
@@ -681,6 +720,21 @@
             "type": "Fixed Kinematic"
         },
         {
+            "id": 1080,
+            "name": "Min Radius",
+            "positionX": 374.3957496588682,
+            "positionY": -289,
+            "type": "ValueDockBlock",
+            "values": {
+                "FieldWitdh": 5,
+                "Font": "Monospace,20,-1,5,50,0,0,0,0,0,Regular",
+                "Precision": 2,
+                "Scale": 1,
+                "Unit": "m",
+                "UnitVisible": true
+            }
+        },
+        {
             "id": 8,
             "name": "Fps Measurement",
             "positionX": -638,
@@ -738,6 +792,48 @@
         }
     ],
     "connections": [
+        {
+            "idFrom": 1077,
+            "idTo": 1080,
+            "portFrom": "Min Radius",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1018,
+            "idTo": 1077,
+            "portFrom": "Number",
+            "portTo": "Max Steering Angle"
+        },
+        {
+            "idFrom": 1077,
+            "idTo": 1081,
+            "portFrom": "Max Steering Angle",
+            "portTo": "Number"
+        },
+        {
+            "idFrom": 1077,
+            "idTo": 1012,
+            "portFrom": "Max Steering Angle",
+            "portTo": "Max Steering Angle"
+        },
+        {
+            "idFrom": 1068,
+            "idTo": 1077,
+            "portFrom": "Velocity",
+            "portTo": "Velocity"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1077,
+            "portFrom": "Velocity",
+            "portTo": "Velocity"
+        },
+        {
+            "idFrom": 1039,
+            "idTo": 1077,
+            "portFrom": "Number",
+            "portTo": "Length Wheelbase"
+        },
         {
             "idFrom": 1011,
             "idTo": 1032,
@@ -1267,12 +1363,6 @@
             "portTo": "Stanley Gain K"
         },
         {
-            "idFrom": 1018,
-            "idTo": 1012,
-            "portFrom": "Number",
-            "portTo": "Max Steering Angle"
-        },
-        {
             "idFrom": 1038,
             "idTo": 1012,
             "portFrom": "Number",
@@ -1415,6 +1505,24 @@
             "idTo": 1005,
             "portFrom": "Orientation Dual Antenna",
             "portTo": "Orientation"
+        },
+        {
+            "idFrom": 1079,
+            "idTo": 1077,
+            "portFrom": "Number",
+            "portTo": "Max Angular Velocity"
+        },
+        {
+            "idFrom": 1077,
+            "idTo": 1011,
+            "portFrom": "Min Radius",
+            "portTo": "Minimum Radius"
+        },
+        {
+            "idFrom": 1,
+            "idTo": 1011,
+            "portFrom": "Steering Angle",
+            "portTo": "Steering Angle"
         }
     ]
 }

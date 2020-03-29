@@ -54,6 +54,7 @@
 #include "../block/GridModel.h"
 
 #include "../block/AckermannSteering.h"
+#include "../block/AngularVelocityLimiter.h"
 
 #include "../block/PoseSimulation.h"
 
@@ -299,6 +300,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   nmeaParserHDTFactory = new NmeaParserHDTFactory();
   nmeaParserRMCFactory = new NmeaParserRMCFactory();
   ackermannSteeringFactory = new AckermannSteeringFactory();
+  angularVelocityLimiterFactory = new AngularVelocityLimiterFactory();
 
   valueTransmissionNumberFactory = new ValueTransmissionNumberFactory();
   valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory();
@@ -314,6 +316,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   sprayerModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
+  angularVelocityLimiterFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
