@@ -35,8 +35,12 @@
 #include <QVector>
 #include <QSharedPointer>
 
+// general stanley-controller:
 // http://ai.stanford.edu/~gabeh/papers/hoffmann_stanley_control07.pdf
 // https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/stanley_controller/stanley_controller.py
+
+// reverse driving:
+// https://www.researchgate.net/publication/339107638_Design_of_a_transverse_controller_for_an_autonomous_driving_model_car_based_on_the_Stanley_approach
 
 class StanleyGuidance : public BlockBase {
     Q_OBJECT
@@ -52,26 +56,38 @@ class StanleyGuidance : public BlockBase {
       this->steeringAngle = steeringAngle;
     }
 
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseFrontWheels( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
-        this->orientation1Ago = this->orientation;
-        this->orientation = orientation;
+        this->positionFrontWheels = position;
+        this->orientation1AgoFrontWheels = this->orientationFrontWheels;
+        this->orientationFrontWheels = orientation;
       }
     }
 
-    void setHeadingOfPath( double headingOfPath ) {
-      this->headingOfPathRadians = qDegreesToRadians( headingOfPath );
+    void setPoseRearWheels( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        this->positionRearWheels = position;
+        this->orientation1AgoRearWheels = this->orientationRearWheels;
+        this->orientationRearWheels = orientation;
+      }
     }
 
-    void setXte( double distance ) {
-      if( !qIsInf( distance ) ) {
-        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadians ) - ( qDegreesToRadians( double( orientation.toEulerAngles().z() ) ) ) );
-        double stanleyXteCompensation = atan( ( stanleyGainK * -distance ) / ( velocity + stanleyGainKSoft ) );
-        double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYaw *
-            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1Ago.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientation.toEulerAngles().z() ) ) ) -
-              ( yawTrajectory1Ago - headingOfPathRadians ) ) );
-        double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteering * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
+    void setHeadingOfPathFrontWheels( double headingOfPath ) {
+      this->headingOfPathRadiansFrontWheels = qDegreesToRadians( headingOfPath );
+    }
+
+    void setHeadingOfPathRearWheels( double headingOfPath ) {
+      this->headingOfPathRadiansRearWheels = qDegreesToRadians( headingOfPath );
+    }
+
+    void setXteFrontWheels( double distance ) {
+      if( !qIsInf( distance ) && velocity >= 0 ) {
+        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadiansFrontWheels ) - ( qDegreesToRadians( double( orientationFrontWheels.toEulerAngles().z() ) ) ) );
+        double stanleyXteCompensation = atan( ( stanleyGainKForwards * -distance ) / ( velocity + stanleyGainKSoftForwards ) );
+        double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYawForwards *
+            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1AgoFrontWheels.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientationFrontWheels.toEulerAngles().z() ) ) ) -
+              ( yawTrajectory1AgoFrontWheels - headingOfPathRadiansFrontWheels ) ) );
+        double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringForwards * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
         double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
         if( steerAngleRequested >= maxSteeringAngle ) {
@@ -85,21 +101,59 @@ class StanleyGuidance : public BlockBase {
 //        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadians ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
 
         emit steerAngleChanged( steerAngleRequested );
-        yawTrajectory1Ago = headingOfPathRadians;
+        yawTrajectory1AgoFrontWheels = headingOfPathRadiansFrontWheels;
       }
     }
 
-    void setStanleyGainK( double stanleyGain ) {
-      this->stanleyGainK = stanleyGain;
+    void setXteRearWheels( double distance ) {
+      if( !qIsInf( distance ) && velocity < 0 ) {
+        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadiansRearWheels ) - ( qDegreesToRadians( double( orientationRearWheels.toEulerAngles().z() ) ) ) );
+        double stanleyXteCompensation = atan( ( stanleyGainKReverse * -distance ) / ( velocity + -stanleyGainKSoftReverse ) );
+        double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYawReverse *
+            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1AgoRearWheels.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientationRearWheels.toEulerAngles().z() ) ) ) -
+              ( yawTrajectory1AgoRearWheels - headingOfPathRadiansRearWheels ) ) );
+        double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringReverse * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
+        double steerAngleRequested = -qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
+
+        if( steerAngleRequested >= maxSteeringAngle ) {
+          steerAngleRequested = maxSteeringAngle;
+        }
+
+        if( steerAngleRequested <= -maxSteeringAngle ) {
+          steerAngleRequested = -maxSteeringAngle;
+        }
+
+        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansRearWheels ) << normalizeAngleRadians( qDegreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
+
+        emit steerAngleChanged( steerAngleRequested );
+        yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
+      }
     }
-    void setStanleyGainKSoft( double stanleyGain ) {
-      this->stanleyGainKSoft = stanleyGain;
+
+    void setStanleyGainKForwards( double stanleyGain ) {
+      this->stanleyGainKForwards = stanleyGain;
     }
-    void setStanleyGainDampeningYaw( double stanleyGain ) {
-      this->stanleyGainDampeningYaw = stanleyGain;
+    void setStanleyGainKSoftForwards( double stanleyGain ) {
+      this->stanleyGainKSoftForwards = stanleyGain;
     }
-    void setStanleyGainDampeningSteering( double stanleyGain ) {
-      this->stanleyGainDampeningSteering = stanleyGain;
+    void setStanleyGainDampeningYawForwards( double stanleyGain ) {
+      this->stanleyGainDampeningYawForwards = stanleyGain;
+    }
+    void setStanleyGainDampeningSteeringForwards( double stanleyGain ) {
+      this->stanleyGainDampeningSteeringForwards = stanleyGain;
+    }
+
+    void setStanleyGainKReverse( double stanleyGain ) {
+      this->stanleyGainKReverse = stanleyGain;
+    }
+    void setStanleyGainKSoftReverse( double stanleyGain ) {
+      this->stanleyGainKSoftReverse = stanleyGain;
+    }
+    void setStanleyGainDampeningYawReverse( double stanleyGain ) {
+      this->stanleyGainDampeningYawReverse = stanleyGain;
+    }
+    void setStanleyGainDampeningSteeringReverse( double stanleyGain ) {
+      this->stanleyGainDampeningSteeringReverse = stanleyGain;
     }
 
     void setVelocity( double velocity ) {
@@ -120,24 +174,36 @@ class StanleyGuidance : public BlockBase {
   private:
 
   public:
-    Point_3 position = Point_3( 0, 0, 0 );
-    QQuaternion orientation = QQuaternion();
-    QQuaternion orientation1Ago = QQuaternion();
-    double velocity = 0;
-    double headingOfPathRadians = 0;
-    double distance = 0;
+    Point_3 positionFrontWheels = Point_3( 0, 0, 0 );
+    QQuaternion orientationFrontWheels = QQuaternion();
+    QQuaternion orientation1AgoFrontWheels = QQuaternion();
 
-    double stanleyGainK = 1;
-    double stanleyGainKSoft = 1;
-    double stanleyGainDampeningYaw = 1;
-    double stanleyGainDampeningSteering = 1;
+    Point_3 positionRearWheels = Point_3( 0, 0, 0 );
+    QQuaternion orientationRearWheels = QQuaternion();
+    QQuaternion orientation1AgoRearWheels = QQuaternion();
+
+    double velocity = 0;
+    double headingOfPathRadiansFrontWheels = 0;
+    double headingOfPathRadiansRearWheels = 0;
+
+    double stanleyGainKForwards = 1;
+    double stanleyGainKSoftForwards = 1;
+    double stanleyGainDampeningYawForwards = 0;
+    double stanleyGainDampeningSteeringForwards = 0;
+
+    double stanleyGainKReverse = 1;
+    double stanleyGainKSoftReverse = 1;
+    double stanleyGainDampeningYawReverse = 0;
+    double stanleyGainDampeningSteeringReverse = 0;
+
     double maxSteeringAngle = 40;
 
     double steeringAngle = 0;
     double steeringAngle1Ago = 0;
     double steeringAngle2Ago = 0;
 
-    double yawTrajectory1Ago = 0;
+    double yawTrajectory1AgoFrontWheels = 0;
+    double yawTrajectory1AgoRearWheels = 0;
 };
 
 class StanleyGuidanceFactory : public BlockFactory {
@@ -155,15 +221,27 @@ class StanleyGuidanceFactory : public BlockFactory {
       auto* obj = new StanleyGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
+
       b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SLOT( setHeadingOfPath( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K" ), QLatin1String( SLOT( setStanleyGainK( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K Softening" ), QLatin1String( SLOT( setStanleyGainKSoft( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningYaw( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening" ), QLatin1String( SLOT( setStanleyGainDampeningSteering( double ) ) ) );
+
+      b->addInputPort( QStringLiteral( "XTE Front Wheels" ), QLatin1String( SLOT( setXteFrontWheels( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Heading of Path Front Wheels" ), QLatin1String( SLOT( setHeadingOfPathFrontWheels( double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE Rear Wheels" ), QLatin1String( SLOT( setXteRearWheels( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Heading of Path Rear Wheels" ), QLatin1String( SLOT( setHeadingOfPathRearWheels( double ) ) ) );
+
+      b->addInputPort( QStringLiteral( "Stanley Gain K Forwards" ), QLatin1String( SLOT( setStanleyGainKForwards( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Forwards" ), QLatin1String( SLOT( setStanleyGainKSoftForwards( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningYawForwards( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringForwards( double ) ) ) );
+
+      b->addInputPort( QStringLiteral( "Stanley Gain K Reverse" ), QLatin1String( SLOT( setStanleyGainKReverse( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Reverse" ), QLatin1String( SLOT( setStanleyGainKSoftReverse( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningYawReverse( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringReverse( double ) ) ) );
+
       b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( double ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( double ) ) ) );
