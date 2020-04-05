@@ -23,7 +23,7 @@ that's your thing.
 Install and run [Manjaro Linux](https://manjaro.org/) on your machine, then enter in a console:
 ```
 # update the system and install various needed packages
-sudo pacman -Suy --needed base-devel bash-completion qt5 qtcreator gmp mpfr git
+sudo pacman -Suy --needed base-devel bash-completion qt5 qtcreator gmp mpfr git cmake boost
 # delete the downloaded packages again, helps on small SSDs/HDs
 sudo pacman -Scc --noconfirm
 
@@ -75,6 +75,48 @@ is quite noticable: the fan is not running anymore all time and the battery last
 about automatic background downloads/updates and generally no control over your system (like no option to cancel a
 reboot or update) ever again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown
 is also not possible.
+
+### Rapsberry Pi
+#### Hardware
+Use a Raspberry Pi4 with at least 2GB of RAM and a fast SD card (minimum Class 10, better UHS 1 or 3) with 16GB or more of storage. Use at least a HD/720p-display, better FullHD/1080p (testing is done with FullHD). Also make sure you have sufficient power for the RPI, 5V/3A is recomended. The RPI4 requires a lot of power, so make sure you use the supplied power brick *and a known good cable*. If you build your own supply for the tractor, keep these requirements in mind.
+
+#### Installing Manjaro Linux
+There are numerous guides on the internet how to flash an image to an SD-card. Use one of those. But basically:
+1. download an image from https://osdn.net/projects/manjaro-arm/storage/rpi4/xfce/
+1. decompress and flash it to a SD-card according to a guide of your choosing
+1. connect all the hardware to the pi, especially the screen, the keyboard and the mouse
+1. boot it up
+1. configure to you liking, but **use safe passwords!**
+1. let it reboot
+1. log in
+1. some settings have to be changed from the default:
+   1. change from the dark theme to a light one: open the settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one
+   1. if you want to use SSH, you have to install and start/enable the SSH-server with:
+  ```
+  sudo pacman -S openssh
+  sudo systemctl enable sshd.service
+  sudo systemctl start sshd.service
+  ```
+
+### Installing QtOpenguidance
+It is exactly the same as for the X86_64 described [here](https://github.com/eringerli/QtOpenGuidance#tldr-installing), it just takes longer :wink:.
+
+**Attention:** Don't select the "-es2"-versions of QT, choose wisely on the install. If you want to change it back, execute the following command: `sudo pacman -S qt5-base qt5-declarative qt5-multimedia qt5-wayland` and explicitly press `Y` to resolve the conflicts.
+
+### Troubleshooting
+#### Resolution of the display
+If the resolution is not set correctly for you display, first check if it is a configuration issue by opening the settings for the display and choosing the best resolution. If that is not enough, open the manual for your display and add the respective lines starting with "hdmi_" to the file `/boot/config.txt` with the `nano`-editor: `sudo nano /boot/config.txt`. Exit it with `Ctrl+X` and affirm the question about the accepting of the changes. Other lines are normally not required. Reboot and choose the right resolution in the settings panel.
+
+#### Performance
+If you experience a really slow system, normally it's caused by a too weak power supply. This in indicated by a randomly flashing red LED on the PCB and the yellow flash in the upper right corner of the display.
+
+Another cause can be thermal throttling. In this case the system slows down if it gets too hot. Consider active cooling, some heat spreaders and/or better air circulation.
+
+### Linking errors
+These are caused by the ES2-version of QT. Please follow the instructions exactly. You have been warned...
+
+#### Doesn't start/crashes with a SEGFAULT
+See [Issue #1](https://github.com/eringerli/QtOpenGuidance/issues/1). Let's hope, they fix it soon in ARM64 too...
 
 ### QT
 #### Linux
