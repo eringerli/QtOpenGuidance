@@ -123,7 +123,7 @@ class StanleyGuidance : public BlockBase {
           steerAngleRequested = -maxSteeringAngle;
         }
 
-        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansRearWheels ) << normalizeAngleRadians( qDegreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
+//        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansRearWheels ) << normalizeAngleRadians( qDegreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
 
         emit steerAngleChanged( steerAngleRequested );
         yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;

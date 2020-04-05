@@ -164,10 +164,19 @@ void GlobalPlannerLines::snapPlanAB() {
   }
 }
 
-GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity )
+GlobalPlannerLines::GlobalPlannerLines( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
   : BlockBase(),
     mainWindow( mainWindow ),
+    tmw( tmw ),
     rootEntity( rootEntity ) {
+  widget = new GlobalPlannerToolbar( mainWindow );
+  dock = new KDDockWidgets::DockWidget( uniqueName );
+
+  QObject::connect( widget, &GlobalPlannerToolbar::setAPoint, this, &GlobalPlannerLines::setAPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::setBPoint, this, &GlobalPlannerLines::setBPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPoint, this, &GlobalPlannerLines::setAdditionalPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::snap, this, &GlobalPlannerLines::snap );
+
   // a point marker -> orange
   {
     aPointEntity = new Qt3DCore::QEntity( rootEntity );
@@ -289,7 +298,7 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
     m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
   }
 
-  // create the CGAL worker and move to it's own thread
+  // create the CGAL worker and move it to it's own thread
   {
     threadForCgalWorker = new CgalThread( this );
     cgalWorker = new CgalWorker();
@@ -308,5 +317,221 @@ GlobalPlannerLines::GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* 
 //    QObject::connect( cgalWorker, &CgalWorker::alphaShapeFinished, this, &GlobalPlanner::alphaShapeFinished );
 
     threadForCgalWorker->start();
+  }
+}
+
+void GlobalPlannerLines::openAbLine() {
+  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+  QString dir;
+
+  auto* fileDialog = new QFileDialog( mainWindow,
+                                      tr( "Open Saved AB-Line/Curve" ),
+                                      dir,
+                                      selectedFilter );
+  fileDialog->setFileMode( QFileDialog::ExistingFile );
+  fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
+
+  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
+  // the signals instead of using the static functions for the dialogs
+#ifdef Q_OS_ANDROID
+  QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile(
+        QUrl::fromPercentEncoding(
+          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        openAbLineFromFile( loadFile );
+      }
+    }
+
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+#else
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString & fileName ) {
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile( fileName );
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+
+        openAbLineFromFile( loadFile );
+      }
+    }
+
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+#endif
+
+  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+
+  fileDialog->open();
+}
+
+void GlobalPlannerLines::openAbLineFromFile( QFile& file ) {
+  QByteArray saveData = file.readAll();
+
+  QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
+  QJsonObject json = loadDoc.object();
+
+  if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
+      json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
+    QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
+
+    for( const auto& feature : qAsConst( featuresArray ) ) {
+
+      QJsonObject featuresObject = feature.toObject();
+
+      if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
+          featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
+        QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
+
+        if( geometryObject.contains( QStringLiteral( "type" ) ) ) {
+
+          // processed field
+          if( ( geometryObject[QStringLiteral( "type" )] == "LineString" ) &&
+              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
+            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
+
+            if( coordinatesArray.size() >= 2 ) {
+              uint16_t index = 0;
+
+              for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
+                QJsonArray coordinate = blockIndex.toArray();
+
+                if( coordinate.size() >= 2 ) {
+                  double x, y, z;
+                  double height = 0;
+
+                  if( coordinate.size() >= 3 ) {
+                    height = coordinate.at( 2 ).toDouble();
+                  };
+
+                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), height, x, y, z );
+
+                  if( index == 0 ) {
+                    aPoint = K::Point_3( x, y, 0 );
+                    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
+                  }
+
+                  if( index == 1 ) {
+                    bPoint = K::Point_3( x, y, 0 );
+                    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
+                    aPointEntity->setEnabled( true );
+                    bPointEntity->setEnabled( true );
+                    abSegment = Segment_3( aPoint, bPoint );
+                  }
+                }
+
+                ++index;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  clearPlan();
+  createPlanAB();
+}
+
+void GlobalPlannerLines::saveAbLine() {
+  if( abSegment.squared_length() > 1 &&
+      implementSegment.squared_length() > 1 ) {
+    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+    QString dir;
+    QString fileName = QFileDialog::getSaveFileName( mainWindow,
+                       tr( "Save AB-Line/Curve" ),
+                       dir,
+                       tr( "All Files (*);;GeoJSON Files (*.geojson)" ),
+                       &selectedFilter );
+
+    if( !fileName.isEmpty() ) {
+
+      QFile saveFile( fileName );
+
+      if( !saveFile.open( QIODevice::WriteOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+        return;
+      }
+
+      saveAbLineToFile( saveFile );
+    }
+  }
+}
+
+void GlobalPlannerLines::saveAbLineToFile( QFile& file ) {
+  QJsonObject jsonObject;
+  QJsonArray features;
+
+  jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
+
+  // processed field as Polygon
+  if( abSegment.squared_length() > 1 &&
+      implementSegment.squared_length() > 1 ) {
+    QJsonObject feature;
+
+    QJsonObject geometry;
+
+    geometry[QStringLiteral( "type" )] = QStringLiteral( "LineString" );
+    QJsonObject properties;
+
+    QJsonArray coordinates;
+
+    {
+      double latitude = 0;
+      double longitude = 0;
+      double height = 0;
+
+      tmw->Reverse( aPoint.x(), aPoint.y(), 0, latitude, longitude, height );
+
+      {
+        QJsonArray coordinate;
+        coordinate.push_back( longitude );
+        coordinate.push_back( latitude );
+
+        coordinates.push_back( coordinate );
+      }
+
+      tmw->Reverse( bPoint.x(), bPoint.y(), 0, latitude, longitude, height );
+
+      {
+        QJsonArray coordinate;
+        coordinate.push_back( longitude );
+        coordinate.push_back( latitude );
+
+        coordinates.push_back( coordinate );
+      }
+    }
+
+    geometry[QStringLiteral( "coordinates" )] = coordinates;
+
+    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
+    feature[QStringLiteral( "geometry" )] = geometry;
+
+    properties[QStringLiteral( "name" )] = QStringLiteral( "AB-Line/Curve" );
+    feature[QStringLiteral( "properties" )] = properties;
+
+    features.push_back( feature );
+
+    jsonObject[QStringLiteral( "features" )] = features;
+
+    QJsonDocument jsonDocument( jsonObject );
+    file.write( jsonDocument.toJson() );
   }
 }

@@ -44,6 +44,7 @@ qtCompileTest(spnav) {
 SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
+    src/block/ActionDockBlock.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlannerLines.cpp \
     src/block/LocalPlanner.cpp \
@@ -52,12 +53,16 @@ SOURCES += \
     src/block/ValueDockBlockBase.cpp \
     src/block/ValueTransmissionBase.cpp \
     src/block/XteDockBlock.cpp \
+    src/gui/ActionDockBlockModel.cpp \
+    src/gui/ActionToolbar.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
+    src/gui/GlobalPlannerToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
+    src/gui/NewOpenSaveToolbar.cpp \
     src/gui/SectionControlToolbar.cpp \
-    src/gui/SliderBlockModel.cpp \
     src/gui/SliderDock.cpp \
+    src/gui/SliderDockBlockModel.cpp \
     src/gui/ThreeValuesDock.cpp \
     src/gui/TransmissionBlockModel.cpp \
     src/gui/ValueBlockModel.cpp \
@@ -86,6 +91,7 @@ HEADERS += \
     src/3d/BufferMesh.h \
     src/3d/BufferMeshGeometry.h \
     src/block/AckermannSteering.h \
+    src/block/ActionDockBlock.h \
     src/block/AngularVelocityLimiter.h \
     src/block/BlockBase.h \
     src/block/CameraController.h \
@@ -106,7 +112,6 @@ HEADERS += \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
     src/block/OrientationDockBlock.h \
-    src/block/PlannerGuiBlock.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
@@ -130,22 +135,26 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/block/XteGuidance.h \
+    src/gui/ActionDockBlockModel.h \
+    src/gui/ActionToolbar.h \
     src/gui/CameraToolbar.h \
     src/gui/FieldsOptimitionToolbar.h \
     src/gui/FieldsToolbar.h \
     src/gui/FontComboboxDelegate.h \
+    src/gui/GlobalPlannerToolbar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceTurning.h \
     src/gui/ImplementBlockModel.h \
     src/gui/ImplementSectionModel.h \
     src/gui/MyFrameworkWidgetFactory.h \
     src/gui/MyMainWindow.h \
+    src/gui/NewOpenSaveToolbar.h \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
-    src/gui/SliderBlockModel.h \
     src/gui/SliderDock.h \
+    src/gui/SliderDockBlockModel.h \
     src/gui/StringBlockModel.h \
     src/gui/ThreeValuesDock.h \
     src/gui/TransmissionBlockModel.h \
@@ -175,11 +184,14 @@ PRECOMPILED_HEADER  = src/pch.h
 #}
 
 FORMS += \
+    src/gui/ActionToolbar.ui \
     src/gui/CameraToolbar.ui \
     src/gui/FieldsOptimitionToolbar.ui \
     src/gui/FieldsToolbar.ui \
+    src/gui/GlobalPlannerToolbar.ui \
     src/gui/GuidanceToolbar.ui \
     src/gui/GuidanceTurning.ui \
+    src/gui/NewOpenSaveToolbar.ui \
     src/gui/PassToolbar.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SliderDock.ui \

@@ -71,12 +71,14 @@
 #include "gui/GuidanceToolbar.h"
 #include "gui/GuidanceTurning.h"
 #include "gui/SliderDock.h"
+#include "gui/NewOpenSaveToolbar.h"
 #include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
 #include "gui/FieldsToolbar.h"
 #include "gui/FieldsOptimitionToolbar.h"
 
 #include "block/CameraController.h"
+#include "block/FieldManager.h"
 #include "block/FpsMeasurement.h"
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
@@ -85,6 +87,7 @@
 #include "block/ValueDockBlock.h"
 #include "block/OrientationDockBlock.h"
 #include "block/PositionDockBlock.h"
+#include "block/ActionDockBlock.h"
 #include "block/SliderDockBlock.h"
 
 
@@ -309,7 +312,6 @@ int main( int argc, char** argv ) {
   auto* fieldsToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "FieldsToolbarDock" ) );
   fieldsToolbarDock->setWidget( fieldsToolbar );
   fieldsToolbarDock->setTitle( fieldsToolbar->windowTitle() );
-//  QObject::connect( fieldsToolbarDock, &QDockWidget::dockLocationChanged, fieldsToolbar, &FieldsToolbar::setDockLocation );
   mainWindow->addDockWidget( fieldsToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( fieldsToolbarDock->toggleAction() );
 
@@ -386,6 +388,13 @@ int main( int argc, char** argv ) {
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
   positionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // action dock
+  BlockFactory* actionDockBlockFactory = new ActionDockBlockFactory(
+    mainWindow,
+    KDDockWidgets::Location_OnRight,
+    guidanceToolbar->menu );
+  actionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // slider dock
   BlockFactory* sliderDockBlockFactory = new SliderDockBlockFactory(
@@ -483,12 +492,6 @@ int main( int argc, char** argv ) {
                     settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
   // field docks -> global planner block
-  QObject::connect( fieldsToolbar, SIGNAL( openField() ),
-                    settingDialog->fieldManager, SLOT( openField() ) );
-  QObject::connect( fieldsToolbar, SIGNAL( newField() ),
-                    settingDialog->fieldManager, SLOT( newField() ) );
-  QObject::connect( fieldsToolbar, SIGNAL( saveField() ),
-                    settingDialog->fieldManager, SLOT( saveField() ) );
   QObject::connect( fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ),
                     settingDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
   QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ),

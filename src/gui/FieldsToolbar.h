@@ -33,17 +33,10 @@ class FieldsToolbar : public QGroupBox {
     ~FieldsToolbar();
 
   signals:
-    void openField();
-    void newField();
-    void saveField();
-
     void continousRecordToggled( bool );
     void recordPoint();
 
     void recordOnEdgeOfImplementChanged( bool right );
-
-  public slots:
-    void setDockLocation( Qt::DockWidgetArea area );
 
   private:
     Ui::FieldsToolbar* ui = nullptr;

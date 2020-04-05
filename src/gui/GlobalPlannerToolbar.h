@@ -16,24 +16,34 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QBoxLayout>
+#pragma once
 
-#include "FieldsToolbar.h"
-#include "ui_FieldsToolbar.h"
+#include <QObject>
 
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
-  ui->setupUi( this );
+#include <QGroupBox>
 
-  setContentsMargins( 0, 0, 0, 0 );
-
-  QObject::connect( ui->pbRecordContinous, &QAbstractButton::toggled, this, &FieldsToolbar::continousRecordToggled );
-  QObject::connect( ui->pbRecordPoint, &QAbstractButton::clicked, this, &FieldsToolbar::recordPoint );
-
-  QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
+namespace Ui {
+  class GlobalPlannerToolbar;
 }
 
-FieldsToolbar::~FieldsToolbar() {
-  delete ui;
-}
+class GlobalPlannerToolbar : public QGroupBox {
+    Q_OBJECT
+
+  public:
+    explicit GlobalPlannerToolbar( QWidget* parent = nullptr );
+    ~GlobalPlannerToolbar();
+    void resetToolbar();
+
+  private slots:
+    void on_pbAB_clicked( bool checked );
+    void on_pbSnap_clicked();
+
+  signals:
+    void setAPoint();
+    void setBPoint();
+    void setAdditionalPoint();
+    void snap();
+
+  private:
+    Ui::GlobalPlannerToolbar* ui;
+};

@@ -128,6 +128,7 @@ class FieldManager : public BlockBase {
     void newField() {
       points.clear();
     }
+
     void saveField();
     void saveFieldToFile( QFile& file );
 

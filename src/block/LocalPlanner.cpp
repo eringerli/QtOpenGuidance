@@ -47,10 +47,7 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
           double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
           double steerAngleAbsoluteDegrees = steeringAngleDegrees + orientation.toEulerAngles().z();
 
-          qDebug() << angleLastPrimitiveDegrees << steerAngleAbsoluteDegrees << std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) );
-
           if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
-            qDebug() << "std::abs(std::abs";
             auto reverse = lastPrimitive->createReverse();
             reverse->anyDirection = false;
             lastPrimitive = reverse;

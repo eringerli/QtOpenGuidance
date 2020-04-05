@@ -43,6 +43,11 @@
 #include "../3d/BufferMesh.h"
 
 #include "../gui/FieldsOptimitionToolbar.h"
+#include "../gui/GlobalPlannerToolbar.h"
+
+#include "../gui/MyMainWindow.h"
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
 
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
@@ -62,9 +67,15 @@ class GlobalPlannerLines : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlannerLines( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity );
+    explicit GlobalPlannerLines( const QString& uniqueName,
+                                 MyMainWindow* mainWindow,
+                                 GeographicConvertionWrapper* tmw,
+                                 Qt3DCore::QEntity* rootEntity );
 
-    ~GlobalPlannerLines() {}
+    ~GlobalPlannerLines() {
+      dock->deleteLater();
+      widget->deleteLater();
+    }
 
   public slots:
     void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
@@ -112,7 +123,7 @@ class GlobalPlannerLines : public BlockBase {
       currentField = field;
     }
 
-    void a_clicked() {
+    void setAPoint() {
       aPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
       aPointEntity->setEnabled( true );
@@ -123,8 +134,8 @@ class GlobalPlannerLines : public BlockBase {
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
-    void b_clicked() {
-      qDebug() << "b_clicked()";
+    void setBPoint() {
+      qDebug() << "setBPoint()";
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
 
@@ -136,17 +147,24 @@ class GlobalPlannerLines : public BlockBase {
       createPlanAB();
     }
 
-    void snap_clicked() {
-      snapPlanAB();
-      qDebug() << "snap_clicked()";
+    void setAdditionalPoint() {
+
     }
 
-    void turnLeft_clicked() {
-      qDebug() << "turnLeft_clicked()";
+    void snap() {
+      snapPlanAB();
+      qDebug() << "snap()";
     }
-    void turnRight_clicked() {
-      qDebug() << "turnRight_clicked()";
+
+    void openAbLine();
+    void openAbLineFromFile( QFile& file );
+
+    void newField() {
+      widget->resetToolbar();
     }
+
+    void saveAbLine();
+    void saveAbLineToFile( QFile& file );
 
     void setPlannerSettings( int pathsToGenerate, int pathsInReserve ) {
       this->pathsToGenerate = pathsToGenerate;
@@ -175,6 +193,8 @@ class GlobalPlannerLines : public BlockBase {
     void setRunNumber( uint32_t runNumber ) {
       this->runNumber = runNumber;
     }
+
+
 
   signals:
     void planChanged( const Plan& );
@@ -220,6 +240,11 @@ class GlobalPlannerLines : public BlockBase {
     Point_3 positionRightEdgeOfImplement = Point_3( 0, 0, 0 );
 
     Plan plan = Plan( Plan::Type::OnlyLines );
+
+    GlobalPlannerToolbar* widget = nullptr;
+    KDDockWidgets::DockWidget* dock = nullptr;
+
+    GeographicConvertionWrapper* tmw = nullptr;
 
   private:
     QWidget* mainWindow = nullptr;
@@ -267,10 +292,17 @@ class GlobalPlannerFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    GlobalPlannerFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity )
+    GlobalPlannerFactory( MyMainWindow* mainWindow,
+                          KDDockWidgets::Location location,
+                          QMenu* menu,
+                          GeographicConvertionWrapper* tmw,
+                          Qt3DCore::QEntity* rootEntity )
       : BlockFactory(),
         mainWindow( mainWindow ),
-        rootEntity( rootEntity ) {
+        location( location ),
+        menu( menu ),
+        rootEntity( rootEntity ),
+        tmw( tmw ) {
       qRegisterMetaType<Plan>();
     }
 
@@ -279,8 +311,18 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new GlobalPlannerLines( mainWindow, rootEntity );
-      auto* b = createBaseBlock( scene, obj, id, true );
+      auto* object = new GlobalPlannerLines( getNameOfFactory() + QString::number( id ),
+                                             mainWindow,
+                                             tmw,
+                                             rootEntity );
+      auto* b = createBaseBlock( scene, object, id, true );
+
+      object->dock->setTitle( QStringLiteral( "Global Planner" ) );
+      object->dock->setWidget( object->widget );
+
+      menu->addAction( object->dock->toggleAction() );
+
+      mainWindow->addDockWidget( object->dock, location );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -288,18 +330,15 @@ class GlobalPlannerFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 
-      b->addInputPort( QStringLiteral( "A clicked" ), QLatin1String( SLOT( a_clicked() ) ) );
-      b->addInputPort( QStringLiteral( "B clicked" ), QLatin1String( SLOT( b_clicked() ) ) );
-      b->addInputPort( QStringLiteral( "Snap clicked" ), QLatin1String( SLOT( snap_clicked() ) ) );
-      b->addInputPort( QStringLiteral( "Turn Left" ), QLatin1String( SLOT( turnLeft_clicked() ) ) );
-      b->addInputPort( QStringLiteral( "Turn Right" ), QLatin1String( SLOT( turnRight_clicked() ) ) );
-
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 
       return b;
     }
 
   private:
-    QWidget* mainWindow = nullptr;
+    MyMainWindow* mainWindow = nullptr;
+    KDDockWidgets::Location location;
+    QMenu* menu = nullptr;
     Qt3DCore::QEntity* rootEntity = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
 };

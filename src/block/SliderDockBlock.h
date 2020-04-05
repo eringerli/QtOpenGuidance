@@ -163,7 +163,7 @@ class SliderDockBlockFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( double ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "gold" ) ) );
+      b->setBrush( QColor( QStringLiteral( "DarkSalmon" ) ) );
 
       return b;
     }

@@ -89,6 +89,11 @@ class LocalPlanner : public BlockBase {
     }
 
   public slots:
+    void setName( const QString& name ) override {
+      dock->setTitle( name );
+      dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
+    }
+
     void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
 
     void setPlan( const Plan& plan );

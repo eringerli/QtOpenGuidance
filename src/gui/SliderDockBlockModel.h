@@ -28,11 +28,11 @@
 
 #include <QGraphicsScene>
 
-class SliderBlockModel : public QAbstractTableModel {
+class SliderDockBlockModel : public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    explicit SliderBlockModel( QGraphicsScene* scene );
+    explicit SliderDockBlockModel( QGraphicsScene* scene );
 
     // Header:
     QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;

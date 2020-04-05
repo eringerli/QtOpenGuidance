@@ -103,32 +103,6 @@ class XteGuidance : public BlockBase {
     void headingOfPathChanged( double );
     void passNumberChanged( double );
 
-  private:
-    double normalizeAngleRadians( double angle ) {
-      while( angle > M_PI ) {
-        angle -= M_PI * 2;
-      }
-
-      while( angle < -M_PI ) {
-        angle += M_PI * 2;
-      }
-
-      return angle;
-    }
-
-    double normalizeAngleDegrees( double angle ) {
-      while( angle > 180 ) {
-        angle -= 360;
-      }
-
-      while( angle < -180 ) {
-        angle += 360;
-      }
-
-      return angle;
-    }
-
-
   public:
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();

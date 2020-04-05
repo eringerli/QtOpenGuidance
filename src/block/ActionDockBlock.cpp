@@ -16,24 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QBoxLayout>
+#include "ActionDockBlock.h"
 
-#include "FieldsToolbar.h"
-#include "ui_FieldsToolbar.h"
+KDDockWidgets::DockWidget* ActionDockBlockFactory::firstActionDock = nullptr;
 
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
-  ui->setupUi( this );
+ActionDockBlock::~ActionDockBlock() {
+  widget->deleteLater();
+  dock->deleteLater();
 
-  setContentsMargins( 0, 0, 0, 0 );
-
-  QObject::connect( ui->pbRecordContinous, &QAbstractButton::toggled, this, &FieldsToolbar::continousRecordToggled );
-  QObject::connect( ui->pbRecordPoint, &QAbstractButton::clicked, this, &FieldsToolbar::recordPoint );
-
-  QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
-}
-
-FieldsToolbar::~FieldsToolbar() {
-  delete ui;
+  if( ActionDockBlockFactory::firstActionDock == dock ) {
+    ActionDockBlockFactory::firstActionDock = nullptr;
+  }
 }

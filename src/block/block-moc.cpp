@@ -17,6 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "moc_AckermannSteering.cpp"
+#include "moc_ActionDockBlock.cpp"
 #include "moc_BlockBase.cpp"
 #include "moc_CameraController.cpp"
 #include "moc_CommunicationJrk.cpp"
@@ -29,7 +30,6 @@
 #include "moc_GridModel.cpp"
 #include "moc_GlobalPlannerModel.cpp"
 #include "moc_LocalPlanner.cpp"
-#include "moc_PlannerGuiBlock.cpp"
 #include "moc_StanleyGuidance.cpp"
 #include "moc_Implement.cpp"
 #include "moc_ImplementSection.cpp"

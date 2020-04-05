@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>118</width>
-    <height>693</height>
+    <height>251</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,184 +17,6 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QComboBox" name="cb_mode">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>80</width>
-       <height>80</height>
-      </size>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::NoContextMenu</enum>
-     </property>
-     <property name="toolTip">
-      <string>Guidance Mode</string>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QComboBox::AdjustToContents</enum>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>55</width>
-       <height>55</height>
-      </size>
-     </property>
-     <item>
-      <property name="text">
-       <string>None</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string comment="AB-line"/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../res/ressources.qrc">
-        <normaloff>:/icons/ABLineOn.png</normaloff>:/icons/ABLineOn.png</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string comment="Countour"/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../res/ressources.qrc">
-        <normaloff>:/icons/ContourOn.png</normaloff>:/icons/ContourOn.png</iconset>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string comment="AB-Curve"/>
-      </property>
-      <property name="icon">
-       <iconset resource="../../res/ressources.qrc">
-        <normaloff>:/icons/CurveOn.png</normaloff>:/icons/CurveOn.png</iconset>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btn_AB">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/LetterABlue.png</normaloff>
-       <normalon>:/icons/LetterBBlue.png</normalon>:/icons/LetterABlue.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btn_snap">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset theme="align-horizontal-center"/>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>38</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btn_autosteer">
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="toolTip">
-      <string>Autosteer</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset theme="media-playback-start"/>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>64</width>
-       <height>64</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item>
     <widget class="QCheckBox" name="cbSimulator">
      <property name="focusPolicy">
@@ -220,7 +42,8 @@
       <string>Docks</string>
      </property>
      <property name="icon">
-      <iconset theme="tab-detach"/>
+      <iconset theme="tab-detach">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -234,7 +57,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QToolButton" name="btn_settings">
+    <widget class="QToolButton" name="pbSettings">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -248,7 +71,8 @@
       <string>Settings</string>
      </property>
      <property name="icon">
-      <iconset theme="configure"/>
+      <iconset theme="configure">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -263,8 +87,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../res/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -71,7 +71,7 @@
 #include "../block/TransverseMercatorConverter.h"
 
 #include "../block/FieldManager.h"
-#include "../block/PlannerGuiBlock.h"
+#include "../block/ActionDockBlock.h"
 #include "../block/GlobalPlannerLines.h"
 #include "../block/LocalPlanner.h"
 #include "../block/StanleyGuidance.h"
@@ -97,7 +97,7 @@
 
 #include "../cgalKernel.h"
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* menu, QWidget* parent ) :
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
   QDialog( parent ),
   mainWindow( mainWindow ),
   ui( new Ui::SettingsDialog ) {
@@ -184,15 +184,25 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
 
+  // new/open/save toolbar
+  newOpenSaveToolbar = new NewOpenSaveToolbar( this );
+  auto* newOpenSaveToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "NewOpenSaveToolbarDock" ) );
+  newOpenSaveToolbarDock->setWidget( newOpenSaveToolbar );
+  newOpenSaveToolbarDock->setTitle( "New, Save, Open" );
+  mainWindow->addDockWidget( newOpenSaveToolbarDock, KDDockWidgets::Location_OnLeft );
+  guidanceToolbarMenu->addAction( newOpenSaveToolbarDock->toggleAction() );
+
   // Models for the tableview
   filterModelValues = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
   numberBlockModel = new NumberBlockModel( scene );
-  sliderBlockModel = new SliderBlockModel( scene );
+  actionBlockModel = new ActionDockBlockModel( scene );
+  sliderBlockModel = new SliderDockBlockModel( scene );
   stringBlockModel = new StringBlockModel( scene );
 
   vectorBlockModel->addToCombobox( ui->cbValues );
   numberBlockModel->addToCombobox( ui->cbValues );
+  actionBlockModel->addToCombobox( ui->cbValues );
   sliderBlockModel->addToCombobox( ui->cbValues );
   stringBlockModel->addToCombobox( ui->cbValues );
   filterModelValues->setSourceModel( vectorBlockModel );
@@ -246,22 +256,52 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   // guidance
   fieldManagerFactory = new FieldManagerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
-  fieldManager = qobject_cast<FieldManager*>( fieldManagerBlock->object );
 
-  plannerGuiFactory = new PlannerGuiBlockFactory();
-  auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
-  plannerGui = qobject_cast<PlannerGuiBlock*>( plannerGuiBlock->object );
+  {
+    auto fieldManagerObject = qobject_cast<FieldManager*>( fieldManagerBlock->object );
+    auto newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
+    QObject::connect( newFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::newField );
 
-  globalPlannerFactory = new GlobalPlannerFactory( mainWindow, rootEntity );
+    auto openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Field" ) );
+    QObject::connect( openFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::openField );
+
+    auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save Field" ) );
+    QObject::connect( saveFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::saveField );
+
+    fieldManager = fieldManagerObject;
+  }
+
+//  plannerGuiFactory = new PlannerGuiBlockFactory();
+//  auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
+//  plannerGui = qobject_cast<ActionDockBlock*>( plannerGuiBlock->object );
+
+  globalPlannerFactory = new GlobalPlannerFactory( mainWindow,
+      KDDockWidgets::Location_OnRight,
+      guidanceToolbarMenu,
+      geographicConvertionWrapperGuidance,
+      rootEntity );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
-  globalPlanner = qobject_cast<GlobalPlannerLines*>( globalPlannerBlock->object );
 
-  QObject::connect( this, SIGNAL( plannerSettingsChanged( int, int ) ),
-                    globalPlanner, SLOT( setPlannerSettings( int, int ) ) );
+  {
+    auto globalPlannerLines = qobject_cast<GlobalPlannerLines*>( globalPlannerBlock->object );
+
+    QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlannerLines, &GlobalPlannerLines::setPlannerSettings );
+
+    auto newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
+    QObject::connect( newFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::newField );
+
+    auto openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
+    QObject::connect( openFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::openAbLine );
+
+    auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
+    QObject::connect( saveFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::saveAbLine );
+
+    globalPlanner = globalPlannerLines;
+  }
 
   localPlannerFactory = new LocalPlannerFactory( mainWindow,
       KDDockWidgets::Location_OnRight,
-      menu,
+      guidanceToolbarMenu,
       rootEntity );
   stanleyGuidanceFactory = new StanleyGuidanceFactory();
   xteGuidanceFactory = new XteGuidanceFactory();
@@ -395,6 +435,8 @@ SettingsDialog::~SettingsDialog() {
   vectorBlockModel->deleteLater();
   numberBlockModel->deleteLater();
   stringBlockModel->deleteLater();
+  sliderBlockModel->deleteLater();
+  actionBlockModel->deleteLater();
 
   implementBlockModel->deleteLater();
   implementSectionModel->deleteLater();
@@ -1137,6 +1179,7 @@ void SettingsDialog::implementModelReset() {
 void SettingsDialog::allModelsReset() {
   vectorBlockModel->resetModel();
   numberBlockModel->resetModel();
+  actionBlockModel->resetModel();
   sliderBlockModel->resetModel();
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();

@@ -16,24 +16,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QBoxLayout>
+#include "NewOpenSaveToolbar.h"
+#include "ui_NewOpenSaveDock.h"
 
-#include "FieldsToolbar.h"
-#include "ui_FieldsToolbar.h"
-
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
+NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
+  ui( new Ui::NewOpenSaveToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
 
-  QObject::connect( ui->pbRecordContinous, &QAbstractButton::toggled, this, &FieldsToolbar::continousRecordToggled );
-  QObject::connect( ui->pbRecordPoint, &QAbstractButton::clicked, this, &FieldsToolbar::recordPoint );
+  newMenu = new QMenu( this );
+  openMenu = new QMenu( this );
+  saveMenu = new QMenu( this );
 
-  QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
+  ui->pbNew->setMenu( newMenu );
+  ui->pbNew->setPopupMode( QToolButton::InstantPopup );
+  ui->pbOpen->setMenu( openMenu );
+  ui->pbOpen->setPopupMode( QToolButton::InstantPopup );
+  ui->pbSave->setMenu( saveMenu );
+  ui->pbSave->setPopupMode( QToolButton::InstantPopup );
 }
 
-FieldsToolbar::~FieldsToolbar() {
+NewOpenSaveToolbar::~NewOpenSaveToolbar() {
   delete ui;
 }

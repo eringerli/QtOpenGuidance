@@ -16,43 +16,41 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QSettings>
-#include <QStandardPaths>
+#include "GlobalPlannerToolbar.h"
+#include "ui_GlobalPlannerToolbar.h"
 
-#include "GuidanceToolbar.h"
-#include "ui_GuidanceToolbar.h"
-
-GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
+GlobalPlannerToolbar::GlobalPlannerToolbar( QWidget* parent ) :
   QGroupBox( parent ),
-  ui( new Ui::GuidanceToolbar ) {
+  ui( new Ui::GlobalPlannerToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
-
-  menu = new QMenu( this );
-
-  ui->pbDocks->setMenu( menu );
-  ui->pbDocks->setPopupMode( QToolButton::InstantPopup );
 }
 
-GuidanceToolbar::~GuidanceToolbar() {
+GlobalPlannerToolbar::~GlobalPlannerToolbar() {
   delete ui;
 }
 
-void GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
-  bool enabled = false;
-
-  if( arg1 == Qt::Checked ) {
-    enabled = true;
+void GlobalPlannerToolbar::on_pbAB_clicked( bool checked ) {
+  if( checked ) {
+    ui->pbAB->setText( QStringLiteral( "B" ) );
+    emit setAPoint();
+  } else {
+    if( ui->pbAB->text() == QStringLiteral( "B" ) ) {
+      ui->pbAB->setText( QStringLiteral( "+" ) );
+      ui->pbAB->setCheckable( false );
+      emit setBPoint();
+    } else {
+      emit setAdditionalPoint();
+    }
   }
-
-  emit simulatorChanged( enabled );
 }
 
-void GuidanceToolbar::on_pbSettings_clicked() {
-  emit toggleSettings();
+void GlobalPlannerToolbar::on_pbSnap_clicked() {
+  emit snap();
 }
 
-void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
-  ui->cbSimulator->setChecked( enabled );
+void GlobalPlannerToolbar::resetToolbar() {
+  ui->pbAB->setText( QStringLiteral( "A" ) );
+  ui->pbAB->setCheckable( true );
 }

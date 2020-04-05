@@ -26,7 +26,7 @@
    <item row="0" column="0" rowspan="2">
     <widget class="QPushButton" name="pbLeft">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>3</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
@@ -34,7 +34,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>20</pointsize>
+       <pointsize>30</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -51,8 +51,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>45</width>
-       <height>45</height>
+       <width>48</width>
+       <height>48</height>
       </size>
      </property>
      <property name="checkable">
@@ -70,12 +70,6 @@
        <horstretch>1</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
      </property>
      <property name="icon">
       <iconset theme="list-add">
@@ -100,12 +94,6 @@
        <verstretch>1</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
      <property name="icon">
       <iconset theme="list-add">
        <normaloff>.</normaloff>.</iconset>
@@ -124,7 +112,7 @@
    <item row="0" column="3" rowspan="2">
     <widget class="QPushButton" name="pbRight">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>3</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
@@ -132,7 +120,7 @@
      <property name="font">
       <font>
        <family>Monospace</family>
-       <pointsize>20</pointsize>
+       <pointsize>30</pointsize>
        <weight>75</weight>
        <bold>true</bold>
       </font>
@@ -155,8 +143,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>45</width>
-       <height>45</height>
+       <width>48</width>
+       <height>48</height>
       </size>
      </property>
      <property name="checkable">
@@ -171,12 +159,6 @@
        <horstretch>1</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
      </property>
      <property name="icon">
       <iconset theme="list-remove">
@@ -200,12 +182,6 @@
        <horstretch>1</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
      </property>
      <property name="icon">
       <iconset theme="list-remove">

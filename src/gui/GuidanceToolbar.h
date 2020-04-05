@@ -39,23 +39,11 @@ class GuidanceToolbar : public QGroupBox {
   private slots:
     void on_cbSimulator_stateChanged( int arg1 );
 
-    void on_btn_settings_clicked();
-
-    void on_btn_AB_clicked( bool checked );
-
-    void on_btn_snap_clicked();
-
-    void on_btn_autosteer_clicked( bool checked );
+    void on_pbSettings_clicked();
 
   signals:
     void toggleSettings();
     void simulatorChanged( bool );
-
-    void a_clicked();
-    void b_clicked();
-    void snap_clicked();
-
-    void autosteerEnabled( bool );
 
   public:
     QMenu* menu = nullptr;

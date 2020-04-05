@@ -138,7 +138,7 @@ void FieldManager::openField() {
   QString dir;
 
   auto* fileDialog = new QFileDialog( mainWindow,
-                                      tr( "Open Saved Config" ),
+                                      tr( "Open Saved Field" ),
                                       dir,
                                       selectedFilter );
   fileDialog->setFileMode( QFileDialog::ExistingFile );
@@ -149,8 +149,6 @@ void FieldManager::openField() {
   // the signals instead of using the static functions for the dialogs
 #ifdef Q_OS_ANDROID
   QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-    qDebug() << "QFileDialog::urlSelected QUrl" << fileName << fileName.toDisplayString() << fileName.toLocalFile();
-
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile(
@@ -172,8 +170,6 @@ void FieldManager::openField() {
   } );
 #else
   QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString & fileName ) {
-    qDebug() << "QFileDialog::fileSelected QString" << fileName;
-
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile( fileName );
@@ -200,7 +196,6 @@ void FieldManager::openField() {
 }
 
 void FieldManager::openFieldFromFile( QFile& file ) {
-
   QByteArray saveData = file.readAll();
 
   QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
@@ -319,7 +314,7 @@ void FieldManager::saveField() {
     QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
     QString dir;
     QString fileName = QFileDialog::getSaveFileName( mainWindow,
-                       tr( "Open Saved Config" ),
+                       tr( "Save Field" ),
                        dir,
                        tr( "All Files (*);;GeoJSON Files (*.geojson)" ),
                        &selectedFilter );

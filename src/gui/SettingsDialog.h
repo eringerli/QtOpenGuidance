@@ -29,9 +29,12 @@
 
 #include "../block/PoseSynchroniser.h"
 
+#include "NewOpenSaveToolbar.h"
+
 #include "VectorBlockModel.h"
 #include "NumberBlockModel.h"
-#include "SliderBlockModel.h"
+#include "ActionDockBlockModel.h"
+#include "SliderDockBlockModel.h"
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
 #include "ImplementSectionModel.h"
@@ -54,7 +57,7 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* menu, QWidget* parent = nullptr );
+    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* guidanceToolbarMenu, QWidget* parent = nullptr );
     ~SettingsDialog();
 
     QGraphicsScene* getSceneOfConfigGraphicsView();
@@ -197,6 +200,8 @@ class SettingsDialog : public QDialog {
     QComboBox* getCbNodeType();
 
   public:
+    NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;
+
     BlockBase* poseSimulation = nullptr;
 
     BlockBase* fieldManager = nullptr;
@@ -264,7 +269,8 @@ class SettingsDialog : public QDialog {
     QSortFilterProxyModel* filterModelValues = nullptr;
     VectorBlockModel* vectorBlockModel = nullptr;
     NumberBlockModel* numberBlockModel = nullptr;
-    SliderBlockModel* sliderBlockModel = nullptr;
+    ActionDockBlockModel* actionBlockModel = nullptr;
+    SliderDockBlockModel* sliderBlockModel = nullptr;
     StringBlockModel* stringBlockModel = nullptr;
 
     QSortFilterProxyModel* filterModelImplements = nullptr;

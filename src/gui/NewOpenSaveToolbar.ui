@@ -1,96 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FieldsToolbar</class>
- <widget class="QGroupBox" name="FieldsToolbar">
+ <class>NewOpenSaveToolbar</class>
+ <widget class="QGroupBox" name="NewOpenSaveToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>130</width>
-    <height>278</height>
+    <width>80</width>
+    <height>220</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Fields</string>
+   <string>New, Open, Save</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QToolButton" name="pbRecordContinous">
+    <widget class="QToolButton" name="pbNew">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Continous</string>
-     </property>
-     <property name="icon">
-      <iconset theme="media-record">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-     <property name="autoRaise">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="pbRecordPoint">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
-     </property>
-     <property name="text">
-      <string>Single</string>
-     </property>
-     <property name="icon">
-      <iconset theme="media-record">
-       <normaloff>.</normaloff>.</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="pbEdgeOfImplement">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>80</width>
-       <height>80</height>
-      </size>
      </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
@@ -99,25 +29,83 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/BoundaryRight.png</normaloff>
-       <normalon>:/icons/BoundaryLeft.png</normalon>:/icons/BoundaryRight.png</iconset>
+      <iconset theme="document-new">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <property name="iconSize">
       <size>
-       <width>64</width>
-       <height>64</height>
+       <width>48</width>
+       <height>48</height>
       </size>
      </property>
-     <property name="checkable">
-      <bool>true</bool>
+     <property name="popupMode">
+      <enum>QToolButton::InstantPopup</enum>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="pbOpen">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="document-open">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::InstantPopup</enum>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QToolButton" name="pbSave">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
+     <property name="icon">
+      <iconset theme="document-save">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::InstantPopup</enum>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonIconOnly</enum>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../res/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

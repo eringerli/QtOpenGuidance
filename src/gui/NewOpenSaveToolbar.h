@@ -16,24 +16,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QBoxLayout>
+#pragma once
 
-#include "FieldsToolbar.h"
-#include "ui_FieldsToolbar.h"
+#include <QGroupBox>
+#include <QMenu>
 
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
-  ui->setupUi( this );
-
-  setContentsMargins( 0, 0, 0, 0 );
-
-  QObject::connect( ui->pbRecordContinous, &QAbstractButton::toggled, this, &FieldsToolbar::continousRecordToggled );
-  QObject::connect( ui->pbRecordPoint, &QAbstractButton::clicked, this, &FieldsToolbar::recordPoint );
-
-  QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
+namespace Ui {
+  class NewOpenSaveToolbar;
 }
 
-FieldsToolbar::~FieldsToolbar() {
-  delete ui;
-}
+class NewOpenSaveToolbar : public QGroupBox {
+    Q_OBJECT
+
+  public:
+    explicit NewOpenSaveToolbar( QWidget* parent = nullptr );
+    ~NewOpenSaveToolbar();
+
+  public:
+    QMenu* openMenu = nullptr;
+    QMenu* newMenu = nullptr;
+    QMenu* saveMenu = nullptr;
+
+  private:
+    Ui::NewOpenSaveToolbar* ui;
+};

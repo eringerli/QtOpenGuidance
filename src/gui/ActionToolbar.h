@@ -16,24 +16,38 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QBoxLayout>
+#pragma once
 
-#include "FieldsToolbar.h"
-#include "ui_FieldsToolbar.h"
+#include <QObject>
 
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
-  ui->setupUi( this );
+#include <QGroupBox>
 
-  setContentsMargins( 0, 0, 0, 0 );
-
-  QObject::connect( ui->pbRecordContinous, &QAbstractButton::toggled, this, &FieldsToolbar::continousRecordToggled );
-  QObject::connect( ui->pbRecordPoint, &QAbstractButton::clicked, this, &FieldsToolbar::recordPoint );
-
-  QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
+namespace Ui {
+  class ActionToolbar;
 }
 
-FieldsToolbar::~FieldsToolbar() {
-  delete ui;
-}
+class ActionToolbar : public QGroupBox {
+    Q_OBJECT
+
+  public:
+    explicit ActionToolbar( QWidget* parent = nullptr );
+    ~ActionToolbar();
+
+    bool state();
+    bool isCheckable();
+    const QString getTheme();
+
+    void setState( bool state );
+    void setCheckable( bool checkable );
+    void setTheme( const QString theme );
+
+  private slots:
+    void on_pbAutosteer_clicked( bool checked );
+
+  signals:
+    void action( bool );
+
+  private:
+    QString theme;
+    Ui::ActionToolbar* ui;
+};
