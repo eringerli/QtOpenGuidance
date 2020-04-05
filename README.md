@@ -101,7 +101,7 @@ There are numerous guides on the internet how to flash an image to an SD-card. U
 ### Installing QtOpenguidance
 It is exactly the same as for the X86_64 described [here](https://github.com/eringerli/QtOpenGuidance#tldr-installing), it just takes longer :wink:.
 
-**Attention:** Don't select the "-es2"-versions of QT, choose wisely on the install. If you want to change it back, execute the following command: `sudo pacman -S qt5-base qt5-declarative qt5-multimedia qt5-wayland` and explicitly press `Y` to resolve the conflicts.
+**Attention:** Don't select the "-es2"-versions of QT, choose wisely when asked. If you want to change it back, execute the following command: `sudo pacman -S qt5-base qt5-declarative qt5-multimedia qt5-wayland` and explicitly press `Y` to resolve the conflicts.
 
 ### Troubleshooting
 #### Resolution of the display
@@ -112,7 +112,7 @@ If you experience a really slow system, normally it's caused by a too weak power
 
 Another cause can be thermal throttling. In this case the system slows down if it gets too hot. Consider active cooling, some heat spreaders and/or better air circulation.
 
-### Linking errors
+#### Linking errors
 These are caused by the ES2-version of QT. Please follow the instructions exactly. You have been warned...
 
 #### Doesn't start/crashes with a SEGFAULT
