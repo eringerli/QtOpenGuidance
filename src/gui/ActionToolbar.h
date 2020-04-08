@@ -42,7 +42,7 @@ class ActionToolbar : public QGroupBox {
     void setTheme( const QString theme );
 
   private slots:
-    void on_pbAutosteer_clicked( bool checked );
+    void on_pbAction_clicked(bool checked);
 
   signals:
     void action( bool );

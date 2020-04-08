@@ -63,6 +63,7 @@ void ActionToolbar::setTheme( const QString theme ) {
   ui->pbAction->setIcon( QIcon::fromTheme( theme ) );
 }
 
-void ActionToolbar::on_pbAutosteer_clicked( bool checked ) {
+void ActionToolbar::on_pbAction_clicked(bool checked)
+{
   emit action( checked );
 }
