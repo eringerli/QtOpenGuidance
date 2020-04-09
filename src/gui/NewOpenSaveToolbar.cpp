@@ -17,7 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "NewOpenSaveToolbar.h"
-#include "ui_NewOpenSaveDock.h"
+#include "ui_NewOpenSaveToolbar.h"
 
 NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) :
   QGroupBox( parent ),
