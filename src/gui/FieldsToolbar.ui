@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>130</width>
-    <height>278</height>
+    <width>96</width>
+    <height>262</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string>Continous</string>
+      <string>Cont.</string>
      </property>
      <property name="icon">
       <iconset theme="media-record">
@@ -43,9 +43,6 @@
      </property>
      <property name="toolButtonStyle">
       <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-     <property name="autoRaise">
-      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -86,12 +83,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize">
-      <size>
-       <width>80</width>
-       <height>80</height>
-      </size>
-     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
@@ -105,8 +96,8 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>64</width>
-       <height>64</height>
+       <width>48</width>
+       <height>48</height>
       </size>
      </property>
      <property name="checkable">
