@@ -22,43 +22,29 @@ use the software responsibly. If you think, this software is fit to drive expens
 that's your thing. Test it thorously before using it on actual equipment. Never leave it unsupervised, pe. by leaving the drivers seat or sleeping behind the wheel (that would be basic common sense).
 
 ## [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Installing on Linux
-Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a virtual machine (instructions [here](https://manjaro.org/support/firststeps/)). Then enter in a console:
+Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a virtual machine (instructions [here](https://manjaro.org/support/firststeps/)). This also works on [Arch Linux](https://www.archlinux.org), but Arch is definitively not for Linux beginners. Then enter in a console:
 ```
 # update the system and install various needed packages
-sudo pacman -Suy --needed base-devel bash-completion qt5 qtcreator gmp mpfr git cmake boost
+sudo pacman -Suy --needed base-devel bash-completion wget
 # delete the downloaded packages again, helps on small SSDs/HDs
 sudo pacman -Scc --noconfirm
 
+# make some folders for the building of the packages
+mkdir -p ~/qtopenguidance-build/{QtOpenGuidance,KDDockWidgets}
+
 # download, build and install KDDockWidgets
-cd
-git clone https://github.com/eringerli/KDDockWidgets.git
-mkdir build-KDDockWidgets ; cd build-KDDockWidgets
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr ../KDDockWidgets
-make -j4
-sudo make install
+cd ~/qtopenguidance-build/KDDockWidgets
+wget https://raw.githubusercontent.com/eringerli/KDDockWidgets/master/PKGBUILD -O PKGBUILD
+makepkg -i
 
-# get QtOpenGuidance
-cd
-git clone https://github.com/eringerli/QtOpenGuidance.git --recursive
-
-# get CGAL
-cd QtOpenGuidance/lib/
-wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
-tar xf CGAL-5.0.2.tar.xz
-
-# build QtOpenGuidance
-cd
-mkdir build-QtOpenGuidance ; cd build-QtOpenGuidance
-qmake -makefile -Wall ../QtOpenGuidance/QtOpenGuidance.pro -after CONFIG-=ccache KDDOCKWIDGET_LIBPATH=/usr
-make -j4
-
-# add a symlink to the desktop, replace "Schreibtisch" with the equivalent in your language
-cd ~/Schreibtisch
-ln -s ../build-QtOpenGuidance/QtOpenGuidance
+# download, build and install QtOpenGuidance
+cd ~/qtopenguidance-build/QtOpenGuidance
+wget https://raw.githubusercontent.com/eringerli/QtOpenGuidance/master/PKGBUILD -O PKGBUILD
+makepkg -i
 ```
-Your set: double-click on the icon on the desktop and load a config. `config/minimal.json` in the QtOpenGuidance-repository 
-should provide a good start. Don't forget to save the config as default in the tab "General". Enable the checkbox for the
-simulator and start playing around.
+Your set: double-click on the icon in the system menu and load a config. `config/minimal.json` in the QtOpenGuidance-repository should provide a good start. Don't forget to save the config as default in the tab "General". Enable the checkbox for the simulator and start playing around.
+
+To update it, run the same commands again. If it doesn't work, you can delete the whole folder with `rm -rf ~/qtopenguidance-build` and try again. Should you ever want to remove the two packages, enter `pacman -R qtopenguidance-git kddockwidgets-eringerli-git`.
 
 ## Windows
 ### General advice about Windows
@@ -75,7 +61,7 @@ performance boost of having a lean system without all the Microsoft/Windows/Manu
 is quite noticable: the fan is not running anymore all time and the battery lasts forever. You never have to worry 
 about automatic background downloads/updates and generally no control over your system (like no option to cancel a
 reboot or update) ever again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown
-is also not possible.
+is also not possible and the building of the packages is automated and they can be removed again.
 
 ### Installing with MSYS2
 #### Prerequisites
