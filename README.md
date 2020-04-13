@@ -12,15 +12,17 @@ please contact me first (@eringerli on Telegram) for coordinating the effort. Th
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
 
 ## If it doesn't compile
-Please update your repository to the most recent version. I sometimes do a force-push, `git reset --hard origin/master` is neccessary in this case. **This removes all local changes, so be carefull!**
+* Please update your repository to the most recent version. I sometimes do a force-push, `git reset --hard origin/master` is neccessary in this case. **This removes all local changes, so be carefull!**
+* If some files are not found, it is most likely because a new submodule was added. To initialize that, open Git Bash inside the QtOpenGuidance-folder and execute `git submodule update&&git submodule init`
+* A clean build helps most of the times, especially after an update. Either enter `make clean` in the terminal or choose the option in the build menu of QtCreator.
 
 ## Warning
 As clearly in the file LICENSE stated (especialy Section 15 through 17), there are no guaranties of any kind. You're responsible to
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
-that's your thing.
+that's your thing. Test it thorously before using it on actual equipment. Never leave it unsupervised, pe. by leaving the drivers seat or sleeping behind the wheel (that would be basic common sense).
 
-## [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Installing
-Install and run [Manjaro Linux](https://manjaro.org/) on your machine, then enter in a console:
+## [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Installing on Linux
+Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a virtual machine (instructions [here](https://manjaro.org/support/firststeps/)). Then enter in a console:
 ```
 # update the system and install various needed packages
 sudo pacman -Suy --needed base-devel bash-completion qt5 qtcreator gmp mpfr git cmake boost
@@ -58,8 +60,7 @@ Your set: double-click on the icon on the desktop and load a config. `config/min
 should provide a good start. Don't forget to save the config as default in the tab "General". Enable the checkbox for the
 simulator and start playing around.
 
-## Dependecies
-
+## Windows
 ### General advice about Windows
 [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Install linux, especially if you want a stable,
 fast and dataplan-saving system without required and unconvenient maintenance and general frickle-ness.
@@ -75,6 +76,49 @@ is quite noticable: the fan is not running anymore all time and the battery last
 about automatic background downloads/updates and generally no control over your system (like no option to cancel a
 reboot or update) ever again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown
 is also not possible.
+
+### Installing with MSYS2
+#### Prerequisites
+* more than 4Gb of free space
+* a working internet connection, downloads about 1.5GB of data
+* the whole thing takes more than an hour (at least on my virtual machine, so [YMMV](https://www.urbandictionary.com/define.php?term=ymmv)), in this time you have a running Manjaro Linux *even with installing the whole system*
+
+#### Installing
+1. go to (https://www.msys2.org/) and download the installer for 64bit
+1. install it according to the instructions; scroll a bit down from the download link. Close the terminal afterwards.
+1. Open "MSYS2 MingW 64bit" (not "MSYS2 MSYS" or "MSYS2 MingW 32bit")
+1. enter `pacman -S --needed base-devel mingw-w64-x86_64-gcc mingw-w64-x86_64-qt5 git mingw-w64-x86_64-cmake mingw-w64-x86_64-make mingw-w64-x86_64-gmp mingw-w64-x86_64-mpfr mingw-w64-x86_64-boost mingw-w64-x86_64-ninja`
+1. enter 
+```
+# make a new folder in C: and change to it
+mkdir /c/qtopenguidance
+cd /c/qtopenguidance
+
+# clone, build and install KDDockWidgets
+git clone https://github.com/eringerli/KDDockWidgets.git
+mkdir build-KDDockWidgets ; cd build-KDDockWidgets
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/usr ../KDDockWidgets
+ninja
+ninja install
+
+# clone QtOpenGuidance with all the submodules
+cd /c/qtopenguidance/
+git clone --recursive https://github.com/eringerli/QtOpenGuidance
+
+# get CGAL
+cd QtOpenGuidance/lib/
+wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
+tar xf CGAL-5.0.2.tar.xz
+
+# build QtOpenGuidance
+cd /c/qtopenguidance/
+mkdir build-QtOpenGuidance ; cd build-QtOpenGuidance
+qmake -makefile -Wall ../QtOpenGuidance/QtOpenGuidance.pro -after CONFIG-=ccache -after CONFIG-=precompile_header -after LIBS+=-L/c/msys64/usr/lib LIBS+=-L/mingw64/lib -after INCLUDEPATH+=/c/msys64/usr/include
+make -j8
+```
+
+To make a shortcut on the desktop, right-click on it, choose "New" and then "Shortcut". Enter in the text field for the location: `C:\msys64\usr\bin\mintty.exe -w hide /bin/env MSYSTEM=MINGW64 /bin/bash -lc /c/qtopenguidance/build-QtOpenGuidance/release/QtOpenGuidance.exe`
+
 
 ### Rapsberry Pi
 #### Hardware
@@ -118,95 +162,16 @@ These are caused by the ES2-version of QT. Please follow the instructions exactl
 #### Doesn't start/crashes with a SEGFAULT
 See [Issue #1](https://github.com/eringerli/QtOpenGuidance/issues/1). Let's hope, they fix it soon in ARM64 too...
 
-### QT
-#### Linux
-Use your distributions packet management system. Make sure to install a git, a compiler, QT5 (QT itself, Qt3D, qtserialport, etc...) and qtcreator. Install the development and debug packages too (`-dev`, `-dbg`), if your distribution splits them into different packages. If you get an error about not found components, first make sure you have them installed.
-
-#### Ubuntu
-Use Ubuntu 19.04, as 18.04 LTS has an ancient version of QT (QT5.9.3), which does't work with QtOpenGuidance.
-
-To install the dependencies, open a terminal and execute the following commands:
-```sudo apt-get install build-essential qt3d5-dev qt3d5-dev-tools qt3d5-examples qtcreator qt5-default qt5-qmake libqt5serialport5 libqt5serialport5-dev git gitk```
-
-#### If it doesn't work
-Install the binaries from https://qt.io on linux and use the bundled QtCreator. This ensures, that the right version of QT is used.
-
-#### Windows
-Use the normal installer of QT from this [link](https://www.qt.io/download-qt-installer). As were are installing Qt and all other dependencies with MSYS2, basicaly all you need from this installer is QtCreator, which is automatically selected.
-
-### Git
-#### Linux
-Most likely, git is already installed. If not, search for it in the package repositories of your system.
-#### Windows
-Install git from https://git-scm.com.
-
-### CGAL
-#### Linux & Windows
-Download CGAL (the zip, not the setup) and extract it in `lib/`. Use the Version `5.0.2` from https://github.com/CGAL/cgal/releases
-
-### MSYS2
-#### Linux
-Not needed.
-#### Windows
-On Windows, it is much simpler to use MSYS2 instead of the bundled MinGW in Qt. This takes also care of GMP/MPFR (needed by CGAL), Boost (also needed by CGAL) and QT itself. Also you get a recent compiler and everything works pretty much out of the box.
-To install all the required packages, follow the instructions below.
-
-1. Download from https://www.msys2.org/. Make sure to use the 64bit-version.
-1. Run the installer
-1. Execute the following commands (change the path to your QT path) in an MSYS2-console:
-```
-pacman -Syu
-```
-1. close the window
-1. open a new MSYS2-console and execute the following commands:
-```
-pacman -Syu
-pacman -S base-devel mingw-w64-x86_64-qt5 git mingw-w64-x86_64-clang mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-make mingw-w64-x86_64-gdb mingw-w64-x86_64-gmp mingw-w64-x86_64-mpfr mingw-w64-x86_64-boost
-```
-
-After that, you have to register the newly installed toolchain in QtCreator (save the changes everytime before you change the tab with a click in `Apply`). Choose wise names to find the stuff later on.
-1. Open `Tools->Options` and go to the tab `Qt Versions`. Add the toolchain by clicking on `Add` and selecting the program
-   `qmake.exe`. If you installed everything in the default localtions, you find it in `C:\msys64\mingw64\bin`.
-1. Go to the tab `Compiler`. Here you add a new MinGW-C++-Compiler and set the path to `C:\msys64\mingw64\bin\g++.exe`. Do the same for a new MinGW-C-Compiler, but choose `C:\msys64\mingw64\bin\gcc.exe`
-1. Go to the tab `Debuger` and add new one. Select `C:\msys64\mingw64\bin\gdb.exe`
-1. Go to the tab `CMake` and add new one. Select `C:\msys64\mingw64\bin\cmake.exe`
-1. Finnaly go to the tab `Kits`, make a new one and select all the newly added stuff.
-1. Change `CMake Generator` to `MinGW Makefiles` (scroll all the way down and click in `Change`).
-1. Close the dialog
-
-**Attention:** to actually use the new kit, you have add new build-settings by clicking first on `Projects` and then on the name of the newly added kit.
-
-### KDAB KDockWidgets
-#### Linux
-Open a terminal and clone KDDockWidgets:
-```git clone https://github.com/eringerli/KDDockWidgets.git```
-And build/install:
-```
-mkdir KDDockWidgets.build && cd KDDockWidgets.build
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/opt/KDAB ../KDDockWidgets
-make
-sudo make install
-```
-
-#### Windows
-Open a msys2-mingw64-terminal and clone KDDockWidgets:
-`git clone https://github.com/eringerli/KDDockWidgets.git`
-And build/install:
-```
-mkdir KDDockWidgets.build && cd KDDockWidgets.build
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/c/msys64/mingw64/ ../KDDockWidgets
-/c/msys64/mingw64/bin/mingw32-make.exe
-/c/msys64/mingw64/bin/mingw32-make.exe install
-```
-
-### Android
-It works kind of stable, but you have to jump through many hoops. Some hints:
+## Android
+You have to jump through many hoops. Some hints:
 * install all the SDK/NDK-stuff
-* compile QT for android
-* compile KDockWidget for Android
-* you have to install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
+* compile QT for android (takes about 1-4 hours, depending on the performance of the CPU and the choosen modules)
+* compile and install KDockWidget
+* compile and install Boost. The easiest way is to use the script in https://github.com/moritz-wundke/Boost-for-Android. Put the compiled stuff in `android/` and edit `QtOpenGuidance.pro` to include and link with the right architecture.
 * install GMP and MPFR (search for "install CGAL on android")
-* dance around a fire on a new moon on midnight and hope, that it works...
+* dance around a fire on a new moon on midnight and hope that it works on the first try...
+
+It *can* run on Android, but the GUI is in no way optimized for it: to actually set it up you have to connect a mouse anyway, a bluetooth connected one works best in this case. Just because it is doable, doesn't imply usefulness or added value over an RPI or a x86-tablet. Also there is the question of transmiting data to and from it. Android has a strict seperation between apps (so data exchange and opening downloaded files is harder to do), so it generally a big hassle to actually use it. If you have expierence in cross-compiling for Android, it is doable. If you don't have, better leave it be, your time is better spent in searching for a reasonably priced used x86-tablet.
 
 ## Cloning
 The easiest way is to use QtCreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and **make sure to enable "recursive"**. Hit "Import". qtcreator should help you from here on out.
@@ -239,36 +204,41 @@ If you find an issue or a bug, report them on github. Also, there's a Telegram g
 
 ## Forking
 It is possible to run this software without forking. So if you're not interested in making changes yourself, don't. To just 
-remember the repository, there's a small star.
+remember the repository, there's a small star or the watch button.
 
 A normal clone (not with the function "download ZIP") can be easily kept up-to-date. To keep a fork synchronised with the
 forked from repository, more work is needed. A downloaded ZIP lacks the nessesary data for git.
 
 ## Contributing
-
 If you want to contribute to the project, there are some rules:
 
+- **Enter the [telegram group](https://t.me/QtOpenGuidance) and ask for open jobs. There's no sense in doing duplicate work without any coordination.**
 - Fork it on github, send pull requests with a clear and compelling description
-- Good and complete commit descriptions, no "WIP"-commits without any hint what is changed
-- Have a plan what to change and what to achieve with it. Read and comprehend the existing code.
+- Do small incremental commits with consise commit descriptions. No "WIP"-commits without any hint what is changed or big commits which touch many indipendent parts of the project. 
+- Have a plan what to change and what to achieve with it. *Read and comprehend the existing code.*
 - Coding style rules:
    - 2 spaces indentation, no tabs
    - Blocks are opened on the same line (pe. `if(...) {`)
    - spaces around operators and on the inside but not outside of parentheses
-- Meaningful and descriptive names. If you alter the meaning of a temporary variable, also change its name.
-- Generaly keep a dataflow-paradigm in the code: data comes in, gets altered/calculated and then gets sent to the next block
-- Use meaningful datatypes to exchange data; steerangle alone is ok, also `Tile*, Vector3D, QQuaterion` for the position+orientation (aka pose), as they are alone meaningless. But don't mash together logicaly different things like velocity + roll. Use seperate signals/slots if it makes sense, instead of one with all the data. The same goes for data streams like UDP-sockets or serial communications.
-- Use SI-units: seconds, meters. Convert the data once on entry and once on exit. Use degrees in external data exchange (like with [esp32-aog](https://github.com/eringerli/esp32-aog)), but quaternions or rad internaly.
-- If you want to show different units in the GUI, make the conversion in one place and as the last step before showing.
-- As we develop for modern machines, floating point calculations are as efficient as integer math (and we use modern compilers, so much of the expression if known at compile time gets optimized out). Don't do divisions as multiplications or other such hard to comprehend math. Use `constexpr` as much as possible. If you optimize an algorythm, document the simplest version of it, so it can be understood with little effort.
+- Meaningful and descriptive names. If you alter the meaning of a temporary variable, also change its name. No indeciverable abreviations.
+- Generaly keep a dataflow-paradigm in the code: data comes in, gets altered/calculated and then gets sent to the next block. Keep logically different parts seperated.
+- Use meaningful datatypes to exchange data. Don't mash together logicaly different things like velocity + roll. Use seperate signals/slots if it makes sense, instead of one with all the data. The same goes for data streams like UDP-sockets or serial communications.
+- Use SI-units: seconds, meters. Convert the data once on entry and once on exit. Use degrees in external data exchange (like with [esp32-aog](https://github.com/eringerli/esp32-aog)), but quaternions or rad internaly. Add "Degrees" or "Rad" to the variable name to indicate the unit.
+- If you want to show different units in the GUI, make the conversion in one place and as the last step before showing. Don't transmit scaled values.
+- As we develop for modern machines, floating point calculations are about as efficient as integer math (and we use modern compilers, so much of the expression if known at compile time gets optimized out). Don't do divisions as multiplications or other such hard to comprehend math. If you optimize an algorythm, document the simplest version of it, so it can be understood with little effort.
+- Document your sources, especially for algorythms.
+- Use `const` and `constexpr` as much as possible.
 - No global variables to exchange data, all data and config gets exchanged with signals and slots.
-- Keep things as local as possible, make as few globals as needed. Local scoping (`{}` without a `for, while(), if()` etc) are encouraged.
+- Keep things as local as possible, make as few globals as needed. Local scoping (`{}` without a `for, while(), if()` etc) are encouraged to keep the namespace clear and hint to the compiler the locality of the data.
+- Generally keep all classes in their own file in the apropriate folder. Name the file after the class and also rename it when changing this name.
+- General advice about configuration/input parameters: if it has to be changed regularily and on the fly, add a signal/slot to the block (pe. the maximal angle velocity to calculate the minimal turning radius from). If it is to be changed once, do it in the settings dialog (pe. the color of the grid lines).
+- Find and set up sane defaults.
 - When adding reused objects/variables, use the factories to pass a pointer to the blocks. Keep the factories in the same file as the block itself.
-- Use as much of QT as possible, especialy Qt3D, the `QVector3D`/`QQuaternion`-based math, the `QObject`-model, `QString`, `QNetwork` and the classes for XML, JSON etc. Don't homegrow something if there is already an implementation. The chance is great, that QTs version is not only more robust and works in more cornercases but is also more performant.
+- Use as much of QT as possible, especialy Qt3D, the `QVector3D`/`QQuaternion`-based math, the `QObject`-model, `QString`, `QNetwork` and the classes for XML, JSON, CBOR etc. Don't homegrow something if there is already an implementation. The chance is great, that QTs version is not only more robust and works in more cornercases but is also more performant.
 - You can add libraries, but it has to be as a git submodule and built together with QtOpenGuidance. If there is a compelling reason to do otherwise, clearly state it in the commit message.
-- Don't introduce platform-specific code, use the avaible QT-abstractions
+- Don't introduce platform-specific code, use the avaible QT-abstractions.
 - QT and Qt3D are pretty performant, so no "optimized but unreadable" code (aka write-only code). Qtcreater has builtin support for profiling; implement new features clean and straightforward, then profile and only optimize if needed. Saving RAM and storage space is pretty pointless on modern machines, saving cycles most of the time too. So generally: better implement new features instead of getting +1% more performance on codepaths which are not critical.
 - This isn't a collection of proof of concepts, but a maintainable, usable and readable codebase for a RTK-based guidance. So keep your implementations readable, documented and clean of premature optimitions.
-- Be as compatible to standards as possible: if there is already an established format like json, J1939 or GPX, use that. Also be as compatible as possible to [AgOpenGPS](https://github.com/farmerbriantee/AgOpenGPS), especialy with the I/O for the motor and sensors. Use the possibilities of QT to read and write them. Normaly, data exchange is not performance critical, so no super optimized code there (see also the points above). No problem if the user waits 0.1s longer to read the previous field with QT-classes instead of a homegrown implementation.
+- Be as compatible to standards as possible: if there is already an established format like JSON, CBOR, J1939 or GeoJSON, use that. Normaly, data exchange is not performance critical (it is done only a few times a second), so no super optimized code there (see also the points above). No problem if the user waits a couple of ms longer in this case.
 - Experiment in your own branches, don't break the master-branch or configfiles without a really compelling reason.
 - If you are still with me; these rules ensure that we create a maintainable codebase which can attract new devs. And this is the most important thing there is for such a project. Not only that it runs on virtualy every kind of machine out there (incl. Raspberry Pis and other SBC), but also that it is fun to implement new features in a way that helps the whole project. So if you are interested in helping me with this project (even by reporting a bug or do a translation), don't hesitate, fork the repository and send me a pull request.
