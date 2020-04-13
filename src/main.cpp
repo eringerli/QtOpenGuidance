@@ -177,6 +177,7 @@ int main( int argc, char** argv ) {
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
   mainWindow->setWindowTitle( "QtOpenGuidance" );
+  app.setWindowIcon( QIcon::fromTheme( QStringLiteral( "QtOpenGuidance" ) ) );
 
   auto* centralDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidanceView" ), KDDockWidgets::DockWidget::Option_NotClosable );
   centralDock->setWidget( container );

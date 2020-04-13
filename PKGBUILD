@@ -47,7 +47,7 @@ build() {
   mkdir -p build
 
   cd build
-  qmake -o Makefile ../QtOpenGuidance.pro -after CONFIG-=ccache target.path="$pkgdir/usr/bin" configs.path="$pkgdir/usr/share/QtOpenGuidance/config"
+  qmake -o Makefile ../QtOpenGuidance.pro -before PREFIX="$pkgdir/usr" -after CONFIG-=ccache
   make
 }
 

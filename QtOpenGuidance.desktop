@@ -1,0 +1,15 @@
+[Desktop Entry]
+Categories=Science;Maps;Robotics
+Comment=GPS based Guidance for Farming Equipment
+Description=GPS based Guidance for Farming Equipment
+Exec=QtOpenGuidance
+GenericName[de_CH]=
+GenericName=
+Icon=QtOpenGuidance
+MimeType=
+Name=QtOpenGuidance
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application

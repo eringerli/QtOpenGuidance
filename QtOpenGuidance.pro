@@ -225,14 +225,26 @@ android {
     configs.path = $$DATADIR/configs
 }
 
-PREFIX = /usr
+isEmpty(PREFIX) {
+  PREFIX = /usr
+}
 
 target.path = $$PREFIX/bin
 INSTALLS += target
 
 configs.files = config/*
-configs.path = $$PREFIX/share/QtOpenGuidance/config
+configs.path = $$PREFIX/share/QtOpenGuidance/config/
 INSTALLS += configs
+
+icons.files = icons/*
+icons.path = $$PREFIX/share/icons/hicolor/
+INSTALLS += icons
+
+desktop-entry.files = QtOpenGuidance.desktop
+desktop-entry.path = $$PREFIX/share/applications/
+INSTALLS += desktop-entry
+
+DISTFILES += PKGBUILD QtOpenGuidance.desktop
 
 DISTFILES += \
     android/AndroidManifest.xml \
