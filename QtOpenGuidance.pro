@@ -18,7 +18,11 @@
 
 load(configure)
 
-CONFIG += c++14 ccache precompile_header
+CONFIG += c++14 ccache
+
+unix {
+    CONFIG += precompile_header
+}
 
 include(build-paths.pri)
 
@@ -170,18 +174,13 @@ HEADERS += \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h
 
-PRECOMPILED_HEADER  = src/pch.h
+unix {
+    PRECOMPILED_HEADER  = src/pch.h
+}
 
-#android {
-    HEADERS += \
-        src/cgal.h \
-        src/cgalKernel.h
-#}
-#!android {
-#    PRECOMPILED_HEADER += \
-#        src/cgal.h \
-#        src/cgalKernel.h
-#}
+HEADERS += \
+    src/cgal.h \
+    src/cgalKernel.h
 
 FORMS += \
     src/gui/ActionToolbar.ui \
@@ -202,7 +201,7 @@ FORMS += \
 RESOURCES += \
     res/ressources.qrc
 
-!linux | android {
+!unix | android {
     RESOURCES += \
         lib/oxygen-icons-png/oxygen.qrc
 }
@@ -218,23 +217,21 @@ INCLUDEPATH += $$KDDOCKWIDGET_INCLUDE
 LIBS += -L$$KDDOCKWIDGET_LIBPATH -l$$KDDOCKWIDGET_LIBRARY
 
 android {
-ANDROID_EXTRA_LIBS += $${KDDOCKWIDGET_LIBPATH}/lib$${KDDOCKWIDGET_LIBRARY}.so
-}
-
-unix {
-target.path = /opt/QtOpenGuidance
-configs.path = /opt/QtOpenGuidance/config
+    ANDROID_EXTRA_LIBS += $${KDDOCKWIDGET_LIBPATH}/lib$${KDDOCKWIDGET_LIBRARY}.so
 }
 
 android {
-QT += androidextras
-
-configs.path = $$DATADIR/configs
+    QT += androidextras
+    configs.path = $$DATADIR/configs
 }
 
+PREFIX = /usr
+
+target.path = $$PREFIX/bin
 INSTALLS += target
 
 configs.files = config/*
+configs.path = $$PREFIX/share/QtOpenGuidance/config
 INSTALLS += configs
 
 DISTFILES += \

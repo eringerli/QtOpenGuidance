@@ -1,5 +1,5 @@
-DEPENDPATH      += $$PWD/UBX_Parser
+DEPENDPATH += $$PWD/UBX_Parser
 
-INCLUDEPATH     += $$PWD/UBX_Parser/src
+INCLUDEPATH += $$PWD/UBX_Parser/src
 
-HEADERS  += $$PWD/UBX_Parser/src/UBX_Parser.h
+HEADERS += $$PWD/UBX_Parser/src/UBX_Parser.h

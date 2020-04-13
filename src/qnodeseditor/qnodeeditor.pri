@@ -1,7 +1,7 @@
-QT          += core widgets gui
+QT += core widgets gui
 
-DEPENDPATH      += $$PWD
-INCLUDEPATH     += $$PWD
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
 
 SOURCES += \
     $$PWD/qneblock.cpp \
