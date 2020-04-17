@@ -18,6 +18,10 @@ CONFIG(release) {
     QMAKE_CXXFLAGS += -frounding-math
 }
 
+win32 {
+    LIBS += -lgmp
+}
+
 # GPM/MPFR
 android {
     LIBS += -L$$GMPMPFR_LIBPATH -lgmp -lmpfr

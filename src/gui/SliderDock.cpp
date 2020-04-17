@@ -19,6 +19,8 @@
 #include "SliderDock.h"
 #include "ui_SliderDock.h"
 
+#include <cmath>
+
 SliderDock::SliderDock( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::SliderDock ) {
@@ -51,7 +53,7 @@ void SliderDock::setDecimals( const int decimals ) {
 
   ui->dsbValue->setDecimals( tmpDecimals );
 
-  double stepSize = /*10 **/ pow( 10, -tmpDecimals );
+  double stepSize = /*10 **/ std::pow( 10, -tmpDecimals );
   ui->dsbValue->setSingleStep( stepSize );
 
   ui->slValue->setMaximum( ui->dsbValue->maximum() / stepSize );
