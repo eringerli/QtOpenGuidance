@@ -1,20 +1,14 @@
 # QtOpenGuidance
 
-A software to do a GPS-based guidance of farming equipment. It uses a principle called "dataflow programming": basicaly this
+A software for GPS-based guidance of farming equipment. It uses a principle called "dataflow programming": basicaly this
 means every module of the software receives, modifies and then sends data. These modules are then connected in a meaningfull 
-way, so a calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on
-the screen and finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
+way, so a calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on the screen and finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
 
 It is pre-alpha now and the development is quite fast. I encourage other devs to add functionality to QtOpenGuidance, but
 please contact me first (@eringerli on Telegram) for coordinating the effort. There's no sense in doing work twice.
 
 ## Word to the Wise
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
-
-## If it doesn't compile
-* Please update your repository to the most recent version. I sometimes do a force-push, `git reset --hard origin/master` is neccessary in this case. **This removes all local changes, so be carefull!**
-* If some files are not found, it is most likely because a new submodule was added. To initialize that, open Git Bash inside the QtOpenGuidance-folder and execute `git submodule update&&git submodule init`
-* A clean build helps most of the times, especially after an update. Either enter `make clean` in the terminal or choose the option in the build menu of QtCreator.
 
 ## Warning
 As clearly in the file LICENSE stated (especialy Section 15 through 17), there are no guaranties of any kind. You're responsible to
@@ -42,9 +36,13 @@ cd ~/qtopenguidance-build/QtOpenGuidance
 wget https://raw.githubusercontent.com/eringerli/QtOpenGuidance/master/PKGBUILD -O PKGBUILD
 makepkg -i
 ```
-Your set: double-click on the icon in the system menu and load a config. `config/minimal.json` in the QtOpenGuidance-repository should provide a good start. Don't forget to save the config as default in the tab "General". Enable the checkbox for the simulator and start playing around.
+Your set: QtOpenGuidance was added to the systems start menu, so you can open it from there. To start, load `config/minimal.json` in the folder `/usr/share/QtOpenGuidance/config`. Don't forget to save the config as default in the tab "General". Enable the checkbox for the simulator and start playing around.
 
 To update it, run the same commands again. If it doesn't work, you can delete the whole folder with `rm -rf ~/qtopenguidance-build` and try again. Should you ever want to remove the two packages, enter `pacman -R qtopenguidance-git kddockwidgets-eringerli-git`.
+
+Normally, you want to change from the dark theme to a light one: open the system settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience, but you can try other ones too: they even automatically update after pushing "Apply", so you can leave QtOpenGuidance open and see the result immidietly.
+
+For the next steps, go to [Quickstart](README.md#quickstart).
 
 ## Windows
 ### General advice about Windows
@@ -105,12 +103,13 @@ make -j8
 
 To make a shortcut on the desktop, right-click on it, choose "New" and then "Shortcut". Enter in the text field for the location: `C:\msys64\usr\bin\mintty.exe -w hide /bin/env MSYSTEM=MINGW64 /bin/bash -lc /c/qtopenguidance/build-QtOpenGuidance/release/QtOpenGuidance.exe`
 
+For the next steps, go to [Quickstart](README.md#quickstart).
 
-### Rapsberry Pi
-#### Hardware
+## Rapsberry Pi
+### Hardware
 Use a Raspberry Pi4 with at least 2GB of RAM and a fast SD card (minimum Class 10, better UHS 1 or 3) with 16GB or more of storage. Use at least a HD/720p-display, better FullHD/1080p (testing is done with FullHD). Also make sure you have sufficient power for the RPI, 5V/3A is recomended. The RPI4 requires a lot of power, so make sure you use the supplied power brick *and a known good cable*. If you build your own supply for the tractor, keep these requirements in mind.
 
-#### Installing Manjaro Linux
+### Installing Manjaro Linux
 There are numerous guides on the internet how to flash an image to an SD-card. Use one of those. But basically:
 1. download an image from https://osdn.net/projects/manjaro-arm/storage/rpi4/xfce/
 1. decompress and flash it to a SD-card according to a guide of your choosing
@@ -120,7 +119,7 @@ There are numerous guides on the internet how to flash an image to an SD-card. U
 1. let it reboot
 1. log in
 1. some settings have to be changed from the default:
-   1. change from the dark theme to a light one: open the settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one
+   1. change from the dark theme to a light one: open the settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience.
    1. if you want to use SSH, you have to install and start/enable the SSH-server with:
   ```
   sudo pacman -S openssh
@@ -132,6 +131,8 @@ There are numerous guides on the internet how to flash an image to an SD-card. U
 It is exactly the same as for the X86_64 described [here](https://github.com/eringerli/QtOpenGuidance#tldr-installing), it just takes longer :wink:.
 
 **Attention:** Don't select the "-es2"-versions of QT, choose wisely when asked. If you want to change it back, execute the following command: `sudo pacman -S qt5-base qt5-declarative qt5-multimedia qt5-wayland` and explicitly press `Y` to resolve the conflicts.
+
+For the next steps, go to [Quickstart](README.md#quickstart).
 
 ### Troubleshooting
 #### Resolution of the display
@@ -159,31 +160,35 @@ You have to jump through many hoops. Some hints:
 
 It *can* run on Android, but the GUI is in no way optimized for it: to actually set it up you have to connect a mouse anyway, a bluetooth connected one works best in this case. Just because it is doable, doesn't imply usefulness or added value over an RPI or a x86-tablet. Also there is the question of transmiting data to and from it. Android has a strict seperation between apps (so data exchange and opening downloaded files is harder to do), so it generally a big hassle to actually use it. If you have expierence in cross-compiling for Android, it is doable. If you don't have, better leave it be, your time is better spent in searching for a reasonably priced used x86-tablet.
 
-## Cloning
-The easiest way is to use QtCreator: go to welcome, the to project and hit "New Project". Choose "Import Project" and in the list "Git Clone". Configure the repository-URL and **make sure to enable "recursive"**. Hit "Import". qtcreator should help you from here on out.
+## Developing
+If you want to implement new stuff, you have to clone the repository and open it in QtCreator. Developing on Linux is much simpler than on Windows, but both are possible (you have to add a custom toolchain/kit to QtCreator).
 
-For the diehards out there who use git bash (like me), you have to `git submodule init` and then `git submodule update`.
+### Dependencies
+The simplest way is to install all the dependencies simply follow the guide for installing on Linux/Windows. Everything is then installed automatically.
 
-## Compiling
-Open the project in qtcreator, change the buildtype to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). If the buttons are grayed out, do as suggested by qtcreator.
+### Cloning
+The easiest way is to clone it recursively, either by adding `--recursive` to `git clone` or ticking the box on importing a new project in QtCreator.
 
-It is developed on linux, but should work on any platform supported by QT and Qt3D.
+For the diehards out there who use Git Bash and have forgotten to add `--recursive`, or after pulling the newest commits in the repository, you have to execute `git submodule init` and then `git submodule update`.
 
-## Running
-To make something useful with the software and to test its functions, open the setup dialog and load a configuration out of the `config/` folder. `minimal.json` should work everytime, the others should too, but are sometimes not kept up to date with the development. Click on the checkbox for the simulator and you can steer the GPS-source.
+### Keeping it up to date
+**Don't fork it, until you are sure you need to!**
 
-You get the structure of the configuration quite fast if you look at the different configurations. Don't try to edit them by hand, as it is possible, but not at all comfortable. You can do all the editing in the setup dialog. Deleting works by either hit the `del`-key or the button. Zooming works with the mousewheel or the buttons, paning by right-click and drag.
-
-To add new connections drag from a red circle to another. If the two ports are compatible, the connection is made instantly and data is transfered. To alter a value of a block, you can edit that in the next tab by double-clicking on a cell in the table view.
-
-If it crashes on start, try to use another build type.
-
-## Keeping it up to date
-1. **Don't fork it**
-1. open a Git Bash Console
+If you didn't fork:
+1. open a Git Bash Console in the repository
 1. `git pull`
 1. `git submodule init`
 1. `git submodule update`
+
+If you do, consult a good guide about upstream merging.
+
+### Compiling
+Open the project in QtCreator, change the buildtype to "Release" (the small screen-icon on the lower left), compile and run it (the green triangle). If the buttons are grayed out, do as suggested by QtCreator.
+
+#### If it doesn't compile
+* Please update your repository to the most recent version. I sometimes do a force-push, `git reset --hard origin/master` is neccessary in this case. **This removes all local changes, so be carefull!**
+* If some files are not found, it is most likely because a new submodule was added. To initialize that, open Git Bash inside the QtOpenGuidance-folder and execute `git submodule update` and `git submodule init`
+* A clean build helps most of the times, especially after an update. Either enter `make clean` in the terminal or choose the option in the build menu of QtCreator.
 
 ## Issues and Bugs
 If you find an issue or a bug, report them on github. Also, there's a Telegram group: https://t.me/QtOpenGuidance.
@@ -194,6 +199,31 @@ remember the repository, there's a small star or the watch button.
 
 A normal clone (not with the function "download ZIP") can be easily kept up-to-date. To keep a fork synchronised with the
 forked from repository, more work is needed. A downloaded ZIP lacks the nessesary data for git.
+
+## Quickstart
+To make something useful with the software and to test its functions, open the settings dialog and load a configuration out of the `config/` folder in the repository or `/usr/share/QtOpenGuidance/config` if you have installed it systemwide. `minimal.json` should work most of the time, is generally kept up to date with the development and give a good overview on the implemented functionality.
+
+### Settings Dialog
+You get the structure of the configuration quite fast if you look at the first tab in the settings tab. The blocks represent different kinds of logical parts in the software and are color coded, like green for calculations or red for docks. Deleting and zooming works as you would expect with the mousewheel or the `DEL`-key, paning by right-click and drag, right-click on a block deletes it. Almost every element in the GUI has it's counterpart in this view, also all the calculation and most of the input values are connected here. The connecting lines represent a path for data. You can try to connect different things, if a line appears (it checks if the source and sink are compatible), the data flows immidietly. It looks overwhelming at first, but by adding blocks and connections, almost all possible (and impossible) configurations can be implemented. It follows a data flow paradigm: data is received (left side), processed and sent (right side) by as simple as possible logical blocks. This makes it more complicated to look at, but makes development easier and also configurations possible, which aren't explicitly developed for. Loading works incremental, so you can also save parts of you configuration an load it multiple times. This also means that you have to "Clear All" if you want to load a complete config.
+
+The second tab is for general configuration. You most likely want to enable the loading of the configuration and the positions of the docks on start.
+
+The third tab is for finer controll of the value block (the gold ones).
+
+The fourth is for the visualisation of the data in the main window, like the displayed unit or the used font (the red ones).
+
+The fifth is for the channel IDs for the communication with the esp32 for controlling the tractor (the light blue ones).
+
+The sixth for configuring the implement.
+
+### Arranging the Main Window
+After you configured it to your linking and closed the setting dialog, you most likely want to arrange all the different docks in the main window. You can also hide/show the docks with a press on the button "Docks". If it somehow screwes up the layout (it's stressing the framework quite well, so sometime it has some hickups), try to resize the window a bit, the avaible space should be used better now. If your happy with the arrangement, don't forget to save it in the settings dialog. The config `minimal.json` is used in the development of the software, so it contains quite many docks. If you don't want them, either hide or delete them in the settings dialog.
+
+### Simulator
+Now you're set to use the simulator: enable it with a click in the checkbox and adjust the sliders for velocity or steer angle. If you have a space mouse and are on Linux, chances are you can use it too for this. Press A/B for creating a new guidance-line and the the play button to enable the automatic steering. The software is completely asynchronous, so without a data source like the simulator, the main view for the guidance is not drawn. With the camera toolbar you can adjust the view (the buttons auto-repeat when pressed longer), zooming is also possible with the mouse wheel. To automatically turn, press the big arrows with the number by it. With the small +/- you can adjust the skipping. You can adjust the slider "Frequency" for simulating different kinds of GPS sources or the performance of you hardware. On a desktop, even 100Hz shouldn't be much of a problem, on weaker processors the framerate normaly drops above 30-40Hz.
+
+### Load/Save/New
+Load/save/new works with a central toolbar: click on the icon and choose in the menu what to load/save/create new. The data format is GeoJSON, so it is compatible with most GIS-software without conversion, pe. with QGIS. All configuration files are in JSON and plain text. No built in chooser is provided, you organise the different A/B-lines, fields, configurations etc in the filesystem of your operating system. I suggest to add a couple of folders in a well known place like your home directory or the Desktop. You can use whatever backup and/or data exchange tool you want, like a cloud service, a simple USB stick or even a git repository. On Linux, you can add a shortcut by draging a folder to the places-tab in the open-dialog of the system.
 
 ## Contributing
 If you want to contribute to the project, there are some rules:
