@@ -112,12 +112,16 @@ bool SliderDock::getSliderInverted() {
 
 void SliderDock::on_slValue_valueChanged( int value ) {
   double val = double( value ) * ui->dsbValue->singleStep();
+  ui->dsbValue->blockSignals( true );
   ui->dsbValue->setValue( val );
+  ui->dsbValue->blockSignals( false );
   emit valueChanged( val );
 }
 
 void SliderDock::on_dsbValue_valueChanged( double value ) {
+  ui->slValue->blockSignals( true );
   ui->slValue->setValue( int( value / ui->dsbValue->singleStep() ) );
+  ui->slValue->blockSignals( false );
   emit valueChanged( value );
 }
 
