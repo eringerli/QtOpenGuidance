@@ -20,11 +20,9 @@
 
 #include "../cgalKernel.h"
 
-#include <QDebug>
-
 class PathPrimitiveLine;
+class PathPrimitiveRay;
 class PathPrimitiveSegment;
-class PathPrimitiveCircle;
 
 class PathPrimitive {
   public:
@@ -38,8 +36,8 @@ class PathPrimitive {
     enum class Type : uint8_t {
       Base = 0,
       Line,
+      Ray,
       Segment,
-      Circle
     };
 
     virtual Type getType() {
@@ -47,24 +45,30 @@ class PathPrimitive {
     }
 
     const PathPrimitiveLine* castToLine();
+    const PathPrimitiveRay* castToRay();
     const PathPrimitiveSegment* castToSegment();
-//    const PathPrimitiveCircle* castToCircle();
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) = 0;
     virtual bool isOn( const Point_2& point ) = 0;
     virtual bool leftOf( const Point_2& point ) = 0;
     virtual double angleAtPointDegrees( const Point_2& point ) = 0;
+
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
     virtual Line_2 perpendicularAtPoint( const Point_2 point ) = 0;
     virtual Point_2 orthogonalProjection( const Point_2 point ) = 0;
 
-    virtual void print() {
-      std::cout << "PathPrimitive" << std::endl;
-    }
+    virtual void transform( const Aff_transformation_2& transformation ) = 0;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() {
       return nullptr;
+    }
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool /*left*/, bool /*reverse*/ ) {
+      return nullptr;
+    }
+
+    virtual void print() {
+      std::cout << "PathPrimitive" << std::endl;
     }
 
     double offsetSign( const Point_2& point ) {
@@ -75,109 +79,9 @@ class PathPrimitive {
       return std::sqrt( distanceToPointSquared( point ) );
     }
 
+
   public:
     bool anyDirection = false;
     double implementWidth = 0;
     int32_t passNumber = 0;
 };
-
-class PathPrimitiveLine : public PathPrimitive {
-  public:
-    PathPrimitiveLine()
-      : PathPrimitive() {}
-
-    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int32_t passNumber )
-      : PathPrimitive( anyDirection, implementWidth, passNumber ), line( line ) {}
-
-    virtual Type getType() override {
-      return Type::Line;
-    }
-
-  public:
-    bool operator==( PathPrimitiveLine& b ) {
-      return passNumber == b.passNumber;
-    }
-    bool operator==( const PathPrimitiveLine& b ) const {
-      return passNumber == b.passNumber;
-    }
-
-  public:
-    virtual std::shared_ptr<PathPrimitive> createReverse() override;
-
-  public:
-    virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual bool isOn( const Point_2& ) override;
-    virtual bool leftOf( const Point_2& point ) override;
-    virtual double angleAtPointDegrees( const Point_2& ) override;
-    virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
-    virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
-    virtual Point_2 orthogonalProjection( const Point_2 point )override;
-
-    virtual void print() override {
-      std::cout << "PathPrimitiveLine: " << line << std::endl;
-    }
-
-  public:
-    Line_2 line;
-};
-
-class PathPrimitiveSegment : public PathPrimitive {
-  public:
-    PathPrimitiveSegment()
-      : PathPrimitive() {}
-
-    PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int32_t passNumber )
-      : PathPrimitive( anyDirection, implementWidth, passNumber ), segment( segment ) {}
-
-    virtual Type getType() override {
-      return Type::Segment;
-    }
-
-  public:
-    bool operator==( PathPrimitiveSegment& b ) {
-      return segment == b.segment;
-    }
-    bool operator==( const PathPrimitiveSegment& b ) const {
-      return segment == b.segment;
-    }
-
-  public:
-    virtual std::shared_ptr<PathPrimitive> createReverse() override;
-
-  public:
-    virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual bool isOn( const Point_2& point ) override;
-    virtual bool leftOf( const Point_2& point ) override;
-    virtual double angleAtPointDegrees( const Point_2& point ) override;
-    virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
-    virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
-    virtual Point_2 orthogonalProjection( const Point_2 point )override;
-
-    virtual void print() override {
-      std::cout << "PathPrimitiveSegment: " << segment << std::endl;
-    }
-
-  public:
-    Segment_2 segment;
-};
-
-//class PathPrimitiveCircle : public PathPrimitive {
-//  public:
-//    PathPrimitiveCircle() : PathPrimitive() {}
-
-//    PathPrimitiveCircle( QPointF center, QPointF start, QPointF end, bool anyDirection, int passNumber )
-//      : PathPrimitive( anyDirection, 0, passNumber ),
-//        center( center ), start( start ), end( end ) {}
-
-//    virtual Type getType() override{
-//      return Type::Circle;
-//    }
-
-//  public:
-//    virtual double distanceToPoint( const Point_2& ) override;
-
-//  public:
-//    QPointF center;
-//    QPointF start;
-//    QPointF end;
-//};

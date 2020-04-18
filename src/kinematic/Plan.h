@@ -26,28 +26,24 @@ class Plan {
     enum class Type : uint8_t {
       OnlyLines,
       OnlySegments,
-      OnlyCircles,
+      OnlyRays,
       Mixed = 100
     };
 
-    Plan() {
-      plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
-    }
-
-    Plan( const Type type )
-      : type( type ) {
-      plan = std::make_shared<std::vector<std::shared_ptr<PathPrimitive>>>();
-    }
+    Plan();
+    Plan( const Type type );
 
   public:
     Type type = Type::Mixed;
-    std::shared_ptr<std::vector<std::shared_ptr<PathPrimitive>>> plan;
+    std::shared_ptr<std::deque<std::shared_ptr<PathPrimitive>>> plan;
 
+    typedef std::shared_ptr<PathPrimitive> PrimitiveSharedPointer;
     typedef decltype( plan->begin() ) PrimitiveIterator;
     typedef decltype( plan->cbegin() ) ConstPrimitiveIterator;
-    typedef std::shared_ptr<PathPrimitive> PrimitivePointer;
 
   public:
+    void transform( const Aff_transformation_2& transformation );
+
     ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, double& distanceSquared );
 };
 

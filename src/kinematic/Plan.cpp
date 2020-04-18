@@ -18,12 +18,34 @@
 
 #include "Plan.h"
 
+#include <QElapsedTimer>
+
+Plan::Plan() {
+  plan = std::make_shared<std::deque<std::shared_ptr<PathPrimitive>>>();
+}
+
+Plan::Plan( const Plan::Type type )
+  : type( type ) {
+  plan = std::make_shared<std::deque<std::shared_ptr<PathPrimitive>>>();
+}
+
+void Plan::transform( const Aff_transformation_2& transformation ) {
+  for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {
+    ( *it )->transform( transformation );
+  }
+}
+
 Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( const Point_2& position2D, double& distanceSquared ) {
+//        QElapsedTimer timer;
+//        timer.start();
   ConstPrimitiveIterator nearestPrimitive = plan->cend();
   distanceSquared = qInf();
 
   for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {
+//    QElapsedTimer timer;
+//    timer.start();
     double currentDistanceSquared = ( *it )->distanceToPointSquared( position2D );
+//    qDebug() << "Cycle Time ( *it )->distanceToPointSquared:" << timer.nsecsElapsed() << "ns";
 
     if( currentDistanceSquared < distanceSquared ) {
       nearestPrimitive = it;
@@ -35,6 +57,8 @@ Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( const Point_2& position2
       }
     }
   }
+
+//        qDebug() << "Cycle Time Plan::getNearestPrimitive:" << timer.nsecsElapsed() << "ns";
 
   return nearestPrimitive;
 }

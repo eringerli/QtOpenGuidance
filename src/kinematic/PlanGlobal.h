@@ -16,33 +16,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "PathPrimitive.h"
-#include "PathPrimitiveLine.h"
-#include "PathPrimitiveRay.h"
-#include "PathPrimitiveSegment.h"
+#pragma once
 
-#include <QtMath>
+#include "Plan.h"
 
-const PathPrimitiveLine* PathPrimitive::castToLine() {
-  if( getType() == Type::Line ) {
-    return static_cast<PathPrimitiveLine*>( this );
-  } else {
-    return nullptr;
-  }
-}
+class PlanGlobal : public Plan {
+  public:
+    PlanGlobal();
+    PlanGlobal( const Type type );
 
-const PathPrimitiveRay* PathPrimitive::castToRay() {
-  if( getType() == Type::Ray ) {
-    return static_cast<PathPrimitiveRay*>( this );
-  } else {
-    return nullptr;
-  }
-}
+  public:
+    void resetPlanWith( PrimitiveSharedPointer referencePrimitive );
+    void createNewPrimitiveOnTheLeft();
+    void createNewPrimitiveOnTheRight();
 
-const PathPrimitiveSegment* PathPrimitive::castToSegment() {
-  if( getType() == Type::Segment ) {
-    return static_cast<PathPrimitiveSegment*>( this );
-  } else {
-    return nullptr;
-  }
-}
+    void expand( const Point_2& position2D );
+
+  public:
+    std::size_t pathsInReserve = 3;
+};
+
+Q_DECLARE_METATYPE( PlanGlobal )

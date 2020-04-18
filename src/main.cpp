@@ -96,6 +96,8 @@
 
 #include "kinematic/FixedKinematic.h"
 #include "kinematic/TrailerKinematic.h"
+#include "kinematic/Plan.h"
+#include "kinematic/PlanGlobal.h"
 
 #include "qneblock.h"
 #include "qneconnection.h"
@@ -155,6 +157,9 @@ int main( int argc, char** argv ) {
   auto* view = new Qt3DExtras::Qt3DWindow();
 
   qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
+
+  qRegisterMetaType<Plan>();
+  qRegisterMetaType<PlanGlobal>();
 
 
   QWidget* container = QWidget::createWindowContainer( view );
@@ -505,8 +510,6 @@ int main( int argc, char** argv ) {
                     settingDialog->fieldManager, SLOT( recalculateField() ) );
   QObject::connect( settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ),
                     fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
-  QObject::connect( settingDialog->fieldManager, SIGNAL( fieldStatisticsChanged( double, double, double ) ),
-                    fieldsOptimitionToolbar, SLOT( setFieldStatistics( double, double, double ) ) );
 
   // set the defaults for the simulator
   simulatorVelocity->setValue( 0 );

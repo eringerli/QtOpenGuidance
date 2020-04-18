@@ -37,6 +37,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 
 typedef K::Point_2                                          Point_2;
 typedef K::Point_3                                          Point_3;
+typedef K::Ray_2                                            Ray_2;
 typedef K::Segment_2                                        Segment_2;
 typedef K::Segment_3                                        Segment_3;
 typedef K::Vector_2                                         Vector_2;
@@ -47,7 +48,11 @@ typedef K::Circle_2                                         Circle_2;
 typedef K::Iso_rectangle_2                                  Iso_rectangle_2;
 
 #include <CGAL/Aff_transformation_2.h>
-typedef CGAL::Aff_transformation_2<K>                       Transformation_2;
+#include <CGAL/aff_transformation_tags.h>
+typedef CGAL::Aff_transformation_2<K>                       Aff_transformation_2;
+
+#include <CGAL/Aff_transformation_3.h>
+typedef CGAL::Aff_transformation_3<K>                       Aff_transformation_3;
 
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
@@ -112,8 +117,13 @@ inline const Vector_3 to3D( const Vector_2& vector ) {
   return Vector_3( vector.x(), vector.y(), 0 );
 }
 
-inline Vector_2 polarOffsetRad( const double angle, const double distance ) {
-  return Vector_2( std::sin( angle ) * distance, -std::cos( angle ) * distance );
+inline Vector_2 polarOffsetRad( const double angleRad, const double distance ) {
+  return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
+}
+
+inline Vector_2 polarOffsetDegrees( const double angleDegrees, const double distance ) {
+  double angleRad = qDegreesToRadians(angleDegrees);
+  return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
 }
 
 inline double angleOfLineDegrees( const Line_2& line ) {

@@ -38,10 +38,13 @@ class GlobalPlannerToolbar : public QGroupBox {
     void on_pbAB_clicked( bool checked );
     void on_pbSnap_clicked();
 
+    void on_pbAbContinuous_clicked( bool checked );
+
   signals:
     void setAPoint();
     void setBPoint();
     void setAdditionalPoint();
+    void setAdditionalPointsContinous( bool );
     void snap();
 
   private:

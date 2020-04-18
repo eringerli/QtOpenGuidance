@@ -72,7 +72,7 @@
 
 #include "../block/FieldManager.h"
 #include "../block/ActionDockBlock.h"
-#include "../block/GlobalPlannerLines.h"
+#include "../block/GlobalPlanner.h"
 #include "../block/LocalPlanner.h"
 #include "../block/StanleyGuidance.h"
 #include "../block/XteGuidance.h"
@@ -167,7 +167,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
 
     // path planner
     {
-      ui->sbPathsToGenerate->setValue( settings.value( QStringLiteral( "PathPlanner/PathsToGenerate" ), 5 ).toInt() );
       ui->sbPathsInReserve->setValue( settings.value( QStringLiteral( "PathPlanner/PathsInReserve" ), 3 ).toInt() );
     }
 
@@ -283,20 +282,20 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto globalPlannerLines = qobject_cast<GlobalPlannerLines*>( globalPlannerBlock->object );
+    auto globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
 
-    QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlannerLines, &GlobalPlannerLines::setPlannerSettings );
+    QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlanner, &GlobalPlanner::setPlannerSettings );
 
     auto newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
-    QObject::connect( newFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::newField );
+    QObject::connect( newFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::newField );
 
     auto openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
-    QObject::connect( openFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::openAbLine );
+    QObject::connect( openFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::openAbLine );
 
     auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
-    QObject::connect( saveFieldAction, &QAction::triggered, globalPlannerLines, &GlobalPlannerLines::saveAbLine );
+    QObject::connect( saveFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
 
-    globalPlanner = globalPlannerLines;
+    globalPlanner = globalPlanner;
   }
 
   localPlannerFactory = new LocalPlannerFactory( mainWindow,
@@ -947,7 +946,6 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
     QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                         QSettings::IniFormat );
 
-    settings.setValue( QStringLiteral( "PathPlanner/PathsToGenerate" ), ui->sbPathsToGenerate->value() );
     settings.setValue( QStringLiteral( "PathPlanner/PathsInReserve" ), ui->sbPathsInReserve->value() );
     settings.sync();
   }
@@ -1027,7 +1025,7 @@ void SettingsDialog::emitAllConfigSignals() {
   emit setGrid( ui->gbGrid->isChecked() );
   emitGridSettings();
 
-  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
+  emit plannerSettingsChanged( ui->sbPathsInReserve->value() );
 
   emit globalPlannerModelSetVisible( ui->gbGlobalPlanner->isChecked() );
   emitGlobalPlannerModelSettings();
@@ -1440,14 +1438,9 @@ void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int ) {
   savePlannerValuesInSettings();
 }
 
-void SettingsDialog::on_sbPathsToGenerate_valueChanged( int ) {
-  savePathPlannerValuesInSettings();
-  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
-}
-
 void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
-  emit plannerSettingsChanged( ui->sbPathsToGenerate->value(), ui->sbPathsInReserve->value() );
+  emit plannerSettingsChanged( ui->sbPathsInReserve->value() );
 }
 
 void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {

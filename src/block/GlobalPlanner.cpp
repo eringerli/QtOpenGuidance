@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "GlobalPlannerLines.h"
+#include "GlobalPlanner.h"
 #include <QScopedPointer>
 
 #include <QFileDialog>
@@ -24,158 +24,19 @@
 #include "../cgal.h"
 #include "../kinematic/CgalWorker.h"
 
-bool GlobalPlannerLines::isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line ) {
-  for( const auto& step : * ( plan.plan ) ) {
-    if( const auto* pathLine = step->castToLine() ) {
-      if( ( *pathLine ) == ( *line ) ) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-void GlobalPlannerLines::sortPlan() {
-  sort( plan.plan->begin( ), plan.plan->end( ), [ ]( const auto & lhs, const auto & rhs ) {
-    const auto* lhsLine = lhs->castToLine();
-    const auto* rhsLine = rhs->castToLine();
-
-    return lhsLine->line.has_on_positive_side( rhsLine->line.point( 0 ) );
-  } );
-}
-
-void GlobalPlannerLines::clearPlan() {
-  plan.plan->clear();
-}
-
-void GlobalPlannerLines::showPlan() {
-  if( !plan.plan->empty() ) {
-    const Point_2 position2D = to2D( position );
-
-    constexpr double range = 25;
-    Iso_rectangle_2 viewBox( Bbox_2( position2D.x() - range, position2D.y() - range, position2D.x() + range, position2D.y() + range ) );
-
-    QVector<QVector3D> positions;
-
-    for( const auto& step : * ( plan.plan ) ) {
-      if( const auto* pathLine = step->castToLine() ) {
-        const auto& line = pathLine->line;
-
-        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-        result = intersection( viewBox, line );
-
-        if( result ) {
-          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
-            positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
-            positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
-          }
-        }
-      }
-    }
-
-    m_segmentsMesh->bufferUpdate( positions );
-    m_segmentsEntity->setEnabled( true );
-  }
-}
-
-void GlobalPlannerLines::createPlanAB() {
-  if( abSegment.squared_length() > 1 &&
-      implementSegment.squared_length() > 1 ) {
-    Point_2 position2D = to2D( position );
-
-    if( plan.plan->size() >= std::vector<std::shared_ptr<PathPrimitive>>::size_type( pathsInReserve * 2 + 1 ) ) {
-      if( ( *( plan.plan->cbegin() + ( pathsInReserve - 1 ) ) )->castToLine()->line.has_on_positive_side( position2D ) &&
-          ( *( plan.plan->cend() - pathsInReserve ) )->castToLine()->line.has_on_negative_side( position2D ) ) {
-        return;
-      }
-    }
-
-//    qDebug() << "Long way...";
-
-    Segment_2 ab2dSegment = to2D( abSegment );
-    Line_2 ab2D = ab2dSegment.supporting_line();
-    Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
-    Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
-
-    double angleAbRad = angleOfLineRadians( ab2D );
-
-    double implementWidth = std::sqrt( implementSegment.squared_length() );
-
-    double distanceFromAbLine = std::sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
-
-    if( ab2D.has_on_positive_side( position2D ) ) {
-      distanceFromAbLine = -distanceFromAbLine;
-    }
-
-    int32_t passNumber = std::floor( distanceFromAbLine / implementWidth );
-
-    double moduloDistanceFromAbLine = passNumber * implementWidth;
-
-    for( int offsetCount = -pathsToGenerate ; offsetCount <= pathsToGenerate ; ++offsetCount ) {
-      double offsetDistance = moduloDistanceFromAbLine + offsetCount * implementWidth;
-
-      auto offsetVector = polarOffsetRad( angleAbRad + M_PI, offsetDistance );
-
-      auto newLine = std::make_shared<PathPrimitiveLine>(
-                       Line_2( ab2dSegment.source() - offsetVector, ab2dSegment.target() - offsetVector ),
-                       implementWidth, true, passNumber + offsetCount );
-
-      if( !isLineAlreadyInPlan( newLine ) ) {
-        plan.plan->push_back( newLine );
-      }
-    }
-
-    sortPlan();
-    emit planChanged( plan );
-  }
-}
-
-void GlobalPlannerLines::snapPlanAB() {
-  if( abSegment.squared_length() > 1 ) {
-    Point_2 position2D = to2D( position );
-
-    Segment_2 ab2dSegment = to2D( abSegment );
-    Line_2 ab2D = ab2dSegment.supporting_line();
-    Point_2 positionProjectedToAbLine = ab2D.projection( position2D );
-    Segment_2 abPerpendicularSegment( position2D, positionProjectedToAbLine );
-
-    double angleAbRad = angleOfLineRadians( ab2D );
-
-    double implementWidth = std::sqrt( implementSegment.squared_length() );
-
-    double distanceFromAbLine = std::sqrt( CGAL::squared_distance( position2D, positionProjectedToAbLine ) );
-
-    if( ab2D.has_on_positive_side( position2D ) ) {
-      distanceFromAbLine = -distanceFromAbLine;
-    }
-
-    int32_t passNumber = std::round( distanceFromAbLine / implementWidth );
-
-    double moduloDistanceFromAbLine = passNumber * implementWidth;
-
-    auto offsetVector = polarOffsetRad( M_PI + angleAbRad, distanceFromAbLine - moduloDistanceFromAbLine );
-    auto offsetVector3D = to3D( offsetVector );
-
-    abSegment = Segment_3( abSegment.source() - offsetVector3D, abSegment.target() - offsetVector3D );
-
-    clearPlan();
-    createPlanAB();
-  }
-}
-
-GlobalPlannerLines::GlobalPlannerLines( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
+GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
   : BlockBase(),
-    mainWindow( mainWindow ),
     tmw( tmw ),
+    mainWindow( mainWindow ),
     rootEntity( rootEntity ) {
   widget = new GlobalPlannerToolbar( mainWindow );
   dock = new KDDockWidgets::DockWidget( uniqueName );
 
-  QObject::connect( widget, &GlobalPlannerToolbar::setAPoint, this, &GlobalPlannerLines::setAPoint );
-  QObject::connect( widget, &GlobalPlannerToolbar::setBPoint, this, &GlobalPlannerLines::setBPoint );
-  QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPoint, this, &GlobalPlannerLines::setAdditionalPoint );
-  QObject::connect( widget, &GlobalPlannerToolbar::snap, this, &GlobalPlannerLines::snap );
+  QObject::connect( widget, &GlobalPlannerToolbar::setAPoint, this, &GlobalPlanner::setAPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::setBPoint, this, &GlobalPlanner::setBPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPoint, this, &GlobalPlanner::setAdditionalPoint );
+  QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPointsContinous, this, &GlobalPlanner::setAdditionalPointsContinous );
+  QObject::connect( widget, &GlobalPlannerToolbar::snap, this, &GlobalPlanner::snap );
 
   // a point marker -> orange
   {
@@ -298,29 +159,107 @@ GlobalPlannerLines::GlobalPlannerLines( const QString& uniqueName, MyMainWindow*
     m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
   }
 
-  // create the CGAL worker and move it to it's own thread
-  {
-    threadForCgalWorker = new CgalThread( this );
-    cgalWorker = new CgalWorker();
-    cgalWorker->moveToThread( threadForCgalWorker );
-
-    qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
-    qRegisterMetaType<uint32_t>( "uint32_t" );
-
+//  // create the CGAL worker and move it to it's own thread
+//  {
+//    threadForCgalWorker = new CgalThread( this );
+//    cgalWorker = new CgalWorker();
+//    cgalWorker->moveToThread( threadForCgalWorker );
+//
+//    qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
+//    qRegisterMetaType<uint32_t>( "uint32_t" );
+//
 //    QObject::connect( this, &GlobalPlanner::requestNewRunNumber, threadForCgalWorker, &CgalThread::requestNewRunNumber );
 //    QObject::connect( threadForCgalWorker, &CgalThread::runNumberChanged, this, &GlobalPlanner::setRunNumber );
 //    QObject::connect( threadForCgalWorker, &QThread::finished, cgalWorker, &CgalWorker::deleteLater );
-
+//
 //    QObject::connect( this, &GlobalPlanner::requestFieldOptimition, cgalWorker, &CgalWorker::fieldOptimitionWorker );
 //    QObject::connect( cgalWorker, &CgalWorker::alphaChanged, this, &GlobalPlanner::alphaChanged );
 //    QObject::connect( cgalWorker, &CgalWorker::fieldStatisticsChanged, this, &GlobalPlanner::fieldStatisticsChanged );
 //    QObject::connect( cgalWorker, &CgalWorker::alphaShapeFinished, this, &GlobalPlanner::alphaShapeFinished );
+//
+//    threadForCgalWorker->start();
+//  }
+}
 
-    threadForCgalWorker->start();
+void GlobalPlanner::showPlan() {
+  if( !plan.plan->empty() ) {
+    const Point_2 position2D = to2D( position );
+
+    constexpr double range = 25;
+    Iso_rectangle_2 viewBox( Bbox_2( position2D.x() - range, position2D.y() - range, position2D.x() + range, position2D.y() + range ) );
+
+    QVector<QVector3D> positions;
+
+    for( const auto& step : * ( plan.plan ) ) {
+      if( const auto* pathLine = step->castToLine() ) {
+        const auto& line = pathLine->line;
+
+        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+        result = intersection( viewBox, line );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
+            positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
+          }
+        }
+      }
+    }
+
+    m_segmentsMesh->bufferUpdate( positions );
+    m_segmentsEntity->setEnabled( true );
   }
 }
 
-void GlobalPlannerLines::openAbLine() {
+void GlobalPlanner::createPlanAB() {
+  if( abSegment.squared_length() > 1 &&
+      implementSegment.squared_length() > 1 ) {
+
+    Point_2 position2D = to2D( position );
+
+    plan.resetPlanWith( make_shared<PathPrimitiveLine>(
+                          to2D( abSegment ).supporting_line(),
+                          std::sqrt( implementSegment.squared_length() ),
+                          true,
+                          0 ) );
+
+    plan.expand( position2D );
+
+    emit planChanged( plan );
+  }
+}
+
+void GlobalPlanner::snapPlanAB() {
+  if( abSegment.squared_length() > 1 ) {
+    Point_2 position2D = to2D( position );
+
+    double xte = 0;
+    auto nearestPrimitive = plan.getNearestPrimitive( position2D, xte );
+    xte = std::sqrt( xte );
+    xte *= ( *nearestPrimitive )->offsetSign( position2D );
+    double angleDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+
+    auto offsetVector2D = polarOffsetDegrees( M_PI + angleDegrees, xte );
+    auto offsetVector3D = to3D( offsetVector2D );
+
+    Aff_transformation_2 transformation2D( CGAL::TRANSLATION, -offsetVector2D );
+    Aff_transformation_3 transformation3D( CGAL::TRANSLATION, -offsetVector3D );
+
+    aPoint = aPoint.transform( transformation3D );
+    bPoint = bPoint.transform( transformation3D );
+    abSegment = Segment_3( aPoint, bPoint );
+
+    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
+    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
+
+//    QElapsedTimer timer;
+//    timer.start();
+    plan.transform( transformation2D );
+//    qDebug() << "Cycle Time Snap:" << timer.nsecsElapsed() << "ns";
+  }
+}
+
+void GlobalPlanner::openAbLine() {
   QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
   QString dir;
 
@@ -382,7 +321,7 @@ void GlobalPlannerLines::openAbLine() {
   fileDialog->open();
 }
 
-void GlobalPlannerLines::openAbLineFromFile( QFile& file ) {
+void GlobalPlanner::openAbLineFromFile( QFile& file ) {
   QByteArray saveData = file.readAll();
 
   QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
@@ -446,11 +385,10 @@ void GlobalPlannerLines::openAbLineFromFile( QFile& file ) {
     }
   }
 
-  clearPlan();
   createPlanAB();
 }
 
-void GlobalPlannerLines::saveAbLine() {
+void GlobalPlanner::saveAbLine() {
   if( abSegment.squared_length() > 1 &&
       implementSegment.squared_length() > 1 ) {
     QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
@@ -475,7 +413,7 @@ void GlobalPlannerLines::saveAbLine() {
   }
 }
 
-void GlobalPlannerLines::saveAbLineToFile( QFile& file ) {
+void GlobalPlanner::saveAbLineToFile( QFile& file ) {
   QJsonObject jsonObject;
   QJsonArray features;
 

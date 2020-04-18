@@ -135,7 +135,7 @@ class LocalPlanner : public BlockBase {
     Plan globalPlan;
     Plan plan;
 
-    Plan::PrimitivePointer lastPrimitive = nullptr;
+    Plan::PrimitiveSharedPointer lastPrimitive = nullptr;
 
     bool turningLeft = false;
     bool turningRight = false;

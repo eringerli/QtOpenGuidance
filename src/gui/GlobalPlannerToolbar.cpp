@@ -54,3 +54,7 @@ void GlobalPlannerToolbar::resetToolbar() {
   ui->pbAB->setText( QStringLiteral( "A" ) );
   ui->pbAB->setCheckable( true );
 }
+
+void GlobalPlannerToolbar::on_pbAbContinuous_clicked( bool checked ) {
+  emit setAdditionalPointsContinous( checked );
+}

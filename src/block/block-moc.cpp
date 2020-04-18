@@ -26,7 +26,7 @@
 #include "moc_FieldManager.cpp"
 #include "moc_FileStream.cpp"
 #include "moc_FpsMeasurement.cpp"
-#include "moc_GlobalPlannerLines.cpp"
+#include "moc_GlobalPlanner.cpp"
 #include "moc_GridModel.cpp"
 #include "moc_GlobalPlannerModel.cpp"
 #include "moc_LocalPlanner.cpp"

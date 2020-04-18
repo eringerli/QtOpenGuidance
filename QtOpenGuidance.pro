@@ -50,7 +50,7 @@ SOURCES += \
     src/3d/BufferMeshGeometry.cpp \
     src/block/ActionDockBlock.cpp \
     src/block/FieldManager.cpp \
-    src/block/GlobalPlannerLines.cpp \
+    src/block/GlobalPlanner.cpp \
     src/block/LocalPlanner.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
@@ -74,7 +74,11 @@ SOURCES += \
     src/gui/XteDock.cpp \
     src/kinematic/CgalWorker.cpp \
     src/kinematic/PathPrimitive.cpp \
+    src/kinematic/PathPrimitiveLine.cpp \
+    src/kinematic/PathPrimitiveRay.cpp \
+    src/kinematic/PathPrimitiveSegment.cpp \
     src/kinematic/Plan.cpp \
+    src/kinematic/PlanGlobal.cpp \
     src/main.cpp \
     src/block/PoseSimulation.cpp \
     src/block/TractorModel.cpp \
@@ -105,7 +109,7 @@ HEADERS += \
     src/block/FieldManager.h \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
-    src/block/GlobalPlannerLines.h \
+    src/block/GlobalPlanner.h \
     src/block/GlobalPlannerModel.h \
     src/block/GridModel.h \
     src/block/Implement.h \
@@ -170,7 +174,11 @@ HEADERS += \
     src/kinematic/FixedKinematic.h \
     src/kinematic/GeographicConvertionWrapper.h \
     src/kinematic/PathPrimitive.h \
+    src/kinematic/PathPrimitiveLine.h \
+    src/kinematic/PathPrimitiveRay.h \
+    src/kinematic/PathPrimitiveSegment.h \
     src/kinematic/Plan.h \
+    src/kinematic/PlanGlobal.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h
 

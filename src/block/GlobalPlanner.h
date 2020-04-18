@@ -51,8 +51,13 @@
 
 #include "../cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
+
 #include "../kinematic/PathPrimitive.h"
-#include "../kinematic/Plan.h"
+#include "../kinematic/PathPrimitiveLine.h"
+#include "../kinematic/PathPrimitiveRay.h"
+#include "../kinematic/PathPrimitiveSegment.h"
+
+#include "../kinematic/PlanGlobal.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
 
@@ -63,16 +68,16 @@
 class CgalThread;
 class CgalWorker;
 
-class GlobalPlannerLines : public BlockBase {
+class GlobalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit GlobalPlannerLines( const QString& uniqueName,
-                                 MyMainWindow* mainWindow,
-                                 GeographicConvertionWrapper* tmw,
-                                 Qt3DCore::QEntity* rootEntity );
+    explicit GlobalPlanner( const QString& uniqueName,
+                            MyMainWindow* mainWindow,
+                            GeographicConvertionWrapper* tmw,
+                            Qt3DCore::QEntity* rootEntity );
 
-    ~GlobalPlannerLines() {
+    ~GlobalPlanner() {
       dock->deleteLater();
       widget->deleteLater();
     }
@@ -86,7 +91,11 @@ class GlobalPlannerLines : public BlockBase {
         aPointTransform->setRotation( orientation );
         bPointTransform->setRotation( orientation );
 
-        createPlanAB();
+//        QElapsedTimer timer;
+//        timer.start();
+        plan.expand( to2D( position ) );
+//        qDebug() << "Cycle Time plan.expandPlan:" << timer.nsecsElapsed() << "ns";
+
         showPlan();
       }
     }
@@ -143,11 +152,14 @@ class GlobalPlannerLines : public BlockBase {
 
       abSegment = Segment_3( aPoint, bPoint );
 
-      clearPlan();
       createPlanAB();
     }
 
     void setAdditionalPoint() {
+
+    }
+
+    void setAdditionalPointsContinous( bool /*enabled*/ ) {
 
     }
 
@@ -166,9 +178,8 @@ class GlobalPlannerLines : public BlockBase {
     void saveAbLine();
     void saveAbLineToFile( QFile& file );
 
-    void setPlannerSettings( int pathsToGenerate, int pathsInReserve ) {
-      this->pathsToGenerate = pathsToGenerate;
-      this->pathsInReserve = pathsInReserve;
+    void setPlannerSettings( int pathsInReserve ) {
+      plan.pathsInReserve = pathsInReserve;
 
 //      createPlanAB();
     }
@@ -210,19 +221,14 @@ class GlobalPlannerLines : public BlockBase {
 //    void requestNewRunNumber();
 
   private:
-    bool isLineAlreadyInPlan( const std::shared_ptr<PathPrimitiveLine>& line );
     void createPlanAB();
     void snapPlanAB();
-    void sortPlan();
     void showPlan();
-    void clearPlan();
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
     QQuaternion orientation = QQuaternion();
 
-    int pathsToGenerate = 5;
-    int pathsInReserve = 3;
     int forwardPasses = 0;
     int reversePasses = 0;
     bool startRight = false;
@@ -239,7 +245,7 @@ class GlobalPlannerLines : public BlockBase {
     Point_3 positionLeftEdgeOfImplement = Point_3( 0, 0, 0 );
     Point_3 positionRightEdgeOfImplement = Point_3( 0, 0, 0 );
 
-    Plan plan = Plan( Plan::Type::OnlyLines );
+    PlanGlobal plan = PlanGlobal();
 
     GlobalPlannerToolbar* widget = nullptr;
     KDDockWidgets::DockWidget* dock = nullptr;
@@ -303,7 +309,6 @@ class GlobalPlannerFactory : public BlockFactory {
         menu( menu ),
         rootEntity( rootEntity ),
         tmw( tmw ) {
-      qRegisterMetaType<Plan>();
     }
 
     QString getNameOfFactory() override {
@@ -311,10 +316,10 @@ class GlobalPlannerFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* object = new GlobalPlannerLines( getNameOfFactory() + QString::number( id ),
-                                             mainWindow,
-                                             tmw,
-                                             rootEntity );
+      auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ),
+                                        mainWindow,
+                                        tmw,
+                                        rootEntity );
       auto* b = createBaseBlock( scene, object, id, true );
 
       object->dock->setTitle( QStringLiteral( "Global Planner" ) );
