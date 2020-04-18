@@ -53,7 +53,7 @@ void SliderDock::setDecimals( const int decimals ) {
 
   ui->dsbValue->setDecimals( tmpDecimals );
 
-  double stepSize = /*10 **/ std::pow( 10, -tmpDecimals );
+  double stepSize = std::pow( 10, -tmpDecimals );
   ui->dsbValue->setSingleStep( stepSize );
 
   ui->slValue->setMaximum( ui->dsbValue->maximum() / stepSize );
@@ -134,6 +134,5 @@ void SliderDock::on_pbValueReset_clicked() {
 }
 
 void SliderDock::setValue( double value ) {
-  on_dsbValue_valueChanged( value );
-  emit valueChanged( value );
+  ui->dsbValue->setValue( value );
 }
