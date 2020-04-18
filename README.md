@@ -36,30 +36,33 @@ cd ~/qtopenguidance-build/QtOpenGuidance
 wget https://raw.githubusercontent.com/eringerli/QtOpenGuidance/master/PKGBUILD -O PKGBUILD
 makepkg -i
 ```
-Your set: QtOpenGuidance was added to the systems start menu, so you can open it from there. To start, load `config/minimal.json` in the folder `/usr/share/QtOpenGuidance/config`. Don't forget to save the config as default in the tab "General". Enable the checkbox for the simulator and start playing around.
+Your set: QtOpenGuidance was added to the systems start menu, so you can open it from there.
 
 To update it, run the same commands again. If it doesn't work, you can delete the whole folder with `rm -rf ~/qtopenguidance-build` and try again. Should you ever want to remove the two packages, enter `pacman -R qtopenguidance-git kddockwidgets-eringerli-git`.
 
-Normally, you want to change from the dark theme to a light one: open the system settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience, but you can try other ones too: they even automatically update after pushing "Apply", so you can leave QtOpenGuidance open and see the result immidietly.
+Normally, you want to change from the dark theme to a light one: open the system settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience, but you can try others too: they even automatically update after pushing "Apply", so you can leave QtOpenGuidance open and see the result immidietly.
 
 For the next steps, go to [Quickstart](README.md#quickstart).
 
 ## Windows
 ### General advice about Windows
-[TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Install linux, especially if you want a stable,
-fast and dataplan-saving system without required and unconvenient maintenance and general frickle-ness.
+TL;DR: Install linux, especially if you want a stable, fast and dataplan-saving system without required and unconvenient maintenance and general frickle-ness.
 
-_Seriously, install Linux_. You have nothing to loose: it takes about 30 minutes on a resonably fast computer, from which
-about 20 you can do other stuff. It takes on an average system (without Office) less than 20GB (_for everything_, not just
+_Seriously, install Linux_. You have nothing to loose: it takes about 15-30 minutes on a resonably fast computer, from which
+more than half you can do other stuff. It takes on an average system (without Office) less than 20GB (_for everything_, not just
 the bare system). [Manjaro](https://manjaro.org/) is a good distribution to start, also for Linux-beginners. Ubuntu is not
-a good choice, as it differs too much from eringerlis system (Arch Linux), has generally too old versions installed and is
-not overly development friendly: Manjaro installs the files for linking with each library (headers and debug-info) per default. 
+a good choice, as it differs too much from eringerlis system (Arch Linux), has generally too old versions installed (sometimes even ancient ones) and is not overly development friendly: Manjaro installs the files for linking with each library (headers and debug-info) per default.
+
 Also, as we generally use weaker systems in our tractors (like the Dell 7130/7139/7140 or even slower tablets), the 
 performance boost of having a lean system without all the Microsoft/Windows/Manufacturer clutter and background processes 
-is quite noticable: the fan is not running anymore all time and the battery lasts forever. You never have to worry 
-about automatic background downloads/updates and generally no control over your system (like no option to cancel a
-reboot or update) ever again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown
-is also not possible and the building of the packages is automated and they can be removed again.
+is quite noticable: the fan is not running all time anymore and the battery lasts forever. You never have to worry 
+about automatic background downloads/updates (especially dowloads can be expensive if you use a limited, cheap connection for the RTK corrections) and generally no control over your system (like no option to cancel a reboot or updates) ever 
+again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown is also not possible. Additionally the building of the packages is automated and they can be removed again.
+
+One important difference from Linux to Windows is the different aproaches when it comes to the shared libraries: Linux loads one of each library into the RAM, which then is used by all installed programs on the system. Windows loads all libs for
+each installed packate, even if they are exactly the same. This lowers the used RAM on Linux tremenduously, which is 
+especially noticeble on system with only a small amount of it. Also on Linux, you update the whole system, which includes
+_all_ installed libraries and programs in one go.
 
 ### Installing with MSYS2
 #### Prerequisites
@@ -100,6 +103,8 @@ mkdir build-QtOpenGuidance ; cd build-QtOpenGuidance
 qmake -makefile -Wall ../QtOpenGuidance/QtOpenGuidance.pro -after CONFIG-=ccache -after CONFIG-=precompile_header -after LIBS+=-L/c/msys64/usr/lib LIBS+=-L/mingw64/lib -after INCLUDEPATH+=/c/msys64/usr/include
 make -j8
 ```
+
+**Important:** Choose an appropriate amount of parallel processes in the last command: rule of thumb is one for every 800MB of free RAM.
 
 To make a shortcut on the desktop, right-click on it, choose "New" and then "Shortcut". Enter in the text field for the location: `C:\msys64\usr\bin\mintty.exe -w hide /bin/env MSYSTEM=MINGW64 /bin/bash -lc /c/qtopenguidance/build-QtOpenGuidance/release/QtOpenGuidance.exe`
 
