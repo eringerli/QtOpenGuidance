@@ -760,7 +760,7 @@
                 "ResetOnStart": false,
                 "SliderInverted": false,
                 "Unit": "",
-                "Value": 1
+                "Value": 65.4
             }
         },
         {
@@ -814,6 +814,12 @@
         }
     ],
     "connections": [
+        {
+            "idFrom": 1082,
+            "idTo": 1012,
+            "portFrom": "Number",
+            "portTo": "Stanley Gain K Softening Reverse"
+        },
         {
             "idFrom": 1090,
             "idTo": 1,
