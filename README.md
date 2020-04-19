@@ -29,12 +29,12 @@ mkdir -p ~/qtopenguidance-build/{QtOpenGuidance,KDDockWidgets}
 # download, build and install KDDockWidgets
 cd ~/qtopenguidance-build/KDDockWidgets
 wget https://raw.githubusercontent.com/eringerli/KDDockWidgets/master/PKGBUILD -O PKGBUILD
-makepkg -i
+makepkg -is
 
 # download, build and install QtOpenGuidance
 cd ~/qtopenguidance-build/QtOpenGuidance
 wget https://raw.githubusercontent.com/eringerli/QtOpenGuidance/master/PKGBUILD -O PKGBUILD
-makepkg -i
+makepkg -is
 ```
 Your set: QtOpenGuidance was added to the systems start menu, so you can open it from there.
 
