@@ -127,6 +127,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pbSaveAll">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Save All</string>
               </property>
@@ -349,8 +352,8 @@
            <property name="title">
             <string>Main Window</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
-            <item>
+           <layout class="QGridLayout" name="gridLayout_10">
+            <item row="0" column="0" colspan="2">
              <widget class="QCheckBox" name="cbOpenSettingsDialogOnStart">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
@@ -360,7 +363,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item row="1" column="0">
              <widget class="QCheckBox" name="cbRunSimulatorOnStart">
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
@@ -370,27 +373,58 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item row="2" column="0" colspan="2">
              <widget class="QCheckBox" name="cbRestoreDockPositions">
               <property name="text">
                <string>Restore positions of the Docks on Start</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item row="3" column="0" colspan="2">
              <widget class="QCheckBox" name="cbSaveDockPositionsOnExit">
               <property name="text">
                <string>Save positions of the Docks on Exit</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item row="4" column="0" colspan="2">
+             <widget class="QPushButton" name="pbSaveDockPositionsAsDefault">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Save current Positions of the Docks as Default</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-save">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
              <widget class="QPushButton" name="pbSaveDockPositions">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string>Save current Positions of the Docks</string>
               </property>
               <property name="icon">
                <iconset theme="document-save">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QPushButton" name="pbLoadDockPositions">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Load current Positions of the Docks as Default</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-open">
                 <normaloff>.</normaloff>.</iconset>
               </property>
              </widget>

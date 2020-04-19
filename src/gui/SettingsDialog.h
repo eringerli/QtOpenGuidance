@@ -168,7 +168,6 @@ class SettingsDialog : public QDialog {
 
     void on_cbRestoreDockPositions_toggled( bool checked );
     void on_cbSaveDockPositionsOnExit_toggled( bool checked );
-    void on_pbSaveDockPositions_clicked();
 
     void on_pbMeterDefaults_clicked();
 
@@ -176,6 +175,10 @@ class SettingsDialog : public QDialog {
     void on_rbCrsGuidanceTransverseMercator_toggled( bool checked );
 
     void on_pbSaveAll_clicked();
+
+    void on_pbSaveDockPositionsAsDefault_clicked();
+    void on_pbSaveDockPositions_clicked();
+    void on_pbLoadDockPositions_clicked();
 
   private:
     void saveGridValuesInSettings();

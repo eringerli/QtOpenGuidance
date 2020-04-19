@@ -295,7 +295,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
     auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
     QObject::connect( saveFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
 
-    globalPlanner = globalPlanner;
+    this->globalPlanner = globalPlanner;
   }
 
   localPlannerFactory = new LocalPlannerFactory( mainWindow,
@@ -495,8 +495,6 @@ void SettingsDialog::onStart() {
     KDDockWidgets::LayoutSaver saver;
 
     saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
-    mainWindow->restoreState( settings.value( QStringLiteral( "SavedPositions" ) ).toByteArray() );
-    mainWindow->restoreGeometry( settings.value( QStringLiteral( "SavedGeometry" ) ).toByteArray() );
   }
 }
 
@@ -511,8 +509,6 @@ void SettingsDialog::onExit() {
                         QSettings::IniFormat );
     KDDockWidgets::LayoutSaver saver;
 
-    settings.setValue( QStringLiteral( "SavedPositions" ), mainWindow->saveState() );
-    settings.setValue( QStringLiteral( "SavedGeometry" ), mainWindow->saveGeometry() );
     settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
     settings.sync();
   }
@@ -1516,17 +1512,6 @@ void SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
   settings.sync();
 }
 
-void SettingsDialog::on_pbSaveDockPositions_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
-  KDDockWidgets::LayoutSaver saver;
-
-  settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
-  settings.setValue( QStringLiteral( "SavedPositions" ), mainWindow->saveState() );
-  settings.setValue( QStringLiteral( "SavedGeometry" ), mainWindow->saveGeometry() );
-  settings.sync();
-}
-
 void SettingsDialog::on_pbMeterDefaults_clicked() {
   QItemSelection selection( ui->tvMeter->selectionModel()->selection() );
 
@@ -1571,4 +1556,92 @@ void SettingsDialog::on_pbSaveAll_clicked() {
       item->setSelected( false );
     }
   }
+}
+
+void SettingsDialog::on_pbSaveDockPositionsAsDefault_clicked()
+{
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+  KDDockWidgets::LayoutSaver saver;
+
+  settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
+  settings.sync();
+}
+
+void SettingsDialog::on_pbSaveDockPositions_clicked() {
+  QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
+  QString dir;
+  QString fileName = QFileDialog::getSaveFileName( this,
+                     tr( "Open Saved Config" ),
+                     dir,
+                     tr( "All Files (*);;JSON Files (*.json)" ),
+                     &selectedFilter );
+
+  if( !fileName.isEmpty() ) {
+
+    QFile saveFile( fileName );
+
+    if( !saveFile.open( QIODevice::WriteOnly ) ) {
+      qWarning() << "Couldn't open save file.";
+      return;
+    }
+    QJsonObject jsonObject;
+    QJsonObject jsonObjectDocks;
+
+    KDDockWidgets::LayoutSaver saver;
+    jsonObjectDocks[QStringLiteral( "SavedDocks" )]= QJsonValue::fromVariant(saver.serializeLayout());
+
+    jsonObject[QStringLiteral("docks")] = jsonObjectDocks;
+
+    QJsonDocument jsonDocument( jsonObject );
+    saveFile.write( jsonDocument.toJson() );
+  }
+}
+
+void SettingsDialog::on_pbLoadDockPositions_clicked() {
+  QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
+  QString dir;
+
+  auto* fileDialog = new QFileDialog( this,
+                                      tr( "Open Saved Config" ),
+                                      dir,
+                                      selectedFilter );
+  fileDialog->setFileMode( QFileDialog::ExistingFile );
+  fileDialog->setNameFilter( tr( "All Files (*);;JSON Files (*.json)" ) );
+
+  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
+  // the signals instead of using the static functions for the dialogs
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( const QString & fileName ) {
+    if( !fileName.isEmpty() ) {
+      // some string wrangling on android to get the native file name
+      QFile loadFile( fileName );
+
+      if( !loadFile.open( QIODevice::ReadOnly ) ) {
+        qWarning() << "Couldn't open save file.";
+      } else {
+        QByteArray saveData = loadFile.readAll();
+
+        QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
+        QJsonObject json = loadDoc.object();
+
+        if(json.contains( QStringLiteral( "docks" ) )){
+          QJsonObject docksObject = json[QStringLiteral( "docks" )].toObject();
+
+          KDDockWidgets::LayoutSaver saver;
+          saver.restoreLayout(docksObject[QStringLiteral( "SavedDocks" )].toVariant().toByteArray() );
+        }
+      }
+    }
+
+    // block all further signals, so no double opening happens
+    fileDialog->blockSignals( true );
+
+    fileDialog->deleteLater();
+  } );
+
+  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+
+  fileDialog->open();
 }
