@@ -23,6 +23,7 @@
 class PathPrimitiveLine;
 class PathPrimitiveRay;
 class PathPrimitiveSegment;
+class PathPrimitiveSequence;
 
 class PathPrimitive {
   public:
@@ -38,6 +39,7 @@ class PathPrimitive {
       Line,
       Ray,
       Segment,
+      Sequence
     };
 
     virtual Type getType() {
@@ -47,6 +49,7 @@ class PathPrimitive {
     const PathPrimitiveLine* castToLine();
     const PathPrimitiveRay* castToRay();
     const PathPrimitiveSegment* castToSegment();
+    const PathPrimitiveSequence* castToSequence();
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) = 0;
@@ -57,6 +60,7 @@ class PathPrimitive {
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
     virtual Line_2 perpendicularAtPoint( const Point_2 point ) = 0;
     virtual Point_2 orthogonalProjection( const Point_2 point ) = 0;
+    virtual Line_2& supportingLine() = 0;
 
     virtual void transform( const Aff_transformation_2& transformation ) = 0;
 

@@ -19,8 +19,8 @@
 #include "PathPrimitiveSegment.h"
 
 PathPrimitiveSegment::PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int32_t passNumber )
-  : PathPrimitive( anyDirection, implementWidth, passNumber ), segment( segment ), supportingLine( segment.supporting_line() ) {
-  angleLineDegrees = angleOfLineDegrees( supportingLine );
+  : PathPrimitive( anyDirection, implementWidth, passNumber ), segment( segment ), supportLine( segment.supporting_line() ) {
+  angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
@@ -62,13 +62,13 @@ double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
 }
 
 bool PathPrimitiveSegment::isOn( const Point_2& point ) {
-  Point_2 ortogonalProjection = supportingLine.projection( point );
+  Point_2 ortogonalProjection = supportLine.projection( point );
 
   return segment.collinear_has_on( ortogonalProjection );
 }
 
 bool PathPrimitiveSegment::leftOf( const Point_2& point ) {
-  return supportingLine.has_on_negative_side( point );
+  return supportLine.has_on_negative_side( point );
 }
 
 double PathPrimitiveSegment::angleAtPointDegrees( const Point_2& ) {
@@ -89,15 +89,19 @@ bool PathPrimitiveSegment::intersectWithLine( const Line_2& lineToIntersect, Poi
 }
 
 Line_2 PathPrimitiveSegment::perpendicularAtPoint( const Point_2 point ) {
-  return supportingLine.perpendicular( point );
+  return supportLine.perpendicular( point );
 }
 
 Point_2 PathPrimitiveSegment::orthogonalProjection( const Point_2 point ) {
-  return supportingLine.projection( point );
+  return supportLine.projection( point );
+}
+
+Line_2& PathPrimitiveSegment::supportingLine() {
+  return supportLine;
 }
 
 void PathPrimitiveSegment::transform( const Aff_transformation_2& transformation ) {
   segment = segment.transform( transformation );
-  supportingLine = segment.supporting_line();
-  angleLineDegrees = angleOfLineDegrees( supportingLine );
+  supportLine = segment.supporting_line();
+  angleLineDegrees = angleOfLineDegrees( supportLine );
 }

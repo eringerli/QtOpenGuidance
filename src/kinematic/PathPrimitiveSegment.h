@@ -48,6 +48,7 @@ class PathPrimitiveSegment : public PathPrimitive {
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
     virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
     virtual Point_2 orthogonalProjection( const Point_2 point )override;
+    virtual Line_2& supportingLine() override;
 
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
@@ -61,5 +62,5 @@ class PathPrimitiveSegment : public PathPrimitive {
   public:
     double angleLineDegrees = 0;
     Segment_2 segment;
-    Line_2 supportingLine;
+    Line_2 supportLine;
 };

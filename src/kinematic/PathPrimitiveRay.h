@@ -25,7 +25,7 @@ class PathPrimitiveRay : public PathPrimitive {
     PathPrimitiveRay()
       : PathPrimitive() {}
 
-    PathPrimitiveRay( const Ray_2& ray, double implementWidth, bool anyDirection, int32_t passNumber );
+    PathPrimitiveRay( const Ray_2& ray, bool reverse, double implementWidth, bool anyDirection, int32_t passNumber );
 
     virtual Type getType() override {
       return Type::Ray;
@@ -48,6 +48,7 @@ class PathPrimitiveRay : public PathPrimitive {
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
     virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
     virtual Point_2 orthogonalProjection( const Point_2 point )override;
+    virtual Line_2& supportingLine() override;
 
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
@@ -61,5 +62,7 @@ class PathPrimitiveRay : public PathPrimitive {
   public:
     double angleLineDegrees = 0;
     Ray_2 ray;
-    Line_2 supportingLine;
+    Line_2 supportLine;
+
+    bool reverse = false;
 };

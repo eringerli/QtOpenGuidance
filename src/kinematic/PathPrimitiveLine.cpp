@@ -66,6 +66,10 @@ Point_2 PathPrimitiveLine::orthogonalProjection( const Point_2 point ) {
   return line.projection( point );
 }
 
+Line_2& PathPrimitiveLine::supportingLine() {
+  return line;
+}
+
 void PathPrimitiveLine::transform( const Aff_transformation_2& transformation ) {
   line = line.transform( transformation );
 }

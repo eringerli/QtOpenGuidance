@@ -56,6 +56,7 @@
 #include "../kinematic/PathPrimitiveLine.h"
 #include "../kinematic/PathPrimitiveRay.h"
 #include "../kinematic/PathPrimitiveSegment.h"
+#include "../kinematic/PathPrimitiveSequence.h"
 
 #include "../kinematic/PlanGlobal.h"
 
@@ -139,6 +140,8 @@ class GlobalPlanner : public BlockBase {
       bPointEntity->setEnabled( false );
 
       aPoint = position;
+      abPolyline.clear();
+      abPolyline.push_back( to2D( position ) );
 
       qDebug() << "a_clicked()"/* << aPoint*/;
     }
@@ -149,6 +152,7 @@ class GlobalPlanner : public BlockBase {
       bPointEntity->setEnabled( true );
 
       bPoint = position;
+      abPolyline.push_back( to2D( position ) );
 
       abSegment = Segment_3( aPoint, bPoint );
 
@@ -156,7 +160,8 @@ class GlobalPlanner : public BlockBase {
     }
 
     void setAdditionalPoint() {
-
+      abPolyline.push_back( to2D( position ) );
+      createPlanAB();
     }
 
     void setAdditionalPointsContinous( bool /*enabled*/ ) {
@@ -239,6 +244,7 @@ class GlobalPlanner : public BlockBase {
     Point_3 aPoint = Point_3( 0, 0, 0 );
     Point_3 bPoint = Point_3( 0, 0, 0 );
     Segment_3 abSegment = Segment_3( Point_3( 0, 0, 0 ), Point_3( 0, 0, 0 ) );
+    std::vector<Point_2> abPolyline;
 
     Segment_2 implementSegment = Segment_2( Point_2( 0, 0 ), Point_2( 0, 0 ) );
 

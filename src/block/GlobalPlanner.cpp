@@ -129,15 +129,15 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     m_segmentsEntity->addComponent( m_segmentsMesh );
 
     m_segmentsMesh2 = new BufferMesh( m_segmentsEntity2 );
-    m_segmentsMesh2->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
+    m_segmentsMesh2->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
     m_segmentsEntity2->addComponent( m_segmentsMesh2 );
 
     m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
+    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
     m_segmentsEntity3->addComponent( m_segmentsMesh3 );
 
     m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
-    m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
+    m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
     m_segmentsEntity4->addComponent( m_segmentsMesh4 );
 
     m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
@@ -148,7 +148,7 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
 
     m_pointsMaterial->setAmbient( Qt::yellow );
     m_segmentsMaterial->setAmbient( Qt::green );
-    m_segmentsMaterial2->setAmbient( Qt::green );
+    m_segmentsMaterial2->setAmbient( Qt::yellow );
     m_segmentsMaterial3->setAmbient( Qt::blue );
     m_segmentsMaterial4->setAmbient( Qt::red );
 
@@ -185,10 +185,12 @@ void GlobalPlanner::showPlan() {
   if( !plan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
 
-    constexpr double range = 25;
+    constexpr double range = 50;
     Iso_rectangle_2 viewBox( Bbox_2( position2D.x() - range, position2D.y() - range, position2D.x() + range, position2D.y() + range ) );
 
     QVector<QVector3D> positions;
+    QVector<QVector3D> positions2;
+    QVector<QVector3D> positions3;
 
     for( const auto& step : * ( plan.plan ) ) {
       if( const auto* pathLine = step->castToLine() ) {
@@ -204,10 +206,102 @@ void GlobalPlanner::showPlan() {
           }
         }
       }
+
+      if( const auto* pathSegment = step->castToSegment() ) {
+        const auto& segment = pathSegment->segment;
+
+        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+        result = intersection( viewBox, segment );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
+            positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
+          }
+        }
+      }
+
+      if( const auto* pathRay = step->castToRay() ) {
+        const auto& ray = pathRay->ray;
+
+        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+        result = intersection( viewBox, ray );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
+            positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
+          }
+        }
+      }
+
+      if( const auto* pathSequence = step->castToSequence() ) {
+        for( const auto& step : pathSequence->sequence ) {
+          if( const auto* pathLine = step->castToLine() ) {
+            const auto& line = pathLine->line;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, line );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
+                positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
+              }
+            }
+          }
+
+          if( const auto* pathSegment = step->castToSegment() ) {
+            const auto& segment = pathSegment->segment;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, segment );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions << QVector3D( segment->source().x(), segment->source().y(), 0 );
+                positions << QVector3D( segment->target().x(), segment->target().y(), 0 );
+              }
+            }
+          }
+
+          if( const auto* pathRay = step->castToRay() ) {
+            const auto& ray = pathRay->ray;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, ray );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions2 << QVector3D( segment->source().x(), segment->source().y(), 0 );
+                positions2 << QVector3D( segment->target().x(), segment->target().y(), 0 );
+              }
+            }
+          }
+        }
+
+//        // bisectors
+//        for( const auto& line : pathSequence->bisectors ) {
+//          CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+//          result = intersection( viewBox, line );
+
+//          if( result ) {
+////            positions3.clear();
+//            if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+//              positions3 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+//              positions3 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+//            }
+//          }
+//        }
+      }
     }
 
     m_segmentsMesh->bufferUpdate( positions );
     m_segmentsEntity->setEnabled( true );
+    m_segmentsMesh2->bufferUpdate( positions2 );
+    m_segmentsEntity2->setEnabled( true );
+    m_segmentsMesh3->bufferUpdate( positions3 );
+    m_segmentsEntity3->setEnabled( true );
   }
 }
 
@@ -217,11 +311,21 @@ void GlobalPlanner::createPlanAB() {
 
     Point_2 position2D = to2D( position );
 
-    plan.resetPlanWith( make_shared<PathPrimitiveLine>(
-                          to2D( abSegment ).supporting_line(),
-                          std::sqrt( implementSegment.squared_length() ),
-                          true,
-                          0 ) );
+    if( abPolyline.size() == 2 ) {
+      plan.resetPlanWith( make_shared<PathPrimitiveLine>(
+                            to2D( abSegment ).supporting_line(),
+                            std::sqrt( implementSegment.squared_length() ),
+                            true,
+                            0 ) );
+    }
+
+    if( abPolyline.size() > 2 ) {
+      plan.resetPlanWith( make_shared<PathPrimitiveSequence>(
+                            abPolyline,
+                            std::sqrt( implementSegment.squared_length() ),
+                            true,
+                            0 ) );
+    }
 
     plan.expand( position2D );
 

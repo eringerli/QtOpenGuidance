@@ -20,24 +20,33 @@
 
 #include "PathPrimitive.h"
 
-class PathPrimitiveLine : public PathPrimitive {
+class PathPrimitiveSequence
+  : public PathPrimitive {
   public:
-    PathPrimitiveLine()
+    PathPrimitiveSequence()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int32_t passNumber );
+    PathPrimitiveSequence( const std::vector<Point_2>& polyline, double implementWidth, bool anyDirection, int32_t passNumber )
+      : PathPrimitive( anyDirection, implementWidth, passNumber ) {
+      updateWithPolyline( polyline );
+    }
+
+    PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive>>& sequence, std::vector<Line_2> bisectors, double implementWidth, bool anyDirection, int32_t passNumber )
+      : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {}
 
     virtual Type getType() override {
-      return Type::Line;
+      return Type::Sequence;
     }
 
+    void updateWithPolyline( const std::vector<Point_2>& polyline );
+
   public:
-    bool operator==( PathPrimitiveLine& b ) {
-      return passNumber == b.passNumber;
-    }
-    bool operator==( const PathPrimitiveLine& b ) const {
-      return passNumber == b.passNumber;
-    }
+//    bool operator==( PathPrimitiveSequence& b ) {
+//      return segment == b.segment;
+//    }
+//    bool operator==( const PathPrimitiveSequence& b ) const {
+//      return segment == b.segment;
+//    }
 
   public:
     virtual double distanceToPointSquared( const Point_2& point ) override;
@@ -56,10 +65,16 @@ class PathPrimitiveLine : public PathPrimitive {
     virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left, bool reverse ) override;
 
     virtual void print() override {
-      std::cout << "PathPrimitiveLine: " << line << std::endl;
+      std::cout << "PathPrimitiveSequence: " << std::endl;
     }
 
   public:
-    double angleLineDegrees = 0;
-    Line_2 line;
+    std::vector<Point_2> polyline;
+    std::vector<std::shared_ptr<PathPrimitive>> sequence;
+    Line_2 supportLine;
+
+    std::vector<Line_2> bisectors;
+
+  private:
+    std::shared_ptr<PathPrimitive>& findSequencePrimitive( const Point_2& point );
 };

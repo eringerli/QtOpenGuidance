@@ -20,6 +20,7 @@
 #include "PathPrimitiveLine.h"
 #include "PathPrimitiveRay.h"
 #include "PathPrimitiveSegment.h"
+#include "PathPrimitiveSequence.h"
 
 #include <QtMath>
 
@@ -42,6 +43,14 @@ const PathPrimitiveRay* PathPrimitive::castToRay() {
 const PathPrimitiveSegment* PathPrimitive::castToSegment() {
   if( getType() == Type::Segment ) {
     return static_cast<PathPrimitiveSegment*>( this );
+  } else {
+    return nullptr;
+  }
+}
+
+const PathPrimitiveSequence* PathPrimitive::castToSequence() {
+  if( getType() == Type::Sequence ) {
+    return static_cast<PathPrimitiveSequence*>( this );
   } else {
     return nullptr;
   }

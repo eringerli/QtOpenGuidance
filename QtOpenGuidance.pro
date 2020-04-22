@@ -51,6 +51,7 @@ SOURCES += \
     src/block/ActionDockBlock.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
+    src/block/GlobalPlannerModel.cpp \
     src/block/LocalPlanner.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
@@ -77,6 +78,7 @@ SOURCES += \
     src/kinematic/PathPrimitiveLine.cpp \
     src/kinematic/PathPrimitiveRay.cpp \
     src/kinematic/PathPrimitiveSegment.cpp \
+    src/kinematic/PathPrimitiveSequence.cpp \
     src/kinematic/Plan.cpp \
     src/kinematic/PlanGlobal.cpp \
     src/main.cpp \
@@ -177,6 +179,7 @@ HEADERS += \
     src/kinematic/PathPrimitiveLine.h \
     src/kinematic/PathPrimitiveRay.h \
     src/kinematic/PathPrimitiveSegment.h \
+    src/kinematic/PathPrimitiveSequence.h \
     src/kinematic/Plan.h \
     src/kinematic/PlanGlobal.h \
     src/kinematic/PoseOptions.h \

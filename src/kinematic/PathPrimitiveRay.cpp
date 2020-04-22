@@ -18,22 +18,26 @@
 
 #include "PathPrimitiveRay.h"
 
-PathPrimitiveRay::PathPrimitiveRay( const Ray_2& ray, double implementWidth, bool anyDirection, int32_t passNumber )
-  : PathPrimitive( anyDirection, implementWidth, passNumber ), ray( ray ), supportingLine( ray.supporting_line() ) {
-  angleLineDegrees = angleOfLineDegrees( supportingLine );
+PathPrimitiveRay::PathPrimitiveRay( const Ray_2& ray, bool reverse, double implementWidth, bool anyDirection, int32_t passNumber )
+  : PathPrimitive( anyDirection, implementWidth, passNumber ), ray( ray ), supportLine( ray.supporting_line() ), reverse( reverse ) {
+  if( reverse ) {
+    supportLine = supportLine.opposite();
+  }
+
+  angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
 std::shared_ptr<PathPrimitive> PathPrimitiveRay::createReverse() {
   return std::make_shared<PathPrimitiveRay> (
-           ray.opposite(),
-           implementWidth, anyDirection, passNumber );
+           ray,
+           !reverse, implementWidth, anyDirection, passNumber );
 }
 
 double PathPrimitiveRay::distanceToPointSquared( const Point_2& point ) {
-  Point_2 ortogonalProjection = orthogonalProjection( point );
-  double distance = CGAL::squared_distance( ortogonalProjection, point );
+  Point_2 orthogonalProjectionPoint = orthogonalProjection( point );
+  double distance = CGAL::squared_distance( orthogonalProjectionPoint, point );
 
-  if( ray.collinear_has_on( ortogonalProjection ) ) {
+  if( ray.collinear_has_on( orthogonalProjectionPoint ) ) {
     return distance;
   } else {
     return CGAL::squared_distance( point, ray.source() );
@@ -41,13 +45,13 @@ double PathPrimitiveRay::distanceToPointSquared( const Point_2& point ) {
 }
 
 bool PathPrimitiveRay::isOn( const Point_2& point ) {
-  Point_2 ortogonalProjection = supportingLine.projection( point );
+  Point_2 ortogonalProjection = supportLine.projection( point );
 
   return ray.collinear_has_on( ortogonalProjection );
 }
 
 bool PathPrimitiveRay::leftOf( const Point_2& point ) {
-  return supportingLine.has_on_negative_side( point );
+  return supportLine.has_on_negative_side( point );
 }
 
 double PathPrimitiveRay::angleAtPointDegrees( const Point_2& ) {
@@ -68,29 +72,41 @@ bool PathPrimitiveRay::intersectWithLine( const Line_2& lineToIntersect, Point_2
 }
 
 Line_2 PathPrimitiveRay::perpendicularAtPoint( const Point_2 point ) {
-  return supportingLine.perpendicular( point );
+  return supportLine.perpendicular( point );
 }
 
 Point_2 PathPrimitiveRay::orthogonalProjection( const Point_2 point ) {
-  return supportingLine.projection( point );
+  return supportLine.projection( point );
+}
+
+Line_2& PathPrimitiveRay::supportingLine() {
+  return supportLine;
 }
 
 void PathPrimitiveRay::transform( const Aff_transformation_2& transformation ) {
   ray = ray.transform( transformation );
-  supportingLine = ray.supporting_line();
-  angleLineDegrees = angleOfLineDegrees( supportingLine );
+  supportLine = ray.supporting_line();
+
+  if( reverse ) {
+    supportLine = supportLine.opposite();
+  }
+
+  angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
 std::shared_ptr<PathPrimitive> PathPrimitiveRay::createNextPrimitive( bool left, bool reverse ) {
-  auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
+
+  auto offsetVector = this->reverse ?
+                      polarOffsetRad( qDegreesToRadians( angleLineDegrees - 180 ) + M_PI, left ? -implementWidth : implementWidth )
+                      : polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   if( reverse ) {
     return std::make_shared<PathPrimitiveRay> (
              Ray_2( ray.source() - offsetVector, ray.opposite().direction() ),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+             this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
   } else {
     return std::make_shared<PathPrimitiveRay> (
              Ray_2( ray.source() - offsetVector, ray.direction() ),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+             this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
   }
 }
