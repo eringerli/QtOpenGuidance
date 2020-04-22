@@ -344,7 +344,6 @@ void FieldManager::saveFieldToFile( QFile& file ) {
   properties[QStringLiteral( "connect-points-distance" )] = distanceBetweenConnectPoints;
   properties[QStringLiteral( "simplification-max-deviation" )] = maxDeviation;
 
-
   // processed field as Polygon
   if( currentField ) {
     QJsonObject feature;

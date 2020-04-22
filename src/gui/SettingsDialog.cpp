@@ -248,8 +248,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   spaceNavigatorPollingThread = new SpaceNavigatorPollingThread( this );
   spaceNavigatorPollingThread->start();
 
-  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( double ) ), poseSimulation, SLOT( setSteerAngle( double ) ) );
-  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( double ) ), poseSimulation, SLOT( setVelocity( double ) ) );
+  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( double ) ), poseSimulation, SLOT( setSteerAngle( double ) ), Qt::QueuedConnection );
+  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( double ) ), poseSimulation, SLOT( setVelocity( double ) ), Qt::QueuedConnection );
 #endif
 
   // guidance
@@ -1558,8 +1558,7 @@ void SettingsDialog::on_pbSaveAll_clicked() {
   }
 }
 
-void SettingsDialog::on_pbSaveDockPositionsAsDefault_clicked()
-{
+void SettingsDialog::on_pbSaveDockPositionsAsDefault_clicked() {
   QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
                       QSettings::IniFormat );
   KDDockWidgets::LayoutSaver saver;
@@ -1585,13 +1584,14 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
       qWarning() << "Couldn't open save file.";
       return;
     }
+
     QJsonObject jsonObject;
     QJsonObject jsonObjectDocks;
 
     KDDockWidgets::LayoutSaver saver;
-    jsonObjectDocks[QStringLiteral( "SavedDocks" )]= QJsonValue::fromVariant(saver.serializeLayout());
+    jsonObjectDocks[QStringLiteral( "SavedDocks" )] = QJsonValue::fromVariant( saver.serializeLayout() );
 
-    jsonObject[QStringLiteral("docks")] = jsonObjectDocks;
+    jsonObject[QStringLiteral( "docks" )] = jsonObjectDocks;
 
     QJsonDocument jsonDocument( jsonObject );
     saveFile.write( jsonDocument.toJson() );
@@ -1625,11 +1625,11 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
         QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
         QJsonObject json = loadDoc.object();
 
-        if(json.contains( QStringLiteral( "docks" ) )){
+        if( json.contains( QStringLiteral( "docks" ) ) ) {
           QJsonObject docksObject = json[QStringLiteral( "docks" )].toObject();
 
           KDDockWidgets::LayoutSaver saver;
-          saver.restoreLayout(docksObject[QStringLiteral( "SavedDocks" )].toVariant().toByteArray() );
+          saver.restoreLayout( docksObject[QStringLiteral( "SavedDocks" )].toVariant().toByteArray() );
         }
       }
     }
