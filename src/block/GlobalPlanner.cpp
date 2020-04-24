@@ -105,6 +105,18 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     bTextEntity->addComponent( material );
   }
 
+  {
+    pointsEntity = new Qt3DCore::QEntity( rootEntity );
+
+    pointsMesh = new Qt3DExtras::QSphereMesh( bPointEntity );
+    pointsMesh->setRadius( .2f );
+    pointsMesh->setSlices( 20 );
+    pointsMesh->setRings( 20 );
+
+    pointsMaterial = new Qt3DExtras::QPhongMaterial( bPointEntity );
+    pointsMaterial->setDiffuse( QColor( "purple" ) );
+  }
+
   // test for recording
   {
     m_baseEntity = new Qt3DCore::QEntity( rootEntity );
@@ -320,6 +332,31 @@ void GlobalPlanner::createPlanAB() {
     }
 
     if( abPolyline.size() > 2 ) {
+      aPointEntity->setEnabled( false );
+      bPointEntity->setEnabled( false );
+
+      qDebug() << "pointsEntity->children().size()" << pointsEntity->children().size();
+
+      for( const auto& child : qAsConst( pointsEntity->children() ) ) {
+        if( auto childPtr = qobject_cast<Qt3DCore::QEntity*>( child ) ) {
+          childPtr->setEnabled( false );
+          childPtr->deleteLater();
+        }
+      }
+
+      for( const auto& point : abPolyline ) {
+        auto entity = new Qt3DCore::QEntity( pointsEntity );
+
+        auto transform = new Qt3DCore::QTransform( entity );
+        transform->setTranslation( convertPoint2ToQVector3D( point ) );
+
+        entity->addComponent( pointsMaterial );
+        entity->addComponent( pointsMesh );
+        entity->addComponent( transform );
+      }
+
+      pointsEntity->setEnabled( true );
+
       plan.resetPlanWith( make_shared<PathPrimitiveSequence>(
                             abPolyline,
                             std::sqrt( implementSegment.squared_length() ),
@@ -453,6 +490,8 @@ void GlobalPlanner::openAbLineFromFile( QFile& file ) {
             if( coordinatesArray.size() >= 2 ) {
               uint16_t index = 0;
 
+              abPolyline.clear();
+
               for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
                 QJsonArray coordinate = blockIndex.toArray();
 
@@ -478,6 +517,8 @@ void GlobalPlanner::openAbLineFromFile( QFile& file ) {
                     bPointEntity->setEnabled( true );
                     abSegment = Segment_3( aPoint, bPoint );
                   }
+
+                  abPolyline.push_back( Point_2( x, y ) );
                 }
 
                 ++index;
@@ -540,19 +581,9 @@ void GlobalPlanner::saveAbLineToFile( QFile& file ) {
       double longitude = 0;
       double height = 0;
 
-      tmw->Reverse( aPoint.x(), aPoint.y(), 0, latitude, longitude, height );
+      for( const auto& point : abPolyline ) {
+        tmw->Reverse( point.x(), point.y(), 0, latitude, longitude, height );
 
-      {
-        QJsonArray coordinate;
-        coordinate.push_back( longitude );
-        coordinate.push_back( latitude );
-
-        coordinates.push_back( coordinate );
-      }
-
-      tmw->Reverse( bPoint.x(), bPoint.y(), 0, latitude, longitude, height );
-
-      {
         QJsonArray coordinate;
         coordinate.push_back( longitude );
         coordinate.push_back( latitude );

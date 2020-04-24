@@ -138,6 +138,7 @@ class GlobalPlanner : public BlockBase {
 
       aPointEntity->setEnabled( true );
       bPointEntity->setEnabled( false );
+      pointsEntity->setEnabled( false );
 
       aPoint = position;
       abPolyline.clear();
@@ -274,6 +275,10 @@ class GlobalPlanner : public BlockBase {
     Qt3DCore::QTransform* bPointTransform = nullptr;
     Qt3DCore::QEntity* bTextEntity = nullptr;
     Qt3DCore::QTransform* bTextTransform = nullptr;
+
+    Qt3DCore::QEntity* pointsEntity = nullptr;
+    Qt3DExtras::QSphereMesh* pointsMesh = nullptr;
+    Qt3DExtras::QPhongMaterial* pointsMaterial = nullptr;
 
   private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;
