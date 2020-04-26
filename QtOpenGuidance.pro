@@ -255,7 +255,7 @@ desktop-entry.files = QtOpenGuidance.desktop
 desktop-entry.path = $$PREFIX/share/applications/
 INSTALLS += desktop-entry
 
-DISTFILES += PKGBUILD QtOpenGuidance.desktop
+DISTFILES += PKGBUILD QtOpenGuidance.desktop README.md
 
 DISTFILES += \
     android/AndroidManifest.xml \

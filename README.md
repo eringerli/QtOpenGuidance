@@ -28,7 +28,7 @@ mkdir -p ~/qtopenguidance-build/{QtOpenGuidance,KDDockWidgets}
 
 # download, build and install KDDockWidgets
 cd ~/qtopenguidance-build/KDDockWidgets
-wget https://raw.githubusercontent.com/eringerli/KDDockWidgets/master/PKGBUILD -O PKGBUILD
+wget https://raw.githubusercontent.com/eringerli/KDDockWidgets/pkgbuild/PKGBUILD -O PKGBUILD
 makepkg -is
 
 # download, build and install QtOpenGuidance
