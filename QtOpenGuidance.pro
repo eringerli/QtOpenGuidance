@@ -51,7 +51,6 @@ SOURCES += \
     src/block/ActionDockBlock.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
-    src/block/GlobalPlannerModel.cpp \
     src/block/LocalPlanner.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
