@@ -92,9 +92,15 @@ class GlobalPlanner : public BlockBase {
         aPointTransform->setRotation( orientation );
         bPointTransform->setRotation( orientation );
 
+        auto position2D = to2D( position );
+
+        if( recordContinous ) {
+          abPolyline.push_back( position2D );
+        }
+
 //        QElapsedTimer timer;
 //        timer.start();
-        plan.expand( to2D( position ) );
+        plan.expand( position2D );
 //        qDebug() << "Cycle Time plan.expandPlan:" << timer.nsecsElapsed() << "ns";
 
         showPlan();
@@ -143,12 +149,9 @@ class GlobalPlanner : public BlockBase {
       aPoint = position;
       abPolyline.clear();
       abPolyline.push_back( to2D( position ) );
-
-      qDebug() << "a_clicked()"/* << aPoint*/;
     }
 
     void setBPoint() {
-      qDebug() << "setBPoint()";
       bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
       bPointEntity->setEnabled( true );
 
@@ -165,13 +168,16 @@ class GlobalPlanner : public BlockBase {
       createPlanAB();
     }
 
-    void setAdditionalPointsContinous( bool /*enabled*/ ) {
+    void setAdditionalPointsContinous( bool enabled ) {
+      if( recordContinous && !enabled ) {
+        emit requestPolylineSimplification( &abPolyline, maxDeviation, true );
+      }
 
+      recordContinous = enabled;
     }
 
     void snap() {
       snapPlanAB();
-      qDebug() << "snap()";
     }
 
     void openAbLine();
@@ -179,15 +185,19 @@ class GlobalPlanner : public BlockBase {
 
     void newField() {
       widget->resetToolbar();
+      abPolyline.clear();
     }
 
     void saveAbLine();
     void saveAbLineToFile( QFile& file );
 
-    void setPlannerSettings( int pathsInReserve ) {
+    void setPlannerSettings( int pathsInReserve, double maxDeviation ) {
       plan.pathsInReserve = pathsInReserve;
+      this->maxDeviation = maxDeviation;
 
-//      createPlanAB();
+      if( abPolyline.size() > 2 ) {
+        emit requestPolylineSimplification( &abPolyline, maxDeviation, true );
+      }
     }
 
     void setPassSettings( int forwardPasses, int reversePasses, bool startRight, bool mirror ) {
@@ -201,8 +211,6 @@ class GlobalPlanner : public BlockBase {
 
       this->startRight = startRight;
       this->mirror = mirror;
-
-//      createPlanAB();
     }
 
     void setPassNumberTo( int /*passNumber*/ ) {}
@@ -211,20 +219,11 @@ class GlobalPlanner : public BlockBase {
       this->runNumber = runNumber;
     }
 
-
+    void createPlanPolyline( std::vector<Point_2>* polylinePtr );
 
   signals:
     void planChanged( const Plan& );
-
-//    void alphaChanged( double optimal, double solid );
-//    void fieldStatisticsChanged( double, double, double );
-//    void requestFieldOptimition( uint32_t runNumber,
-//                                 std::vector<K::Point_2>* points,
-//                                 FieldsOptimitionToolbar::AlphaType alphaType,
-//                                 double customAlpha,
-//                                 double maxDeviation,
-//                                 double distanceBetweenConnectPoints );
-//    void requestNewRunNumber();
+    void requestPolylineSimplification( std::vector<Point_2>*, double, bool );
 
   private:
     void createPlanAB();
@@ -240,12 +239,15 @@ class GlobalPlanner : public BlockBase {
     bool startRight = false;
     bool mirror = false;
 
+    double maxDeviation = 0.1;
+
     std::shared_ptr<Polygon_with_holes_2> currentField;
 
     Point_3 aPoint = Point_3( 0, 0, 0 );
     Point_3 bPoint = Point_3( 0, 0, 0 );
     Segment_3 abSegment = Segment_3( Point_3( 0, 0, 0 ), Point_3( 0, 0, 0 ) );
     std::vector<Point_2> abPolyline;
+    bool recordContinous = false;
 
     Segment_2 implementSegment = Segment_2( Point_2( 0, 0 ), Point_2( 0, 0 ) );
 
@@ -258,6 +260,12 @@ class GlobalPlanner : public BlockBase {
     KDDockWidgets::DockWidget* dock = nullptr;
 
     GeographicConvertionWrapper* tmw = nullptr;
+
+
+  private:
+    CgalThread* threadForCgalWorker = nullptr;
+    CgalWorker* cgalWorker = nullptr;
+    uint32_t runNumber = 0;
 
   private:
     QWidget* mainWindow = nullptr;
@@ -280,13 +288,13 @@ class GlobalPlanner : public BlockBase {
     Qt3DExtras::QSphereMesh* pointsMesh = nullptr;
     Qt3DExtras::QPhongMaterial* pointsMaterial = nullptr;
 
+    Qt3DCore::QEntity* mPointEntity = nullptr;
+    Qt3DExtras::QSphereMesh* mPointMesh = nullptr;
+    Qt3DCore::QTransform* mPointTransform = nullptr;
+
   private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;
     Qt3DCore::QTransform* m_baseTransform = nullptr;
-
-    CgalThread* threadForCgalWorker = nullptr;
-    CgalWorker* cgalWorker = nullptr;
-    uint32_t runNumber = 0;
 
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;

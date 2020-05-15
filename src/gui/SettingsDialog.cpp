@@ -168,6 +168,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
     // path planner
     {
       ui->sbPathsInReserve->setValue( settings.value( QStringLiteral( "PathPlanner/PathsInReserve" ), 3 ).toInt() );
+      ui->sbGlobalPlannerMaxDeviation->setValue( settings.value( QStringLiteral( "PathPlanner/MaxDeviation" ), 0.1 ).toDouble() );
     }
 
     blockSettingsSaving = false;
@@ -943,6 +944,7 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
                         QSettings::IniFormat );
 
     settings.setValue( QStringLiteral( "PathPlanner/PathsInReserve" ), ui->sbPathsInReserve->value() );
+    settings.setValue( QStringLiteral( "PathPlanner/MaxDeviation" ), ui->sbGlobalPlannerMaxDeviation->value() );
     settings.sync();
   }
 }
@@ -1021,7 +1023,7 @@ void SettingsDialog::emitAllConfigSignals() {
   emit setGrid( ui->gbGrid->isChecked() );
   emitGridSettings();
 
-  emit plannerSettingsChanged( ui->sbPathsInReserve->value() );
+  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 
   emit globalPlannerModelSetVisible( ui->gbGlobalPlanner->isChecked() );
   emitGlobalPlannerModelSettings();
@@ -1436,7 +1438,7 @@ void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int ) {
 
 void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
-  emit plannerSettingsChanged( ui->sbPathsInReserve->value() );
+  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }
 
 void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {
@@ -1644,4 +1646,9 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
   QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
 
   fileDialog->open();
+}
+
+void SettingsDialog::on_sbGlobalPlannerMaxDeviation_valueChanged( double ) {
+  savePathPlannerValuesInSettings();
+  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }

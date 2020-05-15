@@ -52,7 +52,6 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   std::size_t max_id = 0;
   std::set<Edge> existing_edges;
 
-  //  for( const auto& edge : v_edges_map ) {
   for( auto it = v_edges_map.cbegin(), end = v_edges_map.cend(); it != end; ++it ) {
     if( existing_edges.count( ( *it ).second.front() ) != 0u ) {
       continue;
@@ -103,6 +102,92 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   out_poly = Polygon_with_holes_2( outer_poly, polies.begin(), polies.end() );
 }
 
+bool CgalWorker::returnEarly( uint32_t runNumber ) {
+  auto cgalThread = qobject_cast<CgalThread*>( thread() );
+
+  if( cgalThread != nullptr ) {
+    QMutexLocker lock( &cgalThread->mutex );
+
+    if( runNumber < cgalThread->runNumber ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool CgalWorker::isCollinear( std::vector<Point_2>* pointsPointer, bool emitSignal ) {
+  bool collinearity = true;
+
+  for( std::size_t i = 0, end = pointsPointer->size(); i < ( end - 2 ); ++i ) {
+    collinearity &= CGAL::collinear( pointsPointer->at( i + 0 ), pointsPointer->at( i + 1 ), pointsPointer->at( i + 2 ) );
+
+    if( !collinearity ) {
+      break;
+    }
+  }
+
+  if( emitSignal ) {
+    emit isCollinearResult( collinearity );
+  }
+
+  return collinearity;
+}
+
+void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal ) {
+  if( distanceBetweenConnectPoints > 0 && pointsPointer->size() >= 2 ) {
+
+    for( auto last = pointsPointer->cbegin(), it = pointsPointer->cbegin() + 1, end = pointsPointer->cend();
+         it != end;
+         ++it, ++last ) {
+      const double distance = std::sqrt( CGAL::squared_distance( *last, *it ) );
+
+      if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
+        std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
+
+        if( numPoints > 1000 ) {
+          numPoints = 1000;
+        }
+
+        CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( *last, *it, numPoints );
+
+        for( std::size_t i = 1; i < ( numPoints - 1 ); ++i ) {
+          pointsPointer->push_back( *pointGenerator );
+          ++pointGenerator;
+        }
+      }
+    }
+  }
+
+  if( emitSignal ) {
+    emit connectPointsResult( pointsPointer );
+  }
+}
+
+void CgalWorker::simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation, bool emitSignal ) {
+  PS::Squared_distance_cost cost;
+
+  auto polylineOut = new std::vector<Point_2>;
+
+  PS::simplify( pointsPointer->begin(), pointsPointer->end(), cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ), std::back_inserter( *polylineOut ) );
+
+  if( emitSignal ) {
+    emit simplifyPolylineResult( polylineOut );
+  } else {
+    delete polylineOut;
+  }
+}
+
+void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal ) {
+  PS::Squared_distance_cost cost;
+
+  *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
+
+  if( emitSignal ) {
+    emit simplifyPolygonResult( out_poly );
+  }
+}
+
 void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
                                         std::vector<Point_2>* pointsPointer,
                                         FieldsOptimitionToolbar::AlphaType alphaType,
@@ -112,145 +197,36 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
 
   QScopedPointer<std::vector<Point_2>> points( pointsPointer );
 
-  auto cgalThread = qobject_cast<CgalThread*>( thread() );
-
-  if( cgalThread != nullptr ) {
-    QMutexLocker lock( &cgalThread->mutex );
-
-    if( runNumber < cgalThread->runNumber ) {
-      qDebug() << "Returned early...";
-      return;
-    }
+  if( returnEarly( runNumber ) ) {
+    return;
   }
-
-  qDebug() << "CgalWorker::fieldOptimitionWorker" << points;
 
   double numPointsRecorded = double( points->size() );
 
   // check for collinearity: if all points are collinear, you can't calculate a triangulation and it crashes
-  bool collinearity = true;
-  {
-    const std::size_t numPoints = points->size();
+  if( !isCollinear( pointsPointer ) ) {
 
-    for( std::size_t i = 0; i < ( numPoints - 2 ); ++i ) {
-      collinearity &= CGAL::collinear( points->at( i + 0 ), points->at( i + 1 ), points->at( i + 2 ) );
+    connectPoints( pointsPointer, distanceBetweenConnectPoints );
 
-      if( !collinearity ) {
-        break;
-      }
+    if( returnEarly( runNumber ) ) {
+      return;
     }
-  }
-
-  if( !collinearity ) {
-
-    if( distanceBetweenConnectPoints > 0 ) {
-      qDebug() << "pointsCopy.size()" << points->size();
-
-      for( auto last = points->cbegin(), it = points->cbegin() + 1, end = points->cend();
-           it != end;
-           ++it, ++last ) {
-        const double distance = std::sqrt( CGAL::squared_distance( *last, *it ) );
-        std::cout << *last << " " << *it << " " << distance << std::endl << std::flush;
-
-        if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
-          std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
-
-          if( numPoints > 1000 ) {
-            CGAL::set_pretty_mode( std::cerr );
-            std::cerr << "pointsCopy.size(): " << points->size() << " distance: " << distance  << " distanceBetweenConnectPoints:" << distanceBetweenConnectPoints << " numPoints:" << numPoints  << " points: " << *last << " " << *it << "\n";
-            numPoints = 10000;
-          }
-
-          CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( *last, *it, numPoints );
-
-          for( std::size_t i = 1; i < ( numPoints - 1 ); ++i ) {
-            points->push_back( *pointGenerator );
-            ++pointGenerator;
-          }
-
-          std::cout << "pointsCopy.size()" << points->size() << "distance" << distance << distanceBetweenConnectPoints << numPoints;
-        }
-      }
-    }
-
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        qDebug() << "Returned early...";
-        return;
-      }
-    }
-
-    qDebug() << "pointsCopy.size()" << points->size();
-
 
     Alpha_shape_2 alphaShape( points->begin(), points->end(),
                               K::FT( 0 ),
                               Alpha_shape_2::REGULARIZED );
 
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        qDebug() << "Returned early...";
-        return;
-      }
+    if( returnEarly( runNumber ) ) {
+      return;
     }
 
-    qDebug() << "Alpha Shape computed";
     double optimalAlpha = CGAL::to_double( *alphaShape.find_optimal_alpha( 1 ) );
-    qDebug() << "Optimal alpha: " << optimalAlpha;
     double solidAlpha = CGAL::to_double( alphaShape.find_alpha_solid() );
-    qDebug() << "Solid alpha: " << solidAlpha;
 
     emit alphaChanged( optimalAlpha, solidAlpha );
 
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        qDebug() << "Returned early...";
-        return;
-      }
-    }
-
-    if( 0 ) {
-      int numSegments = 0;
-      int numSegmentsExterior = 0;
-      int numSegmentsSingular = 0;
-      int numSegmentsRegular = 0;
-      int numSegmentsInterior = 0;
-
-      {
-        auto it = alphaShape.alpha_shape_edges_begin();
-        const auto& end = alphaShape.alpha_shape_edges_end();
-
-        for( ; it != end; ++it ) {
-          switch( alphaShape.classify( *it ) ) {
-            case Alpha_shape_2::EXTERIOR:
-              ++numSegmentsExterior;
-              break;
-
-            case Alpha_shape_2::SINGULAR:
-              ++numSegmentsInterior;
-              break;
-
-            case Alpha_shape_2::REGULAR:
-              ++numSegmentsRegular;
-              break;
-
-            case Alpha_shape_2::INTERIOR:
-              ++numSegmentsInterior;
-              break;
-          }
-
-          ++numSegments;
-        }
-
-      }
-      qDebug() << "alpha shape 2 edges tot: " << numSegments << "points: " << points->size();
-      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
+    if( returnEarly( runNumber ) ) {
+      return;
     }
 
     switch( alphaType ) {
@@ -268,84 +244,27 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
         break;
     }
 
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        qDebug() << "Returned early...";
-        return;
-      }
-    }
-
-    if( 0 ) {
-      int numSegments = 0;
-      int numSegmentsExterior = 0;
-      int numSegmentsSingular = 0;
-      int numSegmentsRegular = 0;
-      int numSegmentsInterior = 0;
-
-      {
-        auto it = alphaShape.alpha_shape_edges_begin();
-        const auto& end = alphaShape.alpha_shape_edges_end();
-
-        for( ; it != end; ++it ) {
-          switch( alphaShape.classify( *it ) ) {
-            case Alpha_shape_2::EXTERIOR:
-              ++numSegmentsExterior;
-              break;
-
-            case Alpha_shape_2::SINGULAR:
-              ++numSegmentsInterior;
-              break;
-
-            case Alpha_shape_2::REGULAR:
-              ++numSegmentsRegular;
-              break;
-
-            case Alpha_shape_2::INTERIOR:
-              ++numSegmentsInterior;
-              break;
-          }
-
-          ++numSegments;
-        }
-
-      }
-      qDebug() << "alpha shape edges tot: " << numSegments << "points: " << points->size();
-      qDebug() << "Ext:" << numSegmentsExterior << "Sin:" << numSegmentsSingular << "Reg:" << numSegmentsRegular << "Int:" << numSegmentsInterior ;
+    if( returnEarly( runNumber ) ) {
+      return;
     }
 
     auto out_poly = new Polygon_with_holes_2();
 
     alphaToPolygon( alphaShape, *out_poly );
 
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        return;
-      }
+    if( returnEarly( runNumber ) ) {
+      return;
     }
 
-    PS::Squared_distance_cost cost;
+    simplifyPolygon( out_poly, maxDeviation );
 
-    *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
-
-    if( cgalThread != nullptr ) {
-      QMutexLocker lock( &cgalThread->mutex );
-
-      if( runNumber < cgalThread->runNumber ) {
-        qDebug() << "Returned early...";
-        return;
-      }
+    if( returnEarly( runNumber ) ) {
+      return;
     }
 
     // traverse the vertices and the edges
     {
-//      using VertexIterator = Polygon_2::Vertex_iterator;
       CGAL::set_pretty_mode( std::cout );
-
-      qDebug() << "out_poly 2:" << out_poly->outer_boundary().size();
 
       emit fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
     }

@@ -29,21 +29,15 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
            implementWidth, anyDirection, passNumber );
 }
 
-std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createNextPrimitive( bool left, bool reverse ) {
+std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createNextPrimitive( bool left ) {
   auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
-  if( reverse ) {
-    return std::make_shared<PathPrimitiveSegment> (
-             Segment_2( segment.target() - offsetVector, segment.source() - offsetVector ),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  } else {
-    return std::make_shared<PathPrimitiveSegment> (
-             Segment_2( segment.source() - offsetVector, segment.target() - offsetVector ),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  }
+  return std::make_shared<PathPrimitiveSegment> (
+           Segment_2( segment.source() - offsetVector, segment.target() - offsetVector ),
+           implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }
 
-double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
+double PathPrimitiveSegment::distanceToPointSquared( const Point_2 point ) {
   Point_2 ortogonalProjection = orthogonalProjection( point );
   double distance = CGAL::squared_distance( ortogonalProjection, point );
 
@@ -61,17 +55,17 @@ double PathPrimitiveSegment::distanceToPointSquared( const Point_2& point ) {
   }
 }
 
-bool PathPrimitiveSegment::isOn( const Point_2& point ) {
+bool PathPrimitiveSegment::isOn( const Point_2 point ) {
   Point_2 ortogonalProjection = supportLine.projection( point );
 
   return segment.collinear_has_on( ortogonalProjection );
 }
 
-bool PathPrimitiveSegment::leftOf( const Point_2& point ) {
+bool PathPrimitiveSegment::leftOf( const Point_2 point ) {
   return supportLine.has_on_negative_side( point );
 }
 
-double PathPrimitiveSegment::angleAtPointDegrees( const Point_2& ) {
+double PathPrimitiveSegment::angleAtPointDegrees( const Point_2 ) {
   return angleLineDegrees;
 }
 
@@ -98,6 +92,18 @@ Point_2 PathPrimitiveSegment::orthogonalProjection( const Point_2 point ) {
 
 Line_2& PathPrimitiveSegment::supportingLine() {
   return supportLine;
+}
+
+void PathPrimitiveSegment::setSource( const Point_2 point ) {
+  segment = Segment_2( point, segment.target() );
+  supportLine = segment.supporting_line();
+  angleLineDegrees = angleOfLineDegrees( supportLine );
+}
+
+void PathPrimitiveSegment::setTarget( const Point_2 point ) {
+  segment = Segment_2( segment.source(), point );
+  supportLine = segment.supporting_line();
+  angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
 void PathPrimitiveSegment::transform( const Aff_transformation_2& transformation ) {

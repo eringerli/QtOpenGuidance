@@ -29,19 +29,19 @@ std::shared_ptr<PathPrimitive> PathPrimitiveLine::createReverse() {
            implementWidth, anyDirection, passNumber );
 }
 
-double PathPrimitiveLine::distanceToPointSquared( const Point_2& point ) {
+double PathPrimitiveLine::distanceToPointSquared( const Point_2 point ) {
   return CGAL::squared_distance( orthogonalProjection( point ), point );
 }
 
-bool PathPrimitiveLine::isOn( const Point_2& ) {
+bool PathPrimitiveLine::isOn( const Point_2 ) {
   return true;
 }
 
-bool PathPrimitiveLine::leftOf( const Point_2& point ) {
+bool PathPrimitiveLine::leftOf( const Point_2 point ) {
   return line.has_on_negative_side( point );
 }
 
-double PathPrimitiveLine::angleAtPointDegrees( const Point_2& ) {
+double PathPrimitiveLine::angleAtPointDegrees( const Point_2 ) {
   return angleLineDegrees;
 }
 
@@ -74,16 +74,10 @@ void PathPrimitiveLine::transform( const Aff_transformation_2& transformation ) 
   line = line.transform( transformation );
 }
 
-std::shared_ptr<PathPrimitive> PathPrimitiveLine::createNextPrimitive( bool left, bool reverse ) {
+std::shared_ptr<PathPrimitive> PathPrimitiveLine::createNextPrimitive( bool left ) {
   auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
-  if( reverse ) {
-    return std::make_shared<PathPrimitiveLine> (
-             Line_2( line.point( 0 ) - offsetVector, line.point( 1 ) - offsetVector ).opposite(),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  } else {
-    return std::make_shared<PathPrimitiveLine> (
-             Line_2( line.point( 0 ) - offsetVector, line.point( 1 ) - offsetVector ),
-             implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  }
+  return std::make_shared<PathPrimitiveLine> (
+           Line_2( line.point( 0 ) - offsetVector, line.point( 1 ) - offsetVector ),
+           implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }

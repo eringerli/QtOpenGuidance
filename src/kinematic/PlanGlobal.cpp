@@ -36,13 +36,13 @@ void PlanGlobal::resetPlanWith( Plan::PrimitiveSharedPointer referencePrimitive 
 
 void PlanGlobal::createNewPrimitiveOnTheLeft() {
   if( !plan->empty() ) {
-    plan->push_front( plan->front()->createNextPrimitive( true, false ) );
+    plan->push_front( plan->front()->createNextPrimitive( true ) );
   }
 }
 
 void PlanGlobal::createNewPrimitiveOnTheRight() {
   if( !plan->empty() ) {
-    plan->push_back( plan->back()->createNextPrimitive( false, false ) );
+    plan->push_back( plan->back()->createNextPrimitive( false ) );
   }
 }
 

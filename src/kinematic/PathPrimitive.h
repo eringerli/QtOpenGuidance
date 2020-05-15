@@ -52,22 +52,24 @@ class PathPrimitive {
     const PathPrimitiveSequence* castToSequence();
 
   public:
-    virtual double distanceToPointSquared( const Point_2& point ) = 0;
-    virtual bool isOn( const Point_2& point ) = 0;
-    virtual bool leftOf( const Point_2& point ) = 0;
-    virtual double angleAtPointDegrees( const Point_2& point ) = 0;
+    virtual double distanceToPointSquared( const Point_2 point ) = 0;
+    virtual bool isOn( const Point_2 point ) = 0;
+    virtual bool leftOf( const Point_2 point ) = 0;
+    virtual double angleAtPointDegrees( const Point_2 point ) = 0;
 
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
     virtual Line_2 perpendicularAtPoint( const Point_2 point ) = 0;
     virtual Point_2 orthogonalProjection( const Point_2 point ) = 0;
     virtual Line_2& supportingLine() = 0;
 
+    virtual void setSource( const Point_2 point );
+    virtual void setTarget( const Point_2 point );
     virtual void transform( const Aff_transformation_2& transformation ) = 0;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() {
       return nullptr;
     }
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool /*left*/, bool /*reverse*/ ) {
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool /*left*/ ) {
       return nullptr;
     }
 
@@ -75,11 +77,11 @@ class PathPrimitive {
       std::cout << "PathPrimitive" << std::endl;
     }
 
-    double offsetSign( const Point_2& point ) {
+    double offsetSign( Point_2 point ) {
       return leftOf( point ) ? -1 : 1;
     }
 
-    double distanceToPoint( const Point_2& point ) {
+    double distanceToPoint( Point_2 point ) {
       return std::sqrt( distanceToPointSquared( point ) );
     }
 

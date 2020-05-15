@@ -55,3 +55,7 @@ const PathPrimitiveSequence* PathPrimitive::castToSequence() {
     return nullptr;
   }
 }
+
+void PathPrimitive::setSource( const Point_2 ) {}
+
+void PathPrimitive::setTarget( const Point_2 ) {}

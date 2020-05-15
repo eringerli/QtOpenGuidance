@@ -47,7 +47,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
@@ -438,6 +438,13 @@
             <string>Global Planner</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>Minimum of Paths in Reserve</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="1">
              <widget class="QSpinBox" name="sbPathsInReserve">
               <property name="sizePolicy">
@@ -460,10 +467,38 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_26">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_29">
               <property name="text">
-               <string>Minimum of Paths in Reserve</string>
+               <string>Maximum Deviation for Polyline Optimition</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="sbGlobalPlannerMaxDeviation">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="suffix">
+               <string> m</string>
+              </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.005000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.100000000000000</double>
               </property>
              </widget>
             </item>

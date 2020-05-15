@@ -33,7 +33,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveRay::createReverse() {
            !reverse, implementWidth, anyDirection, passNumber );
 }
 
-double PathPrimitiveRay::distanceToPointSquared( const Point_2& point ) {
+double PathPrimitiveRay::distanceToPointSquared( const Point_2 point ) {
   Point_2 orthogonalProjectionPoint = orthogonalProjection( point );
   double distance = CGAL::squared_distance( orthogonalProjectionPoint, point );
 
@@ -44,17 +44,17 @@ double PathPrimitiveRay::distanceToPointSquared( const Point_2& point ) {
   }
 }
 
-bool PathPrimitiveRay::isOn( const Point_2& point ) {
+bool PathPrimitiveRay::isOn( const Point_2 point ) {
   Point_2 ortogonalProjection = supportLine.projection( point );
 
   return ray.collinear_has_on( ortogonalProjection );
 }
 
-bool PathPrimitiveRay::leftOf( const Point_2& point ) {
+bool PathPrimitiveRay::leftOf( const Point_2 point ) {
   return supportLine.has_on_negative_side( point );
 }
 
-double PathPrimitiveRay::angleAtPointDegrees( const Point_2& ) {
+double PathPrimitiveRay::angleAtPointDegrees( const Point_2 ) {
   return angleLineDegrees;
 }
 
@@ -83,6 +83,28 @@ Line_2& PathPrimitiveRay::supportingLine() {
   return supportLine;
 }
 
+void PathPrimitiveRay::setSource( const Point_2 point ) {
+  ray = Ray_2( point, ray.direction() );
+  supportLine = ray.supporting_line();
+
+  if( reverse ) {
+    supportLine = supportLine.opposite();
+  }
+
+  angleLineDegrees = angleOfLineDegrees( supportLine );
+}
+
+void PathPrimitiveRay::setTarget( const Point_2 point ) {
+  ray = Ray_2( ray.source(), point );
+  supportLine = ray.supporting_line();
+
+  if( reverse ) {
+    supportLine = supportLine.opposite();
+  }
+
+  angleLineDegrees = angleOfLineDegrees( supportLine );
+}
+
 void PathPrimitiveRay::transform( const Aff_transformation_2& transformation ) {
   ray = ray.transform( transformation );
   supportLine = ray.supporting_line();
@@ -94,19 +116,13 @@ void PathPrimitiveRay::transform( const Aff_transformation_2& transformation ) {
   angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
-std::shared_ptr<PathPrimitive> PathPrimitiveRay::createNextPrimitive( bool left, bool reverse ) {
+std::shared_ptr<PathPrimitive> PathPrimitiveRay::createNextPrimitive( bool left ) {
 
   auto offsetVector = this->reverse ?
                       polarOffsetRad( qDegreesToRadians( angleLineDegrees - 180 ) + M_PI, left ? -implementWidth : implementWidth )
                       : polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
-  if( reverse ) {
-    return std::make_shared<PathPrimitiveRay> (
-             Ray_2( ray.source() - offsetVector, ray.opposite().direction() ),
-             this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  } else {
-    return std::make_shared<PathPrimitiveRay> (
-             Ray_2( ray.source() - offsetVector, ray.direction() ),
-             this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
-  }
+  return std::make_shared<PathPrimitiveRay> (
+           Ray_2( ray.source() - offsetVector, ray.direction() ),
+           this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }

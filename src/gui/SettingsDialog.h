@@ -67,7 +67,7 @@ class SettingsDialog : public QDialog {
   signals:
     void setGrid( bool );
     void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
-    void plannerSettingsChanged( int );
+    void plannerSettingsChanged( int, double );
 
     void globalPlannerModelSetVisible( bool );
 
@@ -165,6 +165,7 @@ class SettingsDialog : public QDialog {
     void on_slLocalPlannerTransparency_valueChanged( int value );
 
     void on_sbPathsInReserve_valueChanged( int arg1 );
+    void on_sbGlobalPlannerMaxDeviation_valueChanged( double );
 
     void on_cbRestoreDockPositions_toggled( bool checked );
     void on_cbSaveDockPositionsOnExit_toggled( bool checked );

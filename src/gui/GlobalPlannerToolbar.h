@@ -33,6 +33,7 @@ class GlobalPlannerToolbar : public QGroupBox {
     explicit GlobalPlannerToolbar( QWidget* parent = nullptr );
     ~GlobalPlannerToolbar();
     void resetToolbar();
+    void setToolbarToAdditionalPoint();
 
   private slots:
     void on_pbAB_clicked( bool checked );

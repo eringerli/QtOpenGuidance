@@ -33,6 +33,7 @@ class CgalWorker : public QObject {
   public:
     explicit CgalWorker( QObject* parent = nullptr );
 
+
   public slots:
     void fieldOptimitionWorker( uint32_t runNumber,
                                 std::vector<Point_2>* points,
@@ -41,15 +42,27 @@ class CgalWorker : public QObject {
                                 double maxDeviation,
                                 double distanceBetweenConnectPoints );
 
+    bool isCollinear( std::vector<Point_2>* pointsPointer, bool emitSignal = false );
+    void connectPoints( std::vector<Point_2>* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal = false );
+    void simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal = false );
+    void simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation, bool emitSignal = false );
+
   signals:
     void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>, double );
     void alphaChanged( double optimal, double solid );
     void fieldStatisticsChanged( double, double, double );
 
+    void isCollinearResult( bool );
+    void connectPointsResult( std::vector<Point_2>* );
+    void simplifyPolygonResult( Polygon_with_holes_2* );
+    void simplifyPolylineResult( std::vector<Point_2>* );
+
   private:
     // form polygons from alpha shape
     void alphaToPolygon( const Alpha_shape_2& A,
                          Polygon_with_holes_2& out_poly );
+
+    bool returnEarly( uint32_t runNumber );
 };
 
 class CgalThread : public QThread {

@@ -117,6 +117,25 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     pointsMaterial->setDiffuse( QColor( "purple" ) );
   }
 
+  // m point marker -> yellow
+  {
+    mPointEntity = new Qt3DCore::QEntity( rootEntity );
+    mPointMesh = new Qt3DExtras::QSphereMesh( mPointEntity );
+    mPointMesh->setRadius( .5f );
+    mPointMesh->setSlices( 20 );
+    mPointMesh->setRings( 20 );
+
+    mPointTransform = new Qt3DCore::QTransform( mPointEntity );
+
+    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial( mPointEntity );
+    material->setDiffuse( QColor( "yellow" ) );
+
+    mPointEntity->addComponent( mPointMesh );
+    mPointEntity->addComponent( material );
+    mPointEntity->addComponent( mPointTransform );
+    mPointEntity->setEnabled( true );
+  }
+
   // test for recording
   {
     m_baseEntity = new Qt3DCore::QEntity( rootEntity );
@@ -171,33 +190,22 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
   }
 
-//  // create the CGAL worker and move it to it's own thread
-//  {
-//    threadForCgalWorker = new CgalThread( this );
-//    cgalWorker = new CgalWorker();
-//    cgalWorker->moveToThread( threadForCgalWorker );
-//
-//    qRegisterMetaType<FieldsOptimitionToolbar::AlphaType>();
-//    qRegisterMetaType<uint32_t>( "uint32_t" );
-//
-//    QObject::connect( this, &GlobalPlanner::requestNewRunNumber, threadForCgalWorker, &CgalThread::requestNewRunNumber );
-//    QObject::connect( threadForCgalWorker, &CgalThread::runNumberChanged, this, &GlobalPlanner::setRunNumber );
-//    QObject::connect( threadForCgalWorker, &QThread::finished, cgalWorker, &CgalWorker::deleteLater );
-//
-//    QObject::connect( this, &GlobalPlanner::requestFieldOptimition, cgalWorker, &CgalWorker::fieldOptimitionWorker );
-//    QObject::connect( cgalWorker, &CgalWorker::alphaChanged, this, &GlobalPlanner::alphaChanged );
-//    QObject::connect( cgalWorker, &CgalWorker::fieldStatisticsChanged, this, &GlobalPlanner::fieldStatisticsChanged );
-//    QObject::connect( cgalWorker, &CgalWorker::alphaShapeFinished, this, &GlobalPlanner::alphaShapeFinished );
-//
-//    threadForCgalWorker->start();
-//  }
+  {
+    threadForCgalWorker = new CgalThread( this );
+    cgalWorker = new CgalWorker();
+    cgalWorker->moveToThread( threadForCgalWorker );
+    threadForCgalWorker->start();
+    QObject::connect( this, &GlobalPlanner::requestPolylineSimplification, cgalWorker, &CgalWorker::simplifyPolyline );
+
+    QObject::connect( cgalWorker, &CgalWorker::simplifyPolylineResult, this, &GlobalPlanner::createPlanPolyline );
+  }
 }
 
 void GlobalPlanner::showPlan() {
   if( !plan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
 
-    constexpr double range = 50;
+    constexpr double range = 200;
     Iso_rectangle_2 viewBox( Bbox_2( position2D.x() - range, position2D.y() - range, position2D.x() + range, position2D.y() + range ) );
 
     QVector<QVector3D> positions;
@@ -292,19 +300,19 @@ void GlobalPlanner::showPlan() {
           }
         }
 
-//        // bisectors
-//        for( const auto& line : pathSequence->bisectors ) {
-//          CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-//          result = intersection( viewBox, line );
+        // bisectors
+        for( const auto& line : pathSequence->bisectors ) {
+          CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+          result = intersection( viewBox, line );
 
-//          if( result ) {
-////            positions3.clear();
-//            if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
-//              positions3 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
-//              positions3 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
-//            }
-//          }
-//        }
+          if( result ) {
+//            positions3.clear();
+            if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+              positions3 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+              positions3 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+            }
+          }
+        }
       }
     }
 
@@ -315,6 +323,72 @@ void GlobalPlanner::showPlan() {
     m_segmentsMesh3->bufferUpdate( positions3 );
     m_segmentsEntity3->setEnabled( true );
   }
+}
+
+void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
+  std::unique_ptr<std::vector<Point_2>> polyline( polylinePtr );
+  Point_2 position2D = to2D( position );
+
+  if( polyline->size() > 2 ) {
+    aPointEntity->setEnabled( false );
+    bPointEntity->setEnabled( false );
+    widget->setToolbarToAdditionalPoint();
+
+    for( const auto& child : qAsConst( pointsEntity->children() ) ) {
+      if( auto childPtr = qobject_cast<Qt3DCore::QEntity*>( child ) ) {
+        childPtr->setEnabled( false );
+        childPtr->deleteLater();
+      }
+    }
+
+    for( const auto& point : *polyline ) {
+      auto entity = new Qt3DCore::QEntity( pointsEntity );
+
+      auto transform = new Qt3DCore::QTransform( entity );
+      transform->setTranslation( convertPoint2ToQVector3D( point ) );
+
+      entity->addComponent( pointsMaterial );
+      entity->addComponent( pointsMesh );
+      entity->addComponent( transform );
+
+      entity->setEnabled( true );
+    }
+
+    pointsEntity->setEnabled( true );
+
+    plan.resetPlanWith( make_shared<PathPrimitiveSequence>(
+                          *polyline,
+                          std::sqrt( implementSegment.squared_length() ),
+                          true,
+                          0 ) );
+
+
+    emit planChanged( plan );
+  }
+
+  if( polyline->size() == 2 ) {
+    aPoint = to3D( polyline->front() );
+    bPoint = to3D( polyline->back() );
+    abSegment = Segment_3( aPoint, bPoint );
+
+    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
+    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
+    aPointEntity->setEnabled( true );
+    bPointEntity->setEnabled( true );
+
+    widget->setToolbarToAdditionalPoint();
+
+    plan.resetPlanWith( make_shared<PathPrimitiveLine>(
+                          to2D( abSegment ).supporting_line(),
+                          std::sqrt( implementSegment.squared_length() ),
+                          true,
+                          0 ) );
+
+    emit planChanged( plan );
+  }
+
+  plan.expand( position2D );
+
 }
 
 void GlobalPlanner::createPlanAB() {
@@ -329,44 +403,14 @@ void GlobalPlanner::createPlanAB() {
                             std::sqrt( implementSegment.squared_length() ),
                             true,
                             0 ) );
+      plan.expand( position2D );
+
+      emit planChanged( plan );
     }
 
     if( abPolyline.size() > 2 ) {
-      aPointEntity->setEnabled( false );
-      bPointEntity->setEnabled( false );
-
-      qDebug() << "pointsEntity->children().size()" << pointsEntity->children().size();
-
-      for( const auto& child : qAsConst( pointsEntity->children() ) ) {
-        if( auto childPtr = qobject_cast<Qt3DCore::QEntity*>( child ) ) {
-          childPtr->setEnabled( false );
-          childPtr->deleteLater();
-        }
-      }
-
-      for( const auto& point : abPolyline ) {
-        auto entity = new Qt3DCore::QEntity( pointsEntity );
-
-        auto transform = new Qt3DCore::QTransform( entity );
-        transform->setTranslation( convertPoint2ToQVector3D( point ) );
-
-        entity->addComponent( pointsMaterial );
-        entity->addComponent( pointsMesh );
-        entity->addComponent( transform );
-      }
-
-      pointsEntity->setEnabled( true );
-
-      plan.resetPlanWith( make_shared<PathPrimitiveSequence>(
-                            abPolyline,
-                            std::sqrt( implementSegment.squared_length() ),
-                            true,
-                            0 ) );
+      emit requestPolylineSimplification( &abPolyline, 0.1, true );
     }
-
-    plan.expand( position2D );
-
-    emit planChanged( plan );
   }
 }
 

@@ -40,10 +40,10 @@ class PathPrimitiveLine : public PathPrimitive {
     }
 
   public:
-    virtual double distanceToPointSquared( const Point_2& point ) override;
-    virtual bool isOn( const Point_2& ) override;
-    virtual bool leftOf( const Point_2& point ) override;
-    virtual double angleAtPointDegrees( const Point_2& ) override;
+    virtual double distanceToPointSquared( const Point_2 point ) override;
+    virtual bool isOn( const Point_2 ) override;
+    virtual bool leftOf( const Point_2 point ) override;
+    virtual double angleAtPointDegrees( const Point_2 ) override;
 
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
     virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
@@ -53,7 +53,7 @@ class PathPrimitiveLine : public PathPrimitive {
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left, bool reverse ) override;
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveLine: " << line << std::endl;

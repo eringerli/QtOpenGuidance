@@ -94,7 +94,7 @@ SOURCES += \
     src/gui/SettingsDialog.cpp \
     src/gui/StringBlockModel.cpp \
     src/gui/VectorBlockModel.cpp
-    
+
 HEADERS += \
     src/3d/ArrowTexture.h \
     src/3d/BufferMesh.h \
