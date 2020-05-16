@@ -40,7 +40,7 @@ class SprayerModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit SprayerModel( Qt3DCore::QEntity* rootEntity );
+    explicit SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
     ~SprayerModel();
 
   public slots:
@@ -71,23 +71,24 @@ class SprayerModel : public BlockBase {
 
     float m_height = 1.0;
     const QColor sprayColor = QColor( qRgb( 0x23, 0xff, 0xed ) /*Qt::lightGray*/ );
-
+    bool usePBR = true;
 };
 
 class SprayerModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    SprayerModelFactory( Qt3DCore::QEntity* rootEntity )
+    SprayerModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR )
       : BlockFactory(),
-        rootEntity( rootEntity ) {}
+        rootEntity( rootEntity ),
+        usePBR( usePBR ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Sprayer Model" );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new SprayerModel( rootEntity );
+      auto* obj = new SprayerModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
@@ -102,4 +103,5 @@ class SprayerModelFactory : public BlockFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    bool usePBR = true;
 };

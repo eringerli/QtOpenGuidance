@@ -39,7 +39,7 @@ class TractorModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit TractorModel( Qt3DCore::QEntity* rootEntity );
+    explicit TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
     ~TractorModel();
 
   public slots:
@@ -95,16 +95,17 @@ class TractorModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    TractorModelFactory( Qt3DCore::QEntity* rootEntity )
+    TractorModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR )
       : BlockFactory(),
-        rootEntity( rootEntity ) {}
+        rootEntity( rootEntity ),
+        usePBR( usePBR ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Tractor Model" );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new TractorModel( rootEntity );
+      auto* obj = new TractorModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );
@@ -124,4 +125,5 @@ class TractorModelFactory : public BlockFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    bool usePBR = true;
 };

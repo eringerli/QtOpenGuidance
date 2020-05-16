@@ -21,18 +21,23 @@
 #include <QtCore/QDebug>
 #include <QtMath>
 #include <QElapsedTimer>
+
 #include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+
 #include <Qt3DExtras/QConeMesh>
 
 #include "../3d/BufferMesh.h"
 
 
-SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity ) {
+SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
 
   // add an entry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
+
+  this->usePBR = usePBR;
 }
 
 SprayerModel::~SprayerModel() {
@@ -148,21 +153,32 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
         boomMesh->setSlices( 20.0f );
         boomMeshes.push_back( boomMesh );
 
+        const QColor colorForceOn = QColor( Qt::green );
+        const QColor colorForceOff = QColor( Qt::red );
+        const QColor colorOn = QColor( Qt::darkGreen );
+        const QColor colorOff = QColor( Qt::darkRed );
+
         constexpr float boomMetalness = 0.1f;
         constexpr float boomRoughness = 0.5f;
 
         {
           auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
-          materialBoom->setBaseColor( QColor( Qt::red ) );
-          materialBoom->setMetalness( boomMetalness );
-          materialBoom->setRoughness( boomRoughness );
+          if( usePBR ) {
+            auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+            materialBoom->setBaseColor( colorForceOff );
+            materialBoom->setMetalness( boomMetalness );
+            materialBoom->setRoughness( boomRoughness );
+            boomEntity->addComponent( materialBoom );
+          } else {
+            auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( boomEntity );
+            material->setDiffuse( colorForceOff );
+            boomEntity->addComponent( material );
+          }
 
           auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
 
           boomEntity->addComponent( boomMesh );
-          boomEntity->addComponent( materialBoom );
           boomEntity->addComponent( boomTransform );
 
           forcedOffBoomEntities.push_back( boomEntity );
@@ -170,15 +186,21 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
         {
           auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
-          materialBoom->setBaseColor( QColor( Qt::green ) );
-          materialBoom->setMetalness( boomMetalness );
-          materialBoom->setRoughness( boomRoughness );
+          if( usePBR ) {
+            auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+            materialBoom->setBaseColor( colorForceOn );
+            materialBoom->setMetalness( boomMetalness );
+            materialBoom->setRoughness( boomRoughness );
+            boomEntity->addComponent( materialBoom );
+          } else {
+            auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( boomEntity );
+            material->setDiffuse( colorForceOn );
+            boomEntity->addComponent( material );
+          }
 
           auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
 
           boomEntity->addComponent( boomMesh );
-          boomEntity->addComponent( materialBoom );
           boomEntity->addComponent( boomTransform );
 
           forcedOnBoomEntities.push_back( boomEntity );
@@ -186,15 +208,21 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
         {
           auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
-          materialBoom->setBaseColor( QColor( Qt::darkGreen ) );
-          materialBoom->setMetalness( boomMetalness );
-          materialBoom->setRoughness( boomRoughness );
+          if( usePBR ) {
+            auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+            materialBoom->setBaseColor( colorOn );
+            materialBoom->setMetalness( boomMetalness );
+            materialBoom->setRoughness( boomRoughness );
+            boomEntity->addComponent( materialBoom );
+          } else {
+            auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( boomEntity );
+            material->setDiffuse( colorOn );
+            boomEntity->addComponent( material );
+          }
 
           auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
 
           boomEntity->addComponent( boomMesh );
-          boomEntity->addComponent( materialBoom );
           boomEntity->addComponent( boomTransform );
 
           onBoomEntities.push_back( boomEntity );
@@ -202,15 +230,21 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
         {
           auto boomEntity = new Qt3DCore::QEntity( boomRootEntity );
 
-          auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
-          materialBoom->setBaseColor( QColor( Qt::darkRed ) );
-          materialBoom->setMetalness( boomMetalness );
-          materialBoom->setRoughness( boomRoughness );
+          if( usePBR ) {
+            auto materialBoom = new Qt3DExtras::QMetalRoughMaterial( boomEntity );
+            materialBoom->setBaseColor( colorOff );
+            materialBoom->setMetalness( boomMetalness );
+            materialBoom->setRoughness( boomRoughness );
+            boomEntity->addComponent( materialBoom );
+          } else {
+            auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( boomEntity );
+            material->setDiffuse( colorOff );
+            boomEntity->addComponent( material );
+          }
 
           auto boomTransform = new Qt3DCore::QTransform( boomRootEntity );
 
           boomEntity->addComponent( boomMesh );
-          boomEntity->addComponent( materialBoom );
           boomEntity->addComponent( boomTransform );
 
           offBoomEntities.push_back( boomEntity );
@@ -231,15 +265,21 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
           auto* sprayTransform = new Qt3DCore::QTransform( sprayEntity );
           sprayTransform->setRotationX( 90 );
 
-          auto sprayMaterial = new Qt3DExtras::QMetalRoughMaterial( sprayEntity );
 
-          sprayMaterial->setBaseColor( sprayColor );
-          sprayMaterial->setMetalness( 0.0f );
-          sprayMaterial->setRoughness( 0.5f );
+          if( usePBR ) {
+            auto sprayMaterial = new Qt3DExtras::QMetalRoughMaterial( sprayEntity );
+            sprayMaterial->setBaseColor( sprayColor );
+            sprayMaterial->setMetalness( 0.0f );
+            sprayMaterial->setRoughness( 0.5f );
+            sprayEntity->addComponent( sprayMaterial );
+          } else {
+            auto* sprayMaterial = new Qt3DExtras::QDiffuseSpecularMaterial( sprayEntity );
+            sprayMaterial->setDiffuse( sprayColor );
+            sprayEntity->addComponent( sprayMaterial );
+          }
 
           sprayEntity->addComponent( sprayMesh );
           sprayEntity->addComponent( sprayTransform );
-          sprayEntity->addComponent( sprayMaterial );
 
           sprayEntities.push_back( sprayEntity );
           sprayTransforms.push_back( sprayTransform );

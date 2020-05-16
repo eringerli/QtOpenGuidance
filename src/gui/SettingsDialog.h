@@ -52,12 +52,15 @@ namespace Ui {
 }
 
 class MyMainWindow;
+namespace Qt3DExtras {
+  class Qt3DWindow;
+}
 
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* guidanceToolbarMenu, QWidget* parent = nullptr );
+    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent = nullptr );
     ~SettingsDialog();
 
     QGraphicsScene* getSceneOfConfigGraphicsView();
@@ -180,6 +183,10 @@ class SettingsDialog : public QDialog {
     void on_pbSaveDockPositionsAsDefault_clicked();
     void on_pbSaveDockPositions_clicked();
     void on_pbLoadDockPositions_clicked();
+
+    void on_rbMaterialAuto_clicked();
+    void on_rbMaterialPRB_clicked();
+    void on_rbMaterialPhong_clicked();
 
   private:
     void saveGridValuesInSettings();

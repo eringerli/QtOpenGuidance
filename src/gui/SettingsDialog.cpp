@@ -40,6 +40,7 @@
 #include "ui_SettingsDialog.h"
 
 #include "MyMainWindow.h"
+#include <Qt3DExtras/Qt3DWindow>
 
 #include "../block/VectorObject.h"
 #include "../block/NumberObject.h"
@@ -97,7 +98,10 @@
 
 #include "../cgalKernel.h"
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
+#include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
   QDialog( parent ),
   mainWindow( mainWindow ),
   ui( new Ui::SettingsDialog ) {
@@ -171,7 +175,26 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
       ui->sbGlobalPlannerMaxDeviation->setValue( settings.value( QStringLiteral( "PathPlanner/MaxDeviation" ), 0.1 ).toDouble() );
     }
 
+    // material
+    {
+      bool usePBR = settings.value( QStringLiteral( "Material/usePBR" ), true ).toBool();
+      bool usePhong = settings.value( QStringLiteral( "Material/usePhong" ), true ).toBool();
+
+      if( usePBR && usePhong ) {
+        ui->rbMaterialAuto->setChecked( true );
+      } else {
+        ui->rbMaterialPRB->setChecked( usePBR );
+        ui->rbMaterialPhong->setChecked( usePhong );
+      }
+    }
+
     blockSettingsSaving = false;
+  }
+
+  bool usePBR = true;
+
+  if( qt3dWindow->format().majorVersion() <= 2 || ui->rbMaterialPhong->isChecked() ) {
+    usePBR = false;
   }
 
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
@@ -316,9 +339,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( geographicConvertionWrapperGuidance );
   poseSynchroniserFactory = new PoseSynchroniserFactory();
-  trailerModelFactory = new TrailerModelFactory( rootEntity );
-  tractorModelFactory = new TractorModelFactory( rootEntity );
-  sprayerModelFactory = new SprayerModelFactory( rootEntity );
+  trailerModelFactory = new TrailerModelFactory( rootEntity, usePBR );
+  tractorModelFactory = new TractorModelFactory( rootEntity, usePBR );
+  sprayerModelFactory = new SprayerModelFactory( rootEntity, usePBR );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
@@ -396,6 +419,84 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
 
   this->on_pbBaudrateRefresh_clicked();
   this->on_pbComPortRefresh_clicked();
+
+  // draw an axis-cross: X-red, Y-green, Z-blue
+  if( true ) {
+    constexpr float metalness = 0.1f;
+    constexpr float roughness = 0.5f;
+
+    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
+    auto* yAxis = new Qt3DCore::QEntity( rootEntity );
+    auto* zAxis = new Qt3DCore::QEntity( rootEntity );
+
+    auto* cylinderMesh = new Qt3DExtras::QCylinderMesh( xAxis );
+    cylinderMesh->setRadius( 0.2f );
+    cylinderMesh->setLength( 10.0f );
+    cylinderMesh->setRings( 10.0f );
+    cylinderMesh->setSlices( 10.0f );
+
+    {
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( xAxis );
+        material->setBaseColor( QColor( Qt::blue ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        xAxis->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( xAxis );
+        material->setDiffuse( QColor( Qt::blue ) );
+        xAxis->addComponent( material );
+      }
+
+      auto* xTransform = new Qt3DCore::QTransform( xAxis );
+      xTransform->setTranslation( QVector3D( cylinderMesh->length() / 2, 0, 0 ) );
+      xTransform->setRotationZ( 90 );
+
+      xAxis->addComponent( cylinderMesh );
+      xAxis->addComponent( xTransform );
+    }
+
+    {
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( yAxis );
+        material->setBaseColor( QColor( Qt::red ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        yAxis->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( yAxis );
+        material->setDiffuse( QColor( Qt::red ) );
+        yAxis->addComponent( material );
+      }
+
+      auto* yTransform = new Qt3DCore::QTransform( yAxis );
+      yTransform->setTranslation( QVector3D( 0, cylinderMesh->length() / 2, 0 ) );
+
+      yAxis->addComponent( cylinderMesh );
+      yAxis->addComponent( yTransform );
+    }
+
+    {
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( zAxis );
+        material->setBaseColor( QColor( Qt::green ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        zAxis->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( zAxis );
+        material->setDiffuse( QColor( Qt::green ) );
+        zAxis->addComponent( material );
+      }
+
+      auto* zTransform = new Qt3DCore::QTransform( zAxis );
+      zTransform->setTranslation( QVector3D( 0, 0, cylinderMesh->length() / 2 ) );
+      zTransform->setRotationX( 90 );
+
+      zAxis->addComponent( cylinderMesh );
+      zAxis->addComponent( zTransform );
+    }
+  }
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -1651,4 +1752,31 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
 void SettingsDialog::on_sbGlobalPlannerMaxDeviation_valueChanged( double ) {
   savePathPlannerValuesInSettings();
   emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
+}
+
+void SettingsDialog::on_rbMaterialAuto_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( QStringLiteral( "Material/usePBR" ), true );
+  settings.setValue( QStringLiteral( "Material/usePhong" ), true );
+  settings.sync();
+}
+
+void SettingsDialog::on_rbMaterialPRB_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( QStringLiteral( "Material/usePBR" ), true );
+  settings.setValue( QStringLiteral( "Material/usePhong" ), false );
+  settings.sync();
+}
+
+void SettingsDialog::on_rbMaterialPhong_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( QStringLiteral( "Material/usePBR" ), false );
+  settings.setValue( QStringLiteral( "Material/usePhong" ), true );
+  settings.sync();
 }

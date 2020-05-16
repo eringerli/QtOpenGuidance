@@ -22,14 +22,20 @@
 #include <QtMath>
 
 #include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
 
 
-TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
+TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
+  qDebug() << "TractorModel::TractorModel" << rootEntity << usePBR;
+
 
   // add an etry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
+
+  const QColor colorBody = QColor( QRgb( 0x665423 ) );
+  const QColor colorWheels = usePBR ? QColor( QRgb( 0x668823 ) ) : QColor( QRgb( 0x475f18 ) );
 
   constexpr float metalness = 0.1f;
   constexpr float roughness = 0.5f;
@@ -41,13 +47,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
     m_baseMesh = new Qt3DExtras::QCuboidMesh( m_baseEntity );
     m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_baseEntity );
-    material->setBaseColor( QColor( QRgb( 0x665423 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_baseEntity );
+      material->setBaseColor( colorBody );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_baseEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_baseEntity );
+      material->setDiffuse( colorBody );
+      m_baseEntity->addComponent( material );
+    }
 
     m_baseEntity->addComponent( m_baseMesh );
-    m_baseEntity->addComponent( material );
     m_baseEntity->addComponent( m_baseTransform );
   }
 
@@ -61,13 +73,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_wheelFrontLeftTransform = new Qt3DCore::QTransform( m_wheelFrontLeftEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelFrontLeftEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelFrontLeftEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelFrontLeftEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelFrontLeftEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelFrontLeftEntity->addComponent( material );
+    }
 
     m_wheelFrontLeftEntity->addComponent( m_wheelFrontMesh );
-    m_wheelFrontLeftEntity->addComponent( material );
     m_wheelFrontLeftEntity->addComponent( m_wheelFrontLeftTransform );
   }
 
@@ -77,13 +95,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_wheelFrontRightTransform = new Qt3DCore::QTransform( m_wheelFrontRightEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelFrontRightEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelFrontRightEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelFrontRightEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelFrontRightEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelFrontRightEntity->addComponent( material );
+    }
 
     m_wheelFrontRightEntity->addComponent( m_wheelFrontMesh );
-    m_wheelFrontRightEntity->addComponent( material );
     m_wheelFrontRightEntity->addComponent( m_wheelFrontRightTransform );
   }
 
@@ -97,13 +121,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_wheelBackLeftTransform = new Qt3DCore::QTransform( m_wheelBackLeftEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelBackLeftEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelBackLeftEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelBackLeftEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelBackLeftEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelBackLeftEntity->addComponent( material );
+    }
 
     m_wheelBackLeftEntity->addComponent( m_wheelBackMesh );
-    m_wheelBackLeftEntity->addComponent( material );
     m_wheelBackLeftEntity->addComponent( m_wheelBackLeftTransform );
   }
 
@@ -113,13 +143,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_wheelBackRightTransform = new Qt3DCore::QTransform( m_wheelBackRightEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelBackRightEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelBackRightEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelBackRightEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelBackRightEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelBackRightEntity->addComponent( material );
+    }
 
     m_wheelBackRightEntity->addComponent( m_wheelBackMesh );
-    m_wheelBackRightEntity->addComponent( material );
     m_wheelBackRightEntity->addComponent( m_wheelBackRightTransform );
   }
 
@@ -139,13 +175,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_towHookTransform = new Qt3DCore::QTransform( m_towHookEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towHookEntity );
-      material->setBaseColor( QColor( Qt::darkRed ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towHookEntity );
+        material->setBaseColor( QColor( Qt::darkRed ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_towHookEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_towHookEntity );
+        material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
+        m_towHookEntity->addComponent( material );
+      }
 
       m_towHookEntity->addComponent( m_towHookMesh );
-      m_towHookEntity->addComponent( material );
       m_towHookEntity->addComponent( m_towHookTransform );
     }
 
@@ -160,13 +202,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_pivotPointTransform = new Qt3DCore::QTransform( m_pivotPointEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_pivotPointEntity );
-      material->setBaseColor( QColor( Qt::darkGreen ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_pivotPointEntity );
+        material->setBaseColor( QColor( Qt::darkGreen ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_pivotPointEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_pivotPointEntity );
+        material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
+        m_pivotPointEntity->addComponent( material );
+      }
 
       m_pivotPointEntity->addComponent( m_pivotPointMesh );
-      m_pivotPointEntity->addComponent( material );
       m_pivotPointEntity->addComponent( m_pivotPointTransform );
     }
 
@@ -181,13 +229,19 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_towPointTransform = new Qt3DCore::QTransform( m_towPointEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towPointEntity );
-      material->setBaseColor( QColor( Qt::darkBlue ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towPointEntity );
+        material->setBaseColor( QColor( Qt::darkBlue ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_towPointEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_towPointEntity );
+        material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
+        m_towPointEntity->addComponent( material );
+      }
 
       m_towPointEntity->addComponent( m_towPointMesh );
-      m_towPointEntity->addComponent( material );
       m_towPointEntity->addComponent( m_towPointTransform );
     }
   }

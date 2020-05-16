@@ -156,11 +156,12 @@ int main( int argc, char** argv ) {
 
   auto* view = new Qt3DExtras::Qt3DWindow();
 
+  qDebug()<<"OpenGL: " << view->format().majorVersion() << view->format().minorVersion();
+
   qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
 
   qRegisterMetaType<Plan>();
   qRegisterMetaType<PlanGlobal>();
-
 
   QWidget* container = QWidget::createWindowContainer( view );
 //  QSize screenSize = view->screen()->size();
@@ -212,7 +213,7 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
 
   // Create setting Window
-  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, guidanceToolbar->menu, widget );
+  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, view, guidanceToolbar->menu, widget );
 
 //  auto* input = new Qt3DInput::QInputAspect;
 //  view->registerAspect( input );
@@ -228,57 +229,6 @@ int main( int argc, char** argv ) {
   cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
   cameraEntity->rollAboutViewCenter( -90 );
   cameraEntity->tiltAboutViewCenter( -45 );
-
-  // draw an axis-cross: X-red, Y-green, Z-blue
-  if( true ) {
-    constexpr float metalness = 0.1f;
-    constexpr float roughness = 0.5f;
-
-    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
-    auto* yAxis = new Qt3DCore::QEntity( rootEntity );
-    auto* zAxis = new Qt3DCore::QEntity( rootEntity );
-
-    auto* cylinderMesh = new Qt3DExtras::QCylinderMesh( xAxis );
-    cylinderMesh->setRadius( 0.2f );
-    cylinderMesh->setLength( 10.0f );
-    cylinderMesh->setRings( 10.0f );
-    cylinderMesh->setSlices( 10.0f );
-
-    auto* blueMaterial = new Qt3DExtras::QMetalRoughMaterial( xAxis );
-    blueMaterial->setBaseColor( QColor( Qt::blue ) );
-    blueMaterial->setMetalness( metalness );
-    blueMaterial->setRoughness( roughness );
-    auto* redMaterial = new Qt3DExtras::QMetalRoughMaterial( yAxis );
-    redMaterial->setBaseColor( QColor( Qt::red ) );
-    redMaterial->setMetalness( metalness );
-    redMaterial->setRoughness( roughness );
-    auto* greenMaterial = new Qt3DExtras::QMetalRoughMaterial( zAxis );
-    greenMaterial->setBaseColor( QColor( Qt::green ) );
-    greenMaterial->setMetalness( metalness );
-    greenMaterial->setRoughness( roughness );
-
-    auto* xTransform = new Qt3DCore::QTransform( xAxis );
-    xTransform->setTranslation( QVector3D( cylinderMesh->length() / 2, 0, 0 ) );
-    xTransform->setRotationZ( 90 );
-//    xTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), 90 ) );
-    auto* yTransform = new Qt3DCore::QTransform( yAxis );
-    yTransform->setTranslation( QVector3D( 0, cylinderMesh->length() / 2, 0 ) );
-    auto* zTransform = new Qt3DCore::QTransform( zAxis );
-    zTransform->setTranslation( QVector3D( 0, 0, cylinderMesh->length() / 2 ) );
-    zTransform->setRotationX( 90 );
-
-//    zTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 1, 0, 0 ), 90 ) );
-
-    xAxis->addComponent( cylinderMesh );
-    xAxis->addComponent( redMaterial );
-    xAxis->addComponent( xTransform );
-    yAxis->addComponent( cylinderMesh );
-    yAxis->addComponent( greenMaterial );
-    yAxis->addComponent( yTransform );
-    zAxis->addComponent( cylinderMesh );
-    zAxis->addComponent( blueMaterial );
-    zAxis->addComponent( zTransform );
-  }
 
   // Set root object of the scene
   view->setRootEntity( rootEntity );

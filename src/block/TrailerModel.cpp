@@ -22,15 +22,17 @@
 #include <QtMath>
 
 #include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
 
-
-TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
+TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
 
   // add an etry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
+  const QColor colorBody = QColor( QRgb( 0x665423 ) );
+  const QColor colorWheels = usePBR ? QColor( QRgb( 0x668823 ) ) : QColor( QRgb( 0x475f18 ) );
   constexpr float metalness = 0.1f;
   constexpr float roughness = 0.5f;
 
@@ -43,13 +45,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
     m_wheelMesh->setSlices( 50 );
     m_wheelLeftTransform = new Qt3DCore::QTransform( m_wheelLeftEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelLeftEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelLeftEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelLeftEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelLeftEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelLeftEntity->addComponent( material );
+    }
 
     m_wheelLeftEntity->addComponent( m_wheelMesh );
-    m_wheelLeftEntity->addComponent( material );
     m_wheelLeftEntity->addComponent( m_wheelLeftTransform );
   }
 
@@ -59,13 +67,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_wheelRightTransform = new Qt3DCore::QTransform( m_wheelRightEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelRightEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_wheelRightEntity );
+      material->setBaseColor( colorWheels );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_wheelRightEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_wheelRightEntity );
+      material->setDiffuse( colorWheels );
+      m_wheelRightEntity->addComponent( material );
+    }
 
     m_wheelRightEntity->addComponent( m_wheelMesh );
-    m_wheelRightEntity->addComponent( material );
     m_wheelRightEntity->addComponent( m_wheelRightTransform );
   }
 
@@ -82,13 +96,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
         QVector3D( 0.0f, 0.0f, 1.0f ),
         90 ) );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_hitchEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_hitchEntity );
+      material->setBaseColor( colorBody );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_hitchEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_hitchEntity );
+      material->setDiffuse( colorBody );
+      m_hitchEntity->addComponent( material );
+    }
 
     m_hitchEntity->addComponent( m_hitchMesh );
-    m_hitchEntity->addComponent( material );
     m_hitchEntity->addComponent( m_hitchTransform );
   }
 
@@ -101,13 +121,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
     m_axleTransform = new Qt3DCore::QTransform( m_axleEntity );
 
-    auto* material = new Qt3DExtras::QMetalRoughMaterial( m_axleEntity );
-    material->setBaseColor( QColor( QRgb( 0x668823 ) ) );
-    material->setMetalness( metalness );
-    material->setRoughness( roughness );
+    if( usePBR ) {
+      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_axleEntity );
+      material->setBaseColor( colorBody );
+      material->setMetalness( metalness );
+      material->setRoughness( roughness );
+      m_axleEntity->addComponent( material );
+    } else {
+      auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_axleEntity );
+      material->setDiffuse( colorBody );
+      m_axleEntity->addComponent( material );
+    }
 
     m_axleEntity->addComponent( m_axleMesh );
-    m_axleEntity->addComponent( material );
     m_axleEntity->addComponent( m_axleTransform );
   }
 
@@ -127,13 +153,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_towHookTransform = new Qt3DCore::QTransform( m_towHookEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towHookEntity );
-      material->setBaseColor( QColor( Qt::darkRed ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towHookEntity );
+        material->setBaseColor( QColor( Qt::darkRed ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_towHookEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_towHookEntity );
+        material->setDiffuse( QColor( QRgb( 0xaa3333 ) ) );
+        m_towHookEntity->addComponent( material );
+      }
 
       m_towHookEntity->addComponent( m_towHookMesh );
-      m_towHookEntity->addComponent( material );
       m_towHookEntity->addComponent( m_towHookTransform );
     }
 
@@ -148,13 +180,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_pivotPointTransform = new Qt3DCore::QTransform( m_pivotPointEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_pivotPointEntity );
-      material->setBaseColor( QColor( Qt::darkGreen ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_pivotPointEntity );
+        material->setBaseColor( QColor( Qt::darkGreen ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_pivotPointEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_pivotPointEntity );
+        material->setDiffuse( QColor( QRgb( 0x33aa33 ) ) );
+        m_pivotPointEntity->addComponent( material );
+      }
 
       m_pivotPointEntity->addComponent( m_pivotPointMesh );
-      m_pivotPointEntity->addComponent( material );
       m_pivotPointEntity->addComponent( m_pivotPointTransform );
     }
 
@@ -169,13 +207,19 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity ) {
 
       m_towPointTransform = new Qt3DCore::QTransform( m_towPointEntity );
 
-      auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towPointEntity );
-      material->setBaseColor( QColor( Qt::darkBlue ) );
-      material->setMetalness( metalness );
-      material->setRoughness( roughness );
+      if( usePBR ) {
+        auto* material = new Qt3DExtras::QMetalRoughMaterial( m_towPointEntity );
+        material->setBaseColor( QColor( Qt::darkBlue ) );
+        material->setMetalness( metalness );
+        material->setRoughness( roughness );
+        m_towPointEntity->addComponent( material );
+      } else {
+        auto* material = new Qt3DExtras::QDiffuseSpecularMaterial( m_towPointEntity );
+        material->setDiffuse( QColor( QRgb( 0x3333aa ) ) );
+        m_towPointEntity->addComponent( material );
+      }
 
       m_towPointEntity->addComponent( m_towPointMesh );
-      m_towPointEntity->addComponent( material );
       m_towPointEntity->addComponent( m_towPointTransform );
     }
   }

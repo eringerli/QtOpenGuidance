@@ -971,6 +971,75 @@
            <property name="currentIndex">
             <number>0</number>
            </property>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>General</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <item>
+              <widget class="QGroupBox" name="groupBox_3">
+               <property name="title">
+                <string>Material  (restart required after changing)</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <item>
+                 <widget class="QRadioButton" name="rbMaterialAuto">
+                  <property name="text">
+                   <string>Auto (use best avaible)</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="rbMaterialPRB">
+                  <property name="text">
+                   <string>Physics Based Rendering (needs OpenGL 3)</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="rbMaterialPhong">
+                  <property name="text">
+                   <string>Basic Phong (needs OpenGL 2)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_6">
+                  <property name="text">
+                   <string>Choose a material to render the objects in the 3D-view. If there is not everything visible, most likely your GPU doesn't support OpenGL 3. This is the case if you use an SBC like the Raspberry Pi.</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
            <widget class="QWidget" name="gbGridPage1">
             <attribute name="title">
              <string>Grid</string>

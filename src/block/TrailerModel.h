@@ -39,7 +39,7 @@ class TrailerModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit TrailerModel( Qt3DCore::QEntity* rootEntity );
+    explicit TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
     ~TrailerModel();
 
   public slots:
@@ -92,16 +92,17 @@ class TrailerModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    TrailerModelFactory( Qt3DCore::QEntity* rootEntity )
+    TrailerModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR )
       : BlockFactory(),
-        rootEntity( rootEntity ) {}
+        rootEntity( rootEntity ),
+        usePBR( usePBR ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Trailer Model" );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new TrailerModel( rootEntity );
+      auto* obj = new TrailerModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( double ) ) ) );
@@ -117,4 +118,5 @@ class TrailerModelFactory : public BlockFactory {
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;
+    bool usePBR = true;
 };
