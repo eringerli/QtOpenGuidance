@@ -41,14 +41,6 @@ class PathPrimitiveSequence
     void updateWithPolyline( const std::vector<Point_2>& polyline );
 
   public:
-//    bool operator==( PathPrimitiveSequence& b ) {
-//      return segment == b.segment;
-//    }
-//    bool operator==( const PathPrimitiveSequence& b ) const {
-//      return segment == b.segment;
-//    }
-
-  public:
     virtual double distanceToPointSquared( const Point_2 point ) override;
     virtual bool isOn( const Point_2 ) override;
     virtual bool leftOf( const Point_2 point ) override;
@@ -68,6 +60,8 @@ class PathPrimitiveSequence
       std::cout << "PathPrimitiveSequence: " << std::endl;
     }
 
+    const std::shared_ptr<PathPrimitive>& findSequencePrimitive( Point_2 point ) const;
+
   public:
     std::vector<Point_2> polyline;
     std::vector<std::shared_ptr<PathPrimitive>> sequence;
@@ -76,7 +70,6 @@ class PathPrimitiveSequence
     std::vector<Line_2> bisectors;
 
   private:
-    std::shared_ptr<PathPrimitive>& findSequencePrimitive( Point_2 point );
     void orderBisectors( std::vector<Line_2>& bisectorsToOrder, const std::vector<std::shared_ptr<PathPrimitive>>& primitives );
     void createBisectors( std::back_insert_iterator<std::vector<Line_2>> bisectorsOutputIterator, const std::vector<std::shared_ptr<PathPrimitive>>& primitives );
 };

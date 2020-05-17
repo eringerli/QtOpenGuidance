@@ -38,7 +38,7 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
     if( !turningLeft && !turningRight ) {
       if( !globalPlan.plan->empty() ) {
 
-        // local planner for lines: find the nearest line and put it into the local plan
+        // local planner for lines: find the nearest primitive and put it into the local plan
         double distanceSquared = qInf();
         auto nearestPrimitive = globalPlan.getNearestPrimitive( position2D, distanceSquared );
         double distanceNearestPrimitive = std::sqrt( distanceSquared );
@@ -68,21 +68,23 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
         }
       }
     } else {
-      if( std::distance( lastSegmentOfTurn, targetSegmentOfTurn ) < 3 && ( *targetSegmentOfTurn )->isOn( position2D ) ) {
-        turningLeft = false;
-        turningRight = false;
-        emit resetTurningStateOfDock();
+      if( !plan.plan->empty() ) {
+        double distanceSquared = qInf();
+        auto nearestPrimitive = plan.getNearestPrimitive( position2D, distanceSquared );
 
-        m_segmentsEntity->setEnabled( false );
+        if( nearestPrimitive == ( plan.plan->cend() - 1 ) ) {
+          turningLeft = false;
+          turningRight = false;
+          emit resetTurningStateOfDock();
 
-        setPose( position, orientation, options );
-      }
+          m_segmentsEntity->setEnabled( false );
 
-      {
-        double squaredDistance = 0;
-        lastSegmentOfTurn = plan.getNearestPrimitive( position2D, squaredDistance );
+          setPose( position, orientation, options );
+        }
       }
     }
+
+    showPlan();
   }
 }
 
@@ -152,99 +154,211 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
       searchUp = !searchUp;
     }
 
-    if( const auto line = ( *nearestPrimitive )->castToLine() ) {
+    // trigger the calculation of the plan
+    double angleOffsetRad = qDegreesToRadians( angleNearestPrimitiveDegrees );
+    auto offset = polarOffsetRad( angleOffsetRad - M_PI, ( *nearestPrimitive )->implementWidth * ( turningLeft ? leftSkip : rightSkip ) );
 
-      // trigger the calculation of the plan
-      double angleOffsetRad = qDegreesToRadians( angleNearestPrimitiveDegrees );
-      auto offset = polarOffsetRad( angleOffsetRad - M_PI, ( *nearestPrimitive )->implementWidth * ( turningLeft ? leftSkip : rightSkip ) );
+    if( turningRight ) {
+      offset = -offset;
+    }
 
-      if( turningRight ) {
-        offset = -offset;
-      }
+    if( reversedLine ) {
+      offset = -offset;
+    }
 
-      if( reversedLine ) {
-        offset = -offset;
-      }
+    emit triggerPlanPose( to3D( positionTurnStart + offset ), orientation, PoseOption::Options() );
 
-      emit triggerPlanPose( to3D( positionTurnStart + offset ), orientation, PoseOption::Options() );
+    nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
 
-      nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
+    auto perpendicularLine = ( *nearestPrimitive )->perpendicularAtPoint( positionTurnStart );
 
-      auto perpendicularLine = line->line.perpendicular( positionTurnStart );
+    Plan::ConstPrimitiveIterator targetLineIt = globalPlan.plan->cend();
 
-      Plan::ConstPrimitiveIterator targetLineIt = globalPlan.plan->cend();
+    if( turningLeft ) {
+      targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
+    } else {
+      targetLineIt = nearestPrimitive + ( searchUp ? rightSkip : -rightSkip );
+    }
 
-      if( turningLeft ) {
-        targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
-      } else {
-        targetLineIt = nearestPrimitive + ( searchUp ? rightSkip : -rightSkip );
-      }
+    if( targetLineIt != globalPlan.plan->cend() ) {
+      Point_2 resultingPoint;
 
-      if( targetLineIt != globalPlan.plan->cend() ) {
-        Point_2 resultingPoint;
+      if( ( *targetLineIt )->intersectWithLine( perpendicularLine, resultingPoint ) ) {
+        double headingAtTargetRad = qDegreesToRadians( ( *targetLineIt )->angleAtPointDegrees( resultingPoint ) ) + ( reversedLine ? M_PI : 0 );
 
-        if( ( *targetLineIt )->intersectWithLine( perpendicularLine, resultingPoint ) ) {
-          double headingAtTargetRad = qDegreesToRadians( ( *targetLineIt )->angleAtPointDegrees( resultingPoint ) ) + ( reversedLine ? M_PI : 0 );
+        DubinsPath dubinsPath;
+        double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( heading )};
+        double q1[] = {resultingPoint.x(), resultingPoint.y(), headingAtTargetRad - M_PI};
 
-//          std::cout << "LocalPlanner::turnLeftToggled position2D:" << position2D << ", resultingPoint:" << resultingPoint << ", angleNearestPrimitive:" << angleNearestPrimitiveDegrees << "headingAtTarget" << headingAtTargetRad << std::endl;
+        dubins_shortest_path( &dubinsPath, q0, q1, minRadius );
 
-          DubinsPath dubinsPath;
-          double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( heading )};
-          double q1[] = {resultingPoint.x(), resultingPoint.y(), headingAtTargetRad - M_PI};
+        std::vector<Point_2> polyline;
 
-          dubins_shortest_path( &dubinsPath, q0, q1, minRadius );
+        dubins_path_sample_many( &dubinsPath, 0.2, []( double q[3], double /*t*/, void* user_data ) -> int{
+          ( ( std::vector<Point_2>* )user_data )->push_back( Point_2( q[0], q[1] ) );
+          return 0;
+        },
+        ( void* )( &polyline ) );
 
-          std::vector<Point_2> polyline;
+        std::vector<Point_2> optimizedPolyline;
+        PS::Squared_distance_cost cost;
+        PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.008 ), std::back_inserter( optimizedPolyline ) );
 
-          dubins_path_sample_many( &dubinsPath, 0.2, []( double q[3], double /*t*/, void* user_data ) -> int{
-            ( ( std::vector<Point_2>* )user_data )->push_back( Point_2( q[0], q[1] ) );
-            return 0;
-          },
-          ( void* )( &polyline ) );
+        if( optimizedPolyline.size() ) {
+          plan.plan->clear();
+          auto lastPoint = optimizedPolyline.cbegin();
 
-          std::vector<Point_2> optimizedPolyline;
-          PS::Squared_distance_cost cost;
-          PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.008 ), std::back_inserter( optimizedPolyline ) );
-
-          if( optimizedPolyline.size() ) {
-            plan.plan->clear();
-            auto lastPoint = optimizedPolyline.cbegin();
-
-            for( auto point = optimizedPolyline.cbegin() + 1, end = optimizedPolyline.cend(); point != end; ++point ) {
-              plan.plan->push_back( std::make_shared<PathPrimitiveSegment>(
-                                      Segment_2( *lastPoint, *point ),
-                                      0, false, 0 ) );
-              lastPoint = point;
-            }
-
-            auto offset = polarOffsetRad( headingAtTargetRad - M_PI_2 - M_PI, 100 );
+          for( auto point = optimizedPolyline.cbegin() + 1, end = optimizedPolyline.cend(); point != end; ++point ) {
             plan.plan->push_back( std::make_shared<PathPrimitiveSegment>(
-                                    Segment_2( *lastPoint, ( *lastPoint ) - offset ),
+                                    Segment_2( *lastPoint, *point ),
                                     0, false, 0 ) );
+            lastPoint = point;
+          }
 
-            lastSegmentOfTurn = plan.plan->cbegin();
-            targetSegmentOfTurn = --plan.plan->cend();
+          Direction_2 direction;
 
-            {
-              QVector<QVector3D> positions;
+          if( reversedLine ) {
+            direction = ( *targetLineIt )->supportingLine().direction();
+          } else {
+            direction = ( *targetLineIt )->supportingLine().opposite().direction();
+          }
 
-              for( auto primitive : *plan.plan ) {
-                auto segment = primitive->castToSegment();
+          plan.plan->push_back( std::make_shared<PathPrimitiveRay>(
+                                  Ray_2( *lastPoint, direction ),
+                                  false,
+                                  0, false, 0 ) );
 
-                positions << QVector3D( float( segment->segment.source().x() ), float( segment->segment.source().y() ), 1 );
-                positions << QVector3D( float( segment->segment.target().x() ), float( segment->segment.target().y() ), 1 );
+          lastSegmentOfTurn = plan.plan->cbegin();
+          targetSegmentOfTurn = --plan.plan->cend();
+
+          plan.type = Plan::Type::Mixed;
+          emit planChanged( plan );
+        }
+      }
+    }
+  }
+}
+
+void LocalPlanner::showPlan() {
+  if( !plan.plan->empty() ) {
+    const Point_2 position2D = to2D( position );
+
+    constexpr double range = 10;
+    Iso_rectangle_2 viewBox( Bbox_2( position2D.x() - range, position2D.y() - range, position2D.x() + range, position2D.y() + range ) );
+
+    QVector<QVector3D> positions;
+    QVector<QVector3D> positions2;
+    QVector<QVector3D> positions3;
+
+    for( const auto& step : * ( plan.plan ) ) {
+      if( const auto* pathLine = step->castToLine() ) {
+        const auto& line = pathLine->line;
+
+        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+        result = intersection( viewBox, line );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+            positions << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+          }
+        }
+      }
+
+      if( const auto* pathSegment = step->castToSegment() ) {
+        const auto& segment = pathSegment->segment;
+
+        CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+        result = intersection( viewBox, segment );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+            positions << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+          }
+        }
+      }
+
+      if( const auto* pathRay = step->castToRay() ) {
+        const auto& ray = pathRay->ray;
+
+        CGAL::cpp11::result_of<Intersect_2( Ray_2, Iso_rectangle_2 )>::type
+        result = intersection( viewBox, ray );
+
+        if( result ) {
+          if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+            positions2 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+            positions2 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+          }
+        }
+      }
+
+      if( const auto* pathSequence = step->castToSequence() ) {
+        for( const auto& step : pathSequence->sequence ) {
+          if( const auto* pathLine = step->castToLine() ) {
+            const auto& line = pathLine->line;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, line );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+                positions << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
               }
-
-              m_segmentsMesh->bufferUpdate( positions );
-              m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-              m_segmentsEntity->setEnabled( true );
             }
+          }
 
-            plan.type = Plan::Type::Mixed;
-            emit planChanged( plan );
+          if( const auto* pathSegment = step->castToSegment() ) {
+            const auto& segment = pathSegment->segment;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, segment );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+                positions << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+              }
+            }
+          }
+
+          if( const auto* pathRay = step->castToRay() ) {
+            const auto& ray = pathRay->ray;
+
+            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+            result = intersection( viewBox, ray );
+
+            if( result ) {
+              if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+                positions2 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+                positions2 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+              }
+            }
+          }
+        }
+
+        // bisectors
+        for( const auto& line : pathSequence->bisectors ) {
+          CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
+          result = intersection( viewBox, line );
+
+          if( result ) {
+//            positions3.clear();
+            if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
+              positions3 << QVector3D( segment->source().x(), segment->source().y(), 0.2 );
+              positions3 << QVector3D( segment->target().x(), segment->target().y(), 0.2 );
+            }
           }
         }
       }
     }
+
+    m_segmentsMesh->bufferUpdate( positions );
+    m_segmentsEntity->setEnabled( true );
+    m_segmentsMesh2->bufferUpdate( positions2 );
+    m_segmentsEntity2->setEnabled( true );
+    m_segmentsMesh3->bufferUpdate( positions3 );
+    m_segmentsEntity3->setEnabled( true );
   }
 }

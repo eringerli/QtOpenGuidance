@@ -209,7 +209,7 @@ void PathPrimitiveSequence::orderBisectors( std::vector<Line_2>& bisectorsToOrde
   }
 }
 
-std::shared_ptr<PathPrimitive>& PathPrimitiveSequence::findSequencePrimitive( Point_2 point ) {
+const std::shared_ptr<PathPrimitive>& PathPrimitiveSequence::findSequencePrimitive( Point_2 point ) const {
   if( sequence.size() < 2 ) {
     return sequence.front();
   }
