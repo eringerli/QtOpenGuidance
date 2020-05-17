@@ -76,7 +76,7 @@ class StringFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( QString ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "gold" ) ) );
+      b->setBrush( valueColor );
 
       model->resetModel();
 

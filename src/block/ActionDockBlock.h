@@ -110,7 +110,7 @@ class ActionDockBlockFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( bool ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "DarkSalmon" ) ) );
+      b->setBrush( inputDockColor );
 
       return b;
     }

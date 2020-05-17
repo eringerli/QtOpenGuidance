@@ -138,7 +138,7 @@ class ValueDockBlockFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( double ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "lightsalmon" ) ) );
+      b->setBrush( dockColor );
 
       return b;
     }

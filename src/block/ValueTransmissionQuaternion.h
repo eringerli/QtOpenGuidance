@@ -87,7 +87,7 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const QQuaternion ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 
-      b->setBrush( QColor( QStringLiteral( "lightblue" ) ) );
+      b->setBrush( converterColor );
 
       return b;
     }

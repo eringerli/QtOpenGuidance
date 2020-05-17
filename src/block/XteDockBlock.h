@@ -99,7 +99,7 @@ class XteDockBlockFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "lightsalmon" ) ) );
+      b->setBrush( dockColor );
 
       return b;
     }

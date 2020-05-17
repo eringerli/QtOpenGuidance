@@ -239,7 +239,7 @@ class UbxParserFactory : public BlockFactory {
       b->addOutputPort( QStringLiteral( "Horizontal Accuracy" ), QLatin1String( SIGNAL( horizontalAccuracyChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Vertical Accuracy" ), QLatin1String( SIGNAL( verticalAccuracyChanged( const double ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "mediumaquamarine" ) ) );
+      b->setBrush( parserColor );
 
       return b;
     }

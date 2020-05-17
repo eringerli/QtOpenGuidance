@@ -94,4 +94,13 @@ class BlockFactory : public QObject {
 
       return true;
     }
+
+  protected:
+    const QColor modelColor = QColor( QStringLiteral( "moccasin" ) );
+    const QColor dockColor = QColor( QStringLiteral( "DarkSalmon" ) );
+    const QColor inputDockColor = QColor( QStringLiteral( "lightsalmon" ) );
+    const QColor parserColor = QColor( QStringLiteral( "mediumaquamarine" ) );
+    const QColor valueColor = QColor( QStringLiteral( "gold" ) );
+    const QColor inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
+    const QColor converterColor = QColor( QStringLiteral( "lightblue" ) );
 };

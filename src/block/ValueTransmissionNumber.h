@@ -78,7 +78,7 @@ class ValueTransmissionNumberFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( const double ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 
-      b->setBrush( QColor( QStringLiteral( "lightblue" ) ) );
+      b->setBrush( converterColor );
 
       return b;
     }

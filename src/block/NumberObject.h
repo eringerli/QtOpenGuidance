@@ -76,7 +76,7 @@ class NumberFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "gold" ) ) );
+      b->setBrush( valueColor );
 
       model->resetModel();
 

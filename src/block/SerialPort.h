@@ -108,7 +108,7 @@ class SerialPortFactory : public BlockFactory {
 
       b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
-      b->setBrush( QColor( QStringLiteral( "cornflowerblue" ) ) );
+      b->setBrush( inputOutputColor );
 
       return b;
     }
