@@ -90,7 +90,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createReverse() {
   std::vector<std::shared_ptr<PathPrimitive>> sequenceNew;
   std::vector<Line_2> bisectorsNew;
 
-  for( auto it = sequence.crbegin(), end = sequence.crend(); it != end; ++it ) {
+  for( auto it = sequence.cbegin(), end = sequence.cend(); it != end; ++it ) {
     sequenceNew.push_back( ( *it )->createReverse() );
   }
 
