@@ -52,6 +52,7 @@ SOURCES += \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
     src/block/LocalPlanner.cpp \
+    src/block/PathPlannerModel.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
@@ -64,6 +65,7 @@ SOURCES += \
     src/gui/GlobalPlannerToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/NewOpenSaveToolbar.cpp \
+    src/gui/PathPlannerModelBlockModel.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SliderDock.cpp \
     src/gui/SliderDockBlockModel.cpp \
@@ -111,7 +113,6 @@ HEADERS += \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
     src/block/GlobalPlanner.h \
-    src/block/GlobalPlannerModel.h \
     src/block/GridModel.h \
     src/block/Implement.h \
     src/block/ImplementSection.h \
@@ -121,6 +122,7 @@ HEADERS += \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
     src/block/OrientationDockBlock.h \
+    src/block/PathPlannerModel.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
@@ -160,6 +162,7 @@ HEADERS += \
     src/gui/NewOpenSaveToolbar.h \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \
+    src/gui/PathPlannerModelBlockModel.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SliderDock.h \

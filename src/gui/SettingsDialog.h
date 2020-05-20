@@ -37,6 +37,7 @@
 #include "SliderDockBlockModel.h"
 #include "StringBlockModel.h"
 #include "ImplementBlockModel.h"
+#include "PathPlannerModelBlockModel.h"
 #include "ImplementSectionModel.h"
 #include "ValueBlockModel.h"
 #include "FontComboboxDelegate.h"
@@ -136,36 +137,15 @@ class SettingsDialog : public QDialog {
     void on_cbImplements_currentIndexChanged( int index );
 
     void implementModelReset();
+    void pathPlannerModelReset();
 
     void on_btnSectionAdd_clicked();
-
     void on_btnSectionRemove_clicked();
 
     void on_pbSetSelectedCellsToNumber_clicked();
 
     void on_btnSectionMoveUp_clicked();
-
     void on_btnSectionMoveDown_clicked();
-
-    void on_gbGlobalPlanner_toggled( bool arg1 );
-    void on_pbGlobalPlannerArrowColor_clicked();
-    void on_pbGlobalPlannerBackgroundColor_clicked();
-    void on_slGlobalPlannerTransparency_valueChanged( int value );
-    void on_cbGlobalPlannerBackground_stateChanged( int );
-    void on_pbGlobalPlannerCenterLineColor_clicked();
-    void on_pbGlobalPlannerBorderLineColor_clicked();
-    void on_slGlobalPlannerArrowSize_valueChanged( int );
-    void on_slGlobalPlannerCenterLine_valueChanged( int );
-    void on_slGlobalPlannerBorderLine_valueChanged( int );
-    void on_dsbGlobalPlannerTextureSize_valueChanged( double );
-    void on_slGlobalPlannerArrowWidth_valueChanged( int );
-
-    void on_gbLocalPlanner_toggled( bool arg1 );
-    void on_dsbLocalPlannerArrowSize_valueChanged( double arg1 );
-    void on_dsbLocalPlannerLineWidth_valueChanged( double arg1 );
-    void on_pbLocalPlannerArrowColor_clicked();
-    void on_pbLocalPlannerLineColor_clicked();
-    void on_slLocalPlannerTransparency_valueChanged( int value );
 
     void on_sbPathsInReserve_valueChanged( int arg1 );
     void on_sbGlobalPlannerMaxDeviation_valueChanged( double );
@@ -188,19 +168,32 @@ class SettingsDialog : public QDialog {
     void on_rbMaterialPRB_clicked();
     void on_rbMaterialPhong_clicked();
 
+    void on_cbPathPlanner_currentIndexChanged( int index );
+
+    void on_lePathPlannerName_textChanged( const QString& arg1 );
+    void on_dsbPathlPlannerZOffset_valueChanged( double arg1 );
+    void on_cbPathPlannerRayColor_stateChanged( int arg1 );
+    void on_cbPathPlannerSegmentColor_stateChanged( int arg1 );
+    void on_dsbPathlPlannerViewbox_valueChanged( double arg1 );
+    void on_gbPathPlanner_toggled( bool arg1 );
+
+    void on_pbPathPlannerLineColor_clicked();
+    void on_pbPathPlannerRayColor_clicked();
+    void on_pbPathPlannerSegmentColor_clicked();
+    void on_pbPathPlannerBisectorsColor_clicked();
+
+    void on_cbPathPlannerBisectors_stateChanged( int arg1 );
+
   private:
     void saveGridValuesInSettings();
-    void savePlannerValuesInSettings();
     void savePathPlannerValuesInSettings();
 
-    void setPlannerColorLabels();
+    void setPathPlannerSettings();
 
     void saveConfigToFile( QFile& file );
     void loadConfigFromFile( QFile& file );
 
     void emitGridSettings();
-    void emitGlobalPlannerModelSettings();
-    void emitLocalPlannerModelSettings();
 
   private:
     QMainWindow* mainWindow = nullptr;
@@ -264,7 +257,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* localPlannerFactory = nullptr;
     BlockFactory* stanleyGuidanceFactory = nullptr;
     BlockFactory* xteGuidanceFactory = nullptr;
-    BlockFactory* globalPlannerModelFactory = nullptr;
+    BlockFactory* pathPlannerModelFactory = nullptr;
 
     BlockFactory* valueTransmissionBase64DataFactory = nullptr;
     BlockFactory* valueTransmissionNumberFactory = nullptr;
@@ -283,8 +276,12 @@ class SettingsDialog : public QDialog {
     StringBlockModel* stringBlockModel = nullptr;
 
     QSortFilterProxyModel* filterModelImplements = nullptr;
+    QSortFilterProxyModel* filterModelPathPlannerModel = nullptr;
+
   public:
     ImplementBlockModel* implementBlockModel = nullptr;
+    PathPlannerModelBlockModel* pathPlannerModelBlockModel = nullptr;
+
   private:
     ImplementSectionModel* implementSectionModel = nullptr;
 

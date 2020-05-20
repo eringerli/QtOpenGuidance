@@ -53,11 +53,9 @@ class LocalPlanner : public BlockBase {
 
   public:
     explicit LocalPlanner( const QString& uniqueName,
-                           MyMainWindow* mainWindow,
-                           Qt3DCore::QEntity* rootEntity
+                           MyMainWindow* mainWindow
                          )
-      : BlockBase(),
-        rootEntity( rootEntity ) {
+      : BlockBase() {
       widget = new GuidanceTurning( mainWindow );
       dock = new KDDockWidgets::DockWidget( uniqueName );
 
@@ -65,56 +63,6 @@ class LocalPlanner : public BlockBase {
       QObject::connect( widget, &GuidanceTurning::turnRightToggled, this, &LocalPlanner::turnRightToggled );
       QObject::connect( widget, &GuidanceTurning::numSkipChanged, this, &LocalPlanner::numSkipChanged );
       QObject::connect( this, &LocalPlanner::resetTurningStateOfDock, widget, &GuidanceTurning::resetTurningState );
-
-      {
-        m_baseEntity = new Qt3DCore::QEntity( rootEntity );
-        m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
-        m_baseEntity->addComponent( m_baseTransform );
-
-        m_segmentsEntity = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity2 = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
-        m_segmentsEntity->setEnabled( false );
-        m_segmentsEntity2->setEnabled( false );
-        m_segmentsEntity3->setEnabled( false );
-
-        m_segmentsMesh = new BufferMesh( m_segmentsEntity );
-        m_segmentsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-        m_segmentsEntity->addComponent( m_segmentsMesh );
-
-        m_segmentsMesh2 = new BufferMesh( m_segmentsEntity2 );
-        m_segmentsMesh2->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-        m_segmentsEntity2->addComponent( m_segmentsMesh2 );
-
-        m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-        m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-        m_segmentsEntity3->addComponent( m_segmentsMesh3 );
-
-        m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
-        m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-        m_segmentsEntity4->addComponent( m_segmentsMesh4 );
-
-        m_segmentsMaterial = new Qt3DExtras::QPhongMaterial( m_segmentsEntity );
-        m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity2 );
-        m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
-        m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
-
-        m_segmentsMaterial->setAmbient( Qt::green );
-        m_segmentsMaterial2->setAmbient( Qt::yellow );
-        m_segmentsMaterial3->setAmbient( Qt::blue );
-        m_segmentsMaterial4->setAmbient( Qt::red );
-
-//        m_segmentsMaterial->setAmbient( Qt::darkGreen );
-//        m_segmentsMaterial2->setAmbient( Qt::darkYellow );
-//        m_segmentsMaterial3->setAmbient( Qt::darkBlue );
-//        m_segmentsMaterial4->setAmbient( Qt::darkRed );
-
-        m_segmentsEntity->addComponent( m_segmentsMaterial );
-        m_segmentsEntity2->addComponent( m_segmentsMaterial2 );
-        m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
-        m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
-      }
     }
 
     ~LocalPlanner() {
@@ -165,7 +113,6 @@ class LocalPlanner : public BlockBase {
 
   private:
     void calculateTurning( bool changeExistingTurn );
-    void showPlan();
 
     Plan globalPlan;
     Plan plan;
@@ -180,26 +127,6 @@ class LocalPlanner : public BlockBase {
     double headingTurnStart = 0;
     Plan::ConstPrimitiveIterator lastSegmentOfTurn;
     Plan::ConstPrimitiveIterator targetSegmentOfTurn;
-
-
-    Qt3DCore::QEntity* rootEntity = nullptr;
-    Qt3DCore::QEntity* m_baseEntity = nullptr;
-    Qt3DCore::QTransform* m_baseTransform = nullptr;
-
-    Qt3DCore::QEntity* m_segmentsEntity = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity2 = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity3 = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity4 = nullptr;
-    BufferMesh* m_pointsMesh = nullptr;
-    BufferMesh* m_segmentsMesh = nullptr;
-    BufferMesh* m_segmentsMesh2 = nullptr;
-    BufferMesh* m_segmentsMesh3 = nullptr;
-    BufferMesh* m_segmentsMesh4 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_pointsMaterial = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class LocalPlannerFactory : public BlockFactory {
@@ -208,13 +135,11 @@ class LocalPlannerFactory : public BlockFactory {
   public:
     LocalPlannerFactory( MyMainWindow* mainWindow,
                          KDDockWidgets::Location location,
-                         QMenu* menu,
-                         Qt3DCore::QEntity* rootEntity )
+                         QMenu* menu )
       : BlockFactory(),
         mainWindow( mainWindow ),
         location( location ),
-        menu( menu ),
-        rootEntity( rootEntity ) {}
+        menu( menu ) {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "Local Planner" );
@@ -222,8 +147,7 @@ class LocalPlannerFactory : public BlockFactory {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* object = new LocalPlanner( getNameOfFactory() + QString::number( id ),
-                                       mainWindow,
-                                       rootEntity );
+                                       mainWindow );
       auto* b = createBaseBlock( scene, object, id );
 
       object->dock->setTitle( getNameOfFactory() );
@@ -249,5 +173,4 @@ class LocalPlannerFactory : public BlockFactory {
     MyMainWindow* mainWindow = nullptr;
     KDDockWidgets::Location location;
     QMenu* menu = nullptr;
-    Qt3DCore::QEntity* rootEntity = nullptr;
 };

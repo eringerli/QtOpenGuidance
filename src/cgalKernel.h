@@ -46,6 +46,7 @@ typedef K::Line_2                                           Line_2;
 typedef K::Line_3                                           Line_3;
 typedef K::Circle_2                                         Circle_2;
 typedef K::Iso_rectangle_2                                  Iso_rectangle_2;
+typedef K::Direction_2                                      Direction_2;
 
 #include <CGAL/Aff_transformation_2.h>
 #include <CGAL/aff_transformation_tags.h>

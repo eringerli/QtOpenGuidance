@@ -47,6 +47,7 @@
 #include "../block/StringObject.h"
 
 #include "../block/Implement.h"
+#include "../block/PathPlannerModel.h"
 
 #include "../block/CameraController.h"
 #include "../block/TractorModel.h"
@@ -77,7 +78,7 @@
 #include "../block/LocalPlanner.h"
 #include "../block/StanleyGuidance.h"
 #include "../block/XteGuidance.h"
-#include "../block/GlobalPlannerModel.h"
+#include "../block/PathPlannerModel.h"
 
 #include "../block/DebugSink.h"
 #include "../block/PrintLatency.h"
@@ -140,33 +141,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
       ui->dsbGridCameraThresholdCoarse->setValue( settings.value( QStringLiteral( "Grid/CameraThresholdCoarse" ), 250 ).toDouble() );
       gridColor = settings.value( QStringLiteral( "Grid/Color" ), QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
       gridColorCoarse = settings.value( QStringLiteral( "Grid/ColorCoarse" ), QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
-    }
-
-    // global/local planner
-    {
-      ui->gbGlobalPlanner->setChecked( settings.value( QStringLiteral( "GlobalPlannerGraphics/Enabled" ), true ).toBool() );
-      ui->slGlobalPlannerArrowSize->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowHeight" ), 50 ).toInt() );
-      ui->slGlobalPlannerArrowWidth->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowWidth" ), 90 ).toInt() );
-      ui->dsbGlobalPlannerTextureSize->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/TextureSize" ), 3 ).toDouble() );
-      ui->slGlobalPlannerCenterLine->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/CenterLineSize" ), 0 ).toInt() );
-      ui->slGlobalPlannerBorderLine->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/BorderLineSize" ), 1 ).toInt() );
-
-      ui->cbGlobalPlannerBackground->setChecked( settings.value( QStringLiteral( "GlobalPlannerGraphics/BackgroundEnabled" ), true ).toBool() );
-
-      globalPlannerArrowColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/ArrowColor" ), QColor( 0xae, 0xec, 0x7f ) ).value<QColor>();
-      globalPlannerCenterLineColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/CenterLineColor" ), QColor( 0x7b, 0x5e, 0x9f ) ).value<QColor>();
-      globalPlannerBorderLineColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/BorderLineColor" ), QColor( 0x99, 0x99, 0 ) ).value<QColor>();
-      globalPlannerBackgroundColor = settings.value( QStringLiteral( "GlobalPlannerGraphics/BackgroundColor" ), QColor( 0xff, 0xff, 0x7f ) ).value<QColor>();
-      ui->slGlobalPlannerTransparency->setValue( settings.value( QStringLiteral( "GlobalPlannerGraphics/Transparency" ), 100 ).toInt() );
-
-
-      ui->gbLocalPlanner->setChecked( settings.value( QStringLiteral( "LocalPlannerGraphics/Enabled" ), true ).toBool() );
-      ui->dsbLocalPlannerArrowSize->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowSize" ), 1 ).toDouble() );
-      ui->dsbLocalPlannerArrowDistance->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowDistance" ), 3 ).toDouble() );
-      ui->dsbLocalPlannerLineWidth->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/LineWidth" ), 0.1 ).toDouble() );
-      localPlannerArrowColor = settings.value( QStringLiteral( "LocalPlannerGraphics/ArrowColor" ), QColor( 0xff, 0x80, 0 ) ).value<QColor>();
-      localPlannerLineColor = settings.value( QStringLiteral( "LocalPlannerGraphics/LineColor" ), QColor( 0xff, 0, 0 ) ).value<QColor>();
-      ui->slLocalPlannerTransparency->setValue( settings.value( QStringLiteral( "LocalPlannerGraphics/Transparency" ), 100 ).toInt() );
     }
 
     // path planner
@@ -261,6 +235,16 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   filterTtransmissionBlockModel->sort( 0, Qt::AscendingOrder );
   ui->tvTransmission->setModel( filterTtransmissionBlockModel );
 
+  pathPlannerModelBlockModel = new PathPlannerModelBlockModel( scene );
+  filterModelPathPlannerModel = new QSortFilterProxyModel( scene );
+  filterModelPathPlannerModel->setDynamicSortFilter( true );
+  filterModelPathPlannerModel->setSourceModel( pathPlannerModelBlockModel );
+  filterModelPathPlannerModel->sort( 0, Qt::AscendingOrder );
+  ui->cbPathPlanner->setModel( filterModelPathPlannerModel );
+  ui->cbPathPlanner->setCurrentIndex( 0 );
+  QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset,
+                    this, &SettingsDialog::pathPlannerModelReset );
+
   // simulator
   poseSimulationFactory = new PoseSimulationFactory( geographicConvertionWrapperSimulator );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
@@ -324,17 +308,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
 
   localPlannerFactory = new LocalPlannerFactory( mainWindow,
       KDDockWidgets::Location_OnRight,
-      guidanceToolbarMenu,
-      rootEntity );
+      guidanceToolbarMenu );
   stanleyGuidanceFactory = new StanleyGuidanceFactory();
   xteGuidanceFactory = new XteGuidanceFactory();
 
-  globalPlannerModelFactory = new GlobalPlannerModelFactory( rootEntity );
-  auto* globalPlannerModelBlock = globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene() );
-  globalPlannerModel = qobject_cast<GlobalPlannerModel*>( globalPlannerModelBlock->object );
-
-  QObject::connect( this, SIGNAL( globalPlannerModelSettingsChanged( int, int, float, int, int, QColor, QColor, QColor, QColor ) ),
-                    globalPlannerModel, SLOT( setPlannerModelSettings( int, int, float, int, int, QColor, QColor, QColor, QColor ) ) );
+  pathPlannerModelFactory = new PathPlannerModelFactory( rootEntity );
 
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( geographicConvertionWrapperGuidance );
@@ -385,6 +363,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
   localPlannerFactory->addToCombobox( ui->cbNodeType );
+  pathPlannerModelFactory->addToCombobox( ui->cbNodeType );
   ubxParserFactory->addToCombobox( ui->cbNodeType );
   nmeaParserGGAFactory->addToCombobox( ui->cbNodeType );
   nmeaParserHDTFactory->addToCombobox( ui->cbNodeType );
@@ -414,8 +393,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   ui->lbColorCoarse->setText( gridColorCoarse.name() );
   ui->lbColorCoarse->setPalette( QPalette( gridColorCoarse ) );
   ui->lbColorCoarse->setAutoFillBackground( true );
-
-  setPlannerColorLabels();
 
   this->on_pbBaudrateRefresh_clicked();
   this->on_pbComPortRefresh_clicked();
@@ -565,7 +542,7 @@ SettingsDialog::~SettingsDialog() {
   stanleyGuidance->deleteLater();
   xteGuidanceFactory->deleteLater();
   xteGuidance->deleteLater();
-  globalPlannerModelFactory->deleteLater();
+  pathPlannerModelFactory->deleteLater();
   globalPlannerModel->deleteLater();
 }
 
@@ -1050,74 +1027,25 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
   }
 }
 
-void SettingsDialog::savePlannerValuesInSettings() {
-  if( !blockSettingsSaving ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+void SettingsDialog::setPathPlannerSettings() {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
 
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/Enabled" ), ui->gbGlobalPlanner->isChecked() );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowHeight" ), ui->slGlobalPlannerArrowSize->value() );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowWidth" ), ui->slGlobalPlannerArrowWidth->value() );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/TextureSize" ), ui->dsbGlobalPlannerTextureSize->value() );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/CenterLineSize" ), ui->slGlobalPlannerCenterLine->value() );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BorderLineSize" ), ui->slGlobalPlannerBorderLine->value() );
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
 
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BackgroundEnabled" ), ui->cbGlobalPlannerBackground->isChecked() );
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+      pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
+      block->setName( ui->lePathPlannerName->text() );
+      pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
+      pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
 
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/ArrowColor" ), globalPlannerArrowColor );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/CenterLineColor" ), globalPlannerCenterLineColor );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BorderLineColor" ), globalPlannerBorderLineColor );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/BackgroundColor" ), globalPlannerBackgroundColor );
-    settings.setValue( QStringLiteral( "GlobalPlannerGraphics/Transparency" ), ui->slGlobalPlannerTransparency->value() );
+      pathPlannerModel->individualRayColor = ui->cbPathPlannerRayColor->isChecked();
+      pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
+      pathPlannerModel->bisectorsVisible = ui->cbPathPlannerBisectors->isChecked();
 
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/Enabled" ), ui->gbLocalPlanner->isChecked() );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowSize" ), ui->dsbLocalPlannerArrowSize->value() );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowDistance" ), ui->dsbLocalPlannerArrowDistance->value() );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/LineWidth" ), ui->dsbLocalPlannerLineWidth->value() );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/ArrowColor" ), localPlannerArrowColor );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/LineColor" ), localPlannerLineColor );
-    settings.setValue( QStringLiteral( "LocalPlannerGraphics/Transparency" ), ui->slLocalPlannerTransparency->value() );
-
-    settings.sync();
+      pathPlannerModel->refreshColors();
+    }
   }
-}
-
-void SettingsDialog::setPlannerColorLabels() {
-  QColor buffer = globalPlannerArrowColor;
-  buffer.setAlphaF( 1 );
-  ui->lbGlobalPlannerArrowColor->setText( buffer.name() );
-  ui->lbGlobalPlannerArrowColor->setPalette( QPalette( buffer ) );
-  ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
-
-  buffer = globalPlannerCenterLineColor;
-  buffer.setAlphaF( 1 );
-  ui->lbGlobalPlannerCenterLineColor->setText( buffer.name() );
-  ui->lbGlobalPlannerCenterLineColor->setPalette( QPalette( buffer ) );
-  ui->lbGlobalPlannerCenterLineColor->setAutoFillBackground( true );
-
-  buffer = globalPlannerBorderLineColor;
-  buffer.setAlphaF( 1 );
-  ui->lbGlobalPlannerBorderLineColor->setText( buffer.name() );
-  ui->lbGlobalPlannerBorderLineColor->setPalette( QPalette( buffer ) );
-  ui->lbGlobalPlannerBorderLineColor->setAutoFillBackground( true );
-
-  buffer = globalPlannerBackgroundColor;
-  buffer.setAlphaF( 1 );
-  ui->lbGlobalPlannerBackgroundColor->setText( buffer.name() );
-  ui->lbGlobalPlannerBackgroundColor->setPalette( QPalette( buffer ) );
-  ui->lbGlobalPlannerBackgroundColor->setAutoFillBackground( true );
-
-  buffer = localPlannerLineColor;
-  buffer.setAlphaF( 1 );
-  ui->lbLocalPlannerLineColor->setText( buffer.name() );
-  ui->lbLocalPlannerLineColor->setPalette( QPalette( buffer ) );
-  ui->lbLocalPlannerLineColor->setAutoFillBackground( true );
-
-  buffer = localPlannerArrowColor;
-  buffer.setAlphaF( 1 );
-  ui->lbLocalPlannerArrowColor->setText( buffer.name() );
-  ui->lbLocalPlannerArrowColor->setPalette( QPalette( buffer ) );
-  ui->lbLocalPlannerArrowColor->setAutoFillBackground( true );
 }
 
 void SettingsDialog::emitAllConfigSignals() {
@@ -1125,12 +1053,6 @@ void SettingsDialog::emitAllConfigSignals() {
   emitGridSettings();
 
   emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
-
-  emit globalPlannerModelSetVisible( ui->gbGlobalPlanner->isChecked() );
-  emitGlobalPlannerModelSettings();
-
-  emit localPlannerModelSetVisible( ui->gbLocalPlanner->isChecked() );
-  emitLocalPlannerModelSettings();
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -1273,6 +1195,14 @@ void SettingsDialog::implementModelReset() {
   on_cbImplements_currentIndexChanged( ui->cbImplements->currentIndex() );
 }
 
+void SettingsDialog::pathPlannerModelReset() {
+  if( ui->cbPathPlanner->currentIndex() == -1 || ui->cbPathPlanner->currentIndex() >= ui->cbPathPlanner->model()->rowCount() ) {
+    ui->cbPathPlanner->setCurrentIndex( 0 );
+  }
+
+  on_cbPathPlanner_currentIndexChanged( ui->cbPathPlanner->currentIndex() );
+}
+
 void SettingsDialog::allModelsReset() {
   vectorBlockModel->resetModel();
   numberBlockModel->resetModel();
@@ -1280,9 +1210,9 @@ void SettingsDialog::allModelsReset() {
   sliderBlockModel->resetModel();
   stringBlockModel->resetModel();
   implementBlockModel->resetModel();
+  pathPlannerModelBlockModel->resetModel();
   meterModel->resetModel();
   transmissionBlockModel->resetModel();
-
 
   ui->twValues->resizeColumnsToContents();
   ui->tvMeter->resizeColumnsToContents();
@@ -1404,31 +1334,6 @@ void SettingsDialog::emitGridSettings() {
                       gridColor, gridColorCoarse );
 }
 
-void SettingsDialog::emitGlobalPlannerModelSettings() {
-  qreal transparencyFactor =  ui->slGlobalPlannerTransparency->value() / 100.0;
-  globalPlannerArrowColor.setAlphaF( transparencyFactor );
-  globalPlannerCenterLineColor.setAlphaF( transparencyFactor );
-  globalPlannerBorderLineColor.setAlphaF( transparencyFactor );
-  globalPlannerBackgroundColor.setAlphaF( ui->cbGlobalPlannerBackground->isChecked() ? transparencyFactor : 0 );
-
-  emit globalPlannerModelSettingsChanged( ui->slGlobalPlannerArrowSize->value(),
-                                          ui->slGlobalPlannerArrowWidth->value(),
-                                          float( ui->dsbGlobalPlannerTextureSize->value() ),
-                                          ui->slGlobalPlannerCenterLine->value(),
-                                          ui->slGlobalPlannerBorderLine->value(),
-                                          globalPlannerArrowColor,
-                                          globalPlannerCenterLineColor,
-                                          globalPlannerBorderLineColor,
-                                          globalPlannerBackgroundColor );
-}
-
-void SettingsDialog::emitLocalPlannerModelSettings() {
-  emit localPlannerModelSettingsChanged( double( ui->dsbLocalPlannerArrowSize->value() ),
-                                         float( ui->dsbLocalPlannerArrowDistance->value() ),
-                                         float( ui->dsbLocalPlannerLineWidth->value() ),
-                                         localPlannerLineColor, localPlannerArrowColor );
-}
-
 void SettingsDialog::on_pbColorCoarse_clicked() {
   const QColor color = QColorDialog::getColor( gridColorCoarse, this, QStringLiteral( "Select Grid Color" ) );
 
@@ -1443,160 +1348,9 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
   }
 }
 
-void SettingsDialog::on_gbGlobalPlanner_toggled( bool ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_pbGlobalPlannerArrowColor_clicked() {
-  QColor tmp = globalPlannerArrowColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Arrow Color" ) );
-
-  if( color.isValid() ) {
-    globalPlannerArrowColor = color;
-    ui->lbGlobalPlannerArrowColor->setText( globalPlannerArrowColor.name() );
-    ui->lbGlobalPlannerArrowColor->setPalette( QPalette( globalPlannerArrowColor ) );
-    ui->lbGlobalPlannerArrowColor->setAutoFillBackground( true );
-
-    emitGlobalPlannerModelSettings();
-    savePlannerValuesInSettings();
-  }
-}
-
-void SettingsDialog::on_pbGlobalPlannerBackgroundColor_clicked() {
-  QColor tmp = globalPlannerBackgroundColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
-
-  if( color.isValid() ) {
-    globalPlannerBackgroundColor = color;
-    ui->lbGlobalPlannerBackgroundColor->setText( globalPlannerBackgroundColor.name() );
-    ui->lbGlobalPlannerBackgroundColor->setPalette( QPalette( globalPlannerBackgroundColor ) );
-    ui->lbGlobalPlannerBackgroundColor->setAutoFillBackground( true );
-
-    emitGlobalPlannerModelSettings();
-    savePlannerValuesInSettings();
-  }
-}
-
-void SettingsDialog::on_slGlobalPlannerTransparency_valueChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_cbGlobalPlannerBackground_stateChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-void SettingsDialog::on_gbLocalPlanner_toggled( bool ) {
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_dsbLocalPlannerArrowSize_valueChanged( double ) {
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_dsbLocalPlannerLineWidth_valueChanged( double ) {
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_pbLocalPlannerArrowColor_clicked() {
-  QColor tmp = localPlannerArrowColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Arrow Color" ) );
-
-  if( color.isValid() ) {
-    localPlannerArrowColor = color;
-    ui->lbLocalPlannerArrowColor->setText( localPlannerArrowColor.name() );
-    ui->lbLocalPlannerArrowColor->setPalette( QPalette( localPlannerArrowColor ) );
-    ui->lbLocalPlannerArrowColor->setAutoFillBackground( true );
-
-    savePlannerValuesInSettings();
-  }
-
-}
-
-void SettingsDialog::on_pbLocalPlannerLineColor_clicked() {
-  QColor tmp = localPlannerLineColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Line Color" ) );
-
-  if( color.isValid() ) {
-    localPlannerLineColor = color;
-    ui->lbLocalPlannerLineColor->setText( localPlannerLineColor.name() );
-    ui->lbLocalPlannerLineColor->setPalette( QPalette( localPlannerLineColor ) );
-    ui->lbLocalPlannerLineColor->setAutoFillBackground( true );
-
-    savePlannerValuesInSettings();
-  }
-
-}
-
-void SettingsDialog::on_slLocalPlannerTransparency_valueChanged( int ) {
-  savePlannerValuesInSettings();
-}
-
 void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
   emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
-}
-
-void SettingsDialog::on_pbGlobalPlannerCenterLineColor_clicked() {
-  QColor tmp = globalPlannerCenterLineColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
-
-  if( color.isValid() ) {
-    globalPlannerCenterLineColor = color;
-    ui->lbGlobalPlannerCenterLineColor->setText( globalPlannerCenterLineColor.name() );
-    ui->lbGlobalPlannerCenterLineColor->setPalette( QPalette( globalPlannerCenterLineColor ) );
-    ui->lbGlobalPlannerCenterLineColor->setAutoFillBackground( true );
-
-    emitGlobalPlannerModelSettings();
-    savePlannerValuesInSettings();
-  }
-}
-
-void SettingsDialog::on_pbGlobalPlannerBorderLineColor_clicked() {
-  QColor tmp = globalPlannerBorderLineColor;
-  tmp.setAlphaF( 1 );
-  const QColor color = QColorDialog::getColor( tmp, this, QStringLiteral( "Select Background Color" ) );
-
-  if( color.isValid() ) {
-    globalPlannerBorderLineColor = color;
-    ui->lbGlobalPlannerBorderLineColor->setText( globalPlannerBorderLineColor.name() );
-    ui->lbGlobalPlannerBorderLineColor->setPalette( QPalette( globalPlannerBorderLineColor ) );
-    ui->lbGlobalPlannerBorderLineColor->setAutoFillBackground( true );
-
-    emitGlobalPlannerModelSettings();
-    savePlannerValuesInSettings();
-  }
-}
-
-void SettingsDialog::on_slGlobalPlannerArrowSize_valueChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_slGlobalPlannerCenterLine_valueChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_slGlobalPlannerBorderLine_valueChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_dsbGlobalPlannerTextureSize_valueChanged( double ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
-}
-
-void SettingsDialog::on_slGlobalPlannerArrowWidth_valueChanged( int ) {
-  emitGlobalPlannerModelSettings();
-  savePlannerValuesInSettings();
 }
 
 void SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
@@ -1715,7 +1469,7 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
   // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
   // this is needed, as the file dialog on android is asynchonous, so you have to connect to
   // the signals instead of using the static functions for the dialogs
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( const QString & fileName ) {
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [fileDialog]( const QString & fileName ) {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile( fileName );
@@ -1779,4 +1533,168 @@ void SettingsDialog::on_rbMaterialPhong_clicked() {
   settings.setValue( QStringLiteral( "Material/usePBR" ), false );
   settings.setValue( QStringLiteral( "Material/usePhong" ), true );
   settings.sync();
+}
+
+void SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( index, 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
+
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+
+      ui->gbPathPlanner->blockSignals( true );
+      ui->lePathPlannerName->blockSignals( true );
+      ui->dsbPathlPlannerZOffset->blockSignals( true );
+      ui->dsbPathlPlannerViewbox->blockSignals( true );
+      ui->cbPathPlannerRayColor->blockSignals( true );
+      ui->cbPathPlannerSegmentColor->blockSignals( true );
+      ui->cbPathPlannerBisectors->blockSignals( true );
+
+      ui->gbPathPlanner->setChecked( pathPlannerModel->visible );
+      ui->lePathPlannerName->setText( block->getName() );
+      ui->dsbPathlPlannerZOffset->setValue( pathPlannerModel->zOffset );
+      ui->dsbPathlPlannerViewbox->setValue( pathPlannerModel->viewBox );
+
+      ui->lbPathPlannerLineColor->setText( pathPlannerModel->linesColor.name() );
+      ui->lbPathPlannerLineColor->setPalette( pathPlannerModel->linesColor );
+      ui->lbPathPlannerLineColor->setAutoFillBackground( true );
+
+      ui->lbPathPlannerRayColor->setText( pathPlannerModel->raysColor.name() );
+      ui->lbPathPlannerRayColor->setPalette( pathPlannerModel->raysColor );
+      ui->lbPathPlannerRayColor->setAutoFillBackground( true );
+
+      ui->lbPathPlannerSegmentColor->setText( pathPlannerModel->segmentsColor.name() );
+      ui->lbPathPlannerSegmentColor->setPalette( pathPlannerModel->segmentsColor );
+      ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
+
+      ui->lbPathPlannerBisectorsColor->setText( pathPlannerModel->bisectorsColor.name() );
+      ui->lbPathPlannerBisectorsColor->setPalette( pathPlannerModel->bisectorsColor );
+      ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
+
+      ui->cbPathPlannerRayColor->setChecked( pathPlannerModel->individualRayColor );
+      ui->cbPathPlannerSegmentColor->setChecked( pathPlannerModel->individualSegmentColor );
+      ui->cbPathPlannerBisectors->setChecked( pathPlannerModel->bisectorsVisible );
+
+      ui->gbPathPlanner->blockSignals( false );
+      ui->lePathPlannerName->blockSignals( false );
+      ui->dsbPathlPlannerZOffset->blockSignals( false );
+      ui->dsbPathlPlannerViewbox->blockSignals( false );
+      ui->cbPathPlannerRayColor->blockSignals( false );
+      ui->cbPathPlannerSegmentColor->blockSignals( false );
+      ui->cbPathPlannerBisectors->blockSignals( false );
+    }
+  }
+};
+
+void SettingsDialog::on_lePathPlannerName_textChanged( const QString& ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_dsbPathlPlannerZOffset_valueChanged( double ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_cbPathPlannerRayColor_stateChanged( int ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_cbPathPlannerSegmentColor_stateChanged( int ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_dsbPathlPlannerViewbox_valueChanged( double ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_gbPathPlanner_toggled( bool ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_cbPathPlannerBisectors_stateChanged( int ) {
+  setPathPlannerSettings();
+}
+
+void SettingsDialog::on_pbPathPlannerLineColor_clicked() {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+      const QColor color = QColorDialog::getColor( pathPlannerModel->linesColor, this, QStringLiteral( "Select Line Color" ) );
+
+      if( color.isValid() ) {
+        pathPlannerModel->linesColor = color;
+
+        ui->lbPathPlannerLineColor->setText( color.name() );
+        ui->lbPathPlannerLineColor->setPalette( color );
+        ui->lbPathPlannerLineColor->setAutoFillBackground( true );
+
+        pathPlannerModel->refreshColors();
+      }
+    }
+  }
+}
+
+void SettingsDialog::on_pbPathPlannerRayColor_clicked() {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+      const QColor color = QColorDialog::getColor( pathPlannerModel->raysColor, this, QStringLiteral( "Select Ray Color" ) );
+
+      if( color.isValid() ) {
+        pathPlannerModel->raysColor = color;
+
+        ui->lbPathPlannerRayColor->setText( color.name() );
+        ui->lbPathPlannerRayColor->setPalette( color );
+        ui->lbPathPlannerRayColor->setAutoFillBackground( true );
+
+        pathPlannerModel->refreshColors();
+      }
+    }
+  }
+}
+
+void SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+      const QColor color = QColorDialog::getColor( pathPlannerModel->segmentsColor, this, QStringLiteral( "Select Segment Color" ) );
+
+      if( color.isValid() ) {
+        pathPlannerModel->segmentsColor = color;
+
+        ui->lbPathPlannerSegmentColor->setText( color.name() );
+        ui->lbPathPlannerSegmentColor->setPalette( color );
+        ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
+
+        pathPlannerModel->refreshColors();
+      }
+    }
+  }
+}
+
+void SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
+  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+      const QColor color = QColorDialog::getColor( pathPlannerModel->bisectorsColor, this, QStringLiteral( "Select Bisectors Color" ) );
+
+      if( color.isValid() ) {
+        pathPlannerModel->bisectorsColor = color;
+
+        ui->lbPathPlannerBisectorsColor->setText( color.name() );
+        ui->lbPathPlannerBisectorsColor->setPalette( color );
+        ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
+
+        pathPlannerModel->refreshColors();
+      }
+    }
+  }
 }

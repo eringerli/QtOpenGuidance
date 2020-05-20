@@ -28,7 +28,7 @@
 #include "moc_FpsMeasurement.cpp"
 #include "moc_GlobalPlanner.cpp"
 #include "moc_GridModel.cpp"
-#include "moc_GlobalPlannerModel.cpp"
+#include "moc_PathPlannerModel.cpp"
 #include "moc_LocalPlanner.cpp"
 #include "moc_StanleyGuidance.cpp"
 #include "moc_Implement.cpp"

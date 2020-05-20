@@ -31,6 +31,7 @@
 #include "moc_NewOpenSaveToolbar.cpp"
 #include "moc_NumberBlockModel.cpp"
 #include "moc_PassToolbar.cpp"
+#include "moc_PathPlannerModelBlockModel.cpp"
 #include "moc_SectionControlToolbar.cpp"
 #include "moc_SettingsDialog.cpp"
 #include "moc_SliderDock.cpp"

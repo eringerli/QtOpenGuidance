@@ -102,8 +102,6 @@ class GlobalPlanner : public BlockBase {
 //        timer.start();
         plan.expand( position2D );
 //        qDebug() << "Cycle Time plan.expandPlan:" << timer.nsecsElapsed() << "ns";
-
-        showPlan();
       }
     }
 
@@ -228,7 +226,6 @@ class GlobalPlanner : public BlockBase {
   private:
     void createPlanAB();
     void snapPlanAB();
-    void showPlan();
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
@@ -261,7 +258,6 @@ class GlobalPlanner : public BlockBase {
 
     GeographicConvertionWrapper* tmw = nullptr;
 
-
   private:
     CgalThread* threadForCgalWorker = nullptr;
     CgalWorker* cgalWorker = nullptr;
@@ -288,29 +284,9 @@ class GlobalPlanner : public BlockBase {
     Qt3DExtras::QSphereMesh* pointsMesh = nullptr;
     Qt3DExtras::QPhongMaterial* pointsMaterial = nullptr;
 
-    Qt3DCore::QEntity* mPointEntity = nullptr;
-    Qt3DExtras::QSphereMesh* mPointMesh = nullptr;
-    Qt3DCore::QTransform* mPointTransform = nullptr;
-
   private:
     Qt3DCore::QEntity* m_baseEntity = nullptr;
     Qt3DCore::QTransform* m_baseTransform = nullptr;
-
-    Qt3DCore::QEntity* m_pointsEntity = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity2 = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity3 = nullptr;
-    Qt3DCore::QEntity* m_segmentsEntity4 = nullptr;
-    BufferMesh* m_pointsMesh = nullptr;
-    BufferMesh* m_segmentsMesh = nullptr;
-    BufferMesh* m_segmentsMesh2 = nullptr;
-    BufferMesh* m_segmentsMesh3 = nullptr;
-    BufferMesh* m_segmentsMesh4 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_pointsMaterial = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
-    Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class GlobalPlannerFactory : public BlockFactory {
