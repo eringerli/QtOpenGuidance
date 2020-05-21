@@ -86,7 +86,6 @@ class FieldManager : public BlockBase {
             points.push_back( position );
             recordNextPoint = false;
             recalculateField();
-            qDebug() << "setPoseLeftEdge -> recalculateField";
           } else {
             if( recordContinous ) {
               points.push_back( position );
@@ -109,7 +108,6 @@ class FieldManager : public BlockBase {
             points.push_back( position );
             recordNextPoint = false;
             recalculateField();
-            qDebug() << "setPoseRightEdge -> recalculateField";
           } else {
             if( recordContinous ) {
               points.push_back( position );

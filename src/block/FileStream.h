@@ -62,7 +62,6 @@ class FileStream : public BlockBase {
 
       if( file->open( QFile::ReadWrite | QFile::Append | QFile::Text ) ) {
         fileStream->setDevice( file );
-        qDebug() << filename;
         fileStream->seek( 0 );
         timer.start( 1000 / linerate, Qt::PreciseTimer, this );
       } else {

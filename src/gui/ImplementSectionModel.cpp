@@ -136,8 +136,6 @@ bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& v
 }
 
 bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& parent ) {
-  qDebug() << row << count << parent;
-
   if( block != nullptr ) {
     auto* implement = qobject_cast<Implement*>( block->object );
 
@@ -162,8 +160,6 @@ bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& p
 }
 
 bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& parent ) {
-  qDebug() << row << count << parent;
-
   if( block != nullptr ) {
     auto* implement = qobject_cast<Implement*>( block->object );
 

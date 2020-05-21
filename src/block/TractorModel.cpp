@@ -26,10 +26,6 @@
 
 
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
-  qDebug() << "TractorModel::TractorModel" << rootEntity << usePBR;
-
-
-  // add an etry, so all coordinates are local
   m_rootEntity = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );

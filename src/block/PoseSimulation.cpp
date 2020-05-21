@@ -75,8 +75,8 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       double latitude, longitude, height;
       geographicConvertionWrapper->Reverse( xWithAntennaOffset, yWithAntennaOffset, zWithAntennaOffset, latitude, longitude, height );
 
-      QElapsedTimer timer;
-      timer.start();
+//      QElapsedTimer timer;
+//      timer.start();
       emit globalPositionChanged( latitude, longitude, height );
 //      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
     }

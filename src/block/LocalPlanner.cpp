@@ -89,8 +89,6 @@ void LocalPlanner::setPlan( const Plan& plan ) {
 }
 
 void LocalPlanner::turnLeftToggled( bool state ) {
-  qDebug() << "LocalPlanner::turnLeftToggled" << state << turningLeft;
-
   if( state == true ) {
     bool existingTurn = turningLeft | turningRight;
     turningLeft = true;
@@ -104,8 +102,6 @@ void LocalPlanner::turnLeftToggled( bool state ) {
 }
 
 void LocalPlanner::turnRightToggled( bool state ) {
-  qDebug() << "LocalPlanner::turnRightToggled" << state << turningRight;
-
   if( state == true ) {
     bool existingTurn = turningLeft | turningRight;
     turningRight = true;
@@ -119,7 +115,6 @@ void LocalPlanner::turnRightToggled( bool state ) {
 }
 
 void LocalPlanner::numSkipChanged( int left, int right ) {
-  qDebug() << "LocalPlanner::numSkipChanged" << left << right;
   bool existingTurn = turningLeft | turningRight;
   leftSkip = left;
   rightSkip = right;

@@ -129,8 +129,6 @@ void FieldManager::alphaShape() {
                                  maxDeviation,
                                  distanceBetweenConnectPoints );
   }
-
-  qDebug() << "FieldManager::alphaShape: " << timer.nsecsElapsed() << "ns";
 }
 
 void FieldManager::openField() {
@@ -449,8 +447,6 @@ void FieldManager::saveFieldToFile( QFile& file ) {
 
 void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double alpha ) {
   currentField = field;
-
-  qDebug() << "FieldManager::alphaShapeFinished" << field.get() << alpha;
 
   QVector<QVector3D> meshSegmentPoints;
   typedef Polygon_2::Vertex_iterator VertexIterator;
