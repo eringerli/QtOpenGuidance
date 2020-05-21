@@ -79,7 +79,7 @@ Point_2 PathPrimitiveRay::orthogonalProjection( const Point_2 point ) {
   return supportLine.projection( point );
 }
 
-Line_2& PathPrimitiveRay::supportingLine() {
+Line_2& PathPrimitiveRay::supportingLine( const Point_2 ) {
   return supportLine;
 }
 

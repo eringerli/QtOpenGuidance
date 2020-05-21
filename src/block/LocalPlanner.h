@@ -125,8 +125,6 @@ class LocalPlanner : public BlockBase {
     int rightSkip = 1;
     Point_2 positionTurnStart = Point_2( 0, 0 );
     double headingTurnStart = 0;
-    Plan::ConstPrimitiveIterator lastSegmentOfTurn;
-    Plan::ConstPrimitiveIterator targetSegmentOfTurn;
 };
 
 class LocalPlannerFactory : public BlockFactory {

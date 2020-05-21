@@ -48,7 +48,7 @@ class PathPrimitiveRay : public PathPrimitive {
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
     virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
     virtual Point_2 orthogonalProjection( const Point_2 point )override;
-    virtual Line_2& supportingLine() override;
+    virtual Line_2& supportingLine( const Point_2 point ) override;
 
     virtual void setSource( const Point_2 point ) override;
     virtual void setTarget( const Point_2 point ) override;

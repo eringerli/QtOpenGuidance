@@ -90,7 +90,7 @@ Point_2 PathPrimitiveSegment::orthogonalProjection( const Point_2 point ) {
   return supportLine.projection( point );
 }
 
-Line_2& PathPrimitiveSegment::supportingLine() {
+Line_2& PathPrimitiveSegment::supportingLine( const Point_2 ) {
   return supportLine;
 }
 

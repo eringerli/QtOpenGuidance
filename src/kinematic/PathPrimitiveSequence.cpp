@@ -26,8 +26,8 @@
 void PathPrimitiveSequence::createBisectors( std::back_insert_iterator<std::vector<Line_2>> bisectorsOutputIterator, const std::vector<std::shared_ptr<PathPrimitive>>& primitives ) {
   for( size_t i = 0, end = primitives.size() - 1; i < end; ++i ) {
     *bisectorsOutputIterator++ = CGAL::bisector(
-                                   sequence.at( i )->supportingLine().opposite(),
-                                   sequence.at( i + 1 )->supportingLine() );
+                                   sequence.at( i )->supportingLine( Point_2() ).opposite(),
+                                   sequence.at( i + 1 )->supportingLine( Point_2() ) );
   }
 }
 
@@ -105,7 +105,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
   int passNumberNew = passNumber + ( left ? 1 : -1 );
 
   if( sequence.size() == 1 ) {
-    return std::make_shared<PathPrimitiveLine>( sequence.front()->supportingLine(), implementWidth, anyDirection, passNumberNew );
+    return std::make_shared<PathPrimitiveLine>( sequence.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
   }
 
   // This removes all segments in the list which would get artifacts if stretched/squashed.
@@ -140,14 +140,14 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
       if( result ) {
         if( const Point_2* point = boost::get<Point_2>( &*result ) ) {
           if( left != ( primitives.at( i + 1 )->leftOf( *point ) ) ) {
-            double distanceSquared = CGAL::squared_distance( primitives.at( i + 1 )->supportingLine(), *point );
+            double distanceSquared = CGAL::squared_distance( primitives.at( i + 1 )->supportingLine( Point_2() ), *point );
 
             if( distanceSquared < implementWidthSquared ) {
               primitives.erase( primitives.cbegin() + i + 1 );
 
               bisectorsNew.at( i ) = CGAL::bisector(
-                                       primitives.at( i )->supportingLine().opposite(),
-                                       primitives.at( i + 1 )->supportingLine() );
+                                       primitives.at( i )->supportingLine( Point_2() ).opposite(),
+                                       primitives.at( i + 1 )->supportingLine( Point_2() ) );
               bisectorsNew.erase( bisectorsNew.cbegin() + i + 1 );
 
               // start again
@@ -166,7 +166,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
 
   // extend the primitives
   for( size_t i = 0; i < primitives.size() - 1; ++i ) {
-    auto result2 = CGAL::intersection( primitives.at( i )->supportingLine(), primitives.at( i + 1 )->supportingLine() );
+    auto result2 = CGAL::intersection( primitives.at( i )->supportingLine( Point_2() ), primitives.at( i + 1 )->supportingLine( Point_2() ) );
 
     if( result2 ) {
       if( const Point_2* point2 = boost::get<Point_2>( &*result2 ) ) {
@@ -184,7 +184,7 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
   // create the new sequence
   {
     if( primitives.size() == 1 ) {
-      return std::make_shared<PathPrimitiveLine>( primitives.front()->supportingLine(), implementWidth, anyDirection, passNumberNew );
+      return std::make_shared<PathPrimitiveLine>( primitives.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
     }
 
     return std::make_shared<PathPrimitiveSequence>( primitives, bisectorsNew, implementWidth, anyDirection, passNumberNew );
@@ -287,8 +287,12 @@ Point_2 PathPrimitiveSequence::orthogonalProjection( const Point_2 point ) {
   return findSequencePrimitive( point )->orthogonalProjection( point );
 }
 
-Line_2& PathPrimitiveSequence::supportingLine() {
-  return supportLine;
+Line_2& PathPrimitiveSequence::supportingLine( const Point_2 point ) {
+  if( sequence.empty() ) {
+    return supportLine;
+  }
+
+  return findSequencePrimitive( point )->supportingLine( point );
 }
 
 void PathPrimitiveSequence::transform( const Aff_transformation_2& transformation ) {

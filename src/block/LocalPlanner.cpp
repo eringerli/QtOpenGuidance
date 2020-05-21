@@ -38,7 +38,6 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
     if( !turningLeft && !turningRight ) {
       if( !globalPlan.plan->empty() ) {
 
-        // local planner for lines: find the nearest primitive and put it into the local plan
         double distanceSquared = qInf();
         auto nearestPrimitive = globalPlan.getNearestPrimitive( position2D, distanceSquared );
         double distanceNearestPrimitive = std::sqrt( distanceSquared );
@@ -100,6 +99,7 @@ void LocalPlanner::turnLeftToggled( bool state ) {
   } else {
     turningLeft = false;
     turningRight = false;
+    lastPrimitive = nullptr;
   }
 }
 
@@ -114,6 +114,7 @@ void LocalPlanner::turnRightToggled( bool state ) {
   } else {
     turningLeft = false;
     turningRight = false;
+    lastPrimitive = nullptr;
   }
 }
 
@@ -202,30 +203,23 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
 
         if( optimizedPolyline.size() ) {
           plan.plan->clear();
-          auto lastPoint = optimizedPolyline.cbegin();
 
-          for( auto point = optimizedPolyline.cbegin() + 1, end = optimizedPolyline.cend(); point != end; ++point ) {
+          for( size_t i = 0, end = optimizedPolyline.size() - 1; i < end; ++i ) {
             plan.plan->push_back( std::make_shared<PathPrimitiveSegment>(
-                                    Segment_2( *lastPoint, *point ),
+                                    Segment_2( optimizedPolyline.at( i ), optimizedPolyline.at( i + 1 ) ),
                                     0, false, 0 ) );
-            lastPoint = point;
           }
 
-          Direction_2 direction;
+          Line_2 direction = ( *targetLineIt )->supportingLine( resultingPoint );
 
-          if( reversedLine ) {
-            direction = ( *targetLineIt )->supportingLine().direction();
-          } else {
-            direction = ( *targetLineIt )->supportingLine().opposite().direction();
+          if( !reversedLine ) {
+            direction = direction.opposite();
           }
 
           plan.plan->push_back( std::make_shared<PathPrimitiveRay>(
-                                  Ray_2( *lastPoint, direction ),
+                                  Ray_2( optimizedPolyline.back(), direction ),
                                   false,
                                   0, false, 0 ) );
-
-          lastSegmentOfTurn = plan.plan->cbegin();
-          targetSegmentOfTurn = --plan.plan->cend();
 
           plan.type = Plan::Type::Mixed;
           emit planChanged( plan );

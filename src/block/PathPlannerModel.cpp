@@ -225,7 +225,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
 
             if( bisectorsVisible ) {
               for( const auto& line : pathSequence->bisectors ) {
-               auto result = intersection( viewBoxRect, line );
+                auto result = intersection( viewBoxRect, line );
 
                 if( result ) {
                   if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {

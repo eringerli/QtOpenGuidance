@@ -60,7 +60,7 @@ class PathPrimitive {
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) = 0;
     virtual Line_2 perpendicularAtPoint( const Point_2 point ) = 0;
     virtual Point_2 orthogonalProjection( const Point_2 point ) = 0;
-    virtual Line_2& supportingLine() = 0;
+    virtual Line_2& supportingLine( const Point_2 point ) = 0;
 
     virtual void setSource( const Point_2 point );
     virtual void setTarget( const Point_2 point );

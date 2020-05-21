@@ -66,7 +66,7 @@ Point_2 PathPrimitiveLine::orthogonalProjection( const Point_2 point ) {
   return line.projection( point );
 }
 
-Line_2& PathPrimitiveLine::supportingLine() {
+Line_2& PathPrimitiveLine::supportingLine( const Point_2 ) {
   return line;
 }
 

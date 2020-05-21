@@ -49,7 +49,7 @@ class PathPrimitiveSequence
     virtual bool intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) override;
     virtual Line_2 perpendicularAtPoint( const Point_2 point )override;
     virtual Point_2 orthogonalProjection( const Point_2 point )override;
-    virtual Line_2& supportingLine() override;
+    virtual Line_2& supportingLine( const Point_2 point ) override;
 
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
