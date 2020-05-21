@@ -20,9 +20,9 @@ load(configure)
 
 CONFIG += c++14 ccache
 
-unix {
-    CONFIG += precompile_header
-}
+#unix {
+#    CONFIG += precompile_header
+#}
 
 include(build-paths.pri)
 
