@@ -445,7 +445,7 @@ void FieldManager::saveFieldToFile( QFile& file ) {
   file.write( jsonDocument.toJson() );
 }
 
-void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double alpha ) {
+void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double /*alpha*/ ) {
   currentField = field;
 
   QVector<QVector3D> meshSegmentPoints;
