@@ -92,6 +92,10 @@ class LocalPlanner : public BlockBase {
       this->minRadius = minRadius;
     }
 
+    void setForceCurrentPath( bool enabled ) {
+      forceCurrentPath = enabled;
+    }
+
     void turnLeftToggled( bool state );
     void turnRightToggled( bool state );
     void numSkipChanged( int left, int right );
@@ -107,6 +111,7 @@ class LocalPlanner : public BlockBase {
     double steeringAngleDegrees = 0;
     double pathHysteresis = 0.5;
     double minRadius = 10;
+    bool forceCurrentPath = false;
 
     GuidanceTurning* widget = nullptr;
     KDDockWidgets::DockWidget* dock = nullptr;
@@ -160,6 +165,7 @@ class LocalPlannerFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( bool ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );

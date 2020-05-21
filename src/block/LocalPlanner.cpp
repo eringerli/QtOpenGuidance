@@ -42,7 +42,7 @@ void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, Po
         auto nearestPrimitive = globalPlan.getNearestPrimitive( position2D, distanceSquared );
         double distanceNearestPrimitive = std::sqrt( distanceSquared );
 
-        if( !lastPrimitive || distanceNearestPrimitive < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) {
+        if( !lastPrimitive || ( !forceCurrentPath && distanceNearestPrimitive < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) ) {
           lastPrimitive = *nearestPrimitive;
           plan.type = globalPlan.type;
           plan.plan->clear();
