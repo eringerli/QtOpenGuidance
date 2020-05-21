@@ -234,7 +234,6 @@ class SettingsDialog : public QDialog {
     BlockFactory* fixedKinematicFactory = nullptr;
     BlockFactory* trailerKinematicFactory = nullptr;
     BlockFactory* debugSinkFactory = nullptr;
-    BlockFactory* printLatencyFactory = nullptr;
     BlockFactory* udpSocketFactory = nullptr;
 
 #ifdef SERIALPORT_ENABLED

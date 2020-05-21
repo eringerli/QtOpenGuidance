@@ -81,7 +81,6 @@
 #include "../block/PathPlannerModel.h"
 
 #include "../block/DebugSink.h"
-#include "../block/PrintLatency.h"
 
 #include "../block/UdpSocket.h"
 #include "../block/FileStream.h"
@@ -326,7 +325,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   numberFactory = new NumberFactory( numberBlockModel );
   stringFactory = new StringFactory( stringBlockModel );
   debugSinkFactory = new DebugSinkFactory();
-  printLatencyFactory = new PrintLatencyFactory();
   udpSocketFactory = new UdpSocketFactory();
 
 #ifdef SERIALPORT_ENABLED
@@ -384,7 +382,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   fileStreamFactory->addToCombobox( ui->cbNodeType );
   communicationPgn7ffeFactory->addToCombobox( ui->cbNodeType );
   communicationJrkFactory->addToCombobox( ui->cbNodeType );
-  printLatencyFactory->addToCombobox( ui->cbNodeType );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -490,7 +487,6 @@ SettingsDialog::~SettingsDialog() {
   numberFactory->deleteLater();
   stringFactory->deleteLater();
   debugSinkFactory->deleteLater();
-  printLatencyFactory->deleteLater();
   udpSocketFactory->deleteLater();
 
   valueTransmissionNumberFactory->deleteLater();

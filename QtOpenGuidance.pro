@@ -126,7 +126,6 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
-    src/block/PrintLatency.h \
     src/block/SliderDockBlock.h \
     src/block/SprayerModel.h \
     src/block/StanleyGuidance.h \
