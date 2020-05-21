@@ -75,13 +75,13 @@ struct PassNumber_merge_info {
 #include <CGAL/Segment_Delaunay_graph_2.h>
 #include <CGAL/Segment_Delaunay_graph_filtered_traits_2.h>
 #include <CGAL/Segment_Delaunay_graph_storage_traits_with_info_2.h>
-typedef CGAL::Segment_Delaunay_graph_filtered_traits_2<K> Gt;
+typedef CGAL::Segment_Delaunay_graph_filtered_traits_2<Epick> Gt;
 
 // define the storage traits with info
 typedef CGAL::Segment_Delaunay_graph_storage_traits_with_info_2<Gt, PassNumber, PassNumber_convert_info, PassNumber_merge_info> ST;
 typedef CGAL::Segment_Delaunay_graph_2<Gt, ST>  SDG2;
-typedef SDG2::Finite_vertices_iterator  FVIT;
-typedef SDG2::Site_2                    Site_2;
+typedef SDG2::Finite_vertices_iterator          FVIT;
+typedef SDG2::Site_2                            Site_2;
 
 #include <CGAL/Segment_Delaunay_graph_adaptation_traits_2.h>
 #include <CGAL/Segment_Delaunay_graph_adaptation_policies_2.h>
@@ -89,7 +89,7 @@ typedef SDG2::Site_2                    Site_2;
 // typedefs for defining the adaptor
 typedef CGAL::Segment_Delaunay_graph_adaptation_traits_2<SDG2>                  AT;
 typedef CGAL::Segment_Delaunay_graph_caching_degeneracy_removal_policy_2<SDG2>  AP;
-typedef CGAL::Voronoi_diagram_2<SDG2, AT, AP>                                     VD;
+typedef CGAL::Voronoi_diagram_2<SDG2, AT, AP>                                   VD;
 
 // typedef for the result type of the point location
 typedef AT::Site_2                    AtSite_2;
@@ -104,23 +104,17 @@ typedef VD::Ccb_halfedge_circulator   VdCcb_halfedge_circulator;
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
-typedef CGAL::Tag_true                                       Alpha_cmp_tag;
-typedef CGAL::Alpha_shape_vertex_base_2<K, CGAL::Default, Alpha_cmp_tag>     AVb;
-typedef CGAL::Alpha_shape_face_base_2<K, CGAL::Default, Alpha_cmp_tag>       AFb;
-typedef CGAL::Triangulation_data_structure_2<AVb, AFb>        ATds;
-typedef CGAL::Delaunay_triangulation_2<K, ATds>               ATriangulation_2;
-typedef CGAL::Alpha_shape_2<ATriangulation_2, Alpha_cmp_tag>   Alpha_shape_2;
-typedef Alpha_shape_2::Alpha_shape_edges_iterator            Alpha_shape_edges_iterator;
+typedef CGAL::Tag_true                                                            Alpha_cmp_tag;
+typedef CGAL::Alpha_shape_vertex_base_2<Epick, CGAL::Default, Alpha_cmp_tag>      AVb;
+typedef CGAL::Alpha_shape_face_base_2<Epick, CGAL::Default, Alpha_cmp_tag>        AFb;
+typedef CGAL::Triangulation_data_structure_2<AVb, AFb>                            ATds;
+typedef CGAL::Delaunay_triangulation_2<Epick, ATds>                               ATriangulation_2;
+typedef CGAL::Alpha_shape_2<ATriangulation_2, Alpha_cmp_tag>                      Alpha_shape_2;
+typedef Alpha_shape_2::Alpha_shape_edges_iterator                                 Alpha_shape_edges_iterator;
 
 #include <CGAL/Polyline_simplification_2/simplify.h>
 namespace PS = CGAL::Polyline_simplification_2;
 
 #include <CGAL/point_generators_2.h>
-
-#include <CGAL/Bbox_2.h>
-typedef CGAL::Bbox_2 Bbox_2;
-
-#include <CGAL/intersections.h>
-typedef K::Intersect_2 Intersect_2;
 
 #endif // not __clang_analyzer__

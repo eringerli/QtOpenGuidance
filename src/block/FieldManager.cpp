@@ -113,7 +113,7 @@ void FieldManager::alphaShape() {
   if( points.size() >= 3 ) {
 
     // make a 2D copy of the recorded points
-    auto pointsCopy2D = new std::vector<K::Point_2>();
+    auto pointsCopy2D = new std::vector<Epick::Point_2>();
     pointsCopy2D->reserve( points.size() );
 
     for( const auto& point : points ) {
@@ -242,7 +242,7 @@ void FieldManager::openFieldFromFile( QFile& file ) {
 
                   tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), x, y, z );
                   positions.push_back( QVector3D( x, y, z ) );
-                  poly.push_back( K::Point_2( x, y ) );
+                  poly.push_back( Epick::Point_2( x, y ) );
                 }
               }
 
@@ -284,7 +284,7 @@ void FieldManager::openFieldFromFile( QFile& file ) {
 
                   positions.push_back( QVector3D( x, y, z ) );
 
-                  points.emplace_back( K::Point_3( x, y, z ) );
+                  points.emplace_back( Epick::Point_3( x, y, z ) );
                 }
               }
 
@@ -415,7 +415,7 @@ void FieldManager::saveFieldToFile( QFile& file ) {
 
     QJsonArray coordinates;
 
-    for( const K::Point_3& point : points ) {
+    for( const Epick::Point_3& point : points ) {
 
       double latitude = 0;
       double longitude = 0;

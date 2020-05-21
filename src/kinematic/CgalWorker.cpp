@@ -149,7 +149,7 @@ void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double dist
           numPoints = 1000;
         }
 
-        CGAL::Points_on_segment_2< K::Point_2 > pointGenerator( *last, *it, numPoints );
+        CGAL::Points_on_segment_2< Epick::Point_2 > pointGenerator( *last, *it, numPoints );
 
         for( std::size_t i = 1; i < ( numPoints - 1 ); ++i ) {
           pointsPointer->push_back( *pointGenerator );
@@ -213,7 +213,7 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
     }
 
     Alpha_shape_2 alphaShape( points->begin(), points->end(),
-                              K::FT( 0 ),
+                              Epick::FT( 0 ),
                               Alpha_shape_2::REGULARIZED );
 
     if( returnEarly( runNumber ) ) {

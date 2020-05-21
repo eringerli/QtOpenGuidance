@@ -353,12 +353,12 @@ void GlobalPlanner::openAbLineFromFile( QFile& file ) {
                   tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), height, x, y, z );
 
                   if( index == 0 ) {
-                    aPoint = K::Point_3( x, y, 0 );
+                    aPoint = Epick::Point_3( x, y, 0 );
                     aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
                   }
 
                   if( index == 1 ) {
-                    bPoint = K::Point_3( x, y, 0 );
+                    bPoint = Epick::Point_3( x, y, 0 );
                     bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
                     aPointEntity->setEnabled( true );
                     bPointEntity->setEnabled( true );

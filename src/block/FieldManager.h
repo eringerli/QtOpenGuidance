@@ -175,7 +175,7 @@ class FieldManager : public BlockBase {
 
     void alphaChanged( double optimal, double solid );
     void requestFieldOptimition( uint32_t runNumber,
-                                 std::vector<K::Point_2>* points,
+                                 std::vector<Epick::Point_2>* points,
                                  FieldsOptimitionToolbar::AlphaType alphaType,
                                  double customAlpha,
                                  double maxDeviation,
@@ -198,7 +198,7 @@ class FieldManager : public BlockBase {
     Qt3DCore::QEntity* rootEntity = nullptr;
     GeographicConvertionWrapper* tmw = nullptr;
 
-    std::vector<K::Point_3> points;
+    std::vector<Epick::Point_3> points;
     bool recordContinous = false;
     bool recordNextPoint = false;
     bool recordOnRightEdgeOfImplement = false;

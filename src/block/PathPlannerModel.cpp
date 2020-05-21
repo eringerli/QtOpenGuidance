@@ -145,8 +145,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
           if( const auto* pathLine = step->castToLine() ) {
             const auto& line = pathLine->line;
 
-            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-            result = intersection( viewBoxRect, line );
+            auto result = intersection( viewBoxRect, line );
 
             if( result ) {
               if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -159,8 +158,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
           if( const auto* pathSegment = step->castToSegment() ) {
             const auto& segment = pathSegment->segment;
 
-            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-            result = intersection( viewBoxRect, segment );
+            auto result = intersection( viewBoxRect, segment );
 
             if( result ) {
               if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -173,8 +171,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
           if( const auto* pathRay = step->castToRay() ) {
             const auto& ray = pathRay->ray;
 
-            CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-            result = intersection( viewBoxRect, ray );
+            auto result = intersection( viewBoxRect, ray );
 
             if( result ) {
               if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -189,8 +186,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
               if( const auto* pathLine = step->castToLine() ) {
                 const auto& line = pathLine->line;
 
-                CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-                result = intersection( viewBoxRect, line );
+                auto result = intersection( viewBoxRect, line );
 
                 if( result ) {
                   if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -203,8 +199,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
               if( const auto* pathSegment = step->castToSegment() ) {
                 const auto& segment = pathSegment->segment;
 
-                CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-                result = intersection( viewBoxRect, segment );
+                auto result = intersection( viewBoxRect, segment );
 
                 if( result ) {
                   if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -217,8 +212,7 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
               if( const auto* pathRay = step->castToRay() ) {
                 const auto& ray = pathRay->ray;
 
-                CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-                result = intersection( viewBoxRect, ray );
+                auto result = intersection( viewBoxRect, ray );
 
                 if( result ) {
                   if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
@@ -231,11 +225,9 @@ void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orien
 
             if( bisectorsVisible ) {
               for( const auto& line : pathSequence->bisectors ) {
-                CGAL::cpp11::result_of<Intersect_2( Segment_2, Line_2 )>::type
-                result = intersection( viewBoxRect, line );
+               auto result = intersection( viewBoxRect, line );
 
                 if( result ) {
-                  //            positions3.clear();
                   if( const Segment_2* segment = boost::get<Segment_2>( &*result ) ) {
                     positionsBisectors << QVector3D( segment->source().x(), segment->source().y(), zOffset );
                     positionsBisectors << QVector3D( segment->target().x(), segment->target().y(), zOffset );

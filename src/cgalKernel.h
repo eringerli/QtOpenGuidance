@@ -33,32 +33,43 @@
 
 // choose the kernel
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel     Epick;
 
-typedef K::Point_2                                          Point_2;
-typedef K::Point_3                                          Point_3;
-typedef K::Ray_2                                            Ray_2;
-typedef K::Segment_2                                        Segment_2;
-typedef K::Segment_3                                        Segment_3;
-typedef K::Vector_2                                         Vector_2;
-typedef K::Vector_3                                         Vector_3;
-typedef K::Line_2                                           Line_2;
-typedef K::Line_3                                           Line_3;
-typedef K::Circle_2                                         Circle_2;
-typedef K::Iso_rectangle_2                                  Iso_rectangle_2;
-typedef K::Direction_2                                      Direction_2;
+typedef Epick::Point_2                                          Point_2;
+typedef Epick::Point_3                                          Point_3;
+typedef Epick::Ray_2                                            Ray_2;
+typedef Epick::Segment_2                                        Segment_2;
+typedef Epick::Segment_3                                        Segment_3;
+typedef Epick::Vector_2                                         Vector_2;
+typedef Epick::Vector_3                                         Vector_3;
+typedef Epick::Line_2                                           Line_2;
+typedef Epick::Line_3                                           Line_3;
+typedef Epick::Circle_2                                         Circle_2;
+typedef Epick::Iso_rectangle_2                                  Iso_rectangle_2;
+typedef Epick::Direction_2                                      Direction_2;
+
+#include <CGAL/Bbox_2.h>
+typedef CGAL::Bbox_2                                            Bbox_2;
+
+#include <CGAL/intersections.h>
+typedef Epick::Intersect_2 Intersect_2;
 
 #include <CGAL/Aff_transformation_2.h>
 #include <CGAL/aff_transformation_tags.h>
-typedef CGAL::Aff_transformation_2<K>                       Aff_transformation_2;
+typedef CGAL::Aff_transformation_2<Epick>                       Aff_transformation_2;
 
 #include <CGAL/Aff_transformation_3.h>
-typedef CGAL::Aff_transformation_3<K>                       Aff_transformation_3;
+typedef CGAL::Aff_transformation_3<Epick>                       Aff_transformation_3;
 
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
-typedef CGAL::Polygon_2<K>                                  Polygon_2;
-typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes_2;
+typedef CGAL::Polygon_2<Epick>                                  Polygon_2;
+typedef CGAL::Polygon_with_holes_2<Epick>                       Polygon_with_holes_2;
+
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+typedef CGAL::Exact_predicates_exact_constructions_kernel       Epeck;
+
+typedef CGAL::Cartesian_converter<Epick, Epeck>                 EpickEpeckConverter;
 
 inline double normalizeAngleRadians( double angle ) {
   while( angle > M_PI ) {
