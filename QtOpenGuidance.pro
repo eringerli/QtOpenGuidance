@@ -51,6 +51,7 @@ SOURCES += \
     src/3d/CultivatedAreaMesh.cpp \
     src/3d/CultivatedAreaMeshGeometry.cpp \
     src/block/ActionDockBlock.cpp \
+    src/block/CultivatedAreaModel.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
     src/block/LocalPlanner.cpp \
@@ -112,6 +113,7 @@ HEADERS += \
     src/block/CameraController.h \
     src/block/CommunicationJrk.h \
     src/block/CommunicationPgn7FFE.h \
+    src/block/CultivatedAreaModel.h \
     src/block/DebugSink.h \
     src/block/FieldManager.h \
     src/block/FileStream.h \

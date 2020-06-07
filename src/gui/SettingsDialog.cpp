@@ -53,6 +53,7 @@
 #include "../block/TractorModel.h"
 #include "../block/TrailerModel.h"
 #include "../block/SprayerModel.h"
+#include "../block/CultivatedAreaModel.h"
 #include "../block/GridModel.h"
 
 #include "../block/AckermannSteering.h"
@@ -319,6 +320,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   trailerModelFactory = new TrailerModelFactory( rootEntity, usePBR );
   tractorModelFactory = new TractorModelFactory( rootEntity, usePBR );
   sprayerModelFactory = new SprayerModelFactory( rootEntity, usePBR );
+  cultivatedAreaModelFactory = new CultivatedAreaModelFactory( rootEntity, usePBR );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
@@ -354,6 +356,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   sprayerModelFactory->addToCombobox( ui->cbNodeType );
+  cultivatedAreaModelFactory->addToCombobox( ui->cbNodeType );
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
   angularVelocityLimiterFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
