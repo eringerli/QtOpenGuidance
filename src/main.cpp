@@ -236,6 +236,7 @@ int main( int argc, char** argv ) {
   view->defaultFrameGraph()->setClearColor( QColor( 0x4d, 0x4d, 0x4f ) );
   view->defaultFrameGraph()->setFrustumCullingEnabled( false );
   view->defaultFrameGraph()->setGamma( 2.0f );
+  view->defaultFrameGraph()->setFrustumCullingEnabled( true );
 
 //  // sort the QT3D objects, so transparency works
 //  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
