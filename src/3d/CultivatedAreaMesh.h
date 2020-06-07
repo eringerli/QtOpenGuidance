@@ -16,7 +16,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "moc_ArrowTexture.cpp"
-#include "moc_BufferMeshGeometry.cpp"
-#include "moc_BufferMesh.cpp"
-#include "moc_CultivatedAreaMesh.cpp"
+#pragma once
+
+#include <QVector>
+#include <QObject>
+#include <QNode>
+#include <QGeometryRenderer>
+
+#include "../kinematic/cgalKernel.h"
+
+class CgalThread;
+class CultivatedAreaMeshGeometry;
+
+class CultivatedAreaMesh : public Qt3DRender::QGeometryRenderer {
+    Q_OBJECT
+
+  public:
+    explicit CultivatedAreaMesh( Qt3DCore::QNode* parent = nullptr );
+    ~CultivatedAreaMesh();
+
+    void addPoints( const Point_2 point1, const Point_2 point2 );
+    void addPointLeft( const Point_2 point );
+    void addPointRight( const Point_2 point );
+
+    void addTrackMesh( CultivatedAreaMesh* trackMesh );
+
+    void optimise( CgalThread* thread );
+
+  private:
+    CultivatedAreaMeshGeometry* m_trackMeshGeometry = nullptr;
+};

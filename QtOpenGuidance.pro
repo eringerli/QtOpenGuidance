@@ -48,6 +48,8 @@ qtCompileTest(spnav) {
 SOURCES += \
     src/3d/BufferMesh.cpp \
     src/3d/BufferMeshGeometry.cpp \
+    src/3d/CultivatedAreaMesh.cpp \
+    src/3d/CultivatedAreaMeshGeometry.cpp \
     src/block/ActionDockBlock.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
@@ -101,6 +103,8 @@ HEADERS += \
     src/3d/ArrowTexture.h \
     src/3d/BufferMesh.h \
     src/3d/BufferMeshGeometry.h \
+    src/3d/CultivatedAreaMesh.h \
+    src/3d/CultivatedAreaMeshGeometry.h \
     src/block/AckermannSteering.h \
     src/block/ActionDockBlock.h \
     src/block/AngularVelocityLimiter.h \
