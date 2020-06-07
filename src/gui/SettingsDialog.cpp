@@ -96,7 +96,7 @@
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 
 #include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>

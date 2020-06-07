@@ -49,7 +49,7 @@
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../kinematic/PathPrimitive.h"

@@ -40,7 +40,7 @@
 
 #include "BlockBase.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../3d/BufferMesh.h"

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 
 class PathPrimitiveLine;
 class PathPrimitiveRay;

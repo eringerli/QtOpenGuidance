@@ -32,7 +32,7 @@
 
 #include "../block/BlockBase.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class TrailerKinematic : public BlockBase {

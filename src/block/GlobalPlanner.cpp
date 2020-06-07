@@ -21,7 +21,7 @@
 
 #include <QFileDialog>
 
-#include "../cgal.h"
+#include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
 
 GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )

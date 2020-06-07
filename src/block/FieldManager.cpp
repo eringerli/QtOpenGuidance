@@ -21,7 +21,7 @@
 
 #include <QFileDialog>
 
-#include "../cgal.h"
+#include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
 
 FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )

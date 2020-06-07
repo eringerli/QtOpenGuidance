@@ -35,7 +35,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class ActionDockBlock : public BlockBase {

@@ -43,7 +43,7 @@
 #include "FontComboboxDelegate.h"
 #include "TransmissionBlockModel.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 
 class SpaceNavigatorPollingThread;
 class GeographicConvertionWrapper;

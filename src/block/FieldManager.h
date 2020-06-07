@@ -44,7 +44,7 @@
 
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 #include "../kinematic/PathPrimitive.h"
 

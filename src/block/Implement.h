@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 
 #include <QObject>
 

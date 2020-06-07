@@ -32,7 +32,7 @@
 
 #include "BlockBase.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 class TractorModel : public BlockBase {

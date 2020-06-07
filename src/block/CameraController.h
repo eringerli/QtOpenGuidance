@@ -31,7 +31,7 @@
 
 #include "BlockBase.h"
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 #include "../kinematic/PoseOptions.h"
 
 #pragma once

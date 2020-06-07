@@ -23,7 +23,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../cgalKernel.h"
+#include "../kinematic/cgalKernel.h"
 
 #include "../gui/MyMainWindow.h"
 #include "../gui/ThreeValuesDock.h"

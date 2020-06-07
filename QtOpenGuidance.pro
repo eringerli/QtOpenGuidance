@@ -191,8 +191,8 @@ unix {
 }
 
 HEADERS += \
-    src/cgal.h \
-    src/cgalKernel.h
+    src/kinematic/cgal.h \
+    src/kinematic/cgalKernel.h
 
 FORMS += \
     src/gui/ActionToolbar.ui \

@@ -18,7 +18,7 @@
 
 #include "LocalPlanner.h"
 
-#include "../cgal.h"
+#include "../kinematic/cgal.h"
 
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/PathPrimitiveLine.h"
