@@ -156,7 +156,7 @@ int main( int argc, char** argv ) {
 
   auto* view = new Qt3DExtras::Qt3DWindow();
 
-  qDebug()<<"OpenGL: " << view->format().majorVersion() << view->format().minorVersion();
+  qDebug() << "OpenGL: " << view->format().majorVersion() << view->format().minorVersion();
 
   qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
 

@@ -63,10 +63,6 @@ void SprayerModel::setSections() {
     const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn );
 
     for( int sectionIndex = 0; sectionIndex < numSections; ++sectionIndex ) {
-
-      QElapsedTimer timer;
-      timer.start();
-
       const auto& section = implement->sections.at( sectionIndex + 1 );
       const auto& state = section->state();
 
