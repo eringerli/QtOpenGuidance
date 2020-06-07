@@ -45,7 +45,7 @@ class CgalWorker : public QObject {
     bool isCollinear( std::vector<Point_2>* pointsPointer, bool emitSignal = false );
     void connectPoints( std::vector<Point_2>* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal = false );
     void simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal = false );
-    void simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation, bool emitSignal = false );
+    void simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation );
 
   signals:
     void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>, double );

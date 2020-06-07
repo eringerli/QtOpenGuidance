@@ -212,7 +212,7 @@ void GlobalPlanner::createPlanAB() {
     }
 
     if( abPolyline.size() > 2 ) {
-      emit requestPolylineSimplification( &abPolyline, 0.1, true );
+      emit requestPolylineSimplification( &abPolyline, 0.1 );
     }
   }
 }

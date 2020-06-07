@@ -168,7 +168,7 @@ class GlobalPlanner : public BlockBase {
 
     void setAdditionalPointsContinous( bool enabled ) {
       if( recordContinous && !enabled ) {
-        emit requestPolylineSimplification( &abPolyline, maxDeviation, true );
+        emit requestPolylineSimplification( &abPolyline, maxDeviation );
       }
 
       recordContinous = enabled;
@@ -194,7 +194,7 @@ class GlobalPlanner : public BlockBase {
       this->maxDeviation = maxDeviation;
 
       if( abPolyline.size() > 2 ) {
-        emit requestPolylineSimplification( &abPolyline, maxDeviation, true );
+        emit requestPolylineSimplification( &abPolyline, maxDeviation );
       }
     }
 
@@ -221,7 +221,7 @@ class GlobalPlanner : public BlockBase {
 
   signals:
     void planChanged( const Plan& );
-    void requestPolylineSimplification( std::vector<Point_2>*, double, bool );
+    void requestPolylineSimplification( std::vector<Point_2>*, double );
 
   private:
     void createPlanAB();

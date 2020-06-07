@@ -164,18 +164,14 @@ void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double dist
   }
 }
 
-void CgalWorker::simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation, bool emitSignal ) {
+void CgalWorker::simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation ) {
   PS::Squared_distance_cost cost;
 
   auto polylineOut = new std::vector<Point_2>;
 
   PS::simplify( pointsPointer->begin(), pointsPointer->end(), cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ), std::back_inserter( *polylineOut ) );
 
-  if( emitSignal ) {
-    emit simplifyPolylineResult( polylineOut );
-  } else {
-    delete polylineOut;
-  }
+  emit simplifyPolylineResult( polylineOut );
 }
 
 void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal ) {
