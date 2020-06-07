@@ -48,7 +48,7 @@ class XteGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+    void setPose( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         const Point_2 position2D = to2D( position );
 
@@ -126,7 +126,7 @@ class XteGuidanceFactory : public BlockFactory {
       auto* obj = new XteGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );

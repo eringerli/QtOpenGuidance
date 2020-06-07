@@ -56,7 +56,7 @@ class StanleyGuidance : public BlockBase {
       this->steeringAngle = steeringAngle;
     }
 
-    void setPoseFrontWheels( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseFrontWheels( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionFrontWheels = position;
         this->orientation1AgoFrontWheels = this->orientationFrontWheels;
@@ -64,7 +64,7 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setPoseRearWheels( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseRearWheels( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionRearWheels = position;
         this->orientation1AgoRearWheels = this->orientationRearWheels;
@@ -221,8 +221,8 @@ class StanleyGuidanceFactory : public BlockFactory {
       auto* obj = new StanleyGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
 
       b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );

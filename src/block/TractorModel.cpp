@@ -299,24 +299,24 @@ void TractorModel::setProportions() {
   }
 }
 
-void TractorModel::setPoseTowPoint( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+void TractorModel::setPoseTowPoint( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_towPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPoseHookPoint( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+void TractorModel::setPoseHookPoint( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_towHookTransform->setTranslation( convertPoint3ToQVector3D( position ) );
   }
 }
 
-void TractorModel::setPosePivotPoint( const Point_3& position, const QQuaternion rotation, const PoseOption::Options options ) {
+void TractorModel::setPosePivotPoint( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_pivotPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
     m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
-    m_rootEntityTransform->setRotation( rotation );
+    m_rootEntityTransform->setRotation( orientation );
   }
 }
 

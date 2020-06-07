@@ -76,7 +76,7 @@ class LocalPlanner : public BlockBase {
       dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
     }
 
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
+    void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options );
 
     void setPlan( const Plan& plan );
 
@@ -102,7 +102,7 @@ class LocalPlanner : public BlockBase {
 
   signals:
     void planChanged( const Plan& );
-    void triggerPlanPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options );
+    void triggerPlanPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options );
     void resetTurningStateOfDock();
 
   public:
@@ -160,14 +160,14 @@ class LocalPlannerFactory : public BlockFactory {
 
       mainWindow->addDockWidget( object->dock, location );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( bool ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 
       return b;

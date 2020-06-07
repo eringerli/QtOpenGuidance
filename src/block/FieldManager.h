@@ -69,14 +69,14 @@ class FieldManager : public BlockBase {
     void alphaShape();
 
   public slots:
-    void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
+    void setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
       }
     }
 
-    void setPoseLeftEdge( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+    void setPoseLeftEdge( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
@@ -98,7 +98,7 @@ class FieldManager : public BlockBase {
       }
     }
 
-    void setPoseRightEdge( const Point_3& position, const QQuaternion, const PoseOption::Options options ) {
+    void setPoseRightEdge( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
@@ -252,9 +252,9 @@ class FieldManagerFactory : public BlockFactory {
       auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 

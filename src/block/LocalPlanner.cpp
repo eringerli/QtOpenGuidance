@@ -28,7 +28,7 @@
 
 #include <dubins/dubins.h>
 
-void LocalPlanner::setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+void LocalPlanner::setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;

@@ -107,7 +107,7 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) + ( orientation * m_offset ) );
         m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
@@ -241,7 +241,7 @@ class CameraControllerFactory : public BlockFactory {
       auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

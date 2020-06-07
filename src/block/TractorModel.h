@@ -43,9 +43,9 @@ class TractorModel : public BlockBase {
     ~TractorModel();
 
   public slots:
-    void setPoseHookPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
-    void setPoseTowPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
-    void setPosePivotPoint( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void setPoseHookPoint( const Point_3, const QQuaternion, const PoseOption::Options );
+    void setPoseTowPoint( const Point_3, const QQuaternion, const PoseOption::Options );
+    void setPosePivotPoint( const Point_3, const QQuaternion, const PoseOption::Options );
 
     void setSteeringAngleLeft( double steerAngle );
     void setSteeringAngleRight( double steerAngle );
@@ -111,9 +111,9 @@ class TractorModelFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );
       b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
       b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( double ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( double ) ) ) );

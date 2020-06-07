@@ -50,7 +50,7 @@ class FixedKinematic : public BlockBase {
       m_offsetHookPoint = position;
     }
 
-    void setPose( const Point_3& position, const QQuaternion rotation, const PoseOption::Options options ) {
+    void setPose( const Point_3 position, const QQuaternion rotation, const PoseOption::Options options ) {
       QQuaternion orientation = QQuaternion();
 
       if( !options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
@@ -86,9 +86,9 @@ class FixedKinematic : public BlockBase {
     }
 
   signals:
-    void poseHookPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
-    void posePivotPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
-    void poseTowPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
+    void posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
+    void poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
@@ -113,11 +113,11 @@ class FixedKinematicFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
       b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

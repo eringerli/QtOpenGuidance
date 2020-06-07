@@ -124,7 +124,7 @@ void PathPlannerModel::refreshColors() {
   bisectorsMaterial->setAmbient( bisectorsColor );
 }
 
-void PathPlannerModel::setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options ) {
+void PathPlannerModel::setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;

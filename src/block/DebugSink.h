@@ -78,7 +78,7 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setPose( const Point_3& position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << orientation << options;
       } else {
@@ -125,7 +125,7 @@ class DebugSinkFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( double, double, double ) ) ) );
       b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( QVector3D ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 

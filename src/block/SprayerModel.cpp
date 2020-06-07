@@ -45,10 +45,10 @@ SprayerModel::~SprayerModel() {
   m_rootEntity->deleteLater();
 }
 
-void SprayerModel::setPose( const Point_3& position, const QQuaternion rotation, const PoseOption::Options options ) {
+void SprayerModel::setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
-    m_rootEntityTransform->setRotation( rotation );
+    m_rootEntityTransform->setRotation( orientation );
   }
 }
 

@@ -39,7 +39,7 @@ class PoseSynchroniser : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPosition( const Point_3& position ) {
+    void setPosition( const Point_3 position ) {
       this->position = position;
       QElapsedTimer timer;
       timer.start();
@@ -52,7 +52,7 @@ class PoseSynchroniser : public BlockBase {
     }
 
   signals:
-    void poseChanged( const Point_3&, const QQuaternion, const PoseOption::Options );
+    void poseChanged( const Point_3, const QQuaternion, const PoseOption::Options );
 
   public:
     virtual void emitConfigSignals() override {
@@ -82,7 +82,7 @@ class PoseSynchroniserFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Point_3& ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const QQuaternion ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
 
       return b;
     }

@@ -104,7 +104,7 @@ class PathPlannerModel : public BlockBase {
       this->plan = plan;
     }
 
-    void setPose( const Point_3& position, const QQuaternion orientation, const PoseOption::Options options );
+    void setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options );
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
@@ -160,7 +160,7 @@ class PathPlannerModelFactory : public BlockFactory {
       auto* obj = new PathPlannerModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3&, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       b->setBrush( modelColor );
