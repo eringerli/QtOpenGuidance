@@ -305,27 +305,26 @@ void SprayerModel::updateProprotions() {
     --numSections;
 
     // get the left most point of the implement
-    double middleOfSection = 0;
+    double sectionOffset = 0;
 
     for( const auto& section : implement->sections ) {
-      middleOfSection +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
+      sectionOffset += section->widthOfSection - section->overlapLeft - section->overlapRight;
     }
 
-    middleOfSection = middleOfSection / 2;
+    sectionOffset = sectionOffset / 2;
 
     for( int i = 0; i < numSections; ++i ) {
       const auto section = implement->sections.at( i + 1 );
-      middleOfSection += section->overlapLeft - section->widthOfSection;
-
+      sectionOffset += section->overlapLeft - section->widthOfSection;
 
       boomMeshes.at( i )->setLength( float( section->widthOfSection ) );
       boomTransforms.at( i )->setTranslation(
-        QVector3D( 0, float( middleOfSection ) + ( boomMeshes.at( i )->length() / 2 ), m_height ) );
+        QVector3D( 0, float( sectionOffset ) + ( section->widthOfSection / 2 ), m_height ) );
 
       sprayTransforms.at( i )->setScale3D( QVector3D( m_height / 3, m_height, section->widthOfSection ) );
       sprayTransforms.at( i )->setTranslation( QVector3D( 0, 0, -m_height / 2 ) );
 
-      middleOfSection += section->overlapRight;
+      sectionOffset += section->overlapRight;
     }
   }
 }
