@@ -399,10 +399,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
     constexpr float metalness = 0.1f;
     constexpr float roughness = 0.5f;
 
-    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
-    auto* yAxis = new Qt3DCore::QEntity( rootEntity );
-    auto* zAxis = new Qt3DCore::QEntity( rootEntity );
 
+    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
     auto* cylinderMesh = new Qt3DExtras::QCylinderMesh( xAxis );
     cylinderMesh->setRadius( 0.2f );
     cylinderMesh->setLength( 10.0f );
@@ -431,6 +429,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
     }
 
     {
+      auto* yAxis = new Qt3DCore::QEntity( rootEntity );
+
       if( usePBR ) {
         auto* material = new Qt3DExtras::QMetalRoughMaterial( yAxis );
         material->setBaseColor( QColor( Qt::red ) );
@@ -451,6 +451,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
     }
 
     {
+      auto* zAxis = new Qt3DCore::QEntity( rootEntity );
+
       if( usePBR ) {
         auto* material = new Qt3DExtras::QMetalRoughMaterial( zAxis );
         material->setBaseColor( QColor( Qt::green ) );
