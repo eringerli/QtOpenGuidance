@@ -50,12 +50,14 @@ SOURCES += \
     src/3d/BufferMeshGeometry.cpp \
     src/3d/CultivatedAreaMesh.cpp \
     src/3d/CultivatedAreaMeshGeometry.cpp \
+    src/3d/texturerendertarget.cpp \
     src/block/ActionDockBlock.cpp \
     src/block/CultivatedAreaModel.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \
     src/block/LocalPlanner.cpp \
     src/block/PathPlannerModel.cpp \
+    src/block/SectionControl.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
     src/block/ValueDockBlockBase.cpp \
@@ -106,6 +108,7 @@ HEADERS += \
     src/3d/BufferMeshGeometry.h \
     src/3d/CultivatedAreaMesh.h \
     src/3d/CultivatedAreaMeshGeometry.h \
+    src/3d/texturerendertarget.h \
     src/block/AckermannSteering.h \
     src/block/ActionDockBlock.h \
     src/block/AngularVelocityLimiter.h \
@@ -132,6 +135,7 @@ HEADERS += \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
+    src/block/SectionControl.h \
     src/block/SliderDockBlock.h \
     src/block/SprayerModel.h \
     src/block/StanleyGuidance.h \

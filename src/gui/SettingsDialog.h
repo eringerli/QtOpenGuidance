@@ -257,6 +257,7 @@ class SettingsDialog : public QDialog {
     BlockFactory* localPlannerFactory = nullptr;
     BlockFactory* stanleyGuidanceFactory = nullptr;
     BlockFactory* xteGuidanceFactory = nullptr;
+    BlockFactory* sectionControlFactory = nullptr;
     BlockFactory* pathPlannerModelFactory = nullptr;
 
     BlockFactory* valueTransmissionBase64DataFactory = nullptr;

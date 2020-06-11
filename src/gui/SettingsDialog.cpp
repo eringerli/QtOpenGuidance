@@ -80,6 +80,7 @@
 #include "../block/StanleyGuidance.h"
 #include "../block/XteGuidance.h"
 #include "../block/PathPlannerModel.h"
+#include "../block/SectionControl.h"
 
 #include "../block/DebugSink.h"
 
@@ -311,6 +312,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
       guidanceToolbarMenu );
   stanleyGuidanceFactory = new StanleyGuidanceFactory();
   xteGuidanceFactory = new XteGuidanceFactory();
+  sectionControlFactory = new SectionControlFactory( mainWindow,
+      KDDockWidgets::Location_OnBottom,
+      guidanceToolbarMenu,
+      rootEntity,
+      static_cast<Qt3DRender::QFrameGraphNode*>( qt3dWindow->activeFrameGraph()->children().front() ) );
 
   pathPlannerModelFactory = new PathPlannerModelFactory( rootEntity );
 
@@ -364,6 +370,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
   localPlannerFactory->addToCombobox( ui->cbNodeType );
+  sectionControlFactory->addToCombobox( ui->cbNodeType );
   pathPlannerModelFactory->addToCombobox( ui->cbNodeType );
   ubxParserFactory->addToCombobox( ui->cbNodeType );
   nmeaParserGGAFactory->addToCombobox( ui->cbNodeType );

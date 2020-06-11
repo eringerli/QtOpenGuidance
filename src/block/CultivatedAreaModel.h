@@ -25,6 +25,7 @@
 
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
+#include <Qt3DRender/QLayer>
 
 #include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
@@ -46,10 +47,15 @@ class CultivatedAreaModel : public BlockBase {
     explicit CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker );
     ~CultivatedAreaModel();
 
+    virtual void emitConfigSignals() override;
+
   public slots:
     void setPose( const Point_3, const QQuaternion, const PoseOption::Options );
     void setImplement( const QPointer<Implement>& );
     void setSections();
+
+  signals:
+    void layerChanged( Qt3DRender::QLayer* );
 
   private:
     CultivatedAreaMesh* createNewMesh();
@@ -62,6 +68,8 @@ class CultivatedAreaModel : public BlockBase {
 
     Qt3DExtras::QMetalRoughMaterial* m_pbrMaterial = nullptr;
     Qt3DExtras::QDiffuseSpecularMaterial* m_phongMaterial = nullptr;
+
+    Qt3DRender::QLayer* m_layer;
 
     QPointer<Implement> implement;
 
@@ -86,6 +94,8 @@ class CultivatedAreaModelFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
       b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+
+      b->addOutputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
 
       b->setBrush( modelColor );
 

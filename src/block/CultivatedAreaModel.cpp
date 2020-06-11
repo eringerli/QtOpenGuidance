@@ -44,6 +44,10 @@ CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThr
   m_phongMaterial->setSpecular( colorCultivatedArea );
   m_phongMaterial->setAlphaBlendingEnabled( true );
   m_phongMaterial->setShininess( 0 );
+
+  m_layer = new Qt3DRender::QLayer( m_baseEntity );
+  m_layer->setRecursive( true );
+  m_baseEntity->addComponent( m_layer );
 }
 
 // order is important! Crashes if a parent entity is removed first!
@@ -51,6 +55,10 @@ CultivatedAreaModel::~CultivatedAreaModel() {
   m_baseEntity->setEnabled( false );
 
   m_baseEntity->deleteLater();
+}
+
+void CultivatedAreaModel::emitConfigSignals() {
+  emit layerChanged( m_layer );
 }
 
 void CultivatedAreaModel::setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
@@ -89,6 +97,14 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
   if( implement != nullptr ) {
     this->implement = implement;
     size_t numSections = implement->sections.size();
+
+    for( auto mesh : sectionMeshes ) {
+      if( mesh != nullptr && mesh->vertexCount() > 3 ) {
+        mesh->optimise( threadForCgalWorker );
+      } else {
+        mesh->deleteLater();
+      }
+    }
 
     sectionMeshes.clear();
     sectionMeshes.resize( numSections - 1, nullptr );
@@ -150,7 +166,12 @@ void CultivatedAreaModel::setSections() {
         }
       } else {
         if( sectionMeshes.at( sectionIndex ) != nullptr ) {
-          sectionMeshes.at( sectionIndex )->optimise( threadForCgalWorker );
+          if( sectionMeshes.at( sectionIndex )->vertexCount() > 3 ) {
+            sectionMeshes.at( sectionIndex )->optimise( threadForCgalWorker );
+          } else {
+            sectionMeshes.at( sectionIndex )->deleteLater();
+          }
+
           sectionMeshes.at( sectionIndex ) = nullptr;
         }
       }
