@@ -83,6 +83,18 @@ class PoseSimulation : public BlockBase {
       m_velocity = velocity;
     }
 
+    void setRollOffset( double offset ) {
+      m_rollOffset = offset;
+    }
+
+    void setPitchOffset( double offset ) {
+      m_pitchOffset = offset;
+    }
+
+    void setYawOffset( double offset ) {
+      m_yawOffset = offset;
+    }
+
     void setSteerAngleFromAutosteer( double steerAngle ) {
       m_steerAngleFromAutosteer = steerAngle;
     }
@@ -144,6 +156,10 @@ class PoseSimulation : public BlockBase {
     double m_steerAngle = 0;
     double m_steerAngleFromAutosteer = 0;
     double m_velocity = 0;
+    double m_rollOffset = 0;
+    double m_pitchOffset = 0;
+    double m_yawOffset = 0;
+
     double m_wheelbase = 2.4f;
 
     QVector3D m_antennaPosition = QVector3D();

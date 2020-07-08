@@ -56,7 +56,14 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
                         0,
                         0,
                         float( qRadiansToDegrees( lastHeading ) )
-                      ) );
+                      ) ) *
+                      QQuaternion::fromEulerAngles( QVector3D(
+                            m_rollOffset,
+                            m_pitchOffset,
+                            m_yawOffset
+                          ) );
+
+
       emit orientationChanged( m_orientation );
     }
     QVector3D antenna =  m_orientation * m_antennaPosition;

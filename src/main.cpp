@@ -318,6 +318,42 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorFrequencyDock, KDDockWidgets::Location_OnRight, simulatorSteeringAngleDock );
   guidanceToolbar->menu->addAction( simulatorFrequencyDock->toggleAction() );
 
+  auto simulatorRollOffset = new SliderDock( widget );
+  auto simulatorRollOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorRollOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorRollOffsetDock->setWidget( simulatorRollOffset );
+  simulatorRollOffsetDock->setTitle( QStringLiteral( "Simulator Roll Offset" ) );
+  simulatorRollOffset->setDecimals( 1 );
+  simulatorRollOffset->setMaximum( 45 );
+  simulatorRollOffset->setMinimum( -45 );
+  simulatorRollOffset->setDefaultValue( 0 );
+  simulatorRollOffset->setUnit( QStringLiteral( " °" ) );
+  mainWindow->addDockWidget( simulatorRollOffsetDock, KDDockWidgets::Location_OnBottom, simulatorVelocityDock );
+  guidanceToolbar->menu->addAction( simulatorRollOffsetDock->toggleAction() );
+
+  auto simulatorPitchOffset = new SliderDock( widget );
+  auto simulatorPitchOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorPitchOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorPitchOffsetDock->setWidget( simulatorPitchOffset );
+  simulatorPitchOffsetDock->setTitle( QStringLiteral( "Simulator Pitch Offset" ) );
+  simulatorPitchOffset->setDecimals( 1 );
+  simulatorPitchOffset->setMaximum( 45 );
+  simulatorPitchOffset->setMinimum( -45 );
+  simulatorPitchOffset->setDefaultValue( 0 );
+  simulatorPitchOffset->setUnit( QStringLiteral( " °" ) );
+  mainWindow->addDockWidget( simulatorPitchOffsetDock, KDDockWidgets::Location_OnBottom, simulatorSteeringAngleDock );
+  guidanceToolbar->menu->addAction( simulatorPitchOffsetDock->toggleAction() );
+
+  auto simulatorYawOffset = new SliderDock( widget );
+  auto simulatorYawOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorYawOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorYawOffsetDock->setWidget( simulatorYawOffset );
+  simulatorYawOffsetDock->setTitle( QStringLiteral( "Simulator Yaw Offset" ) );
+  simulatorYawOffset->setDecimals( 1 );
+  simulatorYawOffset->setMaximum( 45 );
+  simulatorYawOffset->setMinimum( -45 );
+  simulatorYawOffset->setDefaultValue( 0 );
+  simulatorYawOffset->setUnit( QStringLiteral( " °" ) );
+  mainWindow->addDockWidget( simulatorYawOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
+  guidanceToolbar->menu->addAction( simulatorYawOffsetDock->toggleAction() );
+
   // XTE dock
   BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
     mainWindow,
@@ -421,6 +457,12 @@ int main( int argc, char** argv ) {
                     simulatorSteeringAngle, &QWidget::setEnabled );
   QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
                     simulatorFrequency, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorRollOffset, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorPitchOffset, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
+                    simulatorYawOffset, &QWidget::setEnabled );
 
   // connect the signals of the simulator
   QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
@@ -431,6 +473,12 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
   QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ),
                     settingDialog->poseSimulation, SLOT( setFrequency( double ) ) );
+  QObject::connect( simulatorRollOffset, SIGNAL( valueChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setRollOffset( double ) ) );
+  QObject::connect( simulatorPitchOffset, SIGNAL( valueChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setPitchOffset( double ) ) );
+  QObject::connect( simulatorYawOffset, SIGNAL( valueChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setYawOffset( double ) ) );
 
   // guidance dock -> settings dialog
   QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),
