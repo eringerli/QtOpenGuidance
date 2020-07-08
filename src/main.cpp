@@ -90,7 +90,6 @@
 #include "block/ActionDockBlock.h"
 #include "block/SliderDockBlock.h"
 
-
 #include "block/PoseSimulation.h"
 #include "block/PoseSynchroniser.h"
 
@@ -235,7 +234,8 @@ int main( int argc, char** argv ) {
 
   view->defaultFrameGraph()->setClearColor( QColor( 0x4d, 0x4d, 0x4f ) );
   view->defaultFrameGraph()->setFrustumCullingEnabled( false );
-  view->defaultFrameGraph()->setGamma( 2.0f );
+//  view->defaultFrameGraph()->setGamma( 2.2f );
+//  view->defaultFrameGraph()->setShowDebugOverlay( true );
   view->defaultFrameGraph()->setFrustumCullingEnabled( true );
 
 //  // sort the QT3D objects, so transparency works

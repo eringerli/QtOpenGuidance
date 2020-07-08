@@ -184,6 +184,12 @@ class SettingsDialog : public QDialog {
 
     void on_cbPathPlannerBisectors_stateChanged( int arg1 );
 
+    void on_dsbGamma_valueChanged( double arg1 );
+
+    void on_cbShowDebugOverlay_toggled( bool checked );
+
+    void on_pbGammaDefault_clicked();
+
   private:
     void saveGridValuesInSettings();
     void savePathPlannerValuesInSettings();
@@ -197,6 +203,7 @@ class SettingsDialog : public QDialog {
 
   private:
     QMainWindow* mainWindow = nullptr;
+    Qt3DExtras::Qt3DWindow* qt3dWindow = nullptr;
 
   public:
     QComboBox* getCbNodeType();

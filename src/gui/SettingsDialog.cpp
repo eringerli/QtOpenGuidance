@@ -41,6 +41,7 @@
 
 #include "MyMainWindow.h"
 #include <Qt3DExtras/Qt3DWindow>
+#include <Qt3DExtras/QForwardRenderer>
 
 #include "../block/VectorObject.h"
 #include "../block/NumberObject.h"
@@ -106,6 +107,7 @@
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
   QDialog( parent ),
   mainWindow( mainWindow ),
+  qt3dWindow( qt3dWindow ),
   ui( new Ui::SettingsDialog ) {
   // initialise the wrapper for the geographic conversion, so all offsets are the same application-wide
   geographicConvertionWrapperGuidance = new GeographicConvertionWrapper();
@@ -161,6 +163,15 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
         ui->rbMaterialPRB->setChecked( usePBR );
         ui->rbMaterialPhong->setChecked( usePhong );
       }
+    }
+
+    // Qt3D
+    {
+      double gamma = settings.value( QStringLiteral( "Qt3D/Gamma" ), 2.2 ).toDouble();
+      bool showDebugOverlay = settings.value( QStringLiteral( "Qt3D/ShowDebugOverlay" ), false ).toBool();
+
+      ui->dsbGamma->setValue( gamma );
+      ui->cbShowDebugOverlay->setChecked( showDebugOverlay );
     }
 
     blockSettingsSaving = false;
@@ -1705,4 +1716,28 @@ void SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
       }
     }
   }
+}
+
+void SettingsDialog::on_dsbGamma_valueChanged( double arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( QStringLiteral( "Qt3D/Gamma" ), arg1 );
+  settings.sync();
+
+  qt3dWindow->defaultFrameGraph()->setGamma( float( arg1 ) );
+}
+
+void SettingsDialog::on_cbShowDebugOverlay_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
+                      QSettings::IniFormat );
+
+  settings.setValue( QStringLiteral( "Qt3D/ShowDebugOverlay" ), checked );
+  settings.sync();
+
+  qt3dWindow->defaultFrameGraph()->setShowDebugOverlay( checked );
+}
+
+void SettingsDialog::on_pbGammaDefault_clicked() {
+  ui->dsbGamma->setValue( 2.2 );
 }

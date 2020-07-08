@@ -47,7 +47,7 @@
         <enum>Qt::NoFocus</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="tabConfiguration">
         <attribute name="title">
@@ -948,6 +948,16 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabTransmission">
+        <attribute name="title">
+         <string>Transmission</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QTableView" name="tvTransmission"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabGraphics">
         <attribute name="title">
          <string>Graphics</string>
@@ -965,7 +975,7 @@
             <attribute name="title">
              <string>General</string>
             </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_16">
+            <layout class="QVBoxLayout" name="verticalLayout_13">
              <item>
               <widget class="QGroupBox" name="groupBox_3">
                <property name="title">
@@ -975,7 +985,7 @@
                 <item>
                  <widget class="QRadioButton" name="rbMaterialAuto">
                   <property name="text">
-                   <string>Auto (use best avaible)</string>
+                   <string>Auto (use best available)</string>
                   </property>
                   <property name="checked">
                    <bool>true</bool>
@@ -1009,6 +1019,61 @@
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_4">
+               <property name="title">
+                <string>Qt3D</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_13">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>Gamma</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="2">
+                 <widget class="QCheckBox" name="cbShowDebugOverlay">
+                  <property name="text">
+                   <string>Show Debug Overlay</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QDoubleSpinBox" name="dsbGamma">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>10.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>2.200000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QPushButton" name="pbGammaDefault">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="edit-clear"/>
                   </property>
                  </widget>
                 </item>
@@ -1764,16 +1829,6 @@
             </layout>
            </widget>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tabTransmission">
-        <attribute name="title">
-         <string>Transmission</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QTableView" name="tvTransmission"/>
          </item>
         </layout>
        </widget>
