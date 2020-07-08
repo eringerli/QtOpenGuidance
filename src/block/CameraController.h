@@ -109,7 +109,8 @@ class CameraController : public BlockBase {
 
     void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) + ( orientation * m_offset ) );
+        m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) +
+                                     ( QQuaternion::fromEulerAngles( 0, 0, orientation.toEulerAngles().z() ) * m_offset ) );
         m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
         m_cameraEntity->rollAboutViewCenter( 0 );
