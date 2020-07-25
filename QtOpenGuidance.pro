@@ -233,6 +233,8 @@ include($$PWD/lib/geographiclib.pri)
 include($$PWD/lib/cgal.pri)
 include($$PWD/lib/UBX_Parser.pri)
 include($$PWD/lib/dubins_curves.pri)
+include($$PWD/lib/eigen.pri)
+include($$PWD/lib/kalman.pri)
 
 # KDDockWidgets
 INCLUDEPATH += $$KDDOCKWIDGET_INCLUDE
