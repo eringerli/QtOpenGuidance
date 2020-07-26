@@ -57,6 +57,7 @@ SOURCES += \
     src/block/GlobalPlanner.cpp \
     src/block/LocalPlanner.cpp \
     src/block/PathPlannerModel.cpp \
+    src/block/PlotDockBlockBase.cpp \
     src/block/SectionControl.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
@@ -71,6 +72,8 @@ SOURCES += \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/NewOpenSaveToolbar.cpp \
     src/gui/PathPlannerModelBlockModel.cpp \
+    src/gui/PlotBlockModel.cpp \
+    src/gui/PlotDock.cpp \
     src/gui/SectionControlToolbar.cpp \
     src/gui/SliderDock.cpp \
     src/gui/SliderDockBlockModel.cpp \
@@ -131,7 +134,9 @@ HEADERS += \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
     src/block/OrientationDockBlock.h \
+    src/block/OrientationPlotDockBlock.h \
     src/block/PathPlannerModel.h \
+    src/block/PlotDockBlockBase.h \
     src/block/PoseSimulation.h \
     src/block/PoseSynchroniser.h \
     src/block/PositionDockBlock.h \
@@ -147,6 +152,7 @@ HEADERS += \
     src/block/UdpSocket.h \
     src/block/ValueDockBlock.h \
     src/block/ValueDockBlockBase.h \
+    src/block/ValuePlotDockBlock.h \
     src/block/ValueTransmissionBase.h \
     src/block/ValueTransmissionBase64Data.h \
     src/block/ValueTransmissionNumber.h \
@@ -172,6 +178,8 @@ HEADERS += \
     src/gui/NumberBlockModel.h \
     src/gui/PassToolbar.h \
     src/gui/PathPlannerModelBlockModel.h \
+    src/gui/PlotBlockModel.h \
+    src/gui/PlotDock.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
     src/gui/SliderDock.h \
@@ -214,6 +222,7 @@ FORMS += \
     src/gui/GuidanceTurning.ui \
     src/gui/NewOpenSaveToolbar.ui \
     src/gui/PassToolbar.ui \
+    src/gui/PlotDock.ui \
     src/gui/SettingsDialog.ui \
     src/gui/SliderDock.ui \
     src/gui/ThreeValuesDock.ui \

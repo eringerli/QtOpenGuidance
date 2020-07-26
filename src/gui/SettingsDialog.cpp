@@ -240,6 +240,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 6, meterModelFontDelegate );
 
+  plotBlockModel = new PlotBlockModel( scene );
+  filterModelPlot = new QSortFilterProxyModel( scene );
+  filterModelPlot->setDynamicSortFilter( true );
+  filterModelPlot->setSourceModel( plotBlockModel );
+  filterModelPlot->sort( 0, Qt::AscendingOrder );
+  ui->tvPlots->setModel( filterModelPlot );
+
   transmissionBlockModel = new TransmissionBlockModel( scene );
   filterTtransmissionBlockModel = new QSortFilterProxyModel( scene );
   filterTtransmissionBlockModel->setDynamicSortFilter( true );
@@ -1231,10 +1238,12 @@ void SettingsDialog::allModelsReset() {
   implementBlockModel->resetModel();
   pathPlannerModelBlockModel->resetModel();
   meterModel->resetModel();
+  plotBlockModel->resetModel();
   transmissionBlockModel->resetModel();
 
   ui->twValues->resizeColumnsToContents();
   ui->tvMeter->resizeColumnsToContents();
+  ui->tvPlots->resizeColumnsToContents();
   ui->tvTransmission->resizeColumnsToContents();
   ui->twSections->resizeColumnsToContents();
 }
@@ -1395,12 +1404,13 @@ void SettingsDialog::on_pbMeterDefaults_clicked() {
 
   for( const auto& index : constRefOfList ) {
     ui->tvMeter->model()->setData( index.siblingAtColumn( 1 ), true );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 2 ), 0 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 2 ), "" );
     ui->tvMeter->model()->setData( index.siblingAtColumn( 3 ), 1 );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 4 ), 0 );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), QFont( QStringLiteral( "Monospace" ) ) );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), 20 );
-    ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), true );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 4 ), 1 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 5 ), 0 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 6 ), QFont( QStringLiteral( "Monospace" ) ) );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 7 ), 20 );
+    ui->tvMeter->model()->setData( index.siblingAtColumn( 8 ), true );
   }
 }
 
@@ -1740,4 +1750,18 @@ void SettingsDialog::on_cbShowDebugOverlay_toggled( bool checked ) {
 
 void SettingsDialog::on_pbGammaDefault_clicked() {
   ui->dsbGamma->setValue( 2.2 );
+}
+
+void SettingsDialog::on_pbPlotsDefaults_clicked() {
+  QItemSelection selection( ui->tvPlots->selectionModel()->selection() );
+
+  const auto& constRefOfList = selection.indexes();
+
+  for( const auto& index : constRefOfList ) {
+    ui->tvPlots->model()->setData( index.siblingAtColumn( 1 ), false );
+    ui->tvPlots->model()->setData( index.siblingAtColumn( 2 ), true );
+    ui->tvPlots->model()->setData( index.siblingAtColumn( 3 ), QString() );
+    ui->tvPlots->model()->setData( index.siblingAtColumn( 4 ), true );
+    ui->tvPlots->model()->setData( index.siblingAtColumn( 5 ), 20 );
+  }
 }

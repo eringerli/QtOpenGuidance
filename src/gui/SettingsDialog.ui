@@ -744,23 +744,58 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tabMeter">
+       <widget class="QWidget" name="tabDocks">
         <attribute name="title">
-         <string>Value Docks</string>
+         <string>Docks</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_15">
+        <layout class="QVBoxLayout" name="verticalLayout_16">
          <item>
-          <widget class="QTableView" name="tvMeter">
-           <property name="sortingEnabled">
-            <bool>true</bool>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>1</number>
            </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pbMeterDefaults">
-           <property name="text">
-            <string>Defaults</string>
-           </property>
+           <widget class="QWidget" name="tabGauges">
+            <attribute name="title">
+             <string>Gauges</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_15">
+             <item>
+              <widget class="QTableView" name="tvMeter">
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pbMeterDefaults">
+               <property name="text">
+                <string>Defaults</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabPlots">
+            <attribute name="title">
+             <string>Plots</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_17">
+             <item>
+              <widget class="QTableView" name="tvPlots">
+               <property name="sortingEnabled">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pbPlotsDefaults">
+               <property name="text">
+                <string>Defaults</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>

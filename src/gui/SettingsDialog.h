@@ -42,6 +42,7 @@
 #include "ValueBlockModel.h"
 #include "FontComboboxDelegate.h"
 #include "TransmissionBlockModel.h"
+#include "PlotBlockModel.h"
 
 #include "../kinematic/cgalKernel.h"
 
@@ -190,6 +191,8 @@ class SettingsDialog : public QDialog {
 
     void on_pbGammaDefault_clicked();
 
+    void on_pbPlotsDefaults_clicked();
+
   private:
     void saveGridValuesInSettings();
     void savePathPlannerValuesInSettings();
@@ -296,6 +299,9 @@ class SettingsDialog : public QDialog {
     ValueBlockModel* meterModel = nullptr;
     QSortFilterProxyModel* filterModelMeter = nullptr;
     FontComboboxDelegate* meterModelFontDelegate = nullptr;
+
+    PlotBlockModel* plotBlockModel = nullptr;
+    QSortFilterProxyModel* filterModelPlot = nullptr;
 
     TransmissionBlockModel* transmissionBlockModel = nullptr;
     QSortFilterProxyModel* filterTtransmissionBlockModel = nullptr;

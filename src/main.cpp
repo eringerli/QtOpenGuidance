@@ -87,6 +87,9 @@
 #include "block/ValueDockBlock.h"
 #include "block/OrientationDockBlock.h"
 #include "block/PositionDockBlock.h"
+#include "block/ValuePlotDockBlock.h"
+#include "block/OrientationPlotDockBlock.h"
+
 #include "block/ActionDockBlock.h"
 #include "block/SliderDockBlock.h"
 
@@ -381,6 +384,20 @@ int main( int argc, char** argv ) {
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
   positionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // value plot dock
+  BlockFactory* valuePlotDockBlockFactory = new ValuePlotDockBlockFactory(
+    mainWindow,
+    KDDockWidgets::Location_OnRight,
+    guidanceToolbar->menu );
+  valuePlotDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+
+  // orientation plot dock
+  BlockFactory* orientationPlotDockBlockFactory = new OrientationPlotDockBlockFactory(
+    mainWindow,
+    KDDockWidgets::Location_OnRight,
+    guidanceToolbar->menu );
+  orientationPlotDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
 
   // action dock
   BlockFactory* actionDockBlockFactory = new ActionDockBlockFactory(
