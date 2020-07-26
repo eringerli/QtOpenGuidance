@@ -76,7 +76,7 @@ class PoseSimulation : public BlockBase {
     }
 
     void setSteerAngle( double steerAngle ) {
-      m_steerAngle = steerAngle;
+      m_steerAngle = steerAngle + m_steerAngleOffset;
     }
 
     void setVelocity( double velocity ) {
@@ -95,8 +95,12 @@ class PoseSimulation : public BlockBase {
       m_yawOffset = offset;
     }
 
+    void setSteerAngleOffset( double offset ) {
+      m_steerAngleOffset = offset;
+    }
+
     void setSteerAngleFromAutosteer( double steerAngle ) {
-      m_steerAngleFromAutosteer = steerAngle;
+      m_steerAngleFromAutosteer = steerAngle + m_steerAngleOffset;
     }
 
 
@@ -159,6 +163,7 @@ class PoseSimulation : public BlockBase {
     double m_rollOffset = 0;
     double m_pitchOffset = 0;
     double m_yawOffset = 0;
+    double m_steerAngleOffset = 0;
 
     double m_wheelbase = 2.4f;
 

@@ -83,10 +83,12 @@
 #include "block/TractorModel.h"
 #include "block/TrailerModel.h"
 #include "block/GridModel.h"
+
 #include "block/XteDockBlock.h"
 #include "block/ValueDockBlock.h"
 #include "block/OrientationDockBlock.h"
 #include "block/PositionDockBlock.h"
+
 #include "block/ValuePlotDockBlock.h"
 #include "block/OrientationPlotDockBlock.h"
 
@@ -357,6 +359,18 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorYawOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
   guidanceToolbar->menu->addAction( simulatorYawOffsetDock->toggleAction() );
 
+  auto simulatorSteerAngleOffset = new SliderDock( widget );
+  auto simulatorSteerAngleOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteerAngleOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  simulatorSteerAngleOffsetDock->setWidget( simulatorSteerAngleOffset );
+  simulatorSteerAngleOffsetDock->setTitle( QStringLiteral( "Simulator SteerAngle Offset" ) );
+  simulatorSteerAngleOffset->setDecimals( 1 );
+  simulatorSteerAngleOffset->setMaximum( 45 );
+  simulatorSteerAngleOffset->setMinimum( -45 );
+  simulatorSteerAngleOffset->setDefaultValue( 0 );
+  simulatorSteerAngleOffset->setUnit( QStringLiteral( " °" ) );
+  mainWindow->addDockWidget( simulatorSteerAngleOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
+  guidanceToolbar->menu->addAction( simulatorSteerAngleOffsetDock->toggleAction() );
+
   // XTE dock
   BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
     mainWindow,
@@ -496,6 +510,8 @@ int main( int argc, char** argv ) {
                     settingDialog->poseSimulation, SLOT( setPitchOffset( double ) ) );
   QObject::connect( simulatorYawOffset, SIGNAL( valueChanged( double ) ),
                     settingDialog->poseSimulation, SLOT( setYawOffset( double ) ) );
+  QObject::connect( simulatorSteerAngleOffset, SIGNAL( valueChanged( double ) ),
+                    settingDialog->poseSimulation, SLOT( setSteerAngleOffset( double ) ) );
 
   // guidance dock -> settings dialog
   QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),
