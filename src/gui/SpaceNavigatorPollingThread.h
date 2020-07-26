@@ -73,6 +73,8 @@ class SpaceNavigatorPollingThread : public QThread {
             float steerAngle = float( event.motion.ry ) / 400 * 45;
             float velocity = float( event.motion.rx ) / 400 * -15;
 
+//            qDebug() << event.motion.rx << event.motion.ry << event.motion.rz << event.motion.x << event.motion.y << event.motion.z;
+
             emit steerAngleChanged( steerAngle );
             emit velocityChanged( velocity );
           }

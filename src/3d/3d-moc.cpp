@@ -20,3 +20,4 @@
 #include "moc_BufferMeshGeometry.cpp"
 #include "moc_BufferMesh.cpp"
 #include "moc_CultivatedAreaMesh.cpp"
+#include "moc_texturerendertarget.cpp"

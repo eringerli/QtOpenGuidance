@@ -76,6 +76,10 @@ class ImplementSection {
       }
 
       if( stateOfSection.testFlag( State::Automatic ) ) {
+        if( stateOfSection.testFlag( State::AutomaticOff ) ) {
+          return false;
+        }
+
         if( stateOfSection.testFlag( State::AutomaticOn ) ) {
           return true;
         }

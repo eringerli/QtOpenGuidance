@@ -18,6 +18,7 @@
 
 #include "moc_AckermannSteering.cpp"
 #include "moc_ActionDockBlock.cpp"
+#include "moc_AngularVelocityLimiter.cpp"
 #include "moc_BlockBase.cpp"
 #include "moc_CameraController.cpp"
 #include "moc_CommunicationJrk.cpp"
@@ -61,6 +62,7 @@
 #include "moc_ValueTransmissionState.cpp"
 #include "moc_VectorObject.cpp"
 #include "moc_XteDockBlock.cpp"
+#include "moc_XteGuidance.cpp"
 
 #ifdef SERIALPORT_ENABLED
 #include "moc_SerialPort.cpp"

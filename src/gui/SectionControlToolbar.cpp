@@ -224,8 +224,9 @@ void SectionControlToolbar::autoToggled( bool checked ) {
   auto* clickedButton = qobject_cast<QToolButton*>( sender() );
 
   if( clickedButton != nullptr ) {
-    const auto& section = implement->sections[0];
-    section->setState( ImplementSection::State::Automatic, checked );
+    for( auto& section : implement->sections ) {
+      section->setState( ImplementSection::State::Automatic, checked );
+    }
 
     if( checked ) {
       clickedButton->setPalette( buttonYellow );
