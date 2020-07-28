@@ -105,19 +105,44 @@ class PlotDockBlockBase : public BlockBase {
     }
     void setAutoscrollEnabled( bool enabled ) {
       autoScrollEnabled = enabled;
+
+      if( !enabled ) {
+        widget->getQCustomPlotWidget()->setInteractions( QCP::Interaction::iRangeDrag | QCP::Interaction::iRangeZoom );
+      } else {
+        widget->getQCustomPlotWidget()->setInteractions( QCP::Interaction() );
+      }
+
+      setNameHelper();
     }
     void setWindow( double window ) {
       this->window = window;
     }
 
   public slots:
+    void setName( const QString& name ) override {
+      this->name = name;
+      setNameHelper();
+    }
+
+    void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* ) {
+      setAutoscrollEnabled( !autoScrollEnabled );
+    }
+
+  private:
+    void setNameHelper() {
+      dock->setTitle( name + ( autoScrollEnabled ? QString() : QStringLiteral( " (m)" ) ) );
+      dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name );
+    }
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;
     PlotDock* widget = nullptr;
 
+    QString name;
+
     bool autoScrollEnabled = true;
     double window = 20;
+    bool interactable = false;
 
     static KDDockWidgets::DockWidget* firstPlotDock;
 };

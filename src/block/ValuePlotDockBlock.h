@@ -63,11 +63,6 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
     }
 
   public slots:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name );
-    }
-
     void addValue0( double value ) {
       double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
@@ -106,9 +101,8 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
 
       if( autoScrollEnabled ) {
         widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
+        widget->getQCustomPlotWidget()->yAxis->rescale( true );
       }
-
-      widget->getQCustomPlotWidget()->yAxis->rescale( true );
 
       widget->getQCustomPlotWidget()->replot();
     }
@@ -150,6 +144,8 @@ class ValuePlotDockBlockFactory : public BlockFactory {
       } else {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
       }
+
+      QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
       b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( double ) ) ) );
       b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( double ) ) ) );

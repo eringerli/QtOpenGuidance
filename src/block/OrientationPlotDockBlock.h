@@ -77,11 +77,6 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
     }
 
   public slots:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name );
-    }
-
     void setOrientation( QQuaternion orientation ) {
       QVector3D eulerAngles = orientation.toEulerAngles();
       double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
@@ -103,9 +98,8 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
 
       if( autoScrollEnabled ) {
         widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
+        widget->getQCustomPlotWidget()->yAxis->rescale( true );
       }
-
-      widget->getQCustomPlotWidget()->yAxis->rescale( true );
 
       widget->getQCustomPlotWidget()->replot();
     }
@@ -147,6 +141,8 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
       } else {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
       }
+
+      QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
       b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
