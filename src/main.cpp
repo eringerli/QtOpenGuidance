@@ -513,16 +513,6 @@ int main( int argc, char** argv ) {
   QObject::connect( simulatorSteerAngleOffset, SIGNAL( valueChanged( double ) ),
                     settingDialog->poseSimulation, SLOT( setSteerAngleOffset( double ) ) );
 
-  // guidance dock -> settings dialog
-  QObject::connect( guidanceToolbar, SIGNAL( a_clicked() ),
-                    settingDialog->plannerGui, SIGNAL( a_clicked() ) );
-  QObject::connect( guidanceToolbar, SIGNAL( b_clicked() ),
-                    settingDialog->plannerGui, SIGNAL( b_clicked() ) );
-  QObject::connect( guidanceToolbar, SIGNAL( snap_clicked() ),
-                    settingDialog->plannerGui, SIGNAL( snap_clicked() ) );
-  QObject::connect( guidanceToolbar, SIGNAL( autosteerEnabled( bool ) ),
-                    settingDialog->plannerGui, SIGNAL( autosteerEnabled( bool ) ) );
-
   // passes dock -> global planner block
   QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
                     settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool, bool ) ) );
