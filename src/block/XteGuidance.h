@@ -19,8 +19,6 @@
 #pragma once
 
 #include <QObject>
-
-#include <QQuaternion>
 #include <QVector3D>
 
 #include "BlockBase.h"
@@ -29,7 +27,9 @@
 #include "qneport.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
+
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/Plan.h"
 
@@ -48,7 +48,7 @@ class XteGuidance : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setPose( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
+    void setPose( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         const Point_2 position2D = to2D( position );
 
@@ -105,7 +105,7 @@ class XteGuidance : public BlockBase {
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
-    QQuaternion orientation = QQuaternion();
+    Eigen::Quaterniond orientation = Eigen::Quaterniond();
 
   private:
     Plan plan;
@@ -126,7 +126,7 @@ class XteGuidanceFactory : public BlockFactory {
       auto* obj = new XteGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );

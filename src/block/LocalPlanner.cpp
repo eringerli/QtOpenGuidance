@@ -19,6 +19,7 @@
 #include "LocalPlanner.h"
 
 #include "../kinematic/cgal.h"
+#include "../kinematic/eigenHelper.h"
 
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/PathPrimitiveLine.h"
@@ -28,7 +29,7 @@
 
 #include <dubins/dubins.h>
 
-void LocalPlanner::setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;
@@ -50,7 +51,7 @@ void LocalPlanner::setPose( const Point_3 position, QQuaternion orientation, Pos
 
         if( lastPrimitive->anyDirection ) {
           double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
-          double steerAngleAbsoluteDegrees = steeringAngleDegrees + orientation.toEulerAngles().z();
+          double steerAngleAbsoluteDegrees = steeringAngleDegrees + qRadiansToDegrees( quaternionToEuler( orientation ).z() );
 
           if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
             auto reverse = lastPrimitive->createReverse();
@@ -127,7 +128,7 @@ void LocalPlanner::numSkipChanged( int left, int right ) {
 void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
   if( !globalPlan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
-    const double heading = orientation.toEulerAngles().z();
+    const double heading = qRadiansToDegrees( quaternionToEuler( orientation ).z() );
 
     if( !changeExistingTurn ) {
       positionTurnStart = position2D;

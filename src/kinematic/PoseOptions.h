@@ -26,12 +26,12 @@ class PoseOption {
 
   public:
     enum Option {
-      NoOptions = 0x0,
-      CalculateLocalOffsets = 0x1,
-      CalculateWithoutOrientation = 0x2,
+      NoOptions = 0,
+      CalculateLocalOffsets = ( 1 << 1 ),
+      CalculateWithoutOrientation = ( 1 << 2 ),
 
       /// If set, calculate in the first kinematic without the hookpoint offset. Reset after first use!
-      CalculateFromPivotPoint = 0x4
+      CalculateFromPivotPoint = ( 1 << 3 ),
     };
     Q_DECLARE_FLAGS( Options, Option )
     Q_FLAG( Options )

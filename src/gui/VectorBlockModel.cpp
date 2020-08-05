@@ -125,19 +125,19 @@ bool VectorBlockModel::setData( const QModelIndex& index, const QVariant& value,
               return true;
 
             case 1:
-              object->vector.setX( value.toString().toFloat() );
+              object->vector.x() = value.toString().toDouble();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
-              object->vector.setY( value.toString().toFloat() );
+              object->vector.y() = value.toString().toDouble();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
-              object->vector.setZ( value.toString().toFloat() );
+              object->vector.z() = value.toString().toDouble();
               object->emitConfigSignals();
               emit dataChanged( index, index, QVector<int>() << role );
               return true;

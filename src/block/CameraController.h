@@ -32,6 +32,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #pragma once
@@ -107,10 +108,10 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) +
-                                     ( QQuaternion::fromEulerAngles( 0, 0, orientation.toEulerAngles().z() ) * m_offset ) );
+                                     ( QQuaternion::fromEulerAngles( 0, 0, toQQuaternion( orientation ).toEulerAngles().z() ) * m_offset ) );
         m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
         m_cameraEntity->rollAboutViewCenter( 0 );
@@ -242,7 +243,7 @@ class CameraControllerFactory : public BlockFactory {
       auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       return b;
     }

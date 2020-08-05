@@ -39,6 +39,7 @@
 #include "moc_NmeaParserRMC.cpp"
 #include "moc_NumberObject.cpp"
 #include "moc_OrientationDockBlock.cpp"
+#include "moc_OrientationPlotDockBlock.cpp"
 #include "moc_PlotDockBlockBase.cpp"
 #include "moc_PoseSimulation.cpp"
 #include "moc_PoseSynchroniser.cpp"

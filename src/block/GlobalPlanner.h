@@ -20,12 +20,6 @@
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
-#include <QPointF>
-#include <QPolygonF>
-#include <QLineF>
-
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 #include <Qt3DExtras/QSphereMesh>
@@ -50,6 +44,7 @@
 #include <kddockwidgets/DockWidget.h>
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../kinematic/PathPrimitive.h"
@@ -84,13 +79,14 @@ class GlobalPlanner : public BlockBase {
     }
 
   public slots:
-    void setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
+    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->position = position;
         this->orientation = orientation;
 
-        aPointTransform->setRotation( orientation );
-        bPointTransform->setRotation( orientation );
+        auto quat = toQQuaternion( orientation );
+        aPointTransform->setRotation( quat );
+        bPointTransform->setRotation( quat );
 
         auto position2D = to2D( position );
 
@@ -105,7 +101,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseLeftEdge( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
+    void setPoseLeftEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionLeftEdgeOfImplement = position;
@@ -119,7 +115,7 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseRightEdge( const Point_3 position, const QQuaternion, const PoseOption::Options options ) {
+    void setPoseRightEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         positionRightEdgeOfImplement = position;
@@ -229,7 +225,7 @@ class GlobalPlanner : public BlockBase {
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
-    QQuaternion orientation = QQuaternion();
+    Eigen::Quaterniond orientation = Eigen::Quaterniond();
 
     int forwardPasses = 0;
     int reversePasses = 0;
@@ -324,9 +320,9 @@ class GlobalPlannerFactory : public BlockFactory {
 
       mainWindow->addDockWidget( object->dock, location );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 

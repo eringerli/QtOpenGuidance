@@ -20,9 +20,6 @@
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
-
 #include <QDebug>
 
 #include "BlockBase.h"

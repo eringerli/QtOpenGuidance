@@ -196,7 +196,7 @@ class NmeaParserGGAFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
       b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const double ) ) ) );

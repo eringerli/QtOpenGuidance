@@ -20,9 +20,6 @@
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
-
 #include <QDateTime>
 
 #include <QByteArray>
@@ -30,6 +27,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "qneblock.h"
@@ -62,11 +60,13 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setOrientation( QQuaternion value ) {
+    void setOrientation( Eigen::Quaterniond value ) {
+      auto eulers = quaternionToEuler( value );
+
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << eulers.y() << eulers.x() << eulers.z();
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << eulers.y() << eulers.x() << eulers.z();
       }
     }
 
@@ -78,11 +78,13 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setPose( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+      auto eulers = quaternionToEuler( orientation );
+
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << orientation << options;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << eulers.y() << eulers.x() << eulers.z() << options;
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << position.x() << position.y() << position.z() << orientation << options;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << position.x() << position.y() << position.z() << eulers.y() << eulers.x() << eulers.z() << options;
       }
     }
 
@@ -123,9 +125,9 @@ class DebugSinkFactory : public BlockFactory {
       }
 
       b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( double, double, double ) ) ) );
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 

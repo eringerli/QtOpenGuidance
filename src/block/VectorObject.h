@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include <QQuaternion>
+#include <Eigen/Geometry>
 #include <QVector3D>
 
 #include "BlockBase.h"
@@ -32,7 +32,7 @@ class VectorObject : public BlockBase {
 
   public:
     explicit VectorObject()
-      : vector( QVector3D( 0, 0, 0 ) ) {}
+      : vector( Eigen::Vector3d( 0, 0, 0 ) ) {}
 
     void emitConfigSignals() override {
       emit vectorChanged( vector );
@@ -40,9 +40,9 @@ class VectorObject : public BlockBase {
 
     void toJSON( QJsonObject& json ) override {
       QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "X" )] = double( vector.x() );
-      valuesObject[QStringLiteral( "Y" )] = double( vector.y() );
-      valuesObject[QStringLiteral( "Z" )] = double( vector.z() );
+      valuesObject[QStringLiteral( "X" )] = vector.x();
+      valuesObject[QStringLiteral( "Y" )] = vector.y();
+      valuesObject[QStringLiteral( "Z" )] = vector.z();
       json[QStringLiteral( "values" )] = valuesObject;
     }
 
@@ -51,24 +51,24 @@ class VectorObject : public BlockBase {
         QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
         if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
-          vector.setX( float( valuesObject[QStringLiteral( "X" )].toDouble() ) );
+          vector.x() = valuesObject[QStringLiteral( "X" )].toDouble();
         }
 
         if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
-          vector.setY( float( valuesObject[QStringLiteral( "Y" )].toDouble() ) );
+          vector.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
         }
 
         if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
-          vector.setZ( float( valuesObject[QStringLiteral( "Z" )].toDouble() ) );
+          vector.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
         }
       }
     }
 
   signals:
-    void vectorChanged( QVector3D );
+    void vectorChanged( const Eigen::Vector3d );
 
   public:
-    QVector3D vector;
+    Eigen::Vector3d vector;
 };
 
 
@@ -89,7 +89,7 @@ class VectorFactory : public BlockFactory {
       auto* obj = new VectorObject();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( QVector3D ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d ) ) ) );
 
       b->setBrush( valueColor );
 

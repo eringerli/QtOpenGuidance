@@ -23,18 +23,16 @@
 #pragma once
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
+#include "../kinematic/PoseOptions.h"
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
 #include <QMenu>
 
 #include "BlockBase.h"
 
 #include "ImplementSection.h"
-
-#include "../kinematic/PoseOptions.h"
 
 #include "../gui/MyMainWindow.h"
 
@@ -73,10 +71,10 @@ class Implement : public BlockBase {
         width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
       }
 
-      emit leftEdgeChanged( QVector3D( 0, float( -width / 2 ), 0 ) );
-      emit rightEdgeChanged( QVector3D( 0, float( width / 2 ), 0 ) );
+      emit leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ) );
+      emit rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ) );
       emit triggerLocalPose( Point_3( 0, 0, 0 ),
-                             QQuaternion(),
+                             Eigen::Quaterniond(),
                              PoseOption::CalculateLocalOffsets |
                              PoseOption::CalculateWithoutOrientation |
                              PoseOption::CalculateFromPivotPoint );
@@ -129,9 +127,9 @@ class Implement : public BlockBase {
     }
 
   signals:
-    void triggerLocalPose( const Point_3, const QQuaternion, const PoseOption::Options );
-    void leftEdgeChanged( QVector3D );
-    void rightEdgeChanged( QVector3D );
+    void triggerLocalPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+    void leftEdgeChanged( Eigen::Vector3d );
+    void rightEdgeChanged( Eigen::Vector3d );
     void implementChanged( const QPointer<Implement> );
     void sectionsChanged();
 
@@ -191,11 +189,11 @@ class ImplementFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstDock );
       }
 
-      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
       b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
-      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( QVector3D ) ) ) );
-      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( QVector3D ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( Eigen::Vector3d ) ) ) );
 
       model->resetModel();
 

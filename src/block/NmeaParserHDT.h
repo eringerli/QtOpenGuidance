@@ -21,6 +21,7 @@
 #include <QObject>
 
 #include "BlockBase.h"
+#include "../kinematic/eigenHelper.h"
 
 class NmeaParserHDT : public BlockBase {
     Q_OBJECT
@@ -31,7 +32,7 @@ class NmeaParserHDT : public BlockBase {
     }
 
   signals:
-    void orientationChanged( const QQuaternion& );
+    void orientationChanged( const Eigen::Quaterniond& );
 
 
   public slots:
@@ -108,9 +109,9 @@ class NmeaParserHDT : public BlockBase {
               // skip first field
               ++nmeaFileIterator;
 
-              emit orientationChanged( QQuaternion::fromAxisAndAngle(
-                                               QVector3D( 0.0f, 0.0f, 1.0f ),
-                                               nmeaFileIterator->toFloat() ) );
+              emit orientationChanged( Eigen::Quaterniond(
+                                               Eigen::AngleAxisd( qDegreesToRadians( nmeaFileIterator->toDouble() ),
+                                                   Eigen::Vector3d::UnitZ() ) ) );
             }
           }
         }
@@ -142,7 +143,7 @@ class NmeaParserHDTFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const QQuaternion& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
 
       b->setBrush( parserColor );
 

@@ -20,15 +20,13 @@
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
-
 #include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/GeographicConvertionWrapper.h"
 
 #include <QDebug>
@@ -42,23 +40,21 @@ class TransverseMercatorConverter : public BlockBase {
         tmw( tmw ) {}
 
   public slots:
-    void setWGS84Position( const double latitude, const double longitude, const double height ) {
+    void setWGS84Position( const Eigen::Vector3d position ) {
       double x = 0;
       double y = 0;
       double z = 0;
-      tmw->Forward( latitude, longitude, height, x, y, z );
+      tmw->Forward( position.x(), position.y(), position.z(), x, y, z );
 
-      auto point = Point_3( x, y, z );
-      emit positionChanged( point );
+      emit positionChanged( Eigen::Vector3d( x, y, z ) );
     }
 
   signals:
-    void positionChanged( const Point_3& );
+    void positionChanged( const Eigen::Vector3d );
 
   public:
     virtual void emitConfigSignals() override {
-      auto dummyPoint = Point_3( 0, 0, 0 );
-      emit positionChanged( dummyPoint );
+      emit positionChanged( Eigen::Vector3d( 0, 0, 0 ) );
     }
 
   public:
@@ -81,9 +77,9 @@ class TransverseMercatorConverterFactory : public BlockFactory {
       auto* obj = new TransverseMercatorConverter( tmw );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Point_3& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d ) ) ) );
 
       return b;
     }

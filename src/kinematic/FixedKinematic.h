@@ -23,7 +23,6 @@
 #include <QTime>
 #include <QEvent>
 #include <QBasicTimer>
-#include <QQuaternion>
 #include <QVector3D>
 
 #include <QtGlobal>
@@ -32,6 +31,7 @@
 #include "../block/BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class FixedKinematic : public BlockBase {
@@ -40,24 +40,24 @@ class FixedKinematic : public BlockBase {
   public:
     explicit FixedKinematic()
       : BlockBase(),
-        m_offsetHookPoint( QVector3D( 0, 0, 0 ) ), m_offsetTowPoint( QVector3D( -1, 0, 0 ) ) {}
+        m_offsetHookPoint( Eigen::Vector3d( 0, 0, 0 ) ), m_offsetTowPoint( Eigen::Vector3d( -1, 0, 0 ) ) {}
 
   public slots:
-    void setOffsetTowPointPosition( QVector3D position ) {
+    void setOffsetTowPointPosition( Eigen::Vector3d position ) {
       m_offsetTowPoint = position;
     }
-    void setOffsetHookPointPosition( QVector3D position ) {
+    void setOffsetHookPointPosition( Eigen::Vector3d position ) {
       m_offsetHookPoint = position;
     }
 
-    void setPose( const Point_3 position, const QQuaternion rotation, const PoseOption::Options options ) {
-      QQuaternion orientation = QQuaternion();
+    void setPose( const Point_3 position, const Eigen::Quaterniond rotation, const PoseOption::Options options ) {
+      Eigen::Quaterniond orientation = Eigen::Quaterniond();
 
       if( !options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         orientation = rotation;
       }
 
-      QVector3D positionPivotPointCorrection;
+      Eigen::Vector3d positionPivotPointCorrection;
 
       if( !options.testFlag( PoseOption::CalculateFromPivotPoint ) ) {
         positionPivotPointCorrection = orientation * -m_offsetHookPoint;
@@ -67,7 +67,7 @@ class FixedKinematic : public BlockBase {
                                             position.y() + double( positionPivotPointCorrection.y() ),
                                             position.z() + double( positionPivotPointCorrection.z() ) );
 
-      QVector3D positionTowPointCorrection = orientation * m_offsetTowPoint;
+      Eigen::Vector3d positionTowPointCorrection = orientation * m_offsetTowPoint;
       Point_3 positionTowPoint = Point_3( positionPivotPoint.x() + double( positionTowPointCorrection.x() ),
                                           positionPivotPoint.y() + double( positionTowPointCorrection.y() ),
                                           positionPivotPoint.z() + double( positionTowPointCorrection.z() ) );
@@ -86,14 +86,14 @@ class FixedKinematic : public BlockBase {
     }
 
   signals:
-    void poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
-    void posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
-    void poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
+    void poseHookPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+    void posePivotPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+    void poseTowPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetPivotPoint is a negative vector
-    QVector3D m_offsetHookPoint;
-    QVector3D m_offsetTowPoint;
+    Eigen::Vector3d m_offsetHookPoint;
+    Eigen::Vector3d m_offsetTowPoint;
 };
 
 class FixedKinematicFactory : public BlockFactory {
@@ -111,13 +111,13 @@ class FixedKinematicFactory : public BlockFactory {
       auto* obj = new FixedKinematic;
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       return b;
     }

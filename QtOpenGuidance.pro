@@ -32,6 +32,8 @@ include(build-paths.pri)
 QT += 3dcore 3drender 3dinput 3dlogic 3dextras concurrent
 QT += widgets core
 
+DEFINES += _USE_MATH_DEFINES
+
 qtCompileTest(serialport) {
     QT += serialport
     DEFINES += SERIALPORT_ENABLED
@@ -61,6 +63,7 @@ SOURCES += \
     src/block/SectionControl.cpp \
     src/block/SliderDockBlock.cpp \
     src/block/SprayerModel.cpp \
+    src/block/StanleyGuidance.cpp \
     src/block/ValueDockBlockBase.cpp \
     src/block/ValueTransmissionBase.cpp \
     src/block/XteDockBlock.cpp \
@@ -202,7 +205,8 @@ HEADERS += \
     src/kinematic/Plan.h \
     src/kinematic/PlanGlobal.h \
     src/kinematic/PoseOptions.h \
-    src/kinematic/TrailerKinematic.h
+    src/kinematic/TrailerKinematic.h \
+    src/kinematic/eigenHelper.h
 
 unix {
     PRECOMPILED_HEADER  = src/pch.h

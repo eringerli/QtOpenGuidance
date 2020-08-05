@@ -23,6 +23,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include <Eigen/Geometry>
+
 #include "ValueTransmissionBase.h"
 
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
@@ -31,13 +33,13 @@ class ValueTransmissionQuaternion : public ValueTransmissionBase {
     explicit ValueTransmissionQuaternion( int id ) : ValueTransmissionBase( id ) {}
 
   public slots:
-    void setQuaternion( const QQuaternion quaternion ) {
+    void setQuaternion( const Eigen::Quaterniond quaternion ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
       map[QStringLiteral( "x" )] = quaternion.x();
       map[QStringLiteral( "y" )] = quaternion.y();
       map[QStringLiteral( "z" )] = quaternion.z();
-      map[QStringLiteral( "w" )] = quaternion.scalar();
+      map[QStringLiteral( "w" )] = quaternion.w();
 
       emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
@@ -54,13 +56,13 @@ class ValueTransmissionQuaternion : public ValueTransmissionBase {
         auto z = cbor[QStringLiteral( "z" )].toDouble( 0 );
         auto w = cbor[QStringLiteral( "w" )].toDouble( 0 );
 
-        emit quaternionChanged( QQuaternion( float( w ), float( x ), float( y ), float( z ) ) );
+        emit quaternionChanged( Eigen::Quaterniond( w, x, y, z ) );
       }
     }
 
   signals:
     void dataToSend( const QByteArray& );
-    void quaternionChanged( const QQuaternion );
+    void quaternionChanged( const Eigen::Quaterniond );
 
   private:
     QCborStreamReader reader;
@@ -82,9 +84,9 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id, false );
 
       b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( const QQuaternion ) ) ), false );
+      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( const Eigen::Quaterniond ) ) ), false );
 
-      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const QQuaternion ) ) ), false );
+      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const Eigen::Quaterniond ) ) ), false );
       b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 
       b->setBrush( converterColor );

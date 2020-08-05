@@ -28,6 +28,7 @@
 #include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 
+#include "../kinematic/eigenHelper.h"
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker )
   : threadForCgalWorker( threadForCgalWorker ) {
@@ -61,7 +62,7 @@ void CultivatedAreaModel::emitConfigSignals() {
   emit layerChanged( m_layer );
 }
 
-void CultivatedAreaModel::setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
+void CultivatedAreaModel::setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     if( implement != nullptr ) {
       m_baseTransform->setTranslation( QVector3D( 0, 0, position.z() ) );
@@ -70,8 +71,9 @@ void CultivatedAreaModel::setPose( const Point_3 position, const QQuaternion ori
         const auto mesh = sectionMeshes.at( i );
 
         if( mesh != nullptr ) {
-          QVector3D positionCorrectionLeft = orientation * QVector3D( 0, sectionOffsets.at( i * 2 ), 0 );
-          QVector3D positionCorrectionRight = orientation * QVector3D( 0, sectionOffsets.at( ( i * 2 ) + 1 ), 0 );
+          auto quat = toQQuaternion( orientation );
+          QVector3D positionCorrectionLeft = quat * QVector3D( 0, sectionOffsets.at( i * 2 ), 0 );
+          QVector3D positionCorrectionRight = quat * QVector3D( 0, sectionOffsets.at( ( i * 2 ) + 1 ), 0 );
 
           Point_2 point2D = to2D( position );
           auto pointLeft = Point_2( point2D.x() + double( positionCorrectionLeft.x() ),

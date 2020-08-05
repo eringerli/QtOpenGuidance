@@ -41,6 +41,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../3d/BufferMesh.h"
@@ -104,7 +105,7 @@ class GridModel : public BlockBase {
     }
 
   public slots:
-    void setPose( const Point_3 position, QQuaternion, PoseOption::Options ) {
+    void setPose( const Point_3 position, Eigen::Quaterniond, PoseOption::Options ) {
       m_distanceMeasurementTransform->setTranslation( convertPoint3ToQVector3D( position ) );
 
       QVector3D positionModulo( float( std::floor( ( position.x() ) / xStepMax ) * xStepMax ),
@@ -281,7 +282,7 @@ class GridModelFactory : public BlockFactory {
       auto* obj = new GridModel( rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       return b;
     }

@@ -24,14 +24,14 @@
 #include <QMenu>
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
+#include "../kinematic/PoseOptions.h"
 
 #include "../gui/MyMainWindow.h"
 #include "../gui/ThreeValuesDock.h"
 
 #include "BlockBase.h"
 #include "ValueDockBlockBase.h"
-
-#include "../kinematic/PoseOptions.h"
 
 class PositionDockBlock : public ValueDockBlockBase {
     Q_OBJECT
@@ -97,7 +97,7 @@ class PositionDockBlock : public ValueDockBlockBase {
       dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
     }
 
-    void setPose( const Point_3& point, const QQuaternion, const PoseOption::Options ) {
+    void setPose( const Point_3 point, const Eigen::Quaterniond, const PoseOption::Options ) {
       if( wgs84 ) {
         widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
       }
@@ -105,12 +105,12 @@ class PositionDockBlock : public ValueDockBlockBase {
       widget->setValues( point.x(), point.y(), point.z() );
     }
 
-    void setWGS84Position( double lat, double lon, double height ) {
+    void setWGS84Position( const Eigen::Vector3d position ) {
       if( !wgs84 ) {
         widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
       }
 
-      widget->setValues( lon, lat, height );
+      widget->setValues( position.x(), position.y(), position.z() );
     }
 
   public:
@@ -156,8 +156,8 @@ class PositionDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
       }
 
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const double, const double, const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       b->setBrush( dockColor );
 

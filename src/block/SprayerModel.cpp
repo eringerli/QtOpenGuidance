@@ -29,6 +29,7 @@
 
 #include "../3d/BufferMesh.h"
 
+#include "../kinematic/eigenHelper.h"
 
 SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
 
@@ -45,10 +46,10 @@ SprayerModel::~SprayerModel() {
   m_rootEntity->deleteLater();
 }
 
-void SprayerModel::setPose( const Point_3 position, const QQuaternion orientation, const PoseOption::Options options ) {
+void SprayerModel::setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
-    m_rootEntityTransform->setRotation( orientation );
+    m_rootEntityTransform->setRotation( toQQuaternion( orientation ) );
   }
 }
 

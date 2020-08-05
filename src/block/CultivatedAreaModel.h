@@ -33,6 +33,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../block/Implement.h"
@@ -50,7 +51,7 @@ class CultivatedAreaModel : public BlockBase {
     virtual void emitConfigSignals() override;
 
   public slots:
-    void setPose( const Point_3, const QQuaternion, const PoseOption::Options );
+    void setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
     void setImplement( const QPointer<Implement>& );
     void setSections();
 
@@ -91,7 +92,7 @@ class CultivatedAreaModelFactory : public BlockFactory {
       auto* obj = new CultivatedAreaModel( rootEntity, threadForCgalWorker );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
       b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
 

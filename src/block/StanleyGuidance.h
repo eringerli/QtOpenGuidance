@@ -20,16 +20,15 @@
 
 #include <QObject>
 
-#include <QQuaternion>
-#include <QVector3D>
-
 #include "BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
+
 #include "../kinematic/PathPrimitive.h"
 
 #include <QVector>
@@ -56,7 +55,7 @@ class StanleyGuidance : public BlockBase {
       this->steeringAngle = steeringAngle;
     }
 
-    void setPoseFrontWheels( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseFrontWheels( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionFrontWheels = position;
         this->orientation1AgoFrontWheels = this->orientationFrontWheels;
@@ -64,7 +63,7 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setPoseRearWheels( const Point_3 position, QQuaternion orientation, PoseOption::Options options ) {
+    void setPoseRearWheels( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionRearWheels = position;
         this->orientation1AgoRearWheels = this->orientationRearWheels;
@@ -80,55 +79,9 @@ class StanleyGuidance : public BlockBase {
       this->headingOfPathRadiansRearWheels = qDegreesToRadians( headingOfPath );
     }
 
-    void setXteFrontWheels( double distance ) {
-      if( !qIsInf( distance ) && velocity >= 0 ) {
-        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadiansFrontWheels ) - ( qDegreesToRadians( double( orientationFrontWheels.toEulerAngles().z() ) ) ) );
-        double stanleyXteCompensation = atan( ( stanleyGainKForwards * -distance ) / ( velocity + stanleyGainKSoftForwards ) );
-        double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYawForwards *
-            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1AgoFrontWheels.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientationFrontWheels.toEulerAngles().z() ) ) ) -
-              ( yawTrajectory1AgoFrontWheels - headingOfPathRadiansFrontWheels ) ) );
-        double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringForwards * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
-        double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
+    void setXteFrontWheels( double distance );
 
-        if( steerAngleRequested >= maxSteeringAngle ) {
-          steerAngleRequested = maxSteeringAngle;
-        }
-
-        if( steerAngleRequested <= -maxSteeringAngle ) {
-          steerAngleRequested = -maxSteeringAngle;
-        }
-
-//        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadians ) << normalizeAngleRadians( qDegreesToRadians( orientation.toEulerAngles().z() ) );
-
-        emit steerAngleChanged( steerAngleRequested );
-        yawTrajectory1AgoFrontWheels = headingOfPathRadiansFrontWheels;
-      }
-    }
-
-    void setXteRearWheels( double distance ) {
-      if( !qIsInf( distance ) && velocity < 0 ) {
-        double stanleyYawCompensation = /*normalizeAngle*/( ( headingOfPathRadiansRearWheels ) - ( qDegreesToRadians( double( orientationRearWheels.toEulerAngles().z() ) ) ) );
-        double stanleyXteCompensation = atan( ( stanleyGainKReverse * -distance ) / ( velocity + -stanleyGainKSoftReverse ) );
-        double stanleyYawDampening = /*normalizeAngle*/( stanleyGainDampeningYawReverse *
-            ( qDegreesToRadians( normalizeAngleDegrees( double( this->orientation1AgoRearWheels.toEulerAngles().z() ) ) - normalizeAngleDegrees( double( this->orientationRearWheels.toEulerAngles().z() ) ) ) -
-              ( yawTrajectory1AgoRearWheels - headingOfPathRadiansRearWheels ) ) );
-        double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringReverse * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
-        double steerAngleRequested = -qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
-
-        if( steerAngleRequested >= maxSteeringAngle ) {
-          steerAngleRequested = maxSteeringAngle;
-        }
-
-        if( steerAngleRequested <= -maxSteeringAngle ) {
-          steerAngleRequested = -maxSteeringAngle;
-        }
-
-//        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansRearWheels ) << normalizeAngleRadians( qDegreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
-
-        emit steerAngleChanged( steerAngleRequested );
-        yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
-      }
-    }
+    void setXteRearWheels( double distance );
 
     void setStanleyGainKForwards( double stanleyGain ) {
       this->stanleyGainKForwards = stanleyGain;
@@ -175,12 +128,12 @@ class StanleyGuidance : public BlockBase {
 
   public:
     Point_3 positionFrontWheels = Point_3( 0, 0, 0 );
-    QQuaternion orientationFrontWheels = QQuaternion();
-    QQuaternion orientation1AgoFrontWheels = QQuaternion();
+    Eigen::Quaterniond orientationFrontWheels = Eigen::Quaterniond();
+    Eigen::Quaterniond orientation1AgoFrontWheels = Eigen::Quaterniond();
 
     Point_3 positionRearWheels = Point_3( 0, 0, 0 );
-    QQuaternion orientationRearWheels = QQuaternion();
-    QQuaternion orientation1AgoRearWheels = QQuaternion();
+    Eigen::Quaterniond orientationRearWheels = Eigen::Quaterniond();
+    Eigen::Quaterniond orientation1AgoRearWheels = Eigen::Quaterniond();
 
     double velocity = 0;
     double headingOfPathRadiansFrontWheels = 0;
@@ -221,8 +174,8 @@ class StanleyGuidanceFactory : public BlockFactory {
       auto* obj = new StanleyGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
 
       b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );

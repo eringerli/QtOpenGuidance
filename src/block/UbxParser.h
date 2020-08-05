@@ -24,6 +24,8 @@
 
 #include "UBX_Parser.h"
 
+#include "../kinematic/eigenHelper.h"
+
 class UBX_Parser_Helper : public QObject, public UBX_Parser {
     Q_OBJECT
 
@@ -106,12 +108,12 @@ class UbxParser : public BlockBase {
     }
 
   signals:
-    void globalPositionChanged( const double, const double, const double );
+    void globalPositionChanged( const Eigen::Vector3d );
     void velocityChanged( const double );
 
-    void orientationDualAntennaChanged( const QQuaternion& );
-    void orientationVehicleChanged( const QQuaternion& );
-    void orientationMotionChanged( const QQuaternion& );
+    void orientationDualAntennaChanged( const Eigen::Quaterniond );
+    void orientationVehicleChanged( const Eigen::Quaterniond );
+    void orientationMotionChanged( const Eigen::Quaterniond );
 
     void distanceBetweenAntennasChanged( const double );
     void numSatelitesChanged( const double );
@@ -135,7 +137,7 @@ class UbxParser : public BlockBase {
             double /*hMSL*/,
             double hAcc,
             double vAcc ) {
-      emit globalPositionChanged( lon, lat, height );
+      emit globalPositionChanged( Eigen::Vector3d( lon, lat, height ) );
       emit horizontalAccuracyChanged( hAcc );
       emit verticalAccuracyChanged( vAcc );
     }
@@ -149,14 +151,10 @@ class UbxParser : public BlockBase {
             double relPosHeading ) {
       emit orientationDualAntennaChanged(
               // roll
-              QQuaternion::fromAxisAndAngle(
-                      QVector3D( 1.0f, 0.0f, 0.0f ),
-                      float( ( std::asin( relPosD / relPosLenght ) - rollOffset )*rollFactor ) )
+              Eigen::AngleAxisd( ( std::asin( relPosD / relPosLenght ) - rollOffsetRad )*rollFactor, Eigen::Vector3d::UnitX() )
               *
               // heading
-              QQuaternion::fromAxisAndAngle(
-                      QVector3D( 0.0f, 0.0f, 1.0f ),
-                      float( ( relPosHeading - rollOffset )*rollFactor ) )
+              Eigen::AngleAxisd( ( qDegreesToRadians( relPosHeading ) - headingOffsetRad )*headingFactor, Eigen::Vector3d::UnitZ() )
       );
       emit distanceBetweenAntennasChanged( relPosLenght );
     }
@@ -175,24 +173,20 @@ class UbxParser : public BlockBase {
       emit numSatelitesChanged( numSatelites );
       emit hdopChanged( pDOP );
 
-      emit orientationMotionChanged( QQuaternion::fromAxisAndAngle(
-                                             QVector3D( 0.0f, 0.0f, 1.0f ),
-                                             float( ( headingOfMotion - headingOffset )*headingFactor ) ) );
+      emit orientationMotionChanged( Eigen::Quaterniond( Eigen::AngleAxisd( ( qDegreesToRadians( headingOfMotion ) - headingOffsetRad )*headingFactor, Eigen::Vector3d::UnitZ() ) ) );
 
-      emit orientationVehicleChanged( QQuaternion::fromAxisAndAngle(
-                                              QVector3D( 0.0f, 0.0f, 1.0f ),
-                                              float( ( headingOfVehicle - headingOffset )*headingFactor ) ) );
+      emit orientationMotionChanged( Eigen::Quaterniond( Eigen::AngleAxisd( ( qDegreesToRadians( headingOfVehicle ) - headingOffsetRad )*headingFactor, Eigen::Vector3d::UnitZ() ) ) );
     }
 
     void setHeadingOffset( const double headingOffset ) {
-      this->headingOffset = headingOffset;
+      this->headingOffsetRad = qDegreesToRadians( headingOffset );
     }
     void setHeadingFactor( const double headingFactor ) {
       this->headingFactor = headingFactor;
     }
 
     void setRollOffset( const double rollOffset ) {
-      this->rollOffset = rollOffset;
+      this->rollOffsetRad = qDegreesToRadians( rollOffset );
     }
     void setRollFactor( const double rollFactor ) {
       this->rollFactor = rollFactor;
@@ -200,10 +194,10 @@ class UbxParser : public BlockBase {
 
   private:
     UBX_Parser_Helper ubxParser;
-    double headingOffset = 0;
-    double rollOffset = 0;
-    double headingFactor = 0;
-    double rollFactor = 0;
+    double headingOffsetRad = 0;
+    double rollOffsetRad = 0;
+    double headingFactor = 1;
+    double rollFactor = 1;
 };
 
 class UbxParserFactory : public BlockFactory {
@@ -227,11 +221,11 @@ class UbxParserFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "Roll Offset" ), QLatin1String( SLOT( setRollOffset( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Roll Factor" ), QLatin1String( SLOT( setRollFactor( const double ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const double, const double, const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
       b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation Dual Antenna" ), QLatin1String( SIGNAL( orientationDualAntennaChanged( const QQuaternion& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ), QLatin1String( SIGNAL( orientationVehicleChanged( const QQuaternion& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ), QLatin1String( SIGNAL( orientationMotionChanged( const QQuaternion& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation Dual Antenna" ), QLatin1String( SIGNAL( orientationDualAntennaChanged( const Eigen::Quaterniond& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ), QLatin1String( SIGNAL( orientationVehicleChanged( const Eigen::Quaterniond& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ), QLatin1String( SIGNAL( orientationMotionChanged( const Eigen::Quaterniond& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Dist Antennas" ), QLatin1String( SIGNAL( distanceBetweenAntennasChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const double ) ) ) );

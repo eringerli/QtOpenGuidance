@@ -34,6 +34,7 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../block/Implement.h"
@@ -49,36 +50,48 @@ class SectionControl : public BlockBase {
     ~SectionControl();
 
   public slots:
-    void setPose( const Point_3, const QQuaternion, const PoseOption::Options );
+    void setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
     void setImplement( const QPointer<Implement>& );
     void setSections();
     void setLayer( Qt3DRender::QLayer* );
-    void onImageRendered();
+
+    void onImageRenderedTurnOnTexture();
+    void onImageRenderedTurnOffTexture();
 
   private:
-    void requestRenderCapture();
+    void requestRenderCaptureTurnOnTexture();
+    void requestRenderCaptureTurnOffTexture();
 
   signals:
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;
-    QLabel* label = nullptr;
+    QLabel* labelTurnOnTexture = nullptr;
+    QLabel* labelTurnOffTexture = nullptr;
 
   private:
     Qt3DRender::QFrameGraphNode* frameGraphParent = nullptr;
     Qt3DRender::QFrameGraphNode* frameGraph = nullptr;
     Qt3DRender::QLayerFilter* layerFilter = nullptr;
 
-    Qt3DRender::QCamera* cameraEntity = nullptr;
-    QVector3D cameraOffset = QVector3D( 0, 0, 50 );
+    Qt3DRender::QCamera* cameraEntityTurnOnTexture = nullptr;
+    QVector3D cameraOffsetTurnOnTexture = QVector3D( 0, 0, 50 );
 
-    TextureRenderTarget* textureTarget = nullptr;
-    Qt3DRender::QRenderCapture* renderCapture = nullptr;
-    Qt3DRender::QRenderCaptureReply* reply = nullptr;
+    TextureRenderTarget* textureTargetTurnOnTexture = nullptr;
+    Qt3DRender::QRenderCapture* renderCaptureTurnOnTexture = nullptr;
+    Qt3DRender::QRenderCaptureReply* replyTurnOnTexture = nullptr;
+
+    Qt3DRender::QCamera* cameraEntityTurnOffTexture = nullptr;
+    QVector3D cameraOffsetTurnOffTexture = QVector3D( 0, 0, 50 );
+
+    TextureRenderTarget* textureTargetTurnOffTexture = nullptr;
+    Qt3DRender::QRenderCapture* renderCaptureTurnOffTexture = nullptr;
+    Qt3DRender::QRenderCaptureReply* replyTurnOffTexture = nullptr;
 
     QPointer<Implement> implement;
 
     std::vector<double> sectionOffsets;
+    std::vector<uint16_t> sectionPixelOffsets;
 };
 
 class SectionControlFactory : public BlockFactory {
@@ -113,13 +126,13 @@ class SectionControlFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, object, id );
 
       object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->label );
+      object->dock->setWidget( object->labelTurnOnTexture );
 
       menu->addAction( object->dock->toggleAction() );
 
       mainWindow->addDockWidget( object->dock, location );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
       b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
       b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );

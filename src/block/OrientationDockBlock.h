@@ -23,14 +23,14 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../kinematic/cgalKernel.h"
-
 #include "../gui/MyMainWindow.h"
 #include "../gui/ThreeValuesDock.h"
 
 #include "BlockBase.h"
 #include "ValueDockBlockBase.h"
 
+#include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationDockBlock : public ValueDockBlockBase {
@@ -97,13 +97,12 @@ class OrientationDockBlock : public ValueDockBlockBase {
       dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
     }
 
-    void setOrientation( QQuaternion orientation ) {
-      QVector3D eulerAngles = orientation.toEulerAngles();
-
-      widget->setValues( eulerAngles.y(), eulerAngles.x(), eulerAngles.z() );
+    void setOrientation( Eigen::Quaterniond orientation ) {
+      auto eulerAngles = quaternionToEuler( orientation );
+      widget->setValues( qRadiansToDegrees( eulerAngles.y() ), qRadiansToDegrees( eulerAngles.x() ), qRadiansToDegrees( eulerAngles.z() ) );
     }
 
-    void setPose( const Point_3&, const QQuaternion orientation, const PoseOption::Options ) {
+    void setPose( const Point_3, const Eigen::Quaterniond orientation, const PoseOption::Options ) {
       setOrientation( orientation );
     }
 
@@ -148,8 +147,8 @@ class OrientationDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
       }
 
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       b->setBrush( dockColor );
 

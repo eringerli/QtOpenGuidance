@@ -23,7 +23,6 @@
 #include <QTime>
 #include <QEvent>
 #include <QBasicTimer>
-#include <QQuaternion>
 #include <QVector3D>
 
 #include <QtGlobal>
@@ -33,6 +32,7 @@
 #include "../block/BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class TrailerKinematic : public BlockBase {
@@ -43,51 +43,49 @@ class TrailerKinematic : public BlockBase {
       : BlockBase() {}
 
   public slots:
-    void setOffsetTowPointPosition( QVector3D position ) {
-      m_offsetTowPoint = position;
+    void setOffsetTowPointPosition( Eigen::Vector3d position ) {
+      m_offsetTowPoint = Eigen::Vector3d( position.x(), position.y(), position.z() );
     }
-    void setOffsetHookPointPosition( QVector3D position ) {
-      m_offsetHookPoint = position;
+    void setOffsetHookPointPosition( Eigen::Vector3d position ) {
+      m_offsetHookPoint = Eigen::Vector3d( position.x(), position.y(), position.z() );
     }
 
     void setMaxJackknifeAngle( double maxAngle ) {
-      m_maxJackknifeAngle = maxAngle;
+      m_maxJackknifeAngleRad = qDegreesToRadians( maxAngle );
     }
 
     void setMaxAngle( double maxAngle ) {
-      m_maxAngle = maxAngle;
+      m_maxAngleRad = qDegreesToRadians( maxAngle );
     }
 
-    void setPose( const Point_3 position, const QQuaternion rotation, const PoseOption::Options options ) {
-      QQuaternion orientation = rotation;
-      QQuaternion orientationTrailer = QQuaternion();
+    void setPose( const Point_3 position, const Eigen::Quaterniond rotation, const PoseOption::Options options ) {
+      Eigen::Quaterniond orientation = rotation;
+      Eigen::Quaterniond orientationTrailer =  Eigen::Quaterniond();
 
       if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        orientation = QQuaternion();
+        orientation =  Eigen::Quaterniond();
       } else {
 
-        orientationTrailer = QQuaternion::fromAxisAndAngle(
-                                     QVector3D( 0.0f, 0.0f, 1.0f ),
-                                     float( qRadiansToDegrees( qAtan2(
-                                         position.y() - double( m_positionPivotPoint.y() ),
-                                         position.x() - double( m_positionPivotPoint.x() ) ) ) )
-                             );
+        orientationTrailer = Eigen::AngleAxisd( std::atan2( position.y() - m_positionPivotPoint.y(),
+                                                position.x() - m_positionPivotPoint.x() ),
+                                                Eigen::Vector3d::UnitZ()
+                                              );
 
         // the angle between tractor and trailer > m_maxAngleToTowingKinematic -> reset orientation to the one from the tractor
-        float angle = ( orientation.inverted() * orientationTrailer ).toEulerAngles().z();
+        double angle = quaternionToEuler( orientation.inverse() * orientationTrailer ).z();
 
-        if( qAbs( angle ) < m_maxJackknifeAngle ) {
+        if( std::abs( angle ) < m_maxJackknifeAngleRad ) {
 
           // limit the angle to m_maxAngle
-          if( qAbs( angle ) > m_maxAngle ) {
-            orientation = orientation * QQuaternion::fromAxisAndAngle( QVector3D( 0.0f, 0.0f, 1.0f ), m_maxAngle * ( angle > 0 ? 1 : -1 ) );
+          if( std::abs( angle ) > m_maxAngleRad ) {
+            orientation = orientation * Eigen::AngleAxisd( m_maxAngleRad * ( angle > 0 ? 1 : -1 ), Eigen::Vector3d::UnitZ() );
           } else {
             orientation = orientationTrailer;
           }
         }
       }
 
-      QVector3D positionPivotPointCorrection;
+      Eigen::Vector3d positionPivotPointCorrection;
 
       if( !options.testFlag( PoseOption::CalculateFromPivotPoint ) ) {
         positionPivotPointCorrection = orientation * -m_offsetHookPoint;
@@ -101,7 +99,7 @@ class TrailerKinematic : public BlockBase {
         m_positionPivotPoint = positionPivotPoint;
       }
 
-      QVector3D positionTowPointCorrection = orientation * m_offsetTowPoint;
+      Eigen::Vector3d positionTowPointCorrection = orientation * m_offsetTowPoint;
       Point_3 positionTowPoint = Point_3( positionPivotPoint.x() + double( positionTowPointCorrection.x() ),
                                           positionPivotPoint.y() + double( positionTowPointCorrection.y() ),
                                           positionPivotPoint.z() + double( positionTowPointCorrection.z() ) );
@@ -120,18 +118,18 @@ class TrailerKinematic : public BlockBase {
     }
 
   signals:
-    void poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
-    void posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
-    void poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options );
+    void poseHookPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+    void posePivotPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+    void poseTowPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
 
   private:
     // defined in the normal way: x+ is forwards, so m_offsetTowPoint is a negative vector
-    QVector3D m_offsetHookPoint = QVector3D( 6, 0, 0 );
-    QVector3D m_offsetTowPoint = QVector3D( -1, 0, 0 );
+    Eigen::Vector3d m_offsetHookPoint = Eigen::Vector3d( 6, 0, 0 );
+    Eigen::Vector3d m_offsetTowPoint = Eigen::Vector3d( -1, 0, 0 );
     Point_3 m_positionPivotPoint = Point_3( 0, 0, 0 );
 
-    float m_maxJackknifeAngle = 120;
-    float m_maxAngle = 150;
+    double m_maxJackknifeAngleRad = qDegreesToRadians( double( 120 ) );
+    double m_maxAngleRad = qDegreesToRadians( double( 150 ) );
 };
 
 class TrailerKinematicFactory : public BlockFactory {
@@ -149,15 +147,15 @@ class TrailerKinematicFactory : public BlockFactory {
       auto* obj = new TrailerKinematic();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( QVector3D ) ) ) );
-      b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "OffsetHookPoint" ), QLatin1String( SLOT( setOffsetHookPointPosition( Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "OffsetTowPoint" ), QLatin1String( SLOT( setOffsetTowPointPosition( Eigen::Vector3d ) ) ) );
       b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       return b;
     }

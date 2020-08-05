@@ -23,6 +23,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 #include <QDateTime>
+#include <QtMath>
 
 #include "../gui/MyMainWindow.h"
 #include "../gui/PlotDock.h"
@@ -31,6 +32,7 @@
 #include "PlotDockBlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
@@ -77,18 +79,18 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
     }
 
   public slots:
-    void setOrientation( QQuaternion orientation ) {
-      QVector3D eulerAngles = orientation.toEulerAngles();
+    void setOrientation( Eigen::Quaterniond orientation ) {
+      auto eulerAngles = quaternionToEuler( orientation );
       double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
-      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, eulerAngles.y() );
-      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, eulerAngles.x() );
-      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, eulerAngles.z() );
+      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.y() ) );
+      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.x() ) );
+      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.z() ) );
 
       rescale();
     }
 
-    void setPose( const Point_3&, const QQuaternion orientation, const PoseOption::Options ) {
+    void setPose( const Point_3, const Eigen::Quaterniond orientation, const PoseOption::Options ) {
       setOrientation( orientation );
     }
 
@@ -144,8 +146,8 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
 
       QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( QQuaternion ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const QQuaternion, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
 
       b->setBrush( dockColor );
 
