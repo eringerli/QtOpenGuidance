@@ -30,6 +30,7 @@
 #include "moc_MyMainWindow.cpp"
 #include "moc_NewOpenSaveToolbar.cpp"
 #include "moc_NumberBlockModel.cpp"
+#include "moc_OrientationBlockModel.cpp"
 #include "moc_PassToolbar.cpp"
 #include "moc_PathPlannerModelBlockModel.cpp"
 #include "moc_PlotBlockModel.cpp"

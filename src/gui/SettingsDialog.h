@@ -32,6 +32,7 @@
 #include "NewOpenSaveToolbar.h"
 
 #include "VectorBlockModel.h"
+#include "OrientationBlockModel.h"
 #include "NumberBlockModel.h"
 #include "ActionDockBlockModel.h"
 #include "SliderDockBlockModel.h"
@@ -276,11 +277,13 @@ class SettingsDialog : public QDialog {
     BlockFactory* valueTransmissionStateFactory = nullptr;
 
     BlockFactory* vectorFactory = nullptr;
+    BlockFactory* orientationFactory = nullptr;
     BlockFactory* numberFactory = nullptr;
     BlockFactory* stringFactory = nullptr;
 
     QSortFilterProxyModel* filterModelValues = nullptr;
     VectorBlockModel* vectorBlockModel = nullptr;
+    OrientationBlockModel* orientationBlockModel = nullptr;
     NumberBlockModel* numberBlockModel = nullptr;
     ActionDockBlockModel* actionBlockModel = nullptr;
     SliderDockBlockModel* sliderBlockModel = nullptr;

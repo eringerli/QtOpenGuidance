@@ -74,6 +74,7 @@ SOURCES += \
     src/gui/GlobalPlannerToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/NewOpenSaveToolbar.cpp \
+    src/gui/OrientationBlockModel.cpp \
     src/gui/PathPlannerModelBlockModel.cpp \
     src/gui/PlotBlockModel.cpp \
     src/gui/PlotDock.cpp \
@@ -136,6 +137,7 @@ HEADERS += \
     src/block/NmeaParserHDT.h \
     src/block/NmeaParserRMC.h \
     src/block/NumberObject.h \
+    src/block/OrientationBlock.h \
     src/block/OrientationDockBlock.h \
     src/block/OrientationPlotDockBlock.h \
     src/block/PathPlannerModel.h \
@@ -179,6 +181,7 @@ HEADERS += \
     src/gui/MyMainWindow.h \
     src/gui/NewOpenSaveToolbar.h \
     src/gui/NumberBlockModel.h \
+    src/gui/OrientationBlockModel.h \
     src/gui/PassToolbar.h \
     src/gui/PathPlannerModelBlockModel.h \
     src/gui/PlotBlockModel.h \

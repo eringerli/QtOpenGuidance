@@ -44,6 +44,7 @@
 #include <Qt3DExtras/QForwardRenderer>
 
 #include "../block/VectorObject.h"
+#include "../block/OrientationBlock.h"
 #include "../block/NumberObject.h"
 #include "../block/StringObject.h"
 
@@ -204,12 +205,14 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   // Models for the tableview
   filterModelValues = new QSortFilterProxyModel( scene );
   vectorBlockModel = new VectorBlockModel( scene );
+  orientationBlockModel = new OrientationBlockModel( scene );
   numberBlockModel = new NumberBlockModel( scene );
   actionBlockModel = new ActionDockBlockModel( scene );
   sliderBlockModel = new SliderDockBlockModel( scene );
   stringBlockModel = new StringBlockModel( scene );
 
   vectorBlockModel->addToCombobox( ui->cbValues );
+  orientationBlockModel->addToCombobox( ui->cbValues );
   numberBlockModel->addToCombobox( ui->cbValues );
   actionBlockModel->addToCombobox( ui->cbValues );
   sliderBlockModel->addToCombobox( ui->cbValues );
@@ -348,6 +351,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
+  orientationFactory = new OrientationBlockFactory( orientationBlockModel );
   numberFactory = new NumberFactory( numberBlockModel );
   stringFactory = new StringFactory( stringBlockModel );
   debugSinkFactory = new DebugSinkFactory();
@@ -373,6 +377,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory();
 
   vectorFactory->addToCombobox( ui->cbNodeType );
+  orientationFactory->addToCombobox( ui->cbNodeType );
   numberFactory->addToCombobox( ui->cbNodeType );
   stringFactory->addToCombobox( ui->cbNodeType );
   fixedKinematicFactory->addToCombobox( ui->cbNodeType );

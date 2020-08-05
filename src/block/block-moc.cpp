@@ -38,6 +38,7 @@
 #include "moc_NmeaParserHDT.cpp"
 #include "moc_NmeaParserRMC.cpp"
 #include "moc_NumberObject.cpp"
+#include "moc_OrientationBlock.cpp"
 #include "moc_OrientationDockBlock.cpp"
 #include "moc_OrientationPlotDockBlock.cpp"
 #include "moc_PlotDockBlockBase.cpp"
