@@ -76,8 +76,7 @@ class Implement : public BlockBase {
       emit triggerLocalPose( Point_3( 0, 0, 0 ),
                              Eigen::Quaterniond(),
                              PoseOption::CalculateLocalOffsets |
-                             PoseOption::CalculateWithoutOrientation |
-                             PoseOption::CalculateFromPivotPoint );
+                             PoseOption::CalculateWithoutOrientation );
       emit implementChanged( this );
     }
 

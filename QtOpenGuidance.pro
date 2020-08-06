@@ -199,6 +199,7 @@ HEADERS += \
     src/gui/XteDock.h \
     src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
+    src/kinematic/FixedKinematicPrimitive.h \
     src/kinematic/GeographicConvertionWrapper.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PathPrimitiveLine.h \
@@ -209,6 +210,7 @@ HEADERS += \
     src/kinematic/PlanGlobal.h \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h \
+    src/kinematic/TrailerKinematicPrimitive.h \
     src/kinematic/eigenHelper.h
 
 unix {

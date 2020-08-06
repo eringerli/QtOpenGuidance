@@ -17,5 +17,7 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "moc_FixedKinematic.cpp"
+#include "moc_FixedKinematicPrimitive.cpp"
 #include "moc_PoseOptions.cpp"
 #include "moc_TrailerKinematic.cpp"
+#include "moc_TrailerKinematicPrimitive.cpp"

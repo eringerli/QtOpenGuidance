@@ -245,6 +245,8 @@ class SettingsDialog : public QDialog {
     BlockFactory* cultivatedAreaModelFactory = nullptr;
     BlockFactory* fixedKinematicFactory = nullptr;
     BlockFactory* trailerKinematicFactory = nullptr;
+    BlockFactory* fixedKinematicPrimitiveFactory = nullptr;
+    BlockFactory* trailerKinematicPrimitiveFactory = nullptr;
     BlockFactory* debugSinkFactory = nullptr;
     BlockFactory* udpSocketFactory = nullptr;
 

@@ -99,6 +99,8 @@
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
+#include "../kinematic/FixedKinematicPrimitive.h"
+#include "../kinematic/TrailerKinematicPrimitive.h"
 
 #include "../kinematic/cgalKernel.h"
 
@@ -350,6 +352,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   cultivatedAreaModelFactory = new CultivatedAreaModelFactory( rootEntity, usePBR );
   fixedKinematicFactory = new FixedKinematicFactory;
   trailerKinematicFactory = new TrailerKinematicFactory();
+  fixedKinematicPrimitiveFactory = new FixedKinematicPrimitiveFactory;
+  trailerKinematicPrimitiveFactory = new TrailerKinematicPrimitiveFactory();
   vectorFactory = new VectorFactory( vectorBlockModel );
   orientationFactory = new OrientationBlockFactory( orientationBlockModel );
   numberFactory = new NumberFactory( numberBlockModel );
@@ -381,8 +385,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   numberFactory->addToCombobox( ui->cbNodeType );
   stringFactory->addToCombobox( ui->cbNodeType );
   fixedKinematicFactory->addToCombobox( ui->cbNodeType );
+  fixedKinematicPrimitiveFactory->addToCombobox( ui->cbNodeType );
   tractorModelFactory->addToCombobox( ui->cbNodeType );
   trailerKinematicFactory->addToCombobox( ui->cbNodeType );
+  trailerKinematicPrimitiveFactory->addToCombobox( ui->cbNodeType );
   trailerModelFactory->addToCombobox( ui->cbNodeType );
   sprayerModelFactory->addToCombobox( ui->cbNodeType );
   cultivatedAreaModelFactory->addToCombobox( ui->cbNodeType );
@@ -518,6 +524,8 @@ SettingsDialog::~SettingsDialog() {
   sprayerModelFactory->deleteLater();
   fixedKinematicFactory->deleteLater();
   trailerKinematicFactory->deleteLater();
+  fixedKinematicPrimitiveFactory->deleteLater();
+  trailerKinematicPrimitiveFactory->deleteLater();
   vectorFactory->deleteLater();
   numberFactory->deleteLater();
   stringFactory->deleteLater();

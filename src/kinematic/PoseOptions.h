@@ -30,8 +30,8 @@ class PoseOption {
       CalculateLocalOffsets = ( 1 << 1 ),
       CalculateWithoutOrientation = ( 1 << 2 ),
 
-      /// If set, calculate in the first kinematic without the hookpoint offset. Reset after first use!
-      CalculateFromPivotPoint = ( 1 << 3 ),
+      /// cheap update: only do cheap calculations
+      OnlyCheapCalculations = ( 1 << 3 )
     };
     Q_DECLARE_FLAGS( Options, Option )
     Q_FLAG( Options )
