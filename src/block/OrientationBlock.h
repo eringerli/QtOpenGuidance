@@ -16,12 +16,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <cmath>
-#include <Eigen/Eigen>
+#pragma once
 
 #include "../gui/OrientationBlockModel.h"
 
-#pragma once
+#include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
+#include "../kinematic/PoseOptions.h"
+
 
 #include <QObject>
 
@@ -79,6 +81,7 @@ class OrientationBlock : public BlockBase {
         if( averagerEnabled == true ) {
           A.setZero();
           numMeasurements = 0;
+          positionStart = position;
         } else {
           A = ( 1.0 / numMeasurements ) * A;
 
@@ -87,6 +90,14 @@ class OrientationBlock : public BlockBase {
           Eigen::Vector4d qavg = eig.eigenvectors().col( 3 );
 
           orientation = Eigen::Quaterniond( qavg );
+
+          if( position != positionStart ) {
+            auto eulers = quaternionToEuler( orientation );
+            double heading = std::atan2( position.y() - positionStart.y(),
+                                         position.x() - positionStart.x() );
+            qDebug() << eulers.x() << eulers.y() << heading;
+            orientation = eulerToQuaternion( eulers.x(), eulers.y(), heading );
+          }
 
           emit orientationChanged( orientation );
         }
@@ -106,11 +117,31 @@ class OrientationBlock : public BlockBase {
       }
     }
 
+    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+        this->position = position;
+
+        if( averagerEnabled ) {
+          ++numMeasurements;
+          Eigen::Vector4d q( orientation.x(), orientation.y(), orientation.z(), orientation.w() );
+
+          if( q[0] < 0 ) {
+            q = -q;
+          }
+
+          A = q * q.adjoint() + A;
+        }
+      }
+    }
+
   signals:
     void orientationChanged( Eigen::Quaterniond );
 
   public:
     Eigen::Quaterniond orientation;
+    Point_3 position = Point_3( 0, 0, 0 );
+    Point_3 positionStart = Point_3( 0, 0, 0 );
+
     int numMeasurements = 0;
     bool averagerEnabled = false;
     bool averagerEnabledOld = false;
@@ -136,6 +167,7 @@ class OrientationBlockFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( bool ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( Eigen::Quaterniond ) ) ) );
