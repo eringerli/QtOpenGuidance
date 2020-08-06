@@ -474,6 +474,8 @@ int main( int argc, char** argv ) {
                     cameraController, SLOT( resetCamera() ) );
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
                     cameraController, SLOT( setMode( int ) ) );
+  QObject::connect( settingDialog, &SettingsDialog::cameraSmoothingChanged,
+                    cameraController, &CameraController::setCameraSmoothing );
 
   // settings dialog -> grid model
   QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),

@@ -129,6 +129,10 @@ inline const Vector_3 to3D( Vector_2 vector ) {
   return Vector_3( vector.x(), vector.y(), 0 );
 }
 
+inline const Eigen::Vector3d toEigenVector( const Point_3& point ) {
+  return Eigen::Vector3d( point.x(), point.y(), point.z() );
+}
+
 inline Vector_2 polarOffsetRad( const double angleRad, const double distance ) {
   return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
 }

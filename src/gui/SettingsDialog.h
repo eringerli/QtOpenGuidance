@@ -85,6 +85,8 @@ class SettingsDialog : public QDialog {
                                            float,
                                            QColor, QColor );
 
+    void cameraSmoothingChanged( int, int );
+
   public slots:
     void toggleVisibility();
 
@@ -193,6 +195,9 @@ class SettingsDialog : public QDialog {
     void on_pbGammaDefault_clicked();
 
     void on_pbPlotsDefaults_clicked();
+
+    void on_slCameraSmoothingOrientation_valueChanged( int value );
+    void on_slCameraSmoothingPosition_valueChanged( int value );
 
   private:
     void saveGridValuesInSettings();

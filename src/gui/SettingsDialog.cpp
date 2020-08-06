@@ -177,6 +177,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
       ui->cbShowDebugOverlay->setChecked( showDebugOverlay );
     }
 
+    // camera smoothing
+    {
+      ui->slCameraSmoothingOrientation->setValue( settings.value( QStringLiteral( "Camera/orientationSmoothing" ), 0.9 ).toFloat() * 100 );
+      ui->slCameraSmoothingPosition->setValue( settings.value( QStringLiteral( "Camera/positionSmoothing" ), 0.5 ).toFloat() * 100 );
+    }
+
     blockSettingsSaving = false;
   }
 
@@ -301,10 +307,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
 
     fieldManager = fieldManagerObject;
   }
-
-//  plannerGuiFactory = new PlannerGuiBlockFactory();
-//  auto* plannerGuiBlock = plannerGuiFactory->createBlock( ui->gvNodeEditor->scene() );
-//  plannerGui = qobject_cast<ActionDockBlock*>( plannerGuiBlock->object );
 
   globalPlannerFactory = new GlobalPlannerFactory( mainWindow,
       KDDockWidgets::Location_OnRight,
@@ -1092,6 +1094,8 @@ void SettingsDialog::emitAllConfigSignals() {
   emitGridSettings();
 
   emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
+
+  emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), ui->slCameraSmoothingPosition->value() );
 }
 
 QComboBox* SettingsDialog::getCbNodeType() {
@@ -1777,4 +1781,11 @@ void SettingsDialog::on_pbPlotsDefaults_clicked() {
     ui->tvPlots->model()->setData( index.siblingAtColumn( 4 ), true );
     ui->tvPlots->model()->setData( index.siblingAtColumn( 5 ), 20 );
   }
+}
+void SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
+  emit cameraSmoothingChanged( value, ui->slCameraSmoothingPosition->value() );
+}
+
+void SettingsDialog::on_slCameraSmoothingPosition_valueChanged( int value ) {
+  emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), value );
 }

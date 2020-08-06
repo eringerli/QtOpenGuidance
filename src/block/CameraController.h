@@ -66,6 +66,10 @@ class CameraController : public BlockBase {
       calculateOffset();
     }
 
+    ~CameraController() {
+      saveValuesToConfig();
+    }
+
   protected:
     // CameraController also acts an EventFilter to receive the wheel-events of the mouse
     bool eventFilter( QObject*, QEvent* event ) override {
@@ -110,9 +114,13 @@ class CameraController : public BlockBase {
 
     void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        m_cameraEntity->setPosition( convertPoint3ToQVector3D( position ) +
-                                     ( QQuaternion::fromEulerAngles( 0, 0, toQQuaternion( orientation ).toEulerAngles().z() ) * m_offset ) );
-        m_cameraEntity->setViewCenter( convertPoint3ToQVector3D( position ) );
+
+        m_orientationBuffer = QQuaternion::nlerp( m_orientationBuffer, toQQuaternion( orientation ), orientationSmoothing );
+        positionBuffer = toEigenVector( position ) * positionSmoothing + positionBuffer * positionSmoothingInv;
+
+        m_cameraEntity->setPosition( toQVector3D( positionBuffer ) +
+                                     ( QQuaternion::fromEulerAngles( 0, 0, m_orientationBuffer.toEulerAngles().z() ) * m_offset ) );
+        m_cameraEntity->setViewCenter( toQVector3D( positionBuffer ) );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
         m_cameraEntity->rollAboutViewCenter( 0 );
         m_cameraEntity->tiltAboutViewCenter( 0 );
@@ -183,6 +191,16 @@ class CameraController : public BlockBase {
       calculateOffset();
     }
 
+    void setCameraSmoothing( int orientationSmoothing, int positionSmoothing ) {
+      this->orientationSmoothing = 1 - float( orientationSmoothing ) / 100;
+
+      this->positionSmoothingInv = double( positionSmoothing ) / 100;
+      this->positionSmoothing = 1 - positionSmoothingInv;
+
+      saveValuesToConfig();
+    }
+
+  private:
     void calculateOffset() {
       m_offset =
               QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
@@ -197,6 +215,10 @@ class CameraController : public BlockBase {
       settings.setValue( QStringLiteral( "Camera/lenghtToViewCenter" ), lenghtToViewCenter );
       settings.setValue( QStringLiteral( "Camera/panAngle" ), panAngle );
       settings.setValue( QStringLiteral( "Camera/tiltAngle" ), tiltAngle );
+      settings.setValue( QStringLiteral( "Camera/orientationSmoothing" ), float( orientationSmoothing ) );
+      settings.setValue( QStringLiteral( "Camera/positionSmoothing" ), positionSmoothing );
+
+      settings.sync();
     }
 
     void loadValuesFromConfig() {
@@ -219,8 +241,15 @@ class CameraController : public BlockBase {
     Qt3DCore::QTransform* m_lightTransform = nullptr;
 
     QVector3D m_offset = QVector3D();
+    QQuaternion m_orientationBuffer = QQuaternion();
+    Eigen::Vector3d positionBuffer = Eigen::Vector3d( 0, 0, 0 );
 
     int m_mode = 0;
+
+    float orientationSmoothing = 0.1;
+    double positionSmoothing = 0.9;
+    double positionSmoothingInv = 1 - 0.9;
+
 
     float lenghtToViewCenter = 20;
     float panAngle = 0;

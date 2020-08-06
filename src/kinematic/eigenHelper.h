@@ -16,8 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-// only "lightweight" CGAL-stuff here!
-
 #pragma once
 
 #include <cmath>
@@ -49,4 +47,6 @@ inline Eigen::Vector3d toEigenVector3( QVector3D vec ) {
   return Eigen::Vector3d( vec.x(), vec.y(), vec.z() );
 }
 
-//#endif // not __clang_analyzer__
+inline QVector3D toQVector3D( Eigen::Vector3d vec ) {
+  return QVector3D( float( vec.x() ), float( vec.y() ), float( vec.z() ) );
+}
