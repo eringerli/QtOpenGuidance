@@ -23,16 +23,19 @@
 #include "Eigen/Eigen"
 #include "Eigen/Geometry"
 
+#include "unsupported/Eigen/EulerAngles"
+
 #include <QQuaternion>
 
 inline Eigen::Quaterniond eulerToQuaternion( double roll, double pitch, double yaw ) {
-  return Eigen::AngleAxisd( roll, Eigen::Vector3d::UnitX() )
-         * Eigen::AngleAxisd( pitch, Eigen::Vector3d::UnitY() )
-         * Eigen::AngleAxisd( yaw, Eigen::Vector3d::UnitZ() );
+  Eigen::EulerAnglesXYZd euler( roll, pitch, yaw );
+
+  return euler;
 }
 
 inline Eigen::Vector3d quaternionToEuler( Eigen::Quaterniond quaternion ) {
-  return quaternion.toRotationMatrix().eulerAngles( 0, 1, 2 );
+  Eigen::EulerAnglesXYZd euler( quaternion );
+  return euler.angles();
 }
 
 inline Eigen::Quaterniond toEigenQuaternion( QQuaternion quaternion ) {
