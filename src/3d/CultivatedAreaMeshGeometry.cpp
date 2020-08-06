@@ -230,23 +230,33 @@ void CultivatedAreaMeshGeometry::updateBuffers() {
     m_indexAttribute->setCount( indices );
 
     emit vertexCountChanged( indices );
+  } else {
+    emit vertexCountChanged( 0 );
   }
 }
 
 void CultivatedAreaMeshGeometry::optimise( CgalThread* thread ) {
-  auto cgalWorkerLeft = new CgalWorker();
-  cgalWorkerLeft->moveToThread( thread );
-  auto cgalWorkerRight = new CgalWorker();
-  cgalWorkerRight->moveToThread( thread );
+  if( trackPointsLeft.size() > 2 ) {
+    auto cgalWorkerLeft = new CgalWorker();
+    cgalWorkerLeft->moveToThread( thread );
 
-  QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineLeft, cgalWorkerLeft, &CgalWorker::simplifyPolyline );
-  QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineRight, cgalWorkerRight, &CgalWorker::simplifyPolyline );
+    QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineLeft, cgalWorkerLeft, &CgalWorker::simplifyPolyline );
+    QObject::connect( cgalWorkerLeft, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultLeft );
+    waitForOptimition = !waitForOptimition;
 
-  QObject::connect( cgalWorkerLeft, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultLeft );
-  QObject::connect( cgalWorkerRight, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultRight );
+    emit simplifyPolylineLeft( &trackPointsLeft, maxDeviation );
+  }
 
-  emit simplifyPolylineLeft( &trackPointsLeft, maxDeviation );
-  emit simplifyPolylineRight( &trackPointsRight, maxDeviation );
+  if( trackPointsRight.size() > 2 ) {
+    auto cgalWorkerRight = new CgalWorker();
+    cgalWorkerRight->moveToThread( thread );
+
+    QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineRight, cgalWorkerRight, &CgalWorker::simplifyPolyline );
+    QObject::connect( cgalWorkerRight, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultRight );
+    waitForOptimition = !waitForOptimition;
+
+    emit simplifyPolylineRight( &trackPointsRight, maxDeviation );
+  }
 }
 
 void CultivatedAreaMeshGeometry::simplifyPolylineResultLeft( std::vector<Point_2>* points ) {
