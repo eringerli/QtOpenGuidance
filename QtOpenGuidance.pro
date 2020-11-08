@@ -120,10 +120,20 @@ HEADERS += \
     src/block/AckermannSteering.h \
     src/block/ActionDockBlock.h \
     src/block/AngularVelocityLimiter.h \
+    src/block/ArithmeticAddition.h \
+    src/block/ArithmeticDivision.h \
+    src/block/ArithmeticMultiplication.h \
+    src/block/ArithmeticSubtraction.h \
     src/block/BlockBase.h \
     src/block/CameraController.h \
     src/block/CommunicationJrk.h \
     src/block/CommunicationPgn7FFE.h \
+    src/block/ComparisonEqualTo.h \
+    src/block/ComparisonGreaterOrEqualTo.h \
+    src/block/ComparisonGreaterThan.h \
+    src/block/ComparisonLessOrEqualTo.h \
+    src/block/ComparisonLessThan.h \
+    src/block/ComparisonNotEqualTo.h \
     src/block/CultivatedAreaModel.h \
     src/block/DebugSink.h \
     src/block/ExtendedKalmanFilter.h \

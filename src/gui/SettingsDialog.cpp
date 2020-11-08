@@ -48,6 +48,18 @@
 #include "../block/NumberObject.h"
 #include "../block/StringObject.h"
 
+#include "../block/ArithmeticAddition.h"
+#include "../block/ArithmeticSubtraction.h"
+#include "../block/ArithmeticMultiplication.h"
+#include "../block/ArithmeticDivision.h"
+
+#include "../block/ComparisonEqualTo.h"
+#include "../block/ComparisonNotEqualTo.h"
+#include "../block/ComparisonGreaterThan.h"
+#include "../block/ComparisonLessThan.h"
+#include "../block/ComparisonGreaterOrEqualTo.h"
+#include "../block/ComparisonLessOrEqualTo.h"
+
 #include "../block/Implement.h"
 #include "../block/PathPlannerModel.h"
 
@@ -371,6 +383,18 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   debugSinkFactory = new DebugSinkFactory();
   udpSocketFactory = new UdpSocketFactory();
 
+  arithmeticAddition = new ArithmeticAdditionFactory();
+  arithmeticSubtraction = new ArithmeticSubtractionFactory();
+  arithmeticMultiplication = new ArithmeticMultiplicationFactory();
+  arithmeticDivision = new ArithmeticDivisionFactory();
+
+  comparisonEqualTo = new ComparisonEqualToFactory();
+  comparisonNotEqualTo = new ComparisonNotEqualToFactory();
+  comparisonGreaterThan = new ComparisonGreaterThanFactory();
+  comparisonLessThan = new ComparisonLessThanFactory();
+  comparisonGreaterOrEqualTo = new ComparisonGreaterOrEqualToFactory();
+  comparisonLessOrEqualTo = new ComparisonLessOrEqualToFactory();
+
 #ifdef SERIALPORT_ENABLED
   serialPortFactory = new SerialPortFactory();
 #endif
@@ -417,6 +441,18 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   nmeaParserHDTFactory->addToTreeWidget( ui->twBlocks );
   nmeaParserRMCFactory->addToTreeWidget( ui->twBlocks );
   debugSinkFactory->addToTreeWidget( ui->twBlocks );
+
+  arithmeticAddition->addToTreeWidget( ui->twBlocks );
+  arithmeticSubtraction->addToTreeWidget( ui->twBlocks );
+  arithmeticMultiplication->addToTreeWidget( ui->twBlocks );
+  arithmeticDivision->addToTreeWidget( ui->twBlocks );
+
+  comparisonEqualTo->addToTreeWidget( ui->twBlocks );
+  comparisonNotEqualTo->addToTreeWidget( ui->twBlocks );
+  comparisonGreaterThan->addToTreeWidget( ui->twBlocks );
+  comparisonLessThan->addToTreeWidget( ui->twBlocks );
+  comparisonGreaterOrEqualTo->addToTreeWidget( ui->twBlocks );
+  comparisonLessOrEqualTo->addToTreeWidget( ui->twBlocks );
 
   valueTransmissionNumberFactory->addToTreeWidget( ui->twBlocks );
   valueTransmissionQuaternionFactory->addToTreeWidget( ui->twBlocks );
@@ -543,6 +579,18 @@ SettingsDialog::~SettingsDialog() {
   stringFactory->deleteLater();
   debugSinkFactory->deleteLater();
   udpSocketFactory->deleteLater();
+
+  arithmeticAddition->deleteLater();
+  arithmeticSubtraction->deleteLater();
+  arithmeticMultiplication->deleteLater();
+  arithmeticDivision->deleteLater();
+
+  comparisonEqualTo->deleteLater();
+  comparisonNotEqualTo->deleteLater();
+  comparisonGreaterThan->deleteLater();
+  comparisonLessThan->deleteLater();
+  comparisonGreaterOrEqualTo->deleteLater();
+  comparisonLessOrEqualTo->deleteLater();
 
   valueTransmissionNumberFactory->deleteLater();
   valueTransmissionQuaternionFactory->deleteLater();

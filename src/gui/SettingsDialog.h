@@ -301,6 +301,18 @@ class SettingsDialog : public QDialog {
     BlockFactory* numberFactory = nullptr;
     BlockFactory* stringFactory = nullptr;
 
+    BlockFactory* arithmeticAddition = nullptr;
+    BlockFactory* arithmeticSubtraction = nullptr;
+    BlockFactory* arithmeticMultiplication = nullptr;
+    BlockFactory* arithmeticDivision = nullptr;
+
+    BlockFactory* comparisonEqualTo = nullptr;
+    BlockFactory* comparisonNotEqualTo = nullptr;
+    BlockFactory* comparisonGreaterThan = nullptr;
+    BlockFactory* comparisonLessThan = nullptr;
+    BlockFactory* comparisonGreaterOrEqualTo = nullptr;
+    BlockFactory* comparisonLessOrEqualTo = nullptr;
+
     QSortFilterProxyModel* filterModelValues = nullptr;
     VectorBlockModel* vectorBlockModel = nullptr;
     OrientationBlockModel* orientationBlockModel = nullptr;

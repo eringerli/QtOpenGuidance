@@ -83,4 +83,5 @@ class BlockFactory : public QObject {
     const QColor valueColor = QColor( QStringLiteral( "gold" ) );
     const QColor inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
     const QColor converterColor = QColor( QStringLiteral( "lightblue" ) );
+    const QColor arithmeticColor = QColor( QStringLiteral( "DarkKhaki" ) );
 };

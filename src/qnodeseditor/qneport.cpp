@@ -114,17 +114,21 @@ void QNEPort::setPortFlags( int f ) {
     QFont font( scene()->font() );
     font.setItalic( true );
     label->setFont( font );
-    setPath( QPainterPath() );
+    m_portFlags |= NoBullet;
   } else if( ( m_portFlags & NamePort ) != 0 ) {
     QFont font( scene()->font() );
     font.setBold( true );
     label->setFont( font );
-    setPath( QPainterPath() );
+    m_portFlags |= NoBullet;
 
     if( ( m_portFlags & QNEPort::SystemBlock ) == 0 ) {
       porthelper = new QNEPortHelper( this );
       label->setTextInteractionFlags( Qt::TextEditorInteraction );
     }
+  }
+
+  if( ( m_portFlags & NoBullet ) != 0 ) {
+    setPath( QPainterPath() );
   }
 }
 
