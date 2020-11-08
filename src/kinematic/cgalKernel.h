@@ -108,6 +108,10 @@ inline const Point_3 convertQVector3DToPoint3( QVector3D point ) {
   return Point_3( point.x(), point.y(), point.z() );
 }
 
+inline const Point_3 convertEigenVector3ToPoint3( Eigen::Vector3d point ) {
+  return Point_3( point.x(), point.y(), point.z() );
+}
+
 inline const Segment_2 to2D( const Segment_3& segment ) {
   return Segment_2( Point_2( segment.source().x(), segment.source().y() ),
                     Point_2( segment.target().x(), segment.target().y() ) );

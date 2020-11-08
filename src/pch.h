@@ -72,7 +72,7 @@
 #include <QPointF>
 #include <QPolygonF>
 #include <QPushButton>
-#include <QQuaternion>
+#include <Eigen/Geometry>
 #include <QSettings>
 #include <QSharedPointer>
 #include <QSize>

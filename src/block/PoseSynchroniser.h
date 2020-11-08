@@ -77,7 +77,7 @@ class PoseSynchroniserFactory : public BlockFactory {
       auto* obj = new PoseSynchroniser();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const const Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
