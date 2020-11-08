@@ -306,6 +306,10 @@ class GlobalPlannerFactory : public BlockFactory {
       return QStringLiteral( "Global Planner Lines" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Guidance" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ),
                                         mainWindow,

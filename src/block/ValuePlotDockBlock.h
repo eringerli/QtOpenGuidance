@@ -124,6 +124,14 @@ class ValuePlotDockBlockFactory : public BlockFactory {
       return QStringLiteral( "ValuePlotDockBlock" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Plots" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Value Plot Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

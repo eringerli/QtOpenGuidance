@@ -166,6 +166,10 @@ class ImplementFactory : public BlockFactory {
       return QStringLiteral( "Implement" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Section Control" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

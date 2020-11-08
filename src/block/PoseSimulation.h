@@ -216,6 +216,10 @@ class PoseSimulationFactory : public BlockFactory {
       return QStringLiteral( "Pose Simulation" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Base Blocks" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PoseSimulation( geographicConvertionWrapper );
       auto* b = createBaseBlock( scene, obj, id, true );

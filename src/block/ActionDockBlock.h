@@ -88,6 +88,14 @@ class ActionDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Action Dock Block" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Input Docks" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Action Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ),
                                           mainWindow );

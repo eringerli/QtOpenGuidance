@@ -390,48 +390,48 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   valueTransmissionStateFactory = new ValueTransmissionStateFactory();
   valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory();
 
-  vectorFactory->addToCombobox( ui->cbNodeType );
-  orientationFactory->addToCombobox( ui->cbNodeType );
-  numberFactory->addToCombobox( ui->cbNodeType );
-  stringFactory->addToCombobox( ui->cbNodeType );
-  fixedKinematicFactory->addToCombobox( ui->cbNodeType );
-  fixedKinematicPrimitiveFactory->addToCombobox( ui->cbNodeType );
-  tractorModelFactory->addToCombobox( ui->cbNodeType );
-  trailerKinematicFactory->addToCombobox( ui->cbNodeType );
-  trailerKinematicPrimitiveFactory->addToCombobox( ui->cbNodeType );
-  trailerModelFactory->addToCombobox( ui->cbNodeType );
-  sprayerModelFactory->addToCombobox( ui->cbNodeType );
-  cultivatedAreaModelFactory->addToCombobox( ui->cbNodeType );
-  ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
-  angularVelocityLimiterFactory->addToCombobox( ui->cbNodeType );
-  poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
-  extendedKalmanFilterFactory->addToCombobox( ui->cbNodeType );
-  transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
-  xteGuidanceFactory->addToCombobox( ui->cbNodeType );
-  stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
-  localPlannerFactory->addToCombobox( ui->cbNodeType );
-  sectionControlFactory->addToCombobox( ui->cbNodeType );
-  pathPlannerModelFactory->addToCombobox( ui->cbNodeType );
-  ubxParserFactory->addToCombobox( ui->cbNodeType );
-  nmeaParserGGAFactory->addToCombobox( ui->cbNodeType );
-  nmeaParserHDTFactory->addToCombobox( ui->cbNodeType );
-  nmeaParserRMCFactory->addToCombobox( ui->cbNodeType );
-  debugSinkFactory->addToCombobox( ui->cbNodeType );
+  vectorFactory->addToTreeWidget( ui->twBlocks );
+  orientationFactory->addToTreeWidget( ui->twBlocks );
+  numberFactory->addToTreeWidget( ui->twBlocks );
+  stringFactory->addToTreeWidget( ui->twBlocks );
+  fixedKinematicFactory->addToTreeWidget( ui->twBlocks );
+  fixedKinematicPrimitiveFactory->addToTreeWidget( ui->twBlocks );
+  tractorModelFactory->addToTreeWidget( ui->twBlocks );
+  trailerKinematicFactory->addToTreeWidget( ui->twBlocks );
+  trailerKinematicPrimitiveFactory->addToTreeWidget( ui->twBlocks );
+  trailerModelFactory->addToTreeWidget( ui->twBlocks );
+  sprayerModelFactory->addToTreeWidget( ui->twBlocks );
+  cultivatedAreaModelFactory->addToTreeWidget( ui->twBlocks );
+  ackermannSteeringFactory->addToTreeWidget( ui->twBlocks );
+  angularVelocityLimiterFactory->addToTreeWidget( ui->twBlocks );
+  poseSynchroniserFactory->addToTreeWidget( ui->twBlocks );
+  extendedKalmanFilterFactory->addToTreeWidget( ui->twBlocks );
+  transverseMercatorConverterFactory->addToTreeWidget( ui->twBlocks );
+  xteGuidanceFactory->addToTreeWidget( ui->twBlocks );
+  stanleyGuidanceFactory->addToTreeWidget( ui->twBlocks );
+  localPlannerFactory->addToTreeWidget( ui->twBlocks );
+  sectionControlFactory->addToTreeWidget( ui->twBlocks );
+  pathPlannerModelFactory->addToTreeWidget( ui->twBlocks );
+  ubxParserFactory->addToTreeWidget( ui->twBlocks );
+  nmeaParserGGAFactory->addToTreeWidget( ui->twBlocks );
+  nmeaParserHDTFactory->addToTreeWidget( ui->twBlocks );
+  nmeaParserRMCFactory->addToTreeWidget( ui->twBlocks );
+  debugSinkFactory->addToTreeWidget( ui->twBlocks );
 
-  valueTransmissionNumberFactory->addToCombobox( ui->cbNodeType );
-  valueTransmissionQuaternionFactory->addToCombobox( ui->cbNodeType );
-  valueTransmissionStateFactory->addToCombobox( ui->cbNodeType );
-  valueTransmissionBase64DataFactory->addToCombobox( ui->cbNodeType );
+  valueTransmissionNumberFactory->addToTreeWidget( ui->twBlocks );
+  valueTransmissionQuaternionFactory->addToTreeWidget( ui->twBlocks );
+  valueTransmissionStateFactory->addToTreeWidget( ui->twBlocks );
+  valueTransmissionBase64DataFactory->addToTreeWidget( ui->twBlocks );
 
-  udpSocketFactory->addToCombobox( ui->cbNodeType );
+  udpSocketFactory->addToTreeWidget( ui->twBlocks );
 
 #ifdef SERIALPORT_ENABLED
-  serialPortFactory->addToCombobox( ui->cbNodeType );
+  serialPortFactory->addToTreeWidget( ui->twBlocks );
 #endif
 
-  fileStreamFactory->addToCombobox( ui->cbNodeType );
-  communicationPgn7ffeFactory->addToCombobox( ui->cbNodeType );
-  communicationJrkFactory->addToCombobox( ui->cbNodeType );
+  fileStreamFactory->addToTreeWidget( ui->twBlocks );
+  communicationPgn7ffeFactory->addToTreeWidget( ui->twBlocks );
+  communicationJrkFactory->addToTreeWidget( ui->twBlocks );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -626,6 +626,9 @@ void SettingsDialog::onStart() {
 
     saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
   }
+
+  ui->twBlocks->setSortingEnabled( true );
+  ui->twBlocks->sortByColumn( 0, Qt::AscendingOrder );
 }
 
 void SettingsDialog::onExit() {
@@ -878,8 +881,23 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 
           // id is not a system-id -> create new blocks
         } else {
-          int index = ui->cbNodeType->findText( blockObject[QStringLiteral( "type" )].toString(), Qt::MatchExactly );
-          auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( ui->cbNodeType->itemData( index ) ) );
+          BlockFactory* factory = nullptr;
+
+          {
+            auto rootItem = ui->twBlocks->invisibleRootItem();
+
+            for( int i = 0, end = rootItem->childCount(); i < end; i++ ) {
+              auto item = rootItem->child( i );
+
+              for( int j = 0, end = item->childCount(); j < end; j++ ) {
+                auto childItem = item->child( j );
+
+                if( childItem->text( 1 ) == blockObject[QStringLiteral( "type" )].toString() ) {
+                  factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( childItem->data( 0, Qt::UserRole ) ) );
+                }
+              }
+            }
+          }
 
           if( factory != nullptr ) {
             QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene(), id );
@@ -957,14 +975,18 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
-  auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<BlockFactory*>( ui->cbNodeType->currentData() ) );
+  auto results = ui->twBlocks->selectedItems();
 
-  if( factory != nullptr ) {
-    QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
-    block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
+  if( results.size() >= 1 ) {
+    auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( results.first()->data( 0, Qt::UserRole ) ) );
+
+    if( factory != nullptr ) {
+      QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
+      block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
+    }
+
+    allModelsReset();
   }
-
-  allModelsReset();
 }
 
 void SettingsDialog::on_pbZoomOut_clicked() {
@@ -1108,8 +1130,8 @@ void SettingsDialog::emitAllConfigSignals() {
   emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), ui->slCameraSmoothingPosition->value() );
 }
 
-QComboBox* SettingsDialog::getCbNodeType() {
-  return ui->cbNodeType;
+QTreeWidget* SettingsDialog::getBlockTreeWidget() {
+  return ui->twBlocks;
 }
 
 void SettingsDialog::on_cbSaveConfigOnExit_stateChanged( int arg1 ) {
@@ -1827,4 +1849,15 @@ void SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
 
 void SettingsDialog::on_slCameraSmoothingPosition_valueChanged( int value ) {
   emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), value );
+}
+
+void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int ) {
+  auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( item->data( 0, Qt::UserRole ) ) );
+
+  if( factory != nullptr ) {
+    QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
+    block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
+  }
+
+  allModelsReset();
 }

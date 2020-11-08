@@ -103,6 +103,10 @@ class AckermannSteeringFactory : public BlockFactory {
       return QStringLiteral( "Ackermann Steering" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Calculations" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new AckermannSteering();
       auto* b = createBaseBlock( scene, obj, id );

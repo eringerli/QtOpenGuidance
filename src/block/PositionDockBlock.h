@@ -135,6 +135,14 @@ class PositionDockBlockFactory : public BlockFactory {
       return QStringLiteral( "PositionDockBlock" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Display Docks" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Position Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

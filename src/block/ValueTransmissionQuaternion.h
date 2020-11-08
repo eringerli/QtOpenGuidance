@@ -79,6 +79,10 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
       return QStringLiteral( "Value Transmit Quaternion" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Value Converters" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionQuaternion( id );
       auto* b = createBaseBlock( scene, obj, id, false );

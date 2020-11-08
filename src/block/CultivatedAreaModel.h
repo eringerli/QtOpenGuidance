@@ -88,6 +88,10 @@ class CultivatedAreaModelFactory : public BlockFactory {
       return QStringLiteral( "Cultivated Area Model" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new CultivatedAreaModel( rootEntity, threadForCgalWorker );
       auto* b = createBaseBlock( scene, obj, id );

@@ -248,6 +248,10 @@ class FieldManagerFactory : public BlockFactory {
       return QStringLiteral( "Field Manager" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Base Blocks" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );

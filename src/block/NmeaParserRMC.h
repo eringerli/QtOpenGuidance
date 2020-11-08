@@ -176,6 +176,14 @@ class NmeaParserRMCFactory : public BlockFactory {
       return QStringLiteral( "NMEA Parser RMC" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Parsers" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "NMEA Parser for RMC sentences" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new NmeaParserRMC();
       auto* b = createBaseBlock( scene, obj, id );

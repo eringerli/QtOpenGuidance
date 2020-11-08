@@ -81,6 +81,10 @@ class FixedKinematicFactory : public BlockFactory {
       return QStringLiteral( "Fixed Kinematic" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Calculations" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FixedKinematic;
       auto* b = createBaseBlock( scene, obj, id );

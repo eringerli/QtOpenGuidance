@@ -82,6 +82,10 @@ class FixedKinematicPrimitiveFactory : public BlockFactory {
       return QStringLiteral( "Fixed Kinematic Primitive" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Calculations" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FixedKinematicPrimitive;
       auto* b = createBaseBlock( scene, obj, id );

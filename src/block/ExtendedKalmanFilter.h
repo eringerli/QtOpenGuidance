@@ -146,6 +146,14 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
       return QStringLiteral( "ExtendedKalmanFilter" );
     }
 
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Extended Kalman Filter" );
+    }
+
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Base Blocks" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ExtendedKalmanFilter();
       auto* b = createBaseBlock( scene, obj, id );

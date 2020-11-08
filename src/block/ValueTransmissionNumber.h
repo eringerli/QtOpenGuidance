@@ -68,6 +68,10 @@ class ValueTransmissionNumberFactory : public BlockFactory {
       return QStringLiteral( "Value Transmit Number" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Value Converters" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionNumber( id );
       auto* b = createBaseBlock( scene, obj, id, false );

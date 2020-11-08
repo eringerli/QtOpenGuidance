@@ -68,6 +68,10 @@ class ValueTransmissionStateFactory : public BlockFactory {
       return QStringLiteral( "Value Transmit State" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Value Converters" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new ValueTransmissionState( id );
       auto* b = createBaseBlock( scene, obj, id, false );

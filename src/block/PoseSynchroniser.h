@@ -73,6 +73,10 @@ class PoseSynchroniserFactory : public BlockFactory {
       return QStringLiteral( "Pose Synchroniser" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Base Blocks" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PoseSynchroniser();
       auto* b = createBaseBlock( scene, obj, id );

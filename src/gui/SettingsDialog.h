@@ -207,6 +207,8 @@ class SettingsDialog : public QDialog {
     void on_slCameraSmoothingOrientation_valueChanged( int value );
     void on_slCameraSmoothingPosition_valueChanged( int value );
 
+    void on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int column );
+
   private:
     void saveGridValuesInSettings();
     void savePathPlannerValuesInSettings();
@@ -225,7 +227,7 @@ class SettingsDialog : public QDialog {
     Qt3DExtras::Qt3DWindow* qt3dWindow = nullptr;
 
   public:
-    QComboBox* getCbNodeType();
+    QTreeWidget* getBlockTreeWidget();
 
   public:
     NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;

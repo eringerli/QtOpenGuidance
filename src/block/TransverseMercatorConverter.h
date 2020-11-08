@@ -73,6 +73,10 @@ class TransverseMercatorConverterFactory : public BlockFactory {
       return QStringLiteral( "Transverse Mercator" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Calculations" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TransverseMercatorConverter( tmw );
       auto* b = createBaseBlock( scene, obj, id );

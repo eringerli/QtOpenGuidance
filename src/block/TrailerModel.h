@@ -101,6 +101,10 @@ class TrailerModelFactory : public BlockFactory {
       return QStringLiteral( "Trailer Model" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TrailerModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );

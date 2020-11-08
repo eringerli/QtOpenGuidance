@@ -139,6 +139,14 @@ class SliderDockBlockFactory : public BlockFactory {
       return QStringLiteral( "SliderDockBlock" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Input Docks" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Slider Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

@@ -157,6 +157,10 @@ class PathPlannerModelFactory : public BlockFactory {
       return QStringLiteral( "Path Planner Model" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new PathPlannerModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );

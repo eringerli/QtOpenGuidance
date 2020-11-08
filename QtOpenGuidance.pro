@@ -54,6 +54,7 @@ SOURCES += \
     src/3d/CultivatedAreaMeshGeometry.cpp \
     src/3d/texturerendertarget.cpp \
     src/block/ActionDockBlock.cpp \
+    src/block/BlockBase.cpp \
     src/block/CultivatedAreaModel.cpp \
     src/block/FieldManager.cpp \
     src/block/GlobalPlanner.cpp \

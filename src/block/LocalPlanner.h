@@ -146,6 +146,10 @@ class LocalPlannerFactory : public BlockFactory {
       return QStringLiteral( "Local Planner" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Guidance" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* object = new LocalPlanner( getNameOfFactory() + QString::number( id ),
                                        mainWindow );

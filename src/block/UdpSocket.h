@@ -85,6 +85,10 @@ class UdpSocketFactory : public BlockFactory {
       return QStringLiteral( "UDP Socket" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Streams" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new UdpSocket();
       auto* b = createBaseBlock( scene, obj, id );

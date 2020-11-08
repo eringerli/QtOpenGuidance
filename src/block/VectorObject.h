@@ -85,6 +85,14 @@ class VectorFactory : public BlockFactory {
       return QStringLiteral( "Vector3D" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Literals" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "3D Vector" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new VectorObject();
       auto* b = createBaseBlock( scene, obj, id );

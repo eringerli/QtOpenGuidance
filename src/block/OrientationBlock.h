@@ -162,6 +162,10 @@ class OrientationBlockFactory : public BlockFactory {
       return QStringLiteral( "Orientation" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Literals" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new OrientationBlock();
       auto* b = createBaseBlock( scene, obj, id );

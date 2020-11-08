@@ -105,6 +105,10 @@ class TractorModelFactory : public BlockFactory {
       return QStringLiteral( "Tractor Model" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TractorModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );

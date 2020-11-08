@@ -211,6 +211,10 @@ class UbxParserFactory : public BlockFactory {
       return QStringLiteral( "UBX Parser" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Parsers" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new UbxParser();
       auto* b = createBaseBlock( scene, obj, id );

@@ -376,56 +376,56 @@ int main( int argc, char** argv ) {
     mainWindow,
     KDDockWidgets::Location_OnTop,
     guidanceToolbar->menu );
-  xteDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  xteDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value dock
   BlockFactory* valueDockBlockFactory = new ValueDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  valueDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  valueDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation dock
   BlockFactory* orientationDockBlockFactory = new OrientationDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  orientationDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  orientationDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // position dock
   BlockFactory* positionDockBlockFactory = new PositionDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  positionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  positionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value plot dock
   BlockFactory* valuePlotDockBlockFactory = new ValuePlotDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  valuePlotDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  valuePlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation plot dock
   BlockFactory* orientationPlotDockBlockFactory = new OrientationPlotDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  orientationPlotDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  orientationPlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // action dock
   BlockFactory* actionDockBlockFactory = new ActionDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  actionDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  actionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // slider dock
   BlockFactory* sliderDockBlockFactory = new SliderDockBlockFactory(
     mainWindow,
     KDDockWidgets::Location_OnRight,
     guidanceToolbar->menu );
-  sliderDockBlockFactory->addToCombobox( settingDialog->getCbNodeType() );
+  sliderDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
 
   // implements
@@ -434,7 +434,7 @@ int main( int argc, char** argv ) {
     KDDockWidgets::Location_OnBottom,
     guidanceToolbar->menu,
     settingDialog->implementBlockModel );
-  implementFactory->addToCombobox( settingDialog->getCbNodeType() );
+  implementFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );

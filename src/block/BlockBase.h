@@ -24,12 +24,8 @@
 #include <QStringLiteral>
 
 #include <QtWidgets>
-#include <QComboBox>
 
-#include <QJsonObject>
-
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QComponent>
+//#include <QJsonObject>
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -48,6 +44,8 @@ class BlockBase : public QObject {
     virtual void setName( const QString& ) {}
 };
 
+class BlockFactory;
+
 class BlockFactory : public QObject {
     Q_OBJECT
 
@@ -57,43 +55,25 @@ class BlockFactory : public QObject {
 
     virtual QString getNameOfFactory() = 0;
 
-    void addToCombobox( QComboBox* combobox ) {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
-    }
+    virtual QString getPrettyNameOfFactory() {
+      return getNameOfFactory();
+    };
+
+    virtual QString getCategoryOfFactory() = 0;
+
+//    virtual QString getDescriptionOfFactory() = 0;
+
+    void addToCombobox( QComboBox* combobox );
+
+    void addToTreeWidget( QTreeWidget* treeWidget );
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock = false ) {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = 0;
-        qDebug() << "BlockFactory::createBaseBlock: ID conflict";
-      }
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock = false );
 
-      auto* b = new QNEBlock( obj, id, systemBlock );
+    bool isIdUnique( QGraphicsScene* scene, int id );
 
-      scene->addItem( b );
 
-      b->addPort( getNameOfFactory(), QLatin1String(), false, QNEPort::NamePort );
-      b->addPort( getNameOfFactory(),  QLatin1String(), false, QNEPort::TypePort );
-
-      return b;
-    }
-
-    bool isIdUnique( QGraphicsScene* scene, int id ) {
-      const auto& constRefOfList = scene->items();
-
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-        if( block != nullptr ) {
-          if( block->id == id ) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    }
 
   protected:
     const QColor modelColor = QColor( QStringLiteral( "moccasin" ) );

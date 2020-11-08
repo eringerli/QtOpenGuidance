@@ -71,6 +71,10 @@ class CommunicationJrkFactory : public BlockFactory {
       return QStringLiteral( "Communication JRK" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Legacy Converters" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new CommunicationJrk();
       auto* b = createBaseBlock( scene, obj, id );

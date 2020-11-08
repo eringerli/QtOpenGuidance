@@ -123,6 +123,14 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
       return QStringLiteral( "OrientationPlotDockBlock" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Plots" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "Orientation Plot Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

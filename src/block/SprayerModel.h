@@ -87,6 +87,10 @@ class SprayerModelFactory : public BlockFactory {
       return QStringLiteral( "Sprayer Model" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new SprayerModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );

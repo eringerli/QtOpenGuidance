@@ -111,6 +111,10 @@ class TrailerKinematicPrimitiveFactory : public BlockFactory {
       return QStringLiteral( "Trailer Kinematic Primitive" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Calculations" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new TrailerKinematicPrimitive;
       auto* b = createBaseBlock( scene, obj, id );

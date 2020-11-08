@@ -114,6 +114,10 @@ class DebugSinkFactory : public BlockFactory {
       return QStringLiteral( "Console Output" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Base Blocks" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new DebugSink;
       auto* b = createBaseBlock( scene, obj, id );

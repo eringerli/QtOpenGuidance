@@ -70,6 +70,10 @@ class StringFactory : public BlockFactory {
       return QStringLiteral( "String" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Literals" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new StringObject();
       auto* b = createBaseBlock( scene, obj, id );

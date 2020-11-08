@@ -72,6 +72,10 @@ class FpsMeasurementFactory : public BlockFactory {
       return QStringLiteral( "Fps Measurement" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Graphical" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FpsMeasurement( rootEntity );
       auto* b = createBaseBlock( scene, obj, id, true );

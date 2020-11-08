@@ -76,6 +76,14 @@ class XteDockBlockFactory : public BlockFactory {
       return QStringLiteral( "XteDockBlock" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Display Docks" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "XTE Dock" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       if( id != 0 && !isIdUnique( scene, id ) ) {
         id = QNEBlock::getNextUserId();

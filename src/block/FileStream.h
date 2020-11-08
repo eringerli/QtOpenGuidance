@@ -118,6 +118,10 @@ class FileStreamFactory : public BlockFactory {
       return QStringLiteral( "File Stream" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Streams" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new FileStream();
       auto* b = createBaseBlock( scene, obj, id );

@@ -94,8 +94,8 @@ class SerialPortFactory : public BlockFactory {
       return QStringLiteral( "Serial Port" );
     }
 
-    virtual void addToCombobox( QComboBox* combobox ) override {
-      combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Streams" );
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {

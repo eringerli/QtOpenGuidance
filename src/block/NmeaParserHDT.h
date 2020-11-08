@@ -138,6 +138,14 @@ class NmeaParserHDTFactory : public BlockFactory {
       return QStringLiteral( "NMEA Parser HDT" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Parsers" );
+    }
+
+    QString getPrettyNameOfFactory() override {
+      return QStringLiteral( "NMEA Parser for HDT sentences" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new NmeaParserHDT();
       auto* b = createBaseBlock( scene, obj, id );

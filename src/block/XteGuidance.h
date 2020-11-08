@@ -122,6 +122,10 @@ class XteGuidanceFactory : public BlockFactory {
       return QStringLiteral( "Cross Track Error" );
     }
 
+    QString getCategoryOfFactory() override {
+      return QStringLiteral( "Guidance" );
+    }
+
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
       auto* obj = new XteGuidance();
       auto* b = createBaseBlock( scene, obj, id );
