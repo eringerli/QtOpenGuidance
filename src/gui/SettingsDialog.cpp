@@ -67,6 +67,7 @@
 #include "SpaceNavigatorPollingThread.h"
 #endif
 
+#include "../block/ExtendedKalmanFilter.h"
 #include "../block/PoseSynchroniser.h"
 
 #include "../block/UbxParser.h"
@@ -280,14 +281,20 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
 
+  auto poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );;
+  QObject::connect( this, &SettingsDialog::noiseStandartDeviationsChanged,
+                    poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
+
   // SPNAV
 #ifdef SPNAV_ENABLED
   qDebug() << "SPNAV_ENABLED";
   spaceNavigatorPollingThread = new SpaceNavigatorPollingThread( this );
   spaceNavigatorPollingThread->start();
 
-  connect( spaceNavigatorPollingThread, SIGNAL( steerAngleChanged( double ) ), poseSimulation, SLOT( setSteerAngle( double ) ), Qt::QueuedConnection );
-  connect( spaceNavigatorPollingThread, SIGNAL( velocityChanged( double ) ), poseSimulation, SLOT( setVelocity( double ) ), Qt::QueuedConnection );
+  connect( spaceNavigatorPollingThread, &SpaceNavigatorPollingThread::steerAngleChanged,
+           poseSimulationTmp, &PoseSimulation::setSteerAngle, Qt::QueuedConnection );
+  connect( spaceNavigatorPollingThread, &SpaceNavigatorPollingThread::velocityChanged,
+           poseSimulationTmp, &PoseSimulation::setVelocity, Qt::QueuedConnection );
 #endif
 
   // guidance
@@ -348,6 +355,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   // Factories for the blocks
   transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( geographicConvertionWrapperGuidance );
   poseSynchroniserFactory = new PoseSynchroniserFactory();
+  extendedKalmanFilterFactory = new ExtendedKalmanFilterFactory();
   trailerModelFactory = new TrailerModelFactory( rootEntity, usePBR );
   tractorModelFactory = new TractorModelFactory( rootEntity, usePBR );
   sprayerModelFactory = new SprayerModelFactory( rootEntity, usePBR );
@@ -397,6 +405,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   ackermannSteeringFactory->addToCombobox( ui->cbNodeType );
   angularVelocityLimiterFactory->addToCombobox( ui->cbNodeType );
   poseSynchroniserFactory->addToCombobox( ui->cbNodeType );
+  extendedKalmanFilterFactory->addToCombobox( ui->cbNodeType );
   transverseMercatorConverterFactory->addToCombobox( ui->cbNodeType );
   xteGuidanceFactory->addToCombobox( ui->cbNodeType );
   stanleyGuidanceFactory->addToCombobox( ui->cbNodeType );
@@ -521,6 +530,7 @@ SettingsDialog::~SettingsDialog() {
 
   transverseMercatorConverterFactory->deleteLater();
   poseSynchroniserFactory->deleteLater();
+  extendedKalmanFilterFactory->deleteLater();
   tractorModelFactory->deleteLater();
   trailerModelFactory->deleteLater();
   sprayerModelFactory->deleteLater();
@@ -1379,6 +1389,14 @@ void SettingsDialog::emitGridSettings() {
                       gridColor, gridColorCoarse );
 }
 
+void SettingsDialog::emitNoiseStandartDeviations() {
+  emit noiseStandartDeviationsChanged( ui->dsbSimNoisePositionXY->value(),
+                                       ui->dsbSimNoisePositionZ->value(),
+                                       ui->dsbSimNoiseOrientation->value(),
+                                       ui->dsbSimNoiseAccelerometer->value(),
+                                       ui->dsbSimNoiseGyro->value() );
+}
+
 void SettingsDialog::on_pbColorCoarse_clicked() {
   const QColor color = QColorDialog::getColor( gridColorCoarse, this, QStringLiteral( "Select Grid Color" ) );
 
@@ -1782,6 +1800,27 @@ void SettingsDialog::on_pbPlotsDefaults_clicked() {
     ui->tvPlots->model()->setData( index.siblingAtColumn( 5 ), 20 );
   }
 }
+
+void SettingsDialog::on_dsbSimNoisePositionXY_valueChanged( double ) {
+  emitNoiseStandartDeviations();
+}
+
+void SettingsDialog::on_dsbSimNoiseGyro_valueChanged( double ) {
+  emitNoiseStandartDeviations();
+}
+
+void SettingsDialog::on_dsbSimNoisePositionZ_valueChanged( double ) {
+  emitNoiseStandartDeviations();
+}
+
+void SettingsDialog::on_dsbSimNoiseOrientation_valueChanged( double ) {
+  emitNoiseStandartDeviations();
+}
+
+void SettingsDialog::on_dsbSimNoiseAccelerometer_valueChanged( double ) {
+  emitNoiseStandartDeviations();
+}
+
 void SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
   emit cameraSmoothingChanged( value, ui->slCameraSmoothingPosition->value() );
 }

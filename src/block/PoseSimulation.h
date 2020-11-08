@@ -18,13 +18,14 @@
 
 #pragma once
 
+#include <random>
+#include <chrono>
+
 #include <QObject>
 
 #include <QEvent>
 #include <QBasicTimer>
 #include <QElapsedTimer>
-#include <QQuaternion>
-#include <QVector3D>
 
 #include <QtGlobal>
 #include <QtDebug>
@@ -32,8 +33,12 @@
 #include "BlockBase.h"
 
 #include "../kinematic/cgalKernel.h"
+#include "../kinematic/eigenHelper.h"
 
 #include "../kinematic/GeographicConvertionWrapper.h"
+#include "../kinematic/FixedKinematicPrimitive.h"
+
+#include "../filter/BicycleModel/SystemModel.h"
 
 using namespace std;
 using namespace GeographicLib;
@@ -42,11 +47,7 @@ class PoseSimulation : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PoseSimulation( GeographicConvertionWrapper* geographicConvertionWrapper )
-      : BlockBase(),
-        geographicConvertionWrapper( geographicConvertionWrapper ) {
-      setSimulation( false );
-    }
+    explicit PoseSimulation( GeographicConvertionWrapper* geographicConvertionWrapper );
 
   public slots:
     void setInterval( int interval ) {
@@ -110,17 +111,23 @@ class PoseSimulation : public BlockBase {
       }
     }
 
-    void setAntennaPosition( QVector3D position ) {
-      m_antennaPosition = position;
+    void setAntennaOffset( const Eigen::Vector3d offset ) {
+      antennaKinematic.setOffset( -offset );
     }
 
-    void setInitialWGS84Position( QVector3D position ) {
+    void setInitialWGS84Position( const Eigen::Vector3d position ) {
       geographicConvertionWrapper->Reset( position.x(), position.y(), position.z() );
     }
 
     void autosteerEnabled( bool enabled ) {
       m_autosteerEnabled = enabled;
     }
+
+    void setNoiseStandartDeviations( double noisePositionXY,
+                                     double noisePositionZ,
+                                     double noiseOrientation,
+                                     double noiseAccelerometer,
+                                     double noiseGyro );
 
   protected:
     void timerEvent( QTimerEvent* event ) override;
@@ -131,18 +138,21 @@ class PoseSimulation : public BlockBase {
 
     void steerAngleChanged( double );
 
-    void antennaPositionChanged( QVector3D );
+    void antennaPositionChanged( const Eigen::Vector3d );
 
     void steeringAngleChanged( double );
-    void positionChanged( QVector3D );
-    void globalPositionChanged( double, double, double );
-    void orientationChanged( QQuaternion );
+    void positionChanged( const Eigen::Vector3d );
+    void globalPositionChanged( const Eigen::Vector3d );
+    void velocity3DChanged( const Eigen::Vector3d );
+    void orientationChanged( const Eigen::Quaterniond );
     void velocityChanged( double );
+
+    void imuDataChanged( const Eigen::Quaterniond, const Eigen::Vector3d, const Eigen::Vector3d );
 
   public:
     virtual void emitConfigSignals() override {
       emit steerAngleChanged( m_steerAngle );
-      emit positionChanged( QVector3D( float( x ), float( y ), float( height ) ) );
+      emit positionChanged( Eigen::Vector3d( x, y, height ) );
       emit orientationChanged( m_orientation );
       emit steerAngleChanged( 0 );
       emit velocityChanged( 0 );
@@ -167,14 +177,31 @@ class PoseSimulation : public BlockBase {
 
     double m_wheelbase = 2.4f;
 
-    QVector3D m_antennaPosition = QVector3D();
-    QQuaternion m_orientation = QQuaternion();
+    Eigen::Quaterniond m_orientation = Eigen::Quaterniond();
 
     double x = 0;
     double y = 0;
     double height = 0;
     double lastHeading = 0;
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
+    FixedKinematicPrimitive antennaKinematic;
+
+    template <typename T_> using StateType = KinematicModel::State<T_>;
+    StateType<double> state;
+
+    KinematicModel::TractorImuGpsFusionModel<StateType> simulatorModel;
+
+    std::default_random_engine noiseGenerator;
+    bool noisePositionXYActivated = false;
+    std::normal_distribution<double> noisePositionXY = std::normal_distribution<double>( 0, 0.02 );
+    bool noisePositionZActivated = false;
+    std::normal_distribution<double> noisePositionZ = std::normal_distribution<double>( 0, 0.04 );
+    bool noiseOrientationActivated = false;
+    std::normal_distribution<double> noiseOrientation = std::normal_distribution<double>( 0, 0.001 );
+    bool noiseAccelerometerActivated = false;
+    std::normal_distribution<double> noiseAccelerometer = std::normal_distribution<double>( 0, 0.01 );
+    bool noiseGyroActivated = false;
+    std::normal_distribution<double> noiseGyro = std::normal_distribution<double>( 0, 0.01 );
 };
 
 class PoseSimulationFactory : public BlockFactory {
@@ -193,15 +220,19 @@ class PoseSimulationFactory : public BlockFactory {
       auto* obj = new PoseSimulation( geographicConvertionWrapper );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d ) ) ) );
       b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( QVector3D ) ) ) );
+      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( double, double, double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( QVector3D ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( QQuaternion ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d ) ) ) );
+
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond ) ) ) );
       b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( double ) ) ) );
       b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( double ) ) ) );
+
+      b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond, const Eigen::Vector3d, const Eigen::Vector3d ) ) ) );
 
       b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( bool ) ) ) );
       b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( double ) ) ) );

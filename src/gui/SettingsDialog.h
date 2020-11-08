@@ -85,6 +85,8 @@ class SettingsDialog : public QDialog {
                                            float,
                                            QColor, QColor );
 
+    void noiseStandartDeviationsChanged( double, double, double, double, double );
+
     void cameraSmoothingChanged( int, int );
 
   public slots:
@@ -196,6 +198,12 @@ class SettingsDialog : public QDialog {
 
     void on_pbPlotsDefaults_clicked();
 
+    void on_dsbSimNoisePositionXY_valueChanged( double arg1 );
+    void on_dsbSimNoiseGyro_valueChanged( double arg1 );
+    void on_dsbSimNoisePositionZ_valueChanged( double arg1 );
+    void on_dsbSimNoiseOrientation_valueChanged( double arg1 );
+    void on_dsbSimNoiseAccelerometer_valueChanged( double arg1 );
+
     void on_slCameraSmoothingOrientation_valueChanged( int value );
     void on_slCameraSmoothingPosition_valueChanged( int value );
 
@@ -209,6 +217,8 @@ class SettingsDialog : public QDialog {
     void loadConfigFromFile( QFile& file );
 
     void emitGridSettings();
+
+    void emitNoiseStandartDeviations();
 
   private:
     QMainWindow* mainWindow = nullptr;
@@ -244,6 +254,7 @@ class SettingsDialog : public QDialog {
 
     BlockFactory* transverseMercatorConverterFactory = nullptr;
     BlockFactory* poseSynchroniserFactory = nullptr;
+    BlockFactory* extendedKalmanFilterFactory = nullptr;
     BlockFactory* tractorModelFactory = nullptr;
     BlockFactory* trailerModelFactory = nullptr;
     BlockFactory* sprayerModelFactory = nullptr;

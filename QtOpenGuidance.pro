@@ -125,6 +125,7 @@ HEADERS += \
     src/block/CommunicationPgn7FFE.h \
     src/block/CultivatedAreaModel.h \
     src/block/DebugSink.h \
+    src/block/ExtendedKalmanFilter.h \
     src/block/FieldManager.h \
     src/block/FileStream.h \
     src/block/FpsMeasurement.h \
@@ -166,6 +167,12 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/block/XteGuidance.h \
+    src/filter/BicycleModel/ImuMeasurementModel.h \
+    src/filter/BicycleModel/PositionMeasurementModel.h \
+    src/filter/BicycleModel/SystemModel.h \
+    src/filter/KinematicModel/ImuMeasurementModel.h \
+    src/filter/KinematicModel/PositionMeasurementModel.h \
+    src/filter/KinematicModel/SystemModel.h \
     src/filter/MeanMovingWindow.h \
     src/gui/ActionDockBlockModel.h \
     src/gui/ActionToolbar.h \

@@ -39,8 +39,8 @@ class PoseSynchroniser : public BlockBase {
   public slots:
     void setPosition( const Eigen::Vector3d position ) {
       this->position = Point_3( position.x(), position.y(), position.z() );
-      QElapsedTimer timer;
-      timer.start();
+//      QElapsedTimer timer;
+//      timer.start();
       emit poseChanged( this->position, orientation, PoseOption::NoOptions );
 //      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
     }
