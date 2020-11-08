@@ -166,6 +166,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/block/XteGuidance.h \
+    src/filter/MeanMovingWindow.h \
     src/gui/ActionDockBlockModel.h \
     src/gui/ActionToolbar.h \
     src/gui/CameraToolbar.h \
