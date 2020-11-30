@@ -31,6 +31,8 @@
 #include <QtMath>
 #include <QVector3D>
 
+#include "normalizeAngles.h"
+
 // choose the kernel
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 typedef CGAL::Exact_predicates_inexact_constructions_kernel     Epick;
@@ -70,30 +72,6 @@ typedef CGAL::Polygon_with_holes_2<Epick>                       Polygon_with_hol
 typedef CGAL::Exact_predicates_exact_constructions_kernel       Epeck;
 
 typedef CGAL::Cartesian_converter<Epick, Epeck>                 EpickEpeckConverter;
-
-inline double normalizeAngleRadians( double angle ) {
-  while( angle > M_PI ) {
-    angle -= M_PI * 2;
-  }
-
-  while( angle < -M_PI ) {
-    angle += M_PI * 2;
-  }
-
-  return angle;
-}
-
-inline double normalizeAngleDegrees( double angle ) {
-  while( angle > 180 ) {
-    angle -= 360;
-  }
-
-  while( angle < -180 ) {
-    angle += 360;
-  }
-
-  return angle;
-}
 
 // basic conversions
 inline const QVector3D convertPoint3ToQVector3D( const Point_3& point ) {

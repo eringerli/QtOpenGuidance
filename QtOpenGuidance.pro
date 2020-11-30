@@ -230,7 +230,8 @@ HEADERS += \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h \
     src/kinematic/TrailerKinematicPrimitive.h \
-    src/kinematic/eigenHelper.h
+    src/kinematic/eigenHelper.h \
+    src/kinematic/normalizeAngles.h
 
 unix {
     PRECOMPILED_HEADER  = src/pch.h
