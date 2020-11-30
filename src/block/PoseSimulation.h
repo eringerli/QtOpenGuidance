@@ -38,7 +38,7 @@
 #include "../kinematic/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematicPrimitive.h"
 
-#include "../filter/BicycleModel/SystemModel.h"
+#include "../filter/3wFRHRL/SystemModel.h"
 
 using namespace std;
 using namespace GeographicLib;
@@ -112,7 +112,9 @@ class PoseSimulation : public BlockBase {
     }
 
     void setAntennaOffset( const Eigen::Vector3d offset ) {
-      antennaKinematic.setOffset( -offset );
+      auto offsetTmp = offset;
+      offsetTmp.x() -= b;
+      antennaKinematic.setOffset( -offsetTmp );
     }
 
     void setInitialWGS84Position( const Eigen::Vector3d position ) {
@@ -122,6 +124,12 @@ class PoseSimulation : public BlockBase {
     void autosteerEnabled( bool enabled ) {
       m_autosteerEnabled = enabled;
     }
+
+    void setSimulatorValues( const double a, const double b, const double c,
+                             const double Caf, const double Car, const double Cah,
+                             const double m, const double Iz,
+                             const double sigmaF, const double sigmaR, const double sigmaH,
+                             const double Cx, const double slipX );
 
     void setNoiseStandartDeviations( double noisePositionXY,
                                      double noisePositionZ,
@@ -133,6 +141,12 @@ class PoseSimulation : public BlockBase {
     void timerEvent( QTimerEvent* event ) override;
 
   signals:
+    void simulatorValuesChanged( const double a, const double b, const double c,
+                                 const double Caf, const double Car, const double Cah,
+                                 const double m, const double Iz,
+                                 const double sigmaF, const double sigmaR, const double sigmaH,
+                                 const double Cx, const double slip );
+
     void simulationChanged( bool );
     void intervalChanged( int );
 
@@ -149,13 +163,100 @@ class PoseSimulation : public BlockBase {
 
     void imuDataChanged( const Eigen::Quaterniond, const Eigen::Vector3d, const Eigen::Vector3d );
 
+
   public:
     virtual void emitConfigSignals() override {
+      qDebug() << "PoseSimulation::emitConfigSignals";
+      emit simulatorValuesChanged( a, b, c,
+                                   // N/rad -> N/°
+                                   Caf * M_PI / 180, Car * M_PI / 180, Cah * M_PI / 180,
+                                   m, Iz,
+                                   sigmaF, sigmaR, sigmaH,
+                                   Cx, slipX );
+
       emit steerAngleChanged( m_steerAngle );
       emit positionChanged( Eigen::Vector3d( x, y, height ) );
       emit orientationChanged( m_orientation );
       emit steerAngleChanged( 0 );
       emit velocityChanged( 0 );
+    }
+
+    virtual void toJSON( QJsonObject& json ) override {
+      QJsonObject valuesObject;
+
+      valuesObject[QStringLiteral( "a" )] = this->a;
+      valuesObject[QStringLiteral( "b" )] = this->b;
+      valuesObject[QStringLiteral( "c" )] = this->c;
+      valuesObject[QStringLiteral( "Caf" )] = this->Caf;
+      valuesObject[QStringLiteral( "Car" )] = this->Car;
+      valuesObject[QStringLiteral( "Cah" )] = this->Cah;
+      valuesObject[QStringLiteral( "m" )] = this->m;
+      valuesObject[QStringLiteral( "Iz" )] = this->Iz;
+      valuesObject[QStringLiteral( "sigmaF" )] = this->sigmaF;
+      valuesObject[QStringLiteral( "sigmaR" )] = this->sigmaR;
+      valuesObject[QStringLiteral( "sigmaH" )] = this->sigmaH;
+      valuesObject[QStringLiteral( "Cx" )] = this->Cx;
+      valuesObject[QStringLiteral( "slip" )] = this->slipX;
+
+      json[QStringLiteral( "values" )] = valuesObject;
+    }
+
+    virtual void fromJSON( QJsonObject& json ) override {
+      if( json[QStringLiteral( "values" )].isObject() ) {
+        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+
+        if( valuesObject[QStringLiteral( "a" )].isDouble() ) {
+          this->a = valuesObject[QStringLiteral( "a" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "b" )].isDouble() ) {
+          this->b = valuesObject[QStringLiteral( "b" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "c" )].isDouble() ) {
+          this->c = valuesObject[QStringLiteral( "c" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "Caf" )].isDouble() ) {
+          this->Caf = valuesObject[QStringLiteral( "Caf" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "Car" )].isDouble() ) {
+          this->Car = valuesObject[QStringLiteral( "Car" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "Cah" )].isDouble() ) {
+          this->Cah = valuesObject[QStringLiteral( "Cah" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "m" )].isDouble() ) {
+          this->m = valuesObject[QStringLiteral( "m" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "Iz" )].isDouble() ) {
+          this->Iz = valuesObject[QStringLiteral( "Iz" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "sigmaF" )].isDouble() ) {
+          this->sigmaF = valuesObject[QStringLiteral( "sigmaF" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "sigmaR" )].isDouble() ) {
+          this->sigmaR = valuesObject[QStringLiteral( "sigmaR" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "sigmaH" )].isDouble() ) {
+          this->sigmaH = valuesObject[QStringLiteral( "sigmaH" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "Cx" )].isDouble() ) {
+          this->Cx = valuesObject[QStringLiteral( "Cx" )].toDouble();
+        }
+
+        if( valuesObject[QStringLiteral( "slip" )].isDouble() ) {
+          this->slipX = valuesObject[QStringLiteral( "slip" )].toDouble();
+        }
+      }
     }
 
   private:
@@ -175,6 +276,20 @@ class PoseSimulation : public BlockBase {
     double m_yawOffset = 0;
     double m_steerAngleOffset = 0;
 
+    double a = 1;
+    double b = 2;
+    double c = 2.5;
+    double Caf = 2400 * 180 / M_PI;
+    double Car = 5000 * 180 / M_PI;
+    double Cah = 750 * 180 / M_PI;
+    double m = 5500;
+    double Iz = 9500;
+    double sigmaF = 0.34;
+    double sigmaR = 0.34;
+    double sigmaH = 0.40;
+    double Cx = 5000 * 180 / M_PI;
+    double slipX = 0.025;
+
     double m_wheelbase = 2.4f;
 
     Eigen::Quaterniond m_orientation = Eigen::Quaterniond();
@@ -186,10 +301,10 @@ class PoseSimulation : public BlockBase {
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
     FixedKinematicPrimitive antennaKinematic;
 
-    template <typename T_> using StateType = KinematicModel::State<T_>;
-    StateType<double> state;
 
-    KinematicModel::TractorImuGpsFusionModel<StateType> simulatorModel;
+    template <typename T_> using StateType = ThreeWheeledFRHRL::State<T_>;
+    StateType<double> state;
+    ThreeWheeledFRHRL::TractorImuGpsFusionModel<StateType> simulatorModel;
 
     std::default_random_engine noiseGenerator;
     bool noisePositionXYActivated = false;
@@ -225,7 +340,6 @@ class PoseSimulationFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id, true );
 
       b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );
       b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d ) ) ) );
 
       b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );

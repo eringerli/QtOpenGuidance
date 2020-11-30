@@ -178,6 +178,7 @@ HEADERS += \
     src/block/VectorObject.h \
     src/block/XteDockBlock.h \
     src/block/XteGuidance.h \
+    src/filter/3wFRHRL/SystemModel.h \
     src/filter/BicycleModel/ImuMeasurementModel.h \
     src/filter/BicycleModel/PositionMeasurementModel.h \
     src/filter/BicycleModel/SystemModel.h \

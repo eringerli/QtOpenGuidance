@@ -32,11 +32,29 @@
 PoseSimulation::PoseSimulation( GeographicConvertionWrapper* geographicConvertionWrapper )
   : BlockBase(),
     geographicConvertionWrapper( geographicConvertionWrapper ) {
-  setSimulation( false );
 
   state.setZero();
 
+  setSimulation( false );
+
   noiseGenerator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
+}
+
+void PoseSimulation::setSimulatorValues( const double a, const double b, const double c, const double Caf, const double Car, const double Cah, const double m, const double Iz, const double sigmaF, const double sigmaR, const double sigmaH, const double Cx, const double slipX ) {
+  this->a = a;
+  this->b = b;
+  this->c = c;
+  // N/° -> N/rad
+  this->Caf = Caf * 180 / M_PI;
+  this->Car = Car * 180 / M_PI;
+  this->Cah = Cah * 180 / M_PI;
+  this->m = m;
+  this->Iz = Iz;
+  this->sigmaF = sigmaF;
+  this->sigmaR = sigmaR;
+  this->sigmaH = sigmaH;
+  this->Cx = Cx;
+  this->slipX = slipX;
 }
 
 void PoseSimulation::setNoiseStandartDeviations( double noisePositionXY, double noisePositionZ, double noiseOrientation, double noiseAccelerometer, double noiseGyro ) {
@@ -79,7 +97,7 @@ void PoseSimulation::setNoiseStandartDeviations( double noisePositionXY, double 
 void PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
     constexpr double msPerS = 1000;
-    double elapsedTime = double ( m_time.restart() ) / msPerS;
+    double deltaT = double ( m_time.restart() ) / msPerS;
     double steerAngle = 0;
 
     if( m_autosteerEnabled ) {
@@ -92,29 +110,43 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     emit velocityChanged( m_velocity );
 
     {
-      StateType<double> prediction;
-      simulatorModel.predict( state, elapsedTime, m_velocity, steerAngle, m_wheelbase, prediction );
-      state = prediction;
-    }
+      auto& V = m_velocity;
+      auto deltaF = qDegreesToRadians( steerAngle );
 
-    qDebug() << "State: pos x|y|z" << state( int( KinematicModel::StateNames::X ) ) << state( int( KinematicModel::StateNames::Y ) ) << state( int( KinematicModel::StateNames::Z ) );
-    qDebug() << "State: vel x|y|z" << state( int( KinematicModel::StateNames::Vx ) ) << state( int( KinematicModel::StateNames::Vy ) ) << state( int( KinematicModel::StateNames::Vz ) );
-    qDebug() << "State: acc x|y|z" << state( int( KinematicModel::StateNames::Ax ) ) << state( int( KinematicModel::StateNames::Ay ) ) << state( int( KinematicModel::StateNames::Az ) );
-    qDebug() << "State: vel r|p|y" << state( int( KinematicModel::StateNames::Vroll ) ) << state( int( KinematicModel::StateNames::Vpitch ) ) << state( int( KinematicModel::StateNames::Vyaw ) );
-    qDebug() << "State: ang r|p|y" << state( int( KinematicModel::StateNames::Roll ) ) << state( int( KinematicModel::StateNames::Pitch ) ) << state( int( KinematicModel::StateNames::Yaw ) );
-    qDebug() << "";
+      {
+        constexpr double MinDeltaT = 0.001;
+        double factor = std::floor( deltaT / MinDeltaT );
+        double deltaT2 = deltaT / factor;
+
+        std::cout << "factor, deltaT, deltaT2" << factor << deltaT << deltaT2 << std::endl;
+
+        for( int i = 0; i < factor; ++i ) {
+          StateType<double> prediction;
+          qDebug() << "PoseSimulation::timerEvent" << Caf << Car << Cah;
+          simulatorModel.predict( state, deltaT2,
+                                  V, deltaF,
+                                  a, b, c,
+                                  Caf, Car, Cah,
+                                  m, Iz,
+                                  sigmaF, sigmaR, sigmaH,
+                                  Cx, slipX,
+                                  prediction );
+          state = prediction;
+        }
+      }
+    }
 
     // orientation
     {
 
       if( noiseOrientationActivated ) {
-        m_orientation = eulerToQuaternion( state( int( KinematicModel::StateNames::Roll ) ) + noiseOrientation( noiseGenerator ),
-                                           state( int( KinematicModel::StateNames::Pitch ) ) + noiseOrientation( noiseGenerator ),
-                                           state( int( KinematicModel::StateNames::Yaw ) ) + noiseOrientation( noiseGenerator ) );
+        m_orientation = eulerToQuaternion( state( int( ThreeWheeledFRHRL::StateNames::Roll ) ) + noiseOrientation( noiseGenerator ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Pitch ) ) + noiseOrientation( noiseGenerator ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) + noiseOrientation( noiseGenerator ) );
       } else {
-        m_orientation = eulerToQuaternion( state( int( KinematicModel::StateNames::Roll ) ),
-                                           state( int( KinematicModel::StateNames::Pitch ) ),
-                                           state( int( KinematicModel::StateNames::Yaw ) ) );
+        m_orientation = eulerToQuaternion( state( int( ThreeWheeledFRHRL::StateNames::Roll ) ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Pitch ) ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) );
 
       }
 
@@ -128,22 +160,22 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 //        counter = 0;
 
         if( noisePositionXYActivated || noisePositionZActivated ) {
-          antennaKinematic.setPose( Point_3( state( int( KinematicModel::StateNames::X ) ) + noisePositionXY( noiseGenerator ),
-                                             state( int( KinematicModel::StateNames::Y ) ) + noisePositionXY( noiseGenerator ),
-                                             state( int( KinematicModel::StateNames::Z ) ) + noisePositionZ( noiseGenerator ) ),
+          antennaKinematic.setPose( Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ) + noisePositionXY( noiseGenerator ),
+                                             state( int( ThreeWheeledFRHRL::StateNames::Y ) ) + noisePositionXY( noiseGenerator ),
+                                             state( int( ThreeWheeledFRHRL::StateNames::Z ) ) + noisePositionZ( noiseGenerator ) ),
                                     m_orientation,
                                     PoseOption::Options() );
         } else {
-          antennaKinematic.setPose( Point_3( state( int( KinematicModel::StateNames::X ) ),
-                                             state( int( KinematicModel::StateNames::Y ) ),
-                                             state( int( KinematicModel::StateNames::Z ) ) ),
+          antennaKinematic.setPose( Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
+                                             state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
+                                             state( int( ThreeWheeledFRHRL::StateNames::Z ) ) ),
                                     m_orientation,
                                     PoseOption::Options() );
         }
 
-        emit velocity3DChanged( Eigen::Vector3d( state( int( KinematicModel::StateNames::Vx ) ),
-                                state( int( KinematicModel::StateNames::Vy ) ),
-                                state( int( KinematicModel::StateNames::Vz ) ) ) );
+        emit velocity3DChanged( Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Vx ) ),
+                                state( int( ThreeWheeledFRHRL::StateNames::Vy ) ),
+                                state( int( ThreeWheeledFRHRL::StateNames::Vz ) ) ) );
 
         // emit signal with antenna offset
         emit positionChanged( toEigenVector( antennaKinematic.positionCalculated ) );
@@ -168,25 +200,25 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     Eigen::Vector3d accelerometerData;
 
     if( noiseAccelerometerActivated ) {
-      accelerometerData = Eigen::Vector3d( state( int( KinematicModel::StateNames::Ax ) ) + noiseAccelerometer( noiseGenerator ),
-                                           state( int( KinematicModel::StateNames::Ay ) ) + noiseAccelerometer( noiseGenerator ),
-                                           state( int( KinematicModel::StateNames::Az ) ) + noiseAccelerometer( noiseGenerator ) );
+      accelerometerData = Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Ax ) ) + noiseAccelerometer( noiseGenerator ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Ay ) ) + noiseAccelerometer( noiseGenerator ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Az ) ) + noiseAccelerometer( noiseGenerator ) );
     } else {
-      accelerometerData = Eigen::Vector3d( state( int( KinematicModel::StateNames::Ax ) ),
-                                           state( int( KinematicModel::StateNames::Ay ) ),
-                                           state( int( KinematicModel::StateNames::Az ) ) );
+      accelerometerData = Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Ax ) ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Ay ) ),
+                                           state( int( ThreeWheeledFRHRL::StateNames::Az ) ) );
     }
 
     Eigen::Vector3d gyroData;
 
     if( noiseGyroActivated ) {
-      gyroData = Eigen::Vector3d( state( int( KinematicModel::StateNames::Vroll ) ) + noiseGyro( noiseGenerator ),
-                                  state( int( KinematicModel::StateNames::Vpitch ) ) + noiseGyro( noiseGenerator ),
-                                  state( int( KinematicModel::StateNames::Vyaw ) ) + noiseGyro( noiseGenerator ) );
+      gyroData = Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Vroll ) ) + noiseGyro( noiseGenerator ),
+                                  state( int( ThreeWheeledFRHRL::StateNames::Vpitch ) ) + noiseGyro( noiseGenerator ),
+                                  state( int( ThreeWheeledFRHRL::StateNames::Vyaw ) ) + noiseGyro( noiseGenerator ) );
     } else {
-      gyroData = Eigen::Vector3d( state( int( KinematicModel::StateNames::Vroll ) ),
-                                  state( int( KinematicModel::StateNames::Vpitch ) ),
-                                  state( int( KinematicModel::StateNames::Vyaw ) ) );
+      gyroData = Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Vroll ) ),
+                                  state( int( ThreeWheeledFRHRL::StateNames::Vpitch ) ),
+                                  state( int( ThreeWheeledFRHRL::StateNames::Vyaw ) ) );
     }
 
     emit imuDataChanged( m_orientation, accelerometerData, gyroData );

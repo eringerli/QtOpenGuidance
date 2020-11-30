@@ -89,6 +89,11 @@ class SettingsDialog : public QDialog {
 
     void cameraSmoothingChanged( int, int );
 
+    void simulatorValuesChanged( const double a, const double b, const double c,
+                                 const double Caf, const double Car, const double Cah,
+                                 const double m, const double Iz,
+                                 const double sigmaF, const double sigmaR, const double sigmaH,
+                                 const double Cx, const double slip );
   public slots:
     void toggleVisibility();
 
@@ -99,6 +104,12 @@ class SettingsDialog : public QDialog {
     void saveDefaultConfig();
 
     void allModelsReset();
+
+    void setSimulatorValues( const double a, const double b, const double c,
+                             const double Caf, const double Car, const double Cah,
+                             const double m, const double Iz,
+                             const double sigmaF, const double sigmaR, const double sigmaH,
+                             const double Cx, const double slipX );
 
   private slots:
     void on_cbValues_currentIndexChanged( int index );
@@ -209,6 +220,32 @@ class SettingsDialog : public QDialog {
 
     void on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int column );
 
+    void on_dsbSimGeneralSlipX_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralA_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralB_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralC_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralSigmaF_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralSigmaR_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralSigmaH_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralCaf_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralCar_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralCah_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralM_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralIz_valueChanged( double arg1 );
+
+    void on_dsbSimGeneralCx_valueChanged( double arg1 );
+
   private:
     void saveGridValuesInSettings();
     void savePathPlannerValuesInSettings();
@@ -220,6 +257,7 @@ class SettingsDialog : public QDialog {
 
     void emitGridSettings();
 
+    void emitSimulatorValues();
     void emitNoiseStandartDeviations();
 
   private:

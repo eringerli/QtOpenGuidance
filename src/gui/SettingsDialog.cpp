@@ -293,9 +293,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
 
-  auto poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );;
+  auto poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
+  QObject::connect( this, &SettingsDialog::simulatorValuesChanged,
+                    poseSimulationTmp, &PoseSimulation::setSimulatorValues );
   QObject::connect( this, &SettingsDialog::noiseStandartDeviationsChanged,
                     poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
+  QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged,
+                    this, &SettingsDialog::setSimulatorValues );
 
   // SPNAV
 #ifdef SPNAV_ENABLED
@@ -1345,6 +1349,54 @@ void SettingsDialog::allModelsReset() {
   ui->twSections->resizeColumnsToContents();
 }
 
+void SettingsDialog::setSimulatorValues( const double a, const double b, const double c,
+    const double Caf, const double Car, const double Cah,
+    const double m, const double Iz,
+    const double sigmaF, const double sigmaR, const double sigmaH,
+    const double Cx, const double slipX ) {
+  ui->dsbSimGeneralA->blockSignals( true );
+  ui->dsbSimGeneralB->blockSignals( true );
+  ui->dsbSimGeneralC->blockSignals( true );
+  ui->dsbSimGeneralCaf->blockSignals( true );
+  ui->dsbSimGeneralCar->blockSignals( true );
+  ui->dsbSimGeneralCah->blockSignals( true );
+  ui->dsbSimGeneralM->blockSignals( true );
+  ui->dsbSimGeneralIz->blockSignals( true );
+  ui->dsbSimGeneralSigmaF->blockSignals( true );
+  ui->dsbSimGeneralSigmaR->blockSignals( true );
+  ui->dsbSimGeneralSigmaH->blockSignals( true );
+  ui->dsbSimGeneralCx->blockSignals( true );
+  ui->dsbSimGeneralSlipX->blockSignals( true );
+
+  ui->dsbSimGeneralA->setValue( a );
+  ui->dsbSimGeneralB->setValue( b );
+  ui->dsbSimGeneralC->setValue( c );
+  ui->dsbSimGeneralCaf->setValue( Caf );
+  ui->dsbSimGeneralCar->setValue( Car );
+  ui->dsbSimGeneralCah->setValue( Cah );
+  ui->dsbSimGeneralM->setValue( m );
+  ui->dsbSimGeneralIz->setValue( Iz );
+  ui->dsbSimGeneralSigmaF->setValue( sigmaF );
+  ui->dsbSimGeneralSigmaR->setValue( sigmaR );
+  ui->dsbSimGeneralSigmaH->setValue( sigmaH );
+  ui->dsbSimGeneralCx->setValue( Cx );
+  ui->dsbSimGeneralSlipX->setValue( slipX * 100 );
+
+  ui->dsbSimGeneralA->blockSignals( false );
+  ui->dsbSimGeneralB->blockSignals( false );
+  ui->dsbSimGeneralC->blockSignals( false );
+  ui->dsbSimGeneralCaf->blockSignals( false );
+  ui->dsbSimGeneralCar->blockSignals( false );
+  ui->dsbSimGeneralCah->blockSignals( false );
+  ui->dsbSimGeneralM->blockSignals( false );
+  ui->dsbSimGeneralIz->blockSignals( false );
+  ui->dsbSimGeneralSigmaF->blockSignals( false );
+  ui->dsbSimGeneralSigmaR->blockSignals( false );
+  ui->dsbSimGeneralSigmaH->blockSignals( false );
+  ui->dsbSimGeneralCx->blockSignals( false );
+  ui->dsbSimGeneralSlipX->blockSignals( false );
+}
+
 void SettingsDialog::on_btnSectionAdd_clicked() {
   if( !( ui->twSections->selectionModel()->selection().indexes().isEmpty() ) ) {
     ui->twSections->model()->insertRow( ui->twSections->selectionModel()->selection().indexes().constFirst().row() );
@@ -1457,6 +1509,14 @@ void SettingsDialog::emitGridSettings() {
                       float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
                       float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
                       gridColor, gridColorCoarse );
+}
+
+void SettingsDialog::emitSimulatorValues() {
+  emit simulatorValuesChanged( ui->dsbSimGeneralA->value(), ui->dsbSimGeneralB->value(), ui->dsbSimGeneralC->value(),
+                               ui->dsbSimGeneralCaf->value(), ui->dsbSimGeneralCar->value(), ui->dsbSimGeneralCah->value(),
+                               ui->dsbSimGeneralM->value(), ui->dsbSimGeneralIz->value(),
+                               ui->dsbSimGeneralSigmaF->value(), ui->dsbSimGeneralSigmaR->value(), ui->dsbSimGeneralSigmaH->value(),
+                               ui->dsbSimGeneralCx->value(), ui->dsbSimGeneralSlipX->value() / 100 );
 }
 
 void SettingsDialog::emitNoiseStandartDeviations() {
@@ -1909,3 +1969,54 @@ void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int )
 
   allModelsReset();
 }
+
+void SettingsDialog::on_dsbSimGeneralSlipX_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralA_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralB_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralC_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralSigmaF_valueChanged( double ) {
+  emitSimulatorValues();
+}
+void SettingsDialog::on_dsbSimGeneralSigmaR_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralSigmaH_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralCaf_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralCar_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralCah_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralM_valueChanged( double ) {
+  emitSimulatorValues();
+}
+void SettingsDialog::on_dsbSimGeneralIz_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void SettingsDialog::on_dsbSimGeneralCx_valueChanged( double ) {
+  emitSimulatorValues();
+}
+

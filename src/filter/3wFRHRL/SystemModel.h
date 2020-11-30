@@ -23,10 +23,14 @@
 
 #include <kalman/ExtendedKalmanFilter.hpp>
 
-// Formulas from here: https://github.com/cra-ros-pkg/robot_localization/blob/melodic-devel/src/ekf.cpp#L210
+#include <iostream>
+#include <iomanip>
 
-namespace KinematicModel {
+// Formulas from here:
+// yaw dynamic model: https://etd.auburn.edu/bitstream/handle/10415/819/PEARSON_PAUL_30.pdf;sequence=1
+// transfer function: https://github.com/cra-ros-pkg/robot_localization/blob/melodic-devel/src/ekf.cpp#L210
 
+namespace ThreeWheeledFRHRL {
   namespace StateNames {
     enum StateNames : int {
       X = 0,
@@ -36,7 +40,6 @@ namespace KinematicModel {
       Pitch,
       Yaw,
       SteerAngle,
-      SteerAngleAbsolute,
       Vx,
       Vy,
       Vz,
@@ -47,15 +50,12 @@ namespace KinematicModel {
       Ax,
       Ay,
       Az,
+      AlphaFront,
+      AlphaRear,
+      AlphaHitch,
       End
     };
   }
-
-//  template<typename T>
-//  class State : public Kalman::Vector<T, 15> {
-//    public:
-//      KALMAN_VECTOR( State, T, 15 )
-//  };
 
   template<typename _T>
   using State = Kalman::Vector<_T, StateNames::End>;
@@ -70,51 +70,130 @@ namespace KinematicModel {
               << QStringLiteral( "Roll" )
               << QStringLiteral( "Pitch" )
               << QStringLiteral( "Yaw" )
+              << QStringLiteral( "SteerAngle" )
               << QStringLiteral( "Vx" )
               << QStringLiteral( "Vy" )
               << QStringLiteral( "Vz" )
               << QStringLiteral( "Vroll" )
               << QStringLiteral( "Vpitch" )
               << QStringLiteral( "Vyaw" )
+              << QStringLiteral( "SteerAngleRate" )
               << QStringLiteral( "Ax" )
               << QStringLiteral( "Ay" )
-              << QStringLiteral( "Az" );
+              << QStringLiteral( "Az" )
+              << QStringLiteral( "AlphaFront" )
+              << QStringLiteral( "AlphaRear" )
+              << QStringLiteral( "AlphaHitch" );
+
+        oldResult.setZero();
       }
 
       template<typename T, typename _T>
       void predict( const StateType<T>& x, const _T deltaT,
-                    const _T velocity, const _T steerAngle, const _T wheelBase,
+                    const _T V, const _T deltaF,
+                    const _T a, const _T b, const _T c,
+                    const _T Caf, const _T Car, const _T Cah,
+                    const _T m, const _T Iz,
+                    const _T sigmaF, const _T sigmaR, const _T sigmaH,
+                    const _T Cx, const _T slipX,
                     StateType<T>& prediction ) {
-
-//        qDebug() << "TractorImuGpsFusionModel::predict" << deltaT << velocity << steerAngle << wheelBase;
-
-
-//        prediction[StateNames::XFrontWheelsFrontWheels] = x[StateNames::XFrontWheelsFrontWheels] + velocity*cos(qDegreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
-//        prediction[StateNames::YFrontWheelsFrontWheels] = x[StateNames::YFrontWheelsFrontWheels] + velocity*sin(qDegreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
+        // this implements formula 2.58 on page 21 with the 4WD part from formula 5.9 on page 79 of
+        // MODELING AND VALIDATION OF HITCHED LOADING EFFECTS ON TRACTOR YAW DYNAMICS
+        // from Paul James Pearson
+        // ATTENTION: The direction of the vectors and angles in the paper are opposite of the direction used here!!!
 
         StateType<T> xBuffer;
         xBuffer = x;
 
-//        double steerAngleRad = qDegreesToRadians(steerAngle);
+        if( !qIsNull( V ) ) {
+          // model isn't compatible with negative velocities (driving backwards), so use the straight kinematic model
+          if( V < 0 ) {
+            xBuffer( StateNames::Vyaw ) = std::tan( deltaF ) * V / ( a + b );
+            xBuffer( StateNames::Vy ) = 0;
+            xBuffer( StateNames::AlphaFront ) = 0;
+            xBuffer( StateNames::AlphaRear ) = 0;
+            xBuffer( StateNames::AlphaHitch ) = 0;
+          } else {
 
-        xBuffer( StateNames::Ax ) = ( velocity - x( StateNames::Vx ) ) / deltaT;
-        xBuffer( StateNames::Vyaw ) = std::tan( steerAngle ) * velocity / wheelBase;
+            // matrix for the first term (formula 2.58 + 5.9)
+            const _T Ftrac = Cx * slipX;
+            Eigen::Matrix<double, 5, 5> firstTerm;
+            firstTerm <<
+                      -Car / ( m * V ), ( b * Car ) / ( m * V ) - V, -( Ftrac + Caf ) / m, -Car / m, -Cah / m,
+                      ( b * Car ) / ( Iz * V ), -( b * b * Car ) / ( Iz * V ), ( -( Ftrac * a + Caf * a ) ) / Iz, ( b * Car ) / Iz, ( ( b + c )*Cah ) / Iz,
+                      1 / sigmaF, a / sigmaF, -V / sigmaF, 0, 0,
+                      1 / sigmaR, -b / sigmaR, 0, -V / sigmaR, 0,
+                      1 / sigmaH, -( b + c ) / sigmaH, 0, 0, -V / sigmaH;
+            std::cout << "firstTerm" << std::endl << firstTerm << std::endl;
 
-////        xBuffer( StateNames::Ax ) = ( velocity - x( StateNames::Vx ) ) / deltaT;
-//        xBuffer( StateNames::Ax ) = ((velocity*cos(steerAngleRad +xBuffer( StateNames::Yaw ) ))- x( StateNames::Vx )) / deltaT;
-//        xBuffer( StateNames::Ay ) = ((velocity*sin(steerAngleRad +xBuffer( StateNames::Yaw ) ))- x( StateNames::Vy )) / deltaT;
-//        xBuffer( StateNames::Vyaw ) = velocity * sin(steerAngleRad)/wheelBase;
+            Eigen::Vector<double, 5> secondTerm;
+            secondTerm <<
+                       -xBuffer( StateNames::Vy ),
+                       -xBuffer( StateNames::Vyaw ),
+                       -xBuffer( StateNames::AlphaFront ),
+                       -xBuffer( StateNames::AlphaRear ),
+                       -xBuffer( StateNames::AlphaHitch );
+            std::cout << "secondTerm" << std::endl << secondTerm << std::endl;
 
-//        qDebug() << xBuffer( StateNames::Ax ) << xBuffer( StateNames::Ay ) << xBuffer( StateNames::Vyaw );
+
+            Eigen::Vector<double, 5> thirdTerm;
+            thirdTerm <<
+                      0,
+                      0,
+                      -V / sigmaF,
+                      0,
+                      0;
+            std::cout << "thirdTerm" << std::endl << thirdTerm << std::endl;
+            std::cout << "deltaF" << std::endl << deltaF << std::endl;
+
+            auto result = ( firstTerm * secondTerm ) + ( thirdTerm * -deltaF );
+
+            // Trapezoidal rule:
+            // https://en.wikipedia.org/wiki/Trapezoidal_rule
+            auto result2 = ( result + oldResult ) * ( deltaT / 2 );
+
+            xBuffer( StateNames::Vy ) -= result2( 0 );
+            xBuffer( StateNames::Vyaw ) -=  result2( 1 );
+            xBuffer( StateNames::AlphaFront ) = xBuffer( StateNames::AlphaFront ) - result2( 2 );
+            xBuffer( StateNames::AlphaRear ) = xBuffer( StateNames::AlphaRear ) - result2( 3 );
+            xBuffer( StateNames::AlphaHitch ) = xBuffer( StateNames::AlphaHitch ) - result2( 4 );
+
+            oldResult = result;
+            std::cout << "result" << std::endl << result << std::endl;
+
+//          std::cout << "xBuffer" << std::endl << xBuffer << std::endl;
+            for( int i = 0, end = names.count(); i < end; ++i ) {
+              std::cout << std::fixed << std::setw( 12 ) << std::setprecision( 10 ) <</*std::scientific<<*/std::showpos << xBuffer( i ) << " " << names[i].toStdString() << std::endl;
+            }
+
+            qDebug() << "ThreeWheeledFRHRL::predict results" <<
+                     xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw ) << qRadiansToDegrees( xBuffer( StateNames::AlphaFront ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaRear ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaHitch ) );
+          }
+        } else {
+          qDebug() << "ThreeWheeledFRHRL::predict results" << xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw );
+          xBuffer( StateNames::Vy ) = 0;
+          xBuffer( StateNames::Vyaw ) = 0;
+          xBuffer( StateNames::AlphaFront ) = 0;
+          xBuffer( StateNames::AlphaRear ) = 0;
+          xBuffer( StateNames::AlphaHitch ) = 0;
+        }
+
+        xBuffer( StateNames::Vx ) = V;
 
         prediction = prepareTransferMatrix( xBuffer, deltaT ) * xBuffer;
+
+        prediction( StateNames::Yaw ) = normalizeAngleRadians( prediction( StateNames::Yaw ) );
+        prediction( StateNames::Roll ) = normalizeAngleRadians( prediction( StateNames::Roll ) );
+        prediction( StateNames::Pitch ) = normalizeAngleRadians( prediction( StateNames::Pitch ) );
+        prediction( StateNames::AlphaFront ) = normalizeAngleRadians( prediction( StateNames::AlphaFront ) );
+        prediction( StateNames::AlphaRear ) = normalizeAngleRadians( prediction( StateNames::AlphaRear ) );
+        prediction( StateNames::AlphaHitch ) = normalizeAngleRadians( prediction( StateNames::AlphaHitch ) );
       }
 
       template<typename T, typename _T>
       void predict( const StateType<T>& x,
                     const _T deltaT,
                     StateType<T>& prediction ) {
-
         prediction = prepareTransferMatrix( x, deltaT ) * x;
       }
 
@@ -133,7 +212,7 @@ namespace KinematicModel {
 
     public:
       QStringList names;
-
+      Eigen::Vector<double, 5> oldResult;
 
     private:
       template<typename T, typename _T>
