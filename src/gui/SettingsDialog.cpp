@@ -918,7 +918,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
       QJsonObject blockObject = blockIndex.toObject();
       int id = blockObject[QStringLiteral( "id" )].toInt( 0 );
 
-      // if id is a system-id -> search the block and set the values
+      // search the block and set the values
       if( id != 0 ) {
 
         // system id -> don't create new blocks
@@ -929,6 +929,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
             idMap.insert( id, block->id );
             block->setX( blockObject[QStringLiteral( "positionX" )].toDouble( 0 ) );
             block->setY( blockObject[QStringLiteral( "positionY" )].toDouble( 0 ) );
+            block->fromJSON( blockObject );
           }
 
           // id is not a system-id -> create new blocks
