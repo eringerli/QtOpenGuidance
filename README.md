@@ -94,8 +94,8 @@ git clone --recursive https://github.com/eringerli/QtOpenGuidance
 
 # get CGAL
 cd QtOpenGuidance/lib/
-wget https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-5.0.2/CGAL-5.0.2.tar.xz
-tar xf CGAL-5.0.2.tar.xz
+wget https://github.com/CGAL/cgal/releases/download/v5.1.1/CGAL-5.1.1.tar.xz
+tar xf CGAL-5.1.1.tar.xz
 
 # build QtOpenGuidance
 cd /c/qtopenguidance/
@@ -169,7 +169,7 @@ It *can* run on Android, but the GUI is in no way optimized for it: to actually 
 If you want to implement new stuff, you have to clone the repository and open it in QtCreator. Developing on Linux is much simpler than on Windows, but both are possible (you have to add a custom toolchain/kit to QtCreator).
 
 ### Dependencies
-The simplest way is to install all the dependencies simply follow the guide for installing on Linux/Windows. Everything is then installed automatically.
+The simplest way is to install all the dependencies simply follow the guide for installing on Linux/Windows. Everything is then installed automatically. CGAL has to be installed seperately, follow the part about it in the instructions for MSYS2.
 
 ### Cloning
 The easiest way is to clone it recursively, either by adding `--recursive` to `git clone` or ticking the box on importing a new project in QtCreator.
