@@ -27,6 +27,9 @@
 #include "../kinematic/PathPrimitiveSegment.h"
 #include "../kinematic/PathPrimitiveSequence.h"
 
+#include <CGAL/Polyline_simplification_2/simplify.h>
+namespace PS = CGAL::Polyline_simplification_2;
+
 #include <dubins/dubins.h>
 
 void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {

@@ -133,6 +133,57 @@ void FieldManager::alphaShape() {
   }
 }
 
+void FieldManager::setPose(const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options) {
+  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+    this->position = position;
+    this->orientation = orientation;
+  }
+}
+
+void FieldManager::setPoseLeftEdge(const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options) {
+  if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
+      options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+    positionLeftEdgeOfImplement = position;
+  } else {
+    if( recordOnRightEdgeOfImplement == false ) {
+      if( recordNextPoint ) {
+        points.push_back( position );
+        recordNextPoint = false;
+        recalculateField();
+      } else {
+        if( recordContinous ) {
+          points.push_back( position );
+          recordNextPoint = false;
+        }
+      }
+
+      emit pointsRecordedChanged( points.size() );
+    }
+  }
+}
+
+void FieldManager::setPoseRightEdge(const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options) {
+  if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
+      options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+    positionRightEdgeOfImplement = position;
+  } else {
+    if( recordOnRightEdgeOfImplement == true ) {
+      if( recordNextPoint ) {
+        points.push_back( position );
+        recordNextPoint = false;
+        recalculateField();
+      } else {
+        if( recordContinous ) {
+          points.push_back( position );
+          recordNextPoint = false;
+        }
+      }
+
+      emit pointsRecordedChanged( points.size() );
+    }
+  }
+}
+
 void FieldManager::openField() {
   QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
   QString dir;

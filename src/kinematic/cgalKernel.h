@@ -54,13 +54,6 @@ typedef CGAL::Bbox_2                                            Bbox_2;
 #include <CGAL/intersections.h>
 typedef Epick::Intersect_2 Intersect_2;
 
-#include <CGAL/Aff_transformation_2.h>
-#include <CGAL/aff_transformation_tags.h>
-typedef CGAL::Aff_transformation_2<Epick>                       Aff_transformation_2;
-
-#include <CGAL/Aff_transformation_3.h>
-typedef CGAL::Aff_transformation_3<Epick>                       Aff_transformation_3;
-
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 typedef CGAL::Polygon_2<Epick>                                  Polygon_2;

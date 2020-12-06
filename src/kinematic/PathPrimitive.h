@@ -20,6 +20,10 @@
 
 #include "../helpers/cgalHelper.h"
 
+#include <CGAL/Aff_transformation_2.h>
+#include <CGAL/aff_transformation_tags.h>
+typedef CGAL::Aff_transformation_2<Epick>                       Aff_transformation_2;
+
 class PathPrimitiveLine;
 class PathPrimitiveRay;
 class PathPrimitiveSegment;

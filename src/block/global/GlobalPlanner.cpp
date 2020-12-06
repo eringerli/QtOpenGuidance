@@ -28,6 +28,9 @@
 
 #include "../helpers/GeoJsonHelper.h"
 
+#include <CGAL/Aff_transformation_3.h>
+typedef CGAL::Aff_transformation_3<Epick>                       Aff_transformation_3;
+
 GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
   : BlockBase(),
     tmw( tmw ),

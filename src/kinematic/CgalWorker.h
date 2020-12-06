@@ -26,7 +26,17 @@
 #include "../helpers/cgalHelper.h"
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include <QSharedPointer>
+#include <CGAL/Delaunay_triangulation_2.h>
+#include <CGAL/Alpha_shape_2.h>
+#include <CGAL/Alpha_shape_vertex_base_2.h>
+#include <CGAL/Alpha_shape_face_base_2.h>
+typedef CGAL::Tag_true                                                            Alpha_cmp_tag;
+typedef CGAL::Alpha_shape_vertex_base_2<Epick, CGAL::Default, Alpha_cmp_tag>      AVb;
+typedef CGAL::Alpha_shape_face_base_2<Epick, CGAL::Default, Alpha_cmp_tag>        AFb;
+typedef CGAL::Triangulation_data_structure_2<AVb, AFb>                            ATds;
+typedef CGAL::Delaunay_triangulation_2<Epick, ATds>                               ATriangulation_2;
+typedef CGAL::Alpha_shape_2<ATriangulation_2, Alpha_cmp_tag>                      Alpha_shape_2;
+typedef Alpha_shape_2::Alpha_shape_edges_iterator                                 Alpha_shape_edges_iterator;
 
 class CgalWorker : public QObject {
     Q_OBJECT

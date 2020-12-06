@@ -19,7 +19,10 @@
 #include "../kinematic/cgal.h"
 #include "CgalWorker.h"
 
-#include <QScopedPointer>
+#include <CGAL/point_generators_2.h>
+
+#include <CGAL/Polyline_simplification_2/simplify.h>
+namespace PS = CGAL::Polyline_simplification_2;
 
 CgalWorker::CgalWorker( QObject* parent ) : QObject( parent ) {
 

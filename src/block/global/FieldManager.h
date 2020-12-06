@@ -69,56 +69,11 @@ class FieldManager : public BlockBase {
     void alphaShape();
 
   public slots:
-    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
-        this->orientation = orientation;
-      }
-    }
+    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options );
 
-    void setPoseLeftEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
-      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionLeftEdgeOfImplement = position;
-      } else {
-        if( recordOnRightEdgeOfImplement == false ) {
-          if( recordNextPoint ) {
-            points.push_back( position );
-            recordNextPoint = false;
-            recalculateField();
-          } else {
-            if( recordContinous ) {
-              points.push_back( position );
-              recordNextPoint = false;
-            }
-          }
+    void setPoseLeftEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options );
 
-          emit pointsRecordedChanged( points.size() );
-        }
-      }
-    }
-
-    void setPoseRightEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
-      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionRightEdgeOfImplement = position;
-      } else {
-        if( recordOnRightEdgeOfImplement == true ) {
-          if( recordNextPoint ) {
-            points.push_back( position );
-            recordNextPoint = false;
-            recalculateField();
-          } else {
-            if( recordContinous ) {
-              points.push_back( position );
-              recordNextPoint = false;
-            }
-          }
-
-          emit pointsRecordedChanged( points.size() );
-        }
-      }
-    }
+    void setPoseRightEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options );
 
     void openField();
     void openFieldFromFile( QFile& file );
