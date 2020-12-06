@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include <algorithm>
+
 #include "GlobalPlanner.h"
 #include <QScopedPointer>
 
@@ -23,6 +25,8 @@
 
 #include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
+
+#include "../helpers/GeoJsonHelper.h"
 
 GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
   : BlockBase(),
@@ -310,70 +314,42 @@ void GlobalPlanner::openAbLine() {
 }
 
 void GlobalPlanner::openAbLineFromFile( QFile& file ) {
-  QByteArray saveData = file.readAll();
+  auto geoJsonHelper = GeoJsonHelper( file );
+  geoJsonHelper.print();
 
-  QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
-  QJsonObject json = loadDoc.object();
+  for( const auto& member : geoJsonHelper.members ) {
+    switch( member.first ) {
+      case GeoJsonHelper::GeometryType::LineString: {
+          abPolyline.clear();
+          auto index = uint16_t( 0 );
 
-  if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
-      json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
-    QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
+          for( const auto& point : std::get<GeoJsonHelper::LineStringType>( member.second ) ) {
+            auto tmwPoint = convertEigenVector3ToPoint3( tmw->Forward( point ) );
 
-    for( const auto& feature : qAsConst( featuresArray ) ) {
-
-      QJsonObject featuresObject = feature.toObject();
-
-      if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
-          featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
-        QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
-
-        if( geometryObject.contains( QStringLiteral( "type" ) ) ) {
-
-          // processed field
-          if( ( geometryObject[QStringLiteral( "type" )] == "LineString" ) &&
-              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
-            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
-
-            if( coordinatesArray.size() >= 2 ) {
-              uint16_t index = 0;
-
-              abPolyline.clear();
-
-              for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
-                QJsonArray coordinate = blockIndex.toArray();
-
-                if( coordinate.size() >= 2 ) {
-                  double x, y, z;
-                  double height = 0;
-
-                  if( coordinate.size() >= 3 ) {
-                    height = coordinate.at( 2 ).toDouble();
-                  };
-
-                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), height, x, y, z );
-
-                  if( index == 0 ) {
-                    aPoint = Epick::Point_3( x, y, 0 );
-                    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
-                  }
-
-                  if( index == 1 ) {
-                    bPoint = Epick::Point_3( x, y, 0 );
-                    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
-                    aPointEntity->setEnabled( true );
-                    bPointEntity->setEnabled( true );
-                    abSegment = Segment_3( aPoint, bPoint );
-                  }
-
-                  abPolyline.push_back( Point_2( x, y ) );
-                }
-
-                ++index;
-              }
+            if( index == 0 ) {
+              aPoint = tmwPoint;
+              aPointTransform->setTranslation( convertPoint3ToQVector3D( tmwPoint ) );
             }
+
+            if( index == 1 ) {
+              bPoint = tmwPoint;
+              bPointTransform->setTranslation( convertPoint3ToQVector3D( tmwPoint ) );
+              aPointEntity->setEnabled( true );
+              bPointEntity->setEnabled( true );
+              abSegment = Segment_3( aPoint, tmwPoint );
+            }
+
+            abPolyline.push_back( to2D( tmwPoint ) );
+
+            ++index;
           }
+
         }
-      }
+        break;
+
+      default:
+        break;
+
     }
   }
 
@@ -406,52 +382,18 @@ void GlobalPlanner::saveAbLine() {
 }
 
 void GlobalPlanner::saveAbLineToFile( QFile& file ) {
-  QJsonObject jsonObject;
-  QJsonArray features;
-
-  jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
-
-  // processed field as Polygon
   if( abSegment.squared_length() > 1 &&
       implementSegment.squared_length() > 1 ) {
-    QJsonObject feature;
 
-    QJsonObject geometry;
+    auto geoJsonHelper = GeoJsonHelper();
+    auto lineString = GeoJsonHelper::LineStringType();
 
-    geometry[QStringLiteral( "type" )] = QStringLiteral( "LineString" );
-    QJsonObject properties;
-
-    QJsonArray coordinates;
-
-    {
-      double latitude = 0;
-      double longitude = 0;
-      double height = 0;
-
-      for( const auto& point : abPolyline ) {
-        tmw->Reverse( point.x(), point.y(), 0, latitude, longitude, height );
-
-        QJsonArray coordinate;
-        coordinate.push_back( longitude );
-        coordinate.push_back( latitude );
-
-        coordinates.push_back( coordinate );
-      }
+    for( const auto& point : abPolyline ) {
+      lineString.emplace_back( tmw->Reverse( toEigenVector( point ) ) );
     }
 
-    geometry[QStringLiteral( "coordinates" )] = coordinates;
+    geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::LineString, std::move( lineString ) );
 
-    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
-    feature[QStringLiteral( "geometry" )] = geometry;
-
-    properties[QStringLiteral( "name" )] = QStringLiteral( "AB-Line/Curve" );
-    feature[QStringLiteral( "properties" )] = properties;
-
-    features.push_back( feature );
-
-    jsonObject[QStringLiteral( "features" )] = features;
-
-    QJsonDocument jsonDocument( jsonObject );
-    file.write( jsonDocument.toJson() );
+    geoJsonHelper.save( file );
   }
 }

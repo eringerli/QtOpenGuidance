@@ -24,6 +24,8 @@
 #include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
 
+#include "../helpers/GeoJsonHelper.h"
+
 FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
   : BlockBase(),
     mainWindow( mainWindow ), tmw( tmw ) {
@@ -56,7 +58,7 @@ FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, 
     m_segmentsEntity2->addComponent( m_segmentsMesh2 );
 
     m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::LineStrip );
+    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
     m_segmentsEntity3->addComponent( m_segmentsMesh3 );
 
     m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
@@ -194,115 +196,69 @@ void FieldManager::openField() {
 }
 
 void FieldManager::openFieldFromFile( QFile& file ) {
-  QByteArray saveData = file.readAll();
+  auto geoJsonHelper = GeoJsonHelper( file );
 
-  QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
-  QJsonObject json = loadDoc.object();
+  auto newField = bool( false );
+  auto newRawPoints = bool( false );
 
-  bool newField = false;
-  bool newRawPoints = false;
+  for( const auto& member : geoJsonHelper.members ) {
+    switch( member.first ) {
+      case GeoJsonHelper::GeometryType::Polygon: {
+          QVector<QVector3D> positions;
+          Polygon_2 poly;
 
-  if( json.contains( QStringLiteral( "type" ) ) && json[QStringLiteral( "type" )] == "FeatureCollection" &&
-      json.contains( QStringLiteral( "features" ) ) && json[QStringLiteral( "features" )].isArray() ) {
-    QJsonArray featuresArray = json[QStringLiteral( "features" )].toArray();
+          const auto& polygon = std::get<GeoJsonHelper::PolygonType>( member.second );
 
-    for( const auto& feature : qAsConst( featuresArray ) ) {
-
-      QJsonObject featuresObject = feature.toObject();
-
-      if( featuresObject.contains( QStringLiteral( "type" ) ) && featuresObject[QStringLiteral( "type" )] == "Feature" &&
-          featuresObject.contains( QStringLiteral( "geometry" ) ) && featuresObject[QStringLiteral( "geometry" )].isObject() ) {
-        QJsonObject geometryObject = featuresObject[QStringLiteral( "geometry" )].toObject();
-
-        if( geometryObject.contains( QStringLiteral( "type" ) ) ) {
-          // processed field
-          if( ( geometryObject[QStringLiteral( "type" )] == "Polygon" || geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) &&
-              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
-            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
-
-            if( coordinatesArray.size() >= 1 ) {
-              QJsonArray coordinateArray;
-
-              if( geometryObject[QStringLiteral( "type" )] == "MultiPolygon" ) {
-                coordinateArray = coordinatesArray.first().toArray().first().toArray();
-              } else {
-                coordinateArray = coordinatesArray.first().toArray();
-              }
-
-              QVector<QVector3D> positions;
-              Polygon_2 poly;
-
-              for( const auto& blockIndex : qAsConst( coordinateArray ) ) {
-                QJsonArray coordinate = blockIndex.toArray();
-
-                if( coordinate.size() >= 2 ) {
-                  double x, y, z;
-
-                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), x, y, z );
-                  positions.push_back( QVector3D( x, y, z ) );
-                  poly.push_back( Epick::Point_2( x, y ) );
-                }
-              }
-
-              currentField = std::make_shared<Polygon_with_holes_2>( poly );
-
-              const auto& outerPoly = currentField->outer_boundary();
-              emit pointsInFieldBoundaryChanged( outerPoly.size() );
-
-              newField = true;
-
-              m_segmentsMesh2->bufferUpdate( positions );
-              m_segmentsEntity2->setEnabled( true );
-
-              emit fieldChanged( currentField );
+          if( polygon.size() >= 1 ) {
+            for( const auto& point : polygon.front() ) {
+              auto tmwPoint = tmw->Forward( point );
+              positions.push_back( toQVector3D( tmwPoint ) );
+              poly.push_back( convertEigenVector3ToPoint2( tmwPoint ) );
             }
-          }
 
-          // raw points
-          if( geometryObject[QStringLiteral( "type" )] == "MultiPoint" &&
-              geometryObject.contains( QStringLiteral( "coordinates" ) ) && geometryObject[QStringLiteral( "coordinates" )].isArray() ) {
-            QJsonArray coordinatesArray = geometryObject[QStringLiteral( "coordinates" )].toArray();
+            currentField = std::make_shared<Polygon_with_holes_2>( poly );
 
-            if( coordinatesArray.size() >= 1 ) {
-              QVector<QVector3D> positions;
-              points.clear();
+            const auto& outerPoly = currentField->outer_boundary();
+            emit pointsInFieldBoundaryChanged( outerPoly.size() );
 
-              for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
-                QJsonArray coordinate = blockIndex.toArray();
+            newField = true;
 
-                if( coordinate.size() >= 2 ) {
-                  double x, y, z;
-                  double height = 0;
+            m_segmentsMesh2->bufferUpdate( positions );
+            m_segmentsEntity2->setEnabled( true );
 
-                  if( coordinate.size() >= 3 ) {
-                    height = coordinate.at( 2 ).toDouble();
-                  };
-
-                  tmw->Forward( coordinate.at( 1 ).toDouble(), coordinate.at( 0 ).toDouble(), height, x, y, z );
-
-                  positions.push_back( QVector3D( x, y, z ) );
-
-                  points.emplace_back( Epick::Point_3( x, y, z ) );
-                }
-              }
-
-              m_segmentsMesh3->bufferUpdate( positions );
-              m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
-              m_segmentsEntity3->setEnabled( true );
-
-              emit pointsGeneratedForFieldBoundaryChanged( 0 );
-              emit pointsRecordedChanged( points.size() );
-
-              newRawPoints = true;
-            }
+            emit fieldChanged( currentField );
           }
         }
-      }
+        break;
+
+      case GeoJsonHelper::GeometryType::MultiPoint: {
+          QVector<QVector3D> positions;
+          points.clear();
+
+          for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
+            auto tmwPoint = tmw->Forward( point );
+            positions.push_back( toQVector3D( tmwPoint ) );
+            points.emplace_back( convertEigenVector3ToPoint3( tmwPoint ) );
+          }
+
+          m_segmentsMesh3->bufferUpdate( positions );
+          m_segmentsEntity3->setEnabled( true );
+
+          emit pointsGeneratedForFieldBoundaryChanged( 0 );
+          emit pointsRecordedChanged( points.size() );
+
+          newRawPoints = true;
+        }
+        break;
+
+      default:
+        break;
     }
   }
 
+
   // if a file is loaded with only raw points, then recalculate() to set it as new boundary
-  if( newRawPoints && ! newField ) {
+  if( newRawPoints && !newField ) {
     recalculateField();
   }
 }
@@ -332,129 +288,47 @@ void FieldManager::saveField() {
 }
 
 void FieldManager::saveFieldToFile( QFile& file ) {
-  QJsonObject jsonObject;
-  QJsonArray features;
+  auto geoJsonHelper = GeoJsonHelper();
 
-  jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
+  // the refined polygon
+  {
+    auto polygon = GeoJsonHelper::PolygonType();
 
-  QJsonObject properties;
-  properties[QStringLiteral( "alpha" )] = currentAlpha;
-  properties[QStringLiteral( "connect-points-distance" )] = distanceBetweenConnectPoints;
-  properties[QStringLiteral( "simplification-max-deviation" )] = maxDeviation;
+    auto pointsOfPolygon = GeoJsonHelper::MultiPointType();
 
-  // processed field as Polygon
-  if( currentField ) {
-    QJsonObject feature;
-
-    QJsonObject geometry;
-
-    geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
-
-    QJsonArray coordinatesDummy;
-    QJsonArray coordinates;
-
-    typedef Polygon_2::Vertex_iterator VertexIterator;
-
-    auto outerBoundary = currentField->outer_boundary();
-//    outerBoundary.reverse_orientation();
-
-    for( VertexIterator vi = outerBoundary.vertices_begin(),
-         end = outerBoundary.vertices_end();
-         vi != end; ++vi ) {
-
-      double latitude = 0;
-      double longitude = 0;
-      double height = 0;
-      tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
-
-      QJsonArray coordinate;
-      coordinate.push_back( longitude );
-      coordinate.push_back( latitude );
-
-      coordinates.push_back( coordinate );
+    for( const auto& vi : currentField->outer_boundary() ) {
+      pointsOfPolygon.emplace_back( tmw->Reverse( toEigenVector( vi ) ) );
     }
 
+    // add the first point again to close the polygon
+    pointsOfPolygon.push_back( pointsOfPolygon.front() );
 
-    // add the first point again
-    {
-      VertexIterator vi = outerBoundary.vertices_begin();
-      double latitude = 0;
-      double longitude = 0;
-      double height = 0;
-
-      tmw->Reverse( vi->x(), vi->y(), 0, latitude, longitude, height );
-
-      QJsonArray coordinate;
-      coordinate.push_back( longitude );
-      coordinate.push_back( latitude );
-
-      coordinates.push_back( coordinate );
-    }
-
-    coordinatesDummy.push_back( coordinates );
-    geometry[QStringLiteral( "coordinates" )] = coordinatesDummy;
-
-    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
-    feature[QStringLiteral( "geometry" )] = geometry;
-
-    properties[QStringLiteral( "name" )] = QStringLiteral( "processed polygon" );
-    feature[QStringLiteral( "properties" )] = properties;
-
-    features.push_back( feature );
+    polygon.emplace_back( pointsOfPolygon );
+    geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::Polygon, polygon );
   }
 
-  // recorded points as MultiPoint
-  if( !points.empty() ) {
-    QJsonObject feature;
 
-    QJsonObject geometry;
+  // the raw points
+  {
+    auto rawPoints = GeoJsonHelper::MultiPointType();
 
-    geometry[QStringLiteral( "type" )] = QStringLiteral( "MultiPoint" );
-
-    QJsonArray coordinates;
-
-    for( const Epick::Point_3& point : points ) {
-
-      double latitude = 0;
-      double longitude = 0;
-      double height = 0;
-      tmw->Reverse( point.x(), point.y(), point.z(), latitude, longitude, height );
-
-      QJsonArray coordinate;
-      coordinate.push_back( longitude );
-      coordinate.push_back( latitude );
-      coordinate.push_back( height );
-
-      coordinates.push_back( coordinate );
+    for( const auto& point : points ) {
+      rawPoints.emplace_back( tmw->Reverse( toEigenVector( point ) ) );
     }
 
-    geometry[QStringLiteral( "coordinates" )] = coordinates;
-
-    feature[QStringLiteral( "type" )] = QStringLiteral( "Feature" );
-    feature[QStringLiteral( "geometry" )] = geometry;
-
-    properties[QStringLiteral( "name" )] = QStringLiteral( "raw points" );
-    feature[QStringLiteral( "properties" )] = properties;
-
-    features.push_back( feature );
+    geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::MultiPoint, rawPoints );
   }
 
-  jsonObject[QStringLiteral( "features" )] = features;
-
-  QJsonDocument jsonDocument( jsonObject );
-  file.write( jsonDocument.toJson() );
+  geoJsonHelper.save( file );
 }
 
 void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double /*alpha*/ ) {
   currentField = field;
 
   QVector<QVector3D> meshSegmentPoints;
-  typedef Polygon_2::Vertex_iterator VertexIterator;
 
-  for( VertexIterator vi = field->outer_boundary().vertices_begin(),
-       end = field->outer_boundary().vertices_end();
-       vi != end; ++vi ) {
-    meshSegmentPoints << QVector3D( float( vi->x() ), float( vi->y() ), 0.1f );
+  for( const auto& vi : field->outer_boundary() ) {
+    meshSegmentPoints << convertPoint2ToQVector3D( vi, 0.1f );
   }
 
   meshSegmentPoints << meshSegmentPoints.first();

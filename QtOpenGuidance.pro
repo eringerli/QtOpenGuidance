@@ -87,6 +87,7 @@ SOURCES += \
     src/gui/ValueBlockModel.cpp \
     src/gui/ValueDock.cpp \
     src/gui/XteDock.cpp \
+    src/helpers/GeoJsonHelper.cpp \
     src/kinematic/CgalWorker.cpp \
     src/kinematic/PathPrimitive.cpp \
     src/kinematic/PathPrimitiveLine.cpp \
@@ -217,6 +218,7 @@ HEADERS += \
     src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \
     src/gui/XteDock.h \
+    src/helpers/GeoJsonHelper.h \
     src/helpers/GeographicConvertionWrapper.h \
     src/helpers/cgalHelper.h \
     src/helpers/eigenHelper.h \
