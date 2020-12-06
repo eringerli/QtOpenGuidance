@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "eigenHelper.h"
+
 #include <GeographicLib/TransverseMercator.hpp>
 #include <GeographicLib/LocalCartesian.hpp>
 #include <GeographicLib/UTMUPS.hpp>
@@ -88,6 +90,16 @@ class GeographicConvertionWrapper {
       }
     }
 
+    Eigen::Vector3d Forward( const Eigen::Vector3d& point ) {
+      auto x = double();
+      auto y = double();
+      auto z = double();
+
+      Forward( point.x(), point.y(), point.z(), x, y, z );
+
+      return Eigen::Vector3d( x, y, z );
+    }
+
     void Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height ) {
       if( isLatLonOffsetSet ) {
         if( useTM ) {
@@ -131,6 +143,16 @@ class GeographicConvertionWrapper {
       _lc.Reset( latitude, longitude, height );
 
       isLatLonOffsetSet = true;
+    }
+
+    Eigen::Vector3d Reverse( const Eigen::Vector3d& point ) {
+      auto x = double();
+      auto y = double();
+      auto z = double();
+
+      Reverse( point.x(), point.y(), point.z(), x, y, z );
+
+      return Eigen::Vector3d( x, y, z );
     }
 
   public:

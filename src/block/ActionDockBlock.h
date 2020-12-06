@@ -32,7 +32,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class ActionDockBlock : public BlockBase {

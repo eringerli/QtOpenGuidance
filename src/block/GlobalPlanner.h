@@ -43,8 +43,8 @@
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../kinematic/PathPrimitive.h"
@@ -55,7 +55,7 @@
 
 #include "../kinematic/PlanGlobal.h"
 
-#include "../kinematic/GeographicConvertionWrapper.h"
+#include "../helpers/GeographicConvertionWrapper.h"
 
 #include <QVector>
 #include <QSharedPointer>

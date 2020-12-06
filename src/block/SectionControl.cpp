@@ -31,7 +31,7 @@
 #include <Qt3DRender/QRenderCapture>
 #include <Qt3DRender/QRenderCaptureReply>
 
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/eigenHelper.h"
 
 SectionControl::SectionControl( const QString& uniqueName,
                                 MyMainWindow* mainWindow,

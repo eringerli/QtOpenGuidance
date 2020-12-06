@@ -23,7 +23,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 #include "../gui/FieldsOptimitionToolbar.h"
 
 #include <QSharedPointer>

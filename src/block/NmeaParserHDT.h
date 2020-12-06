@@ -21,7 +21,7 @@
 #include <QObject>
 
 #include "BlockBase.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/eigenHelper.h"
 
 class NmeaParserHDT : public BlockBase {
     Q_OBJECT

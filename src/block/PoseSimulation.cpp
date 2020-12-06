@@ -24,7 +24,6 @@
 
 #include <QDebug>
 
-#include "../kinematic/eigenHelper.h"
 
 // http://correll.cs.colorado.edu/?p=1869
 // https://github.com/correll/Introduction-to-Autonomous-Robots/releases

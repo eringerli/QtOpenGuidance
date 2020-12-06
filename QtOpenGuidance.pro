@@ -217,10 +217,13 @@ HEADERS += \
     src/gui/ValueDock.h \
     src/gui/VectorBlockModel.h \
     src/gui/XteDock.h \
+    src/helpers/GeographicConvertionWrapper.h \
+    src/helpers/cgalHelper.h \
+    src/helpers/eigenHelper.h \
+    src/helpers/normalizeAngles.h \
     src/kinematic/CgalWorker.h \
     src/kinematic/FixedKinematic.h \
     src/kinematic/FixedKinematicPrimitive.h \
-    src/kinematic/GeographicConvertionWrapper.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PathPrimitiveLine.h \
     src/kinematic/PathPrimitiveRay.h \
@@ -231,8 +234,6 @@ HEADERS += \
     src/kinematic/PoseOptions.h \
     src/kinematic/TrailerKinematic.h \
     src/kinematic/TrailerKinematicPrimitive.h \
-    src/kinematic/eigenHelper.h \
-    src/kinematic/normalizeAngles.h
 
 unix {
     PRECOMPILED_HEADER  = src/pch.h

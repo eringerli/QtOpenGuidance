@@ -19,7 +19,7 @@
 #include "LocalPlanner.h"
 
 #include "../kinematic/cgal.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/eigenHelper.h"
 
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/PathPrimitiveLine.h"

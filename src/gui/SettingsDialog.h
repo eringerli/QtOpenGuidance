@@ -45,7 +45,7 @@
 #include "TransmissionBlockModel.h"
 #include "PlotBlockModel.h"
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 
 class SpaceNavigatorPollingThread;
 class GeographicConvertionWrapper;

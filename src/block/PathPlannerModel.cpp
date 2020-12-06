@@ -45,7 +45,7 @@
 #include "qneport.h"
 
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../kinematic/Plan.h"

@@ -31,8 +31,8 @@
 #include "BlockBase.h"
 #include "PlotDockBlockBase.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {

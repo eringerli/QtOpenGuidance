@@ -25,9 +25,9 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
-#include "../kinematic/GeographicConvertionWrapper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
+#include "../helpers/GeographicConvertionWrapper.h"
 
 #include <QDebug>
 

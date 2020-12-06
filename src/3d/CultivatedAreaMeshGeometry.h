@@ -22,7 +22,7 @@
 #include <QGeometry>
 #include <Qt3DRender/QBuffer>
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 
 class CgalThread;
 

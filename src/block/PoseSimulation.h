@@ -32,10 +32,10 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 
-#include "../kinematic/GeographicConvertionWrapper.h"
+#include "../helpers/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematicPrimitive.h"
 
 #include "../filter/3wFRHRL/SystemModel.h"

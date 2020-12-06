@@ -34,8 +34,8 @@
 #include "FixedKinematicPrimitive.h"
 #include "TrailerKinematicPrimitive.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class TrailerKinematic : public BlockBase {

@@ -30,8 +30,8 @@
 
 #include "BlockBase.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../block/Implement.h"

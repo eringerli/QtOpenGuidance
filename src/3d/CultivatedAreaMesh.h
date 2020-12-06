@@ -23,7 +23,7 @@
 #include <QNode>
 #include <QGeometryRenderer>
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 
 class CgalThread;
 class CultivatedAreaMeshGeometry;

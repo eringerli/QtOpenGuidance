@@ -28,7 +28,7 @@
 #include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/eigenHelper.h"
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker )
   : threadForCgalWorker( threadForCgalWorker ) {

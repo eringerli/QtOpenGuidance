@@ -29,8 +29,8 @@
 #include "BlockBase.h"
 #include "ValueDockBlockBase.h"
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationDockBlock : public ValueDockBlockBase {

@@ -23,8 +23,8 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../kinematic/cgalKernel.h"
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/cgalHelper.h"
+#include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 #include "../gui/MyMainWindow.h"

@@ -109,13 +109,13 @@
 #include "../block/ValueTransmissionBase64Data.h"
 #include "../block/ValueTransmissionState.h"
 
-#include "../kinematic/GeographicConvertionWrapper.h"
+#include "../helpers/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
 #include "../kinematic/TrailerKinematic.h"
 #include "../kinematic/FixedKinematicPrimitive.h"
 #include "../kinematic/TrailerKinematicPrimitive.h"
 
-#include "../kinematic/cgalKernel.h"
+#include "../helpers/cgalHelper.h"
 
 #include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>

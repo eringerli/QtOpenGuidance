@@ -25,7 +25,7 @@
 
 #include "../qnodeseditor/qneblock.h"
 
-#include "../kinematic/eigenHelper.h"
+#include "../helpers/eigenHelper.h"
 #include <QtMath>
 
 OrientationBlockModel::OrientationBlockModel( QGraphicsScene* scene )
