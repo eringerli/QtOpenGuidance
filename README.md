@@ -1,22 +1,28 @@
 # QtOpenGuidance
 
-A software for GPS-based guidance of farming equipment. It uses a principle called "dataflow programming": basicaly this
+A software for GPS-based guidance of farming equipment. It uses a principle called [dataflow programming](https://en.wikipedia.org/wiki/Dataflow_programming): basicaly this
 means every module of the software receives, modifies and then sends data. These modules are then connected in a meaningfull 
-way, so a calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on the screen and finally outputs commmands for the equipment (steering commands, hitch, section control, etc).
+way, so a calculation network does the job of transforming the input data (GPS, wheelangle, roll, heading...) to a 3D-view on the screen and finally into commmands for the equipment (steering commands, hitch, section control, etc).
 
 It is pre-alpha now and the development is quite fast. I encourage other devs to add functionality to QtOpenGuidance, but
-please contact me first (@eringerli on Telegram) for coordinating the effort. There's no sense in doing work twice.
+please contact me first (@eringerli on Telegram) for coordinating the effort. There's no sense in doing work twice. This also means that the (meager) documentation there is, can be obsolete quite fast.
 
 ## Word to the Wise
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
 
 ## Warning
-As clearly in the file LICENSE stated (especialy Section 15 through 17), there are no guaranties of any kind. You're responsible to
+The GPLv3 states clearly in Section 15 through 17 (the whole text is in the file LICENSE), there are no guaranties of any kind. You're responsible to
 use the software responsibly. If you think, this software is fit to drive expensive equipment with potentialy deadly consequenses,
-that's your thing. Test it thorously before using it on actual equipment. Never leave it unsupervised, pe. by leaving the drivers seat or sleeping behind the wheel (that would be basic common sense).
+that's your thing. Test it thorously before using it on actual equipment, *and then test it on the equipment itself too*. Never leave it unsupervised, pe. by leaving the drivers seat or sleeping behind the wheel (that would be basic common sense).
 
 ## [TL;DR](https://www.urbandictionary.com/define.php?term=tl%3Bdr): Installing on Linux
-Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a virtual machine (instructions [here](https://manjaro.org/support/firststeps/)). This also works on [Arch Linux](https://www.archlinux.org), but Arch is definitively not for Linux beginners. Then enter in a console:
+Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a virtual machine (instructions [here](https://manjaro.org/support/firststeps/)). This also works on [Arch Linux](https://www.archlinux.org), but Arch is definitively not for Linux beginners.
+
+> It won't work with most Debian based Linux (this includes Ubuntu and its derivates like Kubuntu), as they use too old versions of critical libraries, especially Qt. And no, there isn't an easy way to fix that, except compiling and installing the newest versions yourself or adding more (most of the time only half maintained) package repositories to the system (PPAs), which either takes a lot of knowledge and time, is boring and tedious and/or leaves the system in a very brittle state. So please don't open an issue for it or ask for support, just install Manjaro.
+>
+>Newer version *can* work, but the focus of development isn't in keeping it compatible with the most ancient versions of libraries available, but using the existing ones to the extent of their functionality and getting the latest bug fixes. This also means using a reasonably new C++ standard (as of now C++17), which in turn needs a recent compiler. *You have been hereby **strongly** discouraged of using old versions of distributions and/or keeping your system not up to date.*
+
+Then enter in a console:
 ```
 # update the system and install various needed packages
 sudo pacman -Suy --needed base-devel bash-completion wget
@@ -40,8 +46,6 @@ Your set: QtOpenGuidance was added to the systems start menu, so you can open it
 
 To update it, run the same commands again. If it doesn't work, you can delete the whole folder with `rm -rf ~/qtopenguidance-build` and try again. Should you ever want to remove the two packages, enter `pacman -R qtopenguidance-git kddockwidgets-eringerli-git`.
 
-Normally, you want to change from the dark theme to a light one: open the system settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience, but you can try others too: they even automatically update after pushing "Apply", so you can leave QtOpenGuidance open and see the result immidietly.
-
 For the next steps, go to [Quickstart](README.md#quickstart).
 
 ## Windows
@@ -49,15 +53,15 @@ For the next steps, go to [Quickstart](README.md#quickstart).
 TL;DR: Install linux, especially if you want a stable, fast and dataplan-saving system without required and unconvenient maintenance and general frickle-ness.
 
 _Seriously, install Linux_. You have nothing to loose: it takes about 15-30 minutes on a resonably fast computer, from which
-more than half you can do other stuff. It takes on an average system (without Office) less than 20GB (_for everything_, not just
-the bare system). [Manjaro](https://manjaro.org/) is a good distribution to start, also for Linux-beginners. Ubuntu is not
-a good choice, as it differs too much from eringerlis system (Arch Linux), has generally too old versions installed (sometimes even ancient ones) and is not overly development friendly: Manjaro installs the files for linking with each library (headers and debug-info) per default.
+more than half you can do other stuff. It takes on an average system (without office applications) less than 20GB (_for everything_, not just
+the bare system, the bare system itself takes less than 5GB). [Manjaro](https://manjaro.org/) is a good distribution to start, also for Linux-beginners, as it balances performance with simplicity to use. Ubuntu is not
+a good choice (see intro above) and is not overly development friendly: Manjaro installs the files for linking with each library (headers and debug-info) per default.
 
 Also, as we generally use weaker systems in our tractors (like the Dell 7130/7139/7140 or even slower tablets), the 
 performance boost of having a lean system without all the Microsoft/Windows/Manufacturer clutter and background processes 
 is quite noticable: the fan is not running all time anymore and the battery lasts forever. You never have to worry 
 about automatic background downloads/updates (especially dowloads can be expensive if you use a limited, cheap connection for the RTK corrections) and generally no control over your system (like no option to cancel a reboot or updates) ever 
-again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown is also not possible. Additionally the building of the packages is automated and they can be removed again.
+again. Bricking your tablet by interrupting a overly long/hanging update before a shutdown is also not possible, as all updates are triggered by the user. Additionally the building of the packages is automated and they can be removed again.
 
 One important difference from Linux to Windows is the different aproaches when it comes to the shared libraries: Linux loads one of each library into the RAM, which then is used by all installed programs on the system. Windows loads all libs for
 each installed packate, even if they are exactly the same. This lowers the used RAM on Linux tremenduously, which is 
@@ -66,9 +70,10 @@ _all_ installed libraries and programs in one go.
 
 ### Installing with MSYS2
 #### Prerequisites
-* more than 4Gb of free space
-* a working internet connection, downloads about 1.5GB of data
-* the whole thing takes more than an hour (at least on my virtual machine, so [YMMV](https://www.urbandictionary.com/define.php?term=ymmv)), in this time you have a running Manjaro Linux *even with installing the whole system*
+* You're willing to invest some time searching for solutions on the internet. The procedure below is as streamlined as it can be, but sometimes, there are errors none the less.
+* More than 4Gb of free space
+* A working internet connection, the total volume downloaded is about 1.5GB
+* The whole thing takes more than an hour (at least on my virtual machine, so [YMMV](https://www.urbandictionary.com/define.php?term=ymmv)), in this time you have a running Manjaro Linux *even with installing the whole system*
 
 #### Installing
 1. go to (https://www.msys2.org/) and download the installer for 64bit
@@ -207,6 +212,9 @@ forked from repository, more work is needed. A downloaded ZIP lacks the nessesar
 
 ## Quickstart
 To make something useful with the software and to test its functions, open the settings dialog and load a configuration out of the `config/` folder in the repository or `/usr/share/QtOpenGuidance/config` if you have installed it systemwide. `minimal.json` should work most of the time, is generally kept up to date with the development and give a good overview on the implemented functionality.
+
+### Appearance
+Normally, you want to change from the dark theme to a light one: open the system settings, go to "Appearance" and choose one starting with "Matcha-light-". You can use a dark theme, but the development is done on a light one. Also the application honors the chosen icon set. Change it to Oxygen to get the best experience, but you can try others too: they even automatically update after pushing "Apply", so you can leave QtOpenGuidance open and see the result immidietly.
 
 ### Settings Dialog
 You get the structure of the configuration quite fast if you look at the first tab in the settings tab. The blocks represent different kinds of logical parts in the software and are color coded, like green for calculations or red for docks. Deleting and zooming works as you would expect with the mousewheel or the `DEL`-key, paning by right-click and drag, right-click on a block deletes it. Almost every element in the GUI has it's counterpart in this view, also all the calculation and most of the input values are connected here. The connecting lines represent a path for data. You can try to connect different things, if a line appears (it checks if the source and sink are compatible), the data flows immidietly. It looks overwhelming at first, but by adding blocks and connections, almost all possible (and impossible) configurations can be implemented. It follows a data flow paradigm: data is received (left side), processed and sent (right side) by as simple as possible logical blocks. This makes it more complicated to look at, but makes development easier and also configurations possible, which aren't explicitly developed for. Loading works incremental, so you can also save parts of you configuration an load it multiple times. This also means that you have to "Clear All" if you want to load a complete config.
