@@ -27,23 +27,24 @@
 #include <QGraphicsScene>
 #include <QSortFilterProxyModel>
 
-#include "../block/PoseSynchroniser.h"
+#include "../block/guidance/PoseSynchroniser.h"
 
 #include "NewOpenSaveToolbar.h"
 
-#include "VectorBlockModel.h"
-#include "OrientationBlockModel.h"
-#include "NumberBlockModel.h"
-#include "ActionDockBlockModel.h"
-#include "SliderDockBlockModel.h"
-#include "StringBlockModel.h"
-#include "ImplementBlockModel.h"
-#include "PathPlannerModelBlockModel.h"
-#include "ImplementSectionModel.h"
-#include "ValueBlockModel.h"
+#include "model/VectorBlockModel.h"
+#include "model/OrientationBlockModel.h"
+#include "model/NumberBlockModel.h"
+#include "model/ActionDockBlockModel.h"
+#include "model/SliderDockBlockModel.h"
+#include "model/StringBlockModel.h"
+#include "model/ImplementBlockModel.h"
+#include "model/PathPlannerModelBlockModel.h"
+#include "model/ImplementSectionModel.h"
+#include "model/ValueBlockModel.h"
+#include "model/TransmissionBlockModel.h"
+#include "model/PlotBlockModel.h"
+
 #include "FontComboboxDelegate.h"
-#include "TransmissionBlockModel.h"
-#include "PlotBlockModel.h"
 
 #include "../helpers/cgalHelper.h"
 

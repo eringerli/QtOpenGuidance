@@ -37,7 +37,8 @@ DEFINES += _USE_MATH_DEFINES
 qtCompileTest(serialport) {
     QT += serialport
     DEFINES += SERIALPORT_ENABLED
-    HEADERS += src/block/SerialPort.h
+    HEADERS += \
+    src/block/stream/SerialPort.h
     CONFIG += precompile_header
 }
 
@@ -53,40 +54,48 @@ SOURCES += \
     src/3d/CultivatedAreaMesh.cpp \
     src/3d/CultivatedAreaMeshGeometry.cpp \
     src/3d/texturerendertarget.cpp \
-    src/block/ActionDockBlock.cpp \
     src/block/BlockBase.cpp \
-    src/block/CultivatedAreaModel.cpp \
-    src/block/FieldManager.cpp \
-    src/block/GlobalPlanner.cpp \
-    src/block/LocalPlanner.cpp \
-    src/block/PathPlannerModel.cpp \
-    src/block/PlotDockBlockBase.cpp \
-    src/block/SectionControl.cpp \
-    src/block/SliderDockBlock.cpp \
-    src/block/SprayerModel.cpp \
-    src/block/StanleyGuidance.cpp \
-    src/block/ValueDockBlockBase.cpp \
-    src/block/ValueTransmissionBase.cpp \
-    src/block/XteDockBlock.cpp \
-    src/gui/ActionDockBlockModel.cpp \
-    src/gui/ActionToolbar.cpp \
+    src/block/converter/ValueTransmissionBase.cpp \
+    src/block/dock/display/ValueDockBlockBase.cpp \
+    src/block/dock/display/XteDockBlock.cpp \
+    src/block/dock/input/ActionDockBlock.cpp \
+    src/block/dock/input/SliderDockBlock.cpp \
+    src/block/dock/plot/PlotDockBlockBase.cpp \
+    src/block/global/FieldManager.cpp \
+    src/block/global/GlobalPlanner.cpp \
+    src/block/global/PoseSimulation.cpp \
+    src/block/graphical/CultivatedAreaModel.cpp \
+    src/block/graphical/PathPlannerModel.cpp \
+    src/block/graphical/SprayerModel.cpp \
+    src/block/graphical/TractorModel.cpp \
+    src/block/graphical/TrailerModel.cpp \
+    src/block/guidance/LocalPlanner.cpp \
+    src/block/guidance/StanleyGuidance.cpp \
+    src/block/sectionControl/SectionControl.cpp \
     src/gui/FieldsOptimitionToolbar.cpp \
     src/gui/FieldsToolbar.cpp \
     src/gui/GlobalPlannerToolbar.cpp \
     src/gui/MyFrameworkWidgetFactory.cpp \
     src/gui/NewOpenSaveToolbar.cpp \
-    src/gui/OrientationBlockModel.cpp \
-    src/gui/PathPlannerModelBlockModel.cpp \
-    src/gui/PlotBlockModel.cpp \
-    src/gui/PlotDock.cpp \
     src/gui/SectionControlToolbar.cpp \
-    src/gui/SliderDock.cpp \
-    src/gui/SliderDockBlockModel.cpp \
-    src/gui/ThreeValuesDock.cpp \
-    src/gui/TransmissionBlockModel.cpp \
-    src/gui/ValueBlockModel.cpp \
-    src/gui/ValueDock.cpp \
-    src/gui/XteDock.cpp \
+    src/gui/dock/ActionDock.cpp \
+    src/gui/dock/PlotDock.cpp \
+    src/gui/dock/SliderDock.cpp \
+    src/gui/dock/ThreeValuesDock.cpp \
+    src/gui/dock/ValueDock.cpp \
+    src/gui/dock/XteDock.cpp \
+    src/gui/model/ActionDockBlockModel.cpp \
+    src/gui/model/ImplementBlockModel.cpp \
+    src/gui/model/ImplementSectionModel.cpp \
+    src/gui/model/NumberBlockModel.cpp \
+    src/gui/model/OrientationBlockModel.cpp \
+    src/gui/model/PathPlannerModelBlockModel.cpp \
+    src/gui/model/PlotBlockModel.cpp \
+    src/gui/model/SliderDockBlockModel.cpp \
+    src/gui/model/StringBlockModel.cpp \
+    src/gui/model/TransmissionBlockModel.cpp \
+    src/gui/model/ValueBlockModel.cpp \
+    src/gui/model/VectorBlockModel.cpp \
     src/helpers/GeoJsonHelper.cpp \
     src/kinematic/CgalWorker.cpp \
     src/kinematic/PathPrimitive.cpp \
@@ -97,19 +106,11 @@ SOURCES += \
     src/kinematic/Plan.cpp \
     src/kinematic/PlanGlobal.cpp \
     src/main.cpp \
-    src/block/PoseSimulation.cpp \
-    src/block/TractorModel.cpp \
-    src/block/TrailerModel.cpp \
     src/gui/CameraToolbar.cpp \
     src/gui/GuidanceToolbar.cpp \
     src/gui/GuidanceTurning.cpp \
-    src/gui/ImplementBlockModel.cpp \
-    src/gui/ImplementSectionModel.cpp \
-    src/gui/NumberBlockModel.cpp \
     src/gui/PassToolbar.cpp \
-    src/gui/SettingsDialog.cpp \
-    src/gui/StringBlockModel.cpp \
-    src/gui/VectorBlockModel.cpp
+    src/gui/SettingsDialog.cpp
 
 HEADERS += \
     src/3d/ArrowTexture.h \
@@ -118,67 +119,67 @@ HEADERS += \
     src/3d/CultivatedAreaMesh.h \
     src/3d/CultivatedAreaMeshGeometry.h \
     src/3d/texturerendertarget.h \
-    src/block/AckermannSteering.h \
-    src/block/ActionDockBlock.h \
-    src/block/AngularVelocityLimiter.h \
-    src/block/ArithmeticAddition.h \
-    src/block/ArithmeticDivision.h \
-    src/block/ArithmeticMultiplication.h \
-    src/block/ArithmeticSubtraction.h \
     src/block/BlockBase.h \
-    src/block/CameraController.h \
-    src/block/CommunicationJrk.h \
-    src/block/CommunicationPgn7FFE.h \
-    src/block/ComparisonEqualTo.h \
-    src/block/ComparisonGreaterOrEqualTo.h \
-    src/block/ComparisonGreaterThan.h \
-    src/block/ComparisonLessOrEqualTo.h \
-    src/block/ComparisonLessThan.h \
-    src/block/ComparisonNotEqualTo.h \
-    src/block/CultivatedAreaModel.h \
-    src/block/DebugSink.h \
     src/block/ExtendedKalmanFilter.h \
-    src/block/FieldManager.h \
-    src/block/FileStream.h \
-    src/block/FpsMeasurement.h \
-    src/block/GlobalPlanner.h \
-    src/block/GridModel.h \
-    src/block/Implement.h \
-    src/block/ImplementSection.h \
-    src/block/LocalPlanner.h \
-    src/block/NmeaParserGGA.h \
-    src/block/NmeaParserHDT.h \
-    src/block/NmeaParserRMC.h \
-    src/block/NumberObject.h \
-    src/block/OrientationBlock.h \
-    src/block/OrientationDockBlock.h \
-    src/block/OrientationPlotDockBlock.h \
-    src/block/PathPlannerModel.h \
-    src/block/PlotDockBlockBase.h \
-    src/block/PoseSimulation.h \
-    src/block/PoseSynchroniser.h \
-    src/block/PositionDockBlock.h \
-    src/block/SectionControl.h \
-    src/block/SliderDockBlock.h \
-    src/block/SprayerModel.h \
-    src/block/StanleyGuidance.h \
-    src/block/StringObject.h \
-    src/block/TractorModel.h \
-    src/block/TrailerModel.h \
-    src/block/TransverseMercatorConverter.h \
-    src/block/UbxParser.h \
-    src/block/UdpSocket.h \
-    src/block/ValueDockBlock.h \
-    src/block/ValueDockBlockBase.h \
-    src/block/ValuePlotDockBlock.h \
-    src/block/ValueTransmissionBase.h \
-    src/block/ValueTransmissionBase64Data.h \
-    src/block/ValueTransmissionNumber.h \
-    src/block/ValueTransmissionQuaternion.h \
-    src/block/ValueTransmissionState.h \
-    src/block/VectorObject.h \
-    src/block/XteDockBlock.h \
-    src/block/XteGuidance.h \
+    src/block/arithmetic/ArithmeticAddition.h \
+    src/block/arithmetic/ArithmeticDivision.h \
+    src/block/arithmetic/ArithmeticMultiplication.h \
+    src/block/arithmetic/ArithmeticSubtraction.h \
+    src/block/base/DebugSink.h \
+    src/block/calculation/AckermannSteering.h \
+    src/block/calculation/AngularVelocityLimiter.h \
+    src/block/calculation/TransverseMercatorConverter.h \
+    src/block/comparison/ComparisonEqualTo.h \
+    src/block/comparison/ComparisonGreaterOrEqualTo.h \
+    src/block/comparison/ComparisonGreaterThan.h \
+    src/block/comparison/ComparisonLessOrEqualTo.h \
+    src/block/comparison/ComparisonLessThan.h \
+    src/block/comparison/ComparisonNotEqualTo.h \
+    src/block/converter/CommunicationJrk.h \
+    src/block/converter/CommunicationPgn7FFE.h \
+    src/block/converter/ValueTransmissionBase.h \
+    src/block/converter/ValueTransmissionBase64Data.h \
+    src/block/converter/ValueTransmissionNumber.h \
+    src/block/converter/ValueTransmissionQuaternion.h \
+    src/block/converter/ValueTransmissionState.h \
+    src/block/dock/display/OrientationDockBlock.h \
+    src/block/dock/display/PositionDockBlock.h \
+    src/block/dock/display/ValueDockBlock.h \
+    src/block/dock/display/ValueDockBlockBase.h \
+    src/block/dock/display/XteDockBlock.h \
+    src/block/dock/input/ActionDockBlock.h \
+    src/block/dock/input/SliderDockBlock.h \
+    src/block/dock/plot/OrientationPlotDockBlock.h \
+    src/block/dock/plot/PlotDockBlockBase.h \
+    src/block/dock/plot/ValuePlotDockBlock.h \
+    src/block/global/CameraController.h \
+    src/block/global/FieldManager.h \
+    src/block/global/FpsMeasurement.h \
+    src/block/global/GlobalPlanner.h \
+    src/block/global/GridModel.h \
+    src/block/global/PoseSimulation.h \
+    src/block/graphical/CultivatedAreaModel.h \
+    src/block/graphical/PathPlannerModel.h \
+    src/block/graphical/SprayerModel.h \
+    src/block/graphical/TractorModel.h \
+    src/block/graphical/TrailerModel.h \
+    src/block/guidance/LocalPlanner.h \
+    src/block/guidance/PoseSynchroniser.h \
+    src/block/guidance/StanleyGuidance.h \
+    src/block/guidance/XteGuidance.h \
+    src/block/literal/NumberObject.h \
+    src/block/literal/OrientationBlock.h \
+    src/block/literal/StringObject.h \
+    src/block/literal/VectorObject.h \
+    src/block/parser/NmeaParserGGA.h \
+    src/block/parser/NmeaParserHDT.h \
+    src/block/parser/NmeaParserRMC.h \
+    src/block/parser/UbxParser.h \
+    src/block/sectionControl/Implement.h \
+    src/block/sectionControl/ImplementSection.h \
+    src/block/sectionControl/SectionControl.h \
+    src/block/stream/FileStream.h \
+    src/block/stream/UdpSocket.h \
     src/filter/3wFRHRL/SystemModel.h \
     src/filter/BicycleModel/ImuMeasurementModel.h \
     src/filter/BicycleModel/PositionMeasurementModel.h \
@@ -187,8 +188,6 @@ HEADERS += \
     src/filter/KinematicModel/PositionMeasurementModel.h \
     src/filter/KinematicModel/SystemModel.h \
     src/filter/MeanMovingWindow.h \
-    src/gui/ActionDockBlockModel.h \
-    src/gui/ActionToolbar.h \
     src/gui/CameraToolbar.h \
     src/gui/FieldsOptimitionToolbar.h \
     src/gui/FieldsToolbar.h \
@@ -196,28 +195,30 @@ HEADERS += \
     src/gui/GlobalPlannerToolbar.h \
     src/gui/GuidanceToolbar.h \
     src/gui/GuidanceTurning.h \
-    src/gui/ImplementBlockModel.h \
-    src/gui/ImplementSectionModel.h \
     src/gui/MyFrameworkWidgetFactory.h \
     src/gui/MyMainWindow.h \
     src/gui/NewOpenSaveToolbar.h \
-    src/gui/NumberBlockModel.h \
-    src/gui/OrientationBlockModel.h \
     src/gui/PassToolbar.h \
-    src/gui/PathPlannerModelBlockModel.h \
-    src/gui/PlotBlockModel.h \
-    src/gui/PlotDock.h \
     src/gui/SectionControlToolbar.h \
     src/gui/SettingsDialog.h \
-    src/gui/SliderDock.h \
-    src/gui/SliderDockBlockModel.h \
-    src/gui/StringBlockModel.h \
-    src/gui/ThreeValuesDock.h \
-    src/gui/TransmissionBlockModel.h \
-    src/gui/ValueBlockModel.h \
-    src/gui/ValueDock.h \
-    src/gui/VectorBlockModel.h \
-    src/gui/XteDock.h \
+    src/gui/dock/ActionDock.h \
+    src/gui/dock/PlotDock.h \
+    src/gui/dock/SliderDock.h \
+    src/gui/dock/ThreeValuesDock.h \
+    src/gui/dock/ValueDock.h \
+    src/gui/dock/XteDock.h \
+    src/gui/model/ActionDockBlockModel.h \
+    src/gui/model/ImplementBlockModel.h \
+    src/gui/model/ImplementSectionModel.h \
+    src/gui/model/NumberBlockModel.h \
+    src/gui/model/OrientationBlockModel.h \
+    src/gui/model/PathPlannerModelBlockModel.h \
+    src/gui/model/PlotBlockModel.h \
+    src/gui/model/SliderDockBlockModel.h \
+    src/gui/model/StringBlockModel.h \
+    src/gui/model/TransmissionBlockModel.h \
+    src/gui/model/ValueBlockModel.h \
+    src/gui/model/VectorBlockModel.h \
     src/helpers/GeoJsonHelper.h \
     src/helpers/GeographicConvertionWrapper.h \
     src/helpers/cgalHelper.h \
@@ -246,7 +247,6 @@ HEADERS += \
     src/kinematic/cgalKernel.h
 
 FORMS += \
-    src/gui/ActionToolbar.ui \
     src/gui/CameraToolbar.ui \
     src/gui/FieldsOptimitionToolbar.ui \
     src/gui/FieldsToolbar.ui \
@@ -255,12 +255,13 @@ FORMS += \
     src/gui/GuidanceTurning.ui \
     src/gui/NewOpenSaveToolbar.ui \
     src/gui/PassToolbar.ui \
-    src/gui/PlotDock.ui \
     src/gui/SettingsDialog.ui \
-    src/gui/SliderDock.ui \
-    src/gui/ThreeValuesDock.ui \
-    src/gui/ValueDock.ui \
-    src/gui/XteDock.ui
+    src/gui/dock/ActionDock.ui \
+    src/gui/dock/PlotDock.ui \
+    src/gui/dock/SliderDock.ui \
+    src/gui/dock/ThreeValuesDock.ui \
+    src/gui/dock/ValueDock.ui \
+    src/gui/dock/XteDock.ui
 
 RESOURCES += \
     res/ressources.qrc
