@@ -97,6 +97,9 @@ namespace ThreeWheeledFRHRL {
                     const _T sigmaF, const _T sigmaR, const _T sigmaH,
                     const _T Cx, const _T slipX,
                     StateType<T>& prediction ) {
+
+        constexpr bool enableDebug = false;
+
         // this implements formula 2.58 on page 21 with the 4WD part from formula 5.9 on page 79 of
         // MODELING AND VALIDATION OF HITCHED LOADING EFFECTS ON TRACTOR YAW DYNAMICS
         // from Paul James Pearson
@@ -105,15 +108,9 @@ namespace ThreeWheeledFRHRL {
         StateType<T> xBuffer;
         xBuffer = x;
 
-        if( !qIsNull( V ) ) {
+        if( V > 0.1 ) {
           // model isn't compatible with negative velocities (driving backwards), so use the straight kinematic model
-          if( V < 0 ) {
-            xBuffer( StateNames::Vyaw ) = std::tan( deltaF ) * V / ( a + b );
-            xBuffer( StateNames::Vy ) = 0;
-            xBuffer( StateNames::AlphaFront ) = 0;
-            xBuffer( StateNames::AlphaRear ) = 0;
-            xBuffer( StateNames::AlphaHitch ) = 0;
-          } else {
+          {
 
             // matrix for the first term (formula 2.58 + 5.9)
             const _T Ftrac = Cx * slipX;
@@ -124,7 +121,10 @@ namespace ThreeWheeledFRHRL {
                       1 / sigmaF, a / sigmaF, -V / sigmaF, 0, 0,
                       1 / sigmaR, -b / sigmaR, 0, -V / sigmaR, 0,
                       1 / sigmaH, -( b + c ) / sigmaH, 0, 0, -V / sigmaH;
-            std::cout << "firstTerm" << std::endl << firstTerm << std::endl;
+
+            if( enableDebug ) {
+              std::cout << "firstTerm" << std::endl << firstTerm << std::endl;
+            }
 
             Eigen::Vector<double, 5> secondTerm;
             secondTerm <<
@@ -133,7 +133,10 @@ namespace ThreeWheeledFRHRL {
                        -xBuffer( StateNames::AlphaFront ),
                        -xBuffer( StateNames::AlphaRear ),
                        -xBuffer( StateNames::AlphaHitch );
-            std::cout << "secondTerm" << std::endl << secondTerm << std::endl;
+
+            if( enableDebug ) {
+              std::cout << "secondTerm" << std::endl << secondTerm << std::endl;
+            }
 
 
             Eigen::Vector<double, 5> thirdTerm;
@@ -143,8 +146,14 @@ namespace ThreeWheeledFRHRL {
                       -V / sigmaF,
                       0,
                       0;
-            std::cout << "thirdTerm" << std::endl << thirdTerm << std::endl;
-            std::cout << "deltaF" << std::endl << deltaF << std::endl;
+
+            if( enableDebug ) {
+              std::cout << "thirdTerm" << std::endl << thirdTerm << std::endl;
+            }
+
+            if( enableDebug ) {
+              std::cout << "deltaF" << std::endl << deltaF << std::endl;
+            }
 
             auto result = ( firstTerm * secondTerm ) + ( thirdTerm * -deltaF );
 
@@ -159,18 +168,34 @@ namespace ThreeWheeledFRHRL {
             xBuffer( StateNames::AlphaHitch ) = xBuffer( StateNames::AlphaHitch ) - result2( 4 );
 
             oldResult = result;
-            std::cout << "result" << std::endl << result << std::endl;
 
-//          std::cout << "xBuffer" << std::endl << xBuffer << std::endl;
-            for( int i = 0, end = names.count(); i < end; ++i ) {
-              std::cout << std::fixed << std::setw( 12 ) << std::setprecision( 10 ) <</*std::scientific<<*/std::showpos << xBuffer( i ) << " " << names[i].toStdString() << std::endl;
+            if( enableDebug ) {
+              std::cout << "result" << std::endl << result << std::endl;
             }
 
-            qDebug() << "ThreeWheeledFRHRL::predict results" <<
-                     xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw ) << qRadiansToDegrees( xBuffer( StateNames::AlphaFront ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaRear ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaHitch ) );
+//          std::cout << "xBuffer" << std::endl << xBuffer << std::endl;
+            if( enableDebug ) {
+              for( int i = 0, end = names.count(); i < end; ++i ) {
+                std::cout << std::fixed << std::setw( 12 ) << std::setprecision( 10 ) <</*std::scientific<<*/std::showpos << xBuffer( i ) << " " << names[i].toStdString() << std::endl;
+              }
+            }
+
+            if( enableDebug ) {
+              qDebug() << "ThreeWheeledFRHRL::predict results" <<
+                       xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw ) << qRadiansToDegrees( xBuffer( StateNames::AlphaFront ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaRear ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaHitch ) );
+            }
           }
+        } else if( V < 0.1 ) {
+          xBuffer( StateNames::Vyaw ) = std::tan( deltaF ) * V / ( a + b );
+          xBuffer( StateNames::Vy ) = 0;
+          xBuffer( StateNames::AlphaFront ) = 0;
+          xBuffer( StateNames::AlphaRear ) = 0;
+          xBuffer( StateNames::AlphaHitch ) = 0;
         } else {
-          qDebug() << "ThreeWheeledFRHRL::predict results" << xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw );
+          if( enableDebug ) {
+            qDebug() << "ThreeWheeledFRHRL::predict results" << xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw );
+          }
+
           xBuffer( StateNames::Vy ) = 0;
           xBuffer( StateNames::Vyaw ) = 0;
           xBuffer( StateNames::AlphaFront ) = 0;
