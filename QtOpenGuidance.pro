@@ -18,7 +18,7 @@
 
 load(configure)
 
-CONFIG += c++14 ccache
+CONFIG += c++17 ccache
 
 #unix {
 #    CONFIG += precompile_header
