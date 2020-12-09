@@ -22,14 +22,14 @@
 #include <QtMath>
 
 #include "../3d/texturerendertarget.h"
-#include <Qt3DRender/QRenderSurfaceSelector>
-#include <Qt3DRender/QRenderTargetSelector>
-#include <Qt3DRender/QClearBuffers>
-#include <Qt3DRender/QViewport>
 #include <Qt3DRender/QCameraSelector>
+#include <Qt3DRender/QClearBuffers>
 #include <Qt3DRender/QFrustumCulling>
 #include <Qt3DRender/QRenderCapture>
 #include <Qt3DRender/QRenderCaptureReply>
+#include <Qt3DRender/QRenderSurfaceSelector>
+#include <Qt3DRender/QRenderTargetSelector>
+#include <Qt3DRender/QViewport>
 
 #include "../helpers/eigenHelper.h"
 
@@ -39,7 +39,7 @@ SectionControl::SectionControl( const QString& uniqueName,
                                 Qt3DRender::QFrameGraphNode* frameGraphParent )
   : frameGraphParent( frameGraphParent ) {
 
-  QVBoxLayout* layout = new QVBoxLayout;
+  auto* layout = new QVBoxLayout;
 
   labelTurnOnTexture = new QLabel();
   labelTurnOnTexture->setScaledContents( true );
@@ -49,7 +49,7 @@ SectionControl::SectionControl( const QString& uniqueName,
   labelTurnOffTexture->setScaledContents( true );
   layout->addWidget( labelTurnOffTexture );
 
-  auto widget = new QWidget( mainWindow );
+  auto* widget = new QWidget( mainWindow );
   widget->setLayout( layout );
 
   dock = new KDDockWidgets::DockWidget( uniqueName );
@@ -57,15 +57,15 @@ SectionControl::SectionControl( const QString& uniqueName,
 
 
   // Create a viewport node. The viewport here just covers the entire render area.
-  auto viewport = new Qt3DRender::QViewport( frameGraphParent );
+  auto* viewport = new Qt3DRender::QViewport( frameGraphParent );
   viewport->setNormalizedRect( QRectF( 0.0, 0.0, 1.0, 1.0 ) );
 
   // Create a node used for clearing the required buffers.
-  auto clearBuffers = new Qt3DRender::QClearBuffers( viewport );
+  auto* clearBuffers = new Qt3DRender::QClearBuffers( viewport );
   clearBuffers->setClearColor( QColor( 0, 0, 0, 255 ) );
   clearBuffers->setBuffers( Qt3DRender::QClearBuffers::ColorDepthBuffer );
 
-  auto frustumCulling = new Qt3DRender::QFrustumCulling( clearBuffers );
+  auto* frustumCulling = new Qt3DRender::QFrustumCulling( clearBuffers );
 
   layerFilter = new Qt3DRender::QLayerFilter( frustumCulling );
   layerFilter->setFilterMode( Qt3DRender::QLayerFilter::AcceptAnyMatchingLayers );
@@ -73,7 +73,7 @@ SectionControl::SectionControl( const QString& uniqueName,
   {
     // Create a texture to render into. This acts as the buffer that
     // holds the rendered image.
-    auto renderTargetSelector = new Qt3DRender::QRenderTargetSelector( layerFilter );
+    auto* renderTargetSelector = new Qt3DRender::QRenderTargetSelector( layerFilter );
     textureTargetTurnOnTexture = new TextureRenderTarget( renderTargetSelector, QSize( 400, 1 ) );
     renderTargetSelector->setTarget( textureTargetTurnOnTexture );
 
@@ -85,7 +85,7 @@ SectionControl::SectionControl( const QString& uniqueName,
     cameraEntityTurnOnTexture->setViewCenter( QVector3D( 0, 0, 0 ) );
 
     // Create a camera selector node, and tell it to use the camera we've ben given.
-    auto cameraSelectorTurnOnTexture = new Qt3DRender::QCameraSelector( textureTargetTurnOnTexture );
+    auto* cameraSelectorTurnOnTexture = new Qt3DRender::QCameraSelector( textureTargetTurnOnTexture );
     cameraSelectorTurnOnTexture->setCamera( cameraEntityTurnOnTexture );
 
     renderCaptureTurnOnTexture = new Qt3DRender::QRenderCapture( cameraSelectorTurnOnTexture );
@@ -94,7 +94,7 @@ SectionControl::SectionControl( const QString& uniqueName,
   {
     // Create a texture to render into. This acts as the buffer that
     // holds the rendered image.
-    auto renderTargetSelector = new Qt3DRender::QRenderTargetSelector( layerFilter );
+    auto* renderTargetSelector = new Qt3DRender::QRenderTargetSelector( layerFilter );
     textureTargetTurnOffTexture = new TextureRenderTarget( renderTargetSelector, QSize( 400, 1 ) );
     renderTargetSelector->setTarget( textureTargetTurnOffTexture );
 
@@ -106,7 +106,7 @@ SectionControl::SectionControl( const QString& uniqueName,
     cameraEntityTurnOffTexture->setViewCenter( QVector3D( 0, 0, 0 ) );
 
     // Create a camera selector node, and tell it to use the camera we've ben given.
-    auto cameraSelectorTurnOffTexture = new Qt3DRender::QCameraSelector( textureTargetTurnOffTexture );
+    auto* cameraSelectorTurnOffTexture = new Qt3DRender::QCameraSelector( textureTargetTurnOffTexture );
     cameraSelectorTurnOffTexture->setCamera( cameraEntityTurnOffTexture );
 
     renderCaptureTurnOffTexture = new Qt3DRender::QRenderCapture( cameraSelectorTurnOffTexture );
@@ -125,18 +125,18 @@ SectionControl::~SectionControl() {
   dock->deleteLater();
 }
 
-void SectionControl::setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
+void SectionControl::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     if( implement != nullptr ) {
-      auto transformOn = cameraEntityTurnOnTexture->transform();
+      auto* transformOn = cameraEntityTurnOnTexture->transform();
 
       auto qqauternion = toQQuaternion( orientation );
-      transformOn->setTranslation( convertPoint3ToQVector3D( position ) + qqauternion * QVector3D( 1.5f, 0, 20 ) );
+      transformOn->setTranslation( toQVector3D( position ) + qqauternion * QVector3D( 1.5f, 0, 20 ) );
       transformOn->setRotation( qqauternion * QQuaternion::fromAxisAndAngle( 0, 0, 1, 90 ) );
 
-      auto transformOff = cameraEntityTurnOffTexture->transform();
+      auto* transformOff = cameraEntityTurnOffTexture->transform();
 
-      transformOff->setTranslation( convertPoint3ToQVector3D( position ) + qqauternion * QVector3D( 0.5f, 0, 20 ) );
+      transformOff->setTranslation( toQVector3D( position ) + qqauternion * QVector3D( 0.5f, 0, 20 ) );
       transformOff->setRotation( qqauternion * QQuaternion::fromAxisAndAngle( 0, 0, 1, 90 ) );
 
       requestRenderCaptureTurnOnTexture();
@@ -154,7 +154,7 @@ void SectionControl::setImplement( const QPointer<Implement>& implement ) {
     double firstSectionOffset = 0;
 
     for( size_t i = 0; i < numSections; ++i ) {
-      const auto section = implement->sections.at( i );
+      auto* const section = implement->sections.at( i );
       firstSectionOffset += section->widthOfSection - section->overlapLeft - section->overlapRight;
     }
 
@@ -167,7 +167,7 @@ void SectionControl::setImplement( const QPointer<Implement>& implement ) {
     double totalWidthOfSections = 0;
 
     for( size_t i = 1; i < numSections; ++i ) {
-      const auto section = implement->sections.at( i );
+      auto* const section = implement->sections.at( i );
       sectionOffset += section->overlapLeft;
       sectionOffsets.push_back( sectionOffset );
       sectionOffset -= section->widthOfSection;
@@ -241,7 +241,7 @@ void SectionControl::onImageRenderedTurnOnTexture() {
   // Get the image from the reply and display it in the label.
   labelTurnOnTexture->setPixmap( QPixmap::fromImage( replyTurnOnTexture->image() ) );
 
-  auto rgbData = ( QRgb* )replyTurnOnTexture->image().constBits();
+  auto* rgbData = ( QRgb* )replyTurnOnTexture->image().constBits();
 
   constexpr uint8_t numPixelOnToTurnOn = 5;
 
@@ -288,7 +288,7 @@ void SectionControl::onImageRenderedTurnOffTexture() {
   // Get the image from the reply and display it in the label.
   labelTurnOffTexture->setPixmap( QPixmap::fromImage( replyTurnOffTexture->image() ) );
 
-  auto rgbData = ( QRgb* )replyTurnOffTexture->image().constBits();
+  auto* rgbData = ( QRgb* )replyTurnOffTexture->image().constBits();
 
   constexpr uint8_t numPixelOnToTurnOff = 5;
 

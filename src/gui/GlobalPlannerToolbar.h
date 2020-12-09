@@ -35,17 +35,17 @@ class GlobalPlannerToolbar : public QGroupBox {
     void resetToolbar();
     void setToolbarToAdditionalPoint();
 
-  private slots:
+  private Q_SLOTS:
     void on_pbAB_clicked( bool checked );
     void on_pbSnap_clicked();
 
     void on_pbAbContinuous_clicked( bool checked );
 
-  signals:
+  Q_SIGNALS:
     void setAPoint();
     void setBPoint();
     void setAdditionalPoint();
-    void setAdditionalPointsContinous( bool );
+    void setAdditionalPointsContinous( const bool );
     void snap();
 
   private:

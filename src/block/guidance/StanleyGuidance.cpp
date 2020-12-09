@@ -22,11 +22,11 @@
 
 void StanleyGuidance::setXteFrontWheels( double distance ) {
   if( !qIsInf( distance ) && velocity >= 0 ) {
-    auto eulerFrontWheels = quaternionToEuler( orientationFrontWheels );
-    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansFrontWheels ) - eulerFrontWheels.z() );
+    auto taitBryanFrontWheels = quaternionToTaitBryan( orientationFrontWheels );
+    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansFrontWheels ) - taitBryanFrontWheels.z() );
     double stanleyXteCompensation = atan( ( stanleyGainKForwards * -distance ) / ( velocity + stanleyGainKSoftForwards ) );
     double stanleyYawDampening = /*normalizeAngleRadians*/( stanleyGainDampeningYawForwards *
-        ( ( quaternionToEuler( this->orientation1AgoFrontWheels ).z() ) - eulerFrontWheels.z() ) -
+        ( ( quaternionToTaitBryan( this->orientation1AgoFrontWheels ).z() ) - taitBryanFrontWheels.z() ) -
         ( yawTrajectory1AgoFrontWheels - headingOfPathRadiansFrontWheels ) );
     double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringForwards * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
     double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
@@ -39,20 +39,20 @@ void StanleyGuidance::setXteFrontWheels( double distance ) {
       steerAngleRequested = -maxSteeringAngle;
     }
 
-    qDebug() << Qt::fixed << Qt::forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansFrontWheels ) << normalizeAngleRadians( eulerFrontWheels.z() );
+    qDebug() << Qt::fixed << Qt::forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansFrontWheels ) << normalizeAngleRadians( taitBryanFrontWheels.z() );
 
-    emit steerAngleChanged( steerAngleRequested );
+    Q_EMIT steerAngleChanged( steerAngleRequested );
     yawTrajectory1AgoFrontWheels = headingOfPathRadiansFrontWheels;
   }
 }
 
 void StanleyGuidance::setXteRearWheels( double distance ) {
   if( !qIsInf( distance ) && velocity < 0 ) {
-    auto eulerRearWheels = quaternionToEuler( orientationRearWheels );
-    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansRearWheels ) - eulerRearWheels.z() );
+    auto taitBryanRearWheels = quaternionToTaitBryan( orientationRearWheels );
+    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansRearWheels ) - taitBryanRearWheels.z() );
     double stanleyXteCompensation = atan( ( stanleyGainKReverse * -distance ) / ( velocity + -stanleyGainKSoftReverse ) );
     double stanleyYawDampening = /*normalizeAngleRadians*/( stanleyGainDampeningYawReverse *
-        ( ( quaternionToEuler( this->orientation1AgoRearWheels ).z() ) - eulerRearWheels.z() ) -
+        ( ( quaternionToTaitBryan( this->orientation1AgoRearWheels ).z() ) - taitBryanRearWheels.z() ) -
         ( yawTrajectory1AgoRearWheels - headingOfPathRadiansRearWheels ) );
     double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringReverse * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
     double steerAngleRequested = -qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
@@ -67,7 +67,7 @@ void StanleyGuidance::setXteRearWheels( double distance ) {
 
     //        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansRearWheels ) << normalizeAngleRadians( qDegreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
 
-    emit steerAngleChanged( steerAngleRequested );
+    Q_EMIT steerAngleChanged( steerAngleRequested );
     yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
   }
 }

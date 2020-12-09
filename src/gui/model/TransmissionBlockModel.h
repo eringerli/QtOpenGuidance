@@ -51,7 +51,7 @@ class TransmissionBlockModel : public QAbstractTableModel {
 
     Qt::ItemFlags flags( const QModelIndex& index ) const override;
 
-  public slots:
+  public Q_SLOTS:
     void resetModel();
 
   private:

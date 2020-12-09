@@ -25,7 +25,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -36,30 +35,30 @@ class PoseSynchroniser : public BlockBase {
     explicit PoseSynchroniser()
       : BlockBase() {}
 
-  public slots:
-    void setPosition( const Eigen::Vector3d position ) {
-      this->position = Point_3( position.x(), position.y(), position.z() );
+  public Q_SLOTS:
+    void setPosition( const Eigen::Vector3d& position ) {
+      this->position = position;
 //      QElapsedTimer timer;
 //      timer.start();
-      emit poseChanged( this->position, orientation, PoseOption::NoOptions );
+      Q_EMIT poseChanged( this->position, orientation, PoseOption::NoOptions );
 //      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
     }
 
-    void setOrientation( const Eigen::Quaterniond value ) {
+    void setOrientation( const Eigen::Quaterniond& value ) {
       orientation = value;
     }
 
-  signals:
-    void poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+  Q_SIGNALS:
+    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
   public:
     virtual void emitConfigSignals() override {
-      emit poseChanged( position, orientation, PoseOption::NoOptions );
+      Q_EMIT poseChanged( position, orientation, PoseOption::NoOptions );
     }
 
   public:
-    Point_3 position = Point_3( 0, 0, 0 );
-    Eigen::Quaterniond orientation = Eigen::Quaterniond();
+    Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
+    Eigen::Quaterniond orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
 };
 
 class PoseSynchroniserFactory : public BlockFactory {
@@ -81,10 +80,10 @@ class PoseSynchroniserFactory : public BlockFactory {
       auto* obj = new PoseSynchroniser();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
+      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d& ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       return b;
     }

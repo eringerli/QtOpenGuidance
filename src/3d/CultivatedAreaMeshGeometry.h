@@ -47,12 +47,12 @@ class CultivatedAreaMeshGeometry : public Qt3DRender::QGeometry {
     void addPointRightWithoutUpdate( const Point_2 point );
     void updateBuffers();
 
-  signals:
+  Q_SIGNALS:
     void simplifyPolylineLeft( std::vector<Point_2>* pointsPointer, double maxDeviation );
     void simplifyPolylineRight( std::vector<Point_2>* pointsPointer, double maxDeviation );
     void vertexCountChanged( int );
 
-  private slots:
+  private Q_SLOTS:
     void simplifyPolylineResultLeft( std::vector<Point_2>* );
     void simplifyPolylineResultRight( std::vector<Point_2>* );
 

@@ -86,7 +86,7 @@ QVariant SliderDockBlockModel::headerData( int section, Qt::Orientation orientat
 
 bool SliderDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -183,47 +183,47 @@ bool SliderDockBlockModel::setData( const QModelIndex& index, const QVariant& va
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 1:
               object->widget->setValue( value.toString().toDouble() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
               object->widget->setDecimals( value.toString().toInt() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
               object->widget->setMaximum( value.toString().toDouble() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 4:
               object->widget->setMinimum( value.toString().toDouble() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 5:
               object->widget->setDefaultValue( value.toString().toDouble() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 6:
               object->widget->setUnit( value.toString() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 7:
               object->widget->resetOnStart = value.toBool();
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 8:
               object->widget->setSliderInverted( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
           }
         }

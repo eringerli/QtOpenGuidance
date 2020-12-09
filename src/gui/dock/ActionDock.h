@@ -37,15 +37,15 @@ class ActionDock : public QGroupBox {
     bool isCheckable();
     const QString getTheme();
 
-    void setState( bool state );
-    void setCheckable( bool checkable );
-    void setTheme( const QString theme );
+    void setState( const bool state );
+    void setCheckable( const bool checkable );
+    void setTheme( const QString& theme );
 
-  private slots:
-    void on_pbAction_clicked( bool checked );
+  private Q_SLOTS:
+    void on_pbAction_clicked( const bool checked );
 
-  signals:
-    void action( bool );
+  Q_SIGNALS:
+    void action( const bool );
 
   private:
     QString theme;

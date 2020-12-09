@@ -78,10 +78,10 @@ class GlobalPlanner : public BlockBase {
       widget->deleteLater();
     }
 
-  public slots:
-    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
+  public Q_SLOTS:
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
+        this->position = toPoint3( position );
         this->orientation = orientation;
 
         auto quat = toQQuaternion( orientation );
@@ -101,10 +101,10 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseLeftEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
+    void setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionLeftEdgeOfImplement = position;
+        positionLeftEdgeOfImplement = toPoint3( position );
 
         auto point2D = to2D( position );
 
@@ -115,10 +115,10 @@ class GlobalPlanner : public BlockBase {
       }
     }
 
-    void setPoseRightEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
+    void setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
       if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
           options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionRightEdgeOfImplement = position;
+        positionRightEdgeOfImplement = toPoint3( position );
 
         auto point2D = to2D( position );
 
@@ -134,7 +134,7 @@ class GlobalPlanner : public BlockBase {
     }
 
     void setAPoint() {
-      aPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+      aPointTransform->setTranslation( toQVector3D( position ) );
 
       aPointEntity->setEnabled( true );
       bPointEntity->setEnabled( false );
@@ -146,7 +146,7 @@ class GlobalPlanner : public BlockBase {
     }
 
     void setBPoint() {
-      bPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+      bPointTransform->setTranslation( toQVector3D( position ) );
       bPointEntity->setEnabled( true );
 
       bPoint = position;
@@ -162,9 +162,9 @@ class GlobalPlanner : public BlockBase {
       createPlanAB();
     }
 
-    void setAdditionalPointsContinous( bool enabled ) {
+    void setAdditionalPointsContinous( const bool enabled ) {
       if( recordContinous && !enabled ) {
-        emit requestPolylineSimplification( &abPolyline, maxDeviation );
+        Q_EMIT requestPolylineSimplification( &abPolyline, maxDeviation );
       }
 
       recordContinous = enabled;
@@ -185,16 +185,19 @@ class GlobalPlanner : public BlockBase {
     void saveAbLine();
     void saveAbLineToFile( QFile& file );
 
-    void setPlannerSettings( int pathsInReserve, double maxDeviation ) {
+    void setPlannerSettings( const int pathsInReserve, const double maxDeviation ) {
       plan.pathsInReserve = pathsInReserve;
       this->maxDeviation = maxDeviation;
 
       if( abPolyline.size() > 2 ) {
-        emit requestPolylineSimplification( &abPolyline, maxDeviation );
+        Q_EMIT requestPolylineSimplification( &abPolyline, maxDeviation );
       }
     }
 
-    void setPassSettings( int forwardPasses, int reversePasses, bool startRight, bool mirror ) {
+    void setPassSettings( const int forwardPasses,
+                          const int reversePasses,
+                          const bool startRight,
+                          const bool mirror ) {
       if( ( forwardPasses == 0 || reversePasses == 0 ) ) {
         this->forwardPasses = 0;
         this->reversePasses = 0;
@@ -207,17 +210,17 @@ class GlobalPlanner : public BlockBase {
       this->mirror = mirror;
     }
 
-    void setPassNumberTo( int /*passNumber*/ ) {}
+    void setPassNumberTo( const int /*passNumber*/ ) {}
 
-    void setRunNumber( uint32_t runNumber ) {
+    void setRunNumber( const uint32_t runNumber ) {
       this->runNumber = runNumber;
     }
 
     void createPlanPolyline( std::vector<Point_2>* polylinePtr );
 
-  signals:
+  Q_SIGNALS:
     void planChanged( const Plan& );
-    void requestPolylineSimplification( std::vector<Point_2>*, double );
+    void requestPolylineSimplification( std::vector<Point_2>*, const double );
 
   private:
     void createPlanAB();
@@ -324,9 +327,9 @@ class GlobalPlannerFactory : public BlockFactory {
 
       mainWindow->addDockWidget( object->dock, location );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 

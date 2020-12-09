@@ -26,10 +26,10 @@ FieldsOptimitionToolbar::FieldsOptimitionToolbar( QWidget* parent ) :
 
   setContentsMargins( 0, 0, 0, 0 );
 
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 FieldsOptimitionToolbar::~FieldsOptimitionToolbar() {
@@ -50,11 +50,11 @@ void FieldsOptimitionToolbar::setAlpha( double optimalAlpha, double solidAlpha )
 }
 
 void FieldsOptimitionToolbar::on_pbRecalculate_clicked() {
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
-  emit recalculateField();
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateField();
 }
 
 void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString& arg1 ) {
@@ -68,37 +68,37 @@ void FieldsOptimitionToolbar::on_cbAlphaShape_currentTextChanged( const QString&
     ui->dsbAlpha->setValue( solidAlpha );
   }
 
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 void FieldsOptimitionToolbar::on_cbConnectEndToStart_stateChanged( int ) {
 
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 void FieldsOptimitionToolbar::on_dsbDistanceConnectingPoints_valueChanged( double ) {
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 void FieldsOptimitionToolbar::on_dsbAlpha_valueChanged( double ) {
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }
 
 void FieldsOptimitionToolbar::on_dsbMaxDeviation_valueChanged( double ) {
-  emit recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
-                                        ui->dsbAlpha->value(),
-                                        ui->dsbMaxDeviation->value(),
-                                        ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
+  Q_EMIT recalculateFieldSettingsChanged( AlphaType( ui->cbAlphaShape->currentIndex() ),
+                                          ui->dsbAlpha->value(),
+                                          ui->dsbMaxDeviation->value(),
+                                          ui->cbConnectEndToStart->isChecked() ? ui->dsbDistanceConnectingPoints->value() : 0 );
 }

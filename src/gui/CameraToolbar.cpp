@@ -32,33 +32,33 @@ CameraToolbar::~CameraToolbar() {
 }
 
 void CameraToolbar::on_pbUp_clicked() {
-  emit tiltUp();
+  Q_EMIT tiltUp();
 }
 
 void CameraToolbar::on_pbDown_clicked() {
-  emit tiltDown();
+  Q_EMIT tiltDown();
 }
 
 void CameraToolbar::on_pbZoomIn_clicked() {
-  emit zoomIn();
+  Q_EMIT zoomIn();
 }
 
 void CameraToolbar::on_pbZoomOut_clicked() {
-  emit zoomOut();
+  Q_EMIT zoomOut();
 }
 
 void CameraToolbar::on_pbPanLeft_clicked() {
-  emit panLeft();
+  Q_EMIT panLeft();
 }
 
 void CameraToolbar::on_pbPanRight_clicked() {
-  emit panRight();
+  Q_EMIT panRight();
 }
 
 void CameraToolbar::on_pbReset_clicked() {
-  emit resetCamera();
+  Q_EMIT resetCamera();
 }
 
 void CameraToolbar::on_comboBox_currentIndexChanged( int index ) {
-  emit setMode( index );
+  Q_EMIT setMode( index );
 }

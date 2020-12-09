@@ -44,14 +44,14 @@ class XteDockBlock : public BlockBase {
     ~XteDockBlock();
 
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "XTE: " ) + name );
       widget->setName( name );
     }
 
-    void setXte( double xte ) {
+    void setXte( const double xte ) {
       widget->setXte( xte );
     }
 
@@ -105,7 +105,7 @@ class XteDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnRight, firstDock );
       }
 
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( const double ) ) ) );
 
       b->setBrush( dockColor );
 

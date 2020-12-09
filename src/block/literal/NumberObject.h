@@ -32,7 +32,7 @@ class NumberObject : public BlockBase {
       : BlockBase() {}
 
     void emitConfigSignals() override {
-      emit numberChanged( number );
+      Q_EMIT numberChanged( number );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -51,8 +51,8 @@ class NumberObject : public BlockBase {
       }
     }
 
-  signals:
-    void numberChanged( double );
+  Q_SIGNALS:
+    void numberChanged( const double );
 
   public:
     double number = 0;
@@ -78,7 +78,7 @@ class NumberFactory : public BlockFactory {
       auto* obj = new NumberObject();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ) );
 
       b->setBrush( valueColor );
 

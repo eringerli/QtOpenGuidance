@@ -44,25 +44,25 @@ class CgalWorker : public QObject {
     explicit CgalWorker( QObject* parent = nullptr );
 
 
-  public slots:
-    void fieldOptimitionWorker( uint32_t runNumber,
+  public Q_SLOTS:
+    void fieldOptimitionWorker( const uint32_t runNumber,
                                 std::vector<Point_2>* points,
-                                FieldsOptimitionToolbar::AlphaType alphaType,
-                                double customAlpha,
-                                double maxDeviation,
-                                double distanceBetweenConnectPoints );
+                                const FieldsOptimitionToolbar::AlphaType alphaType,
+                                const double customAlpha,
+                                const double maxDeviation,
+                                const double distanceBetweenConnectPoints );
 
-    bool isCollinear( std::vector<Point_2>* pointsPointer, bool emitSignal = false );
-    void connectPoints( std::vector<Point_2>* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal = false );
-    void simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal = false );
-    void simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation );
+    bool isCollinear( std::vector<Point_2>* pointsPointer, const bool emitSignal = false );
+    void connectPoints( std::vector<Point_2>* pointsPointer, const double distanceBetweenConnectPoints, const bool emitSignal = false );
+    void simplifyPolygon( Polygon_with_holes_2* out_poly, const double maxDeviation, const bool emitSignal = false );
+    void simplifyPolyline( std::vector<Point_2>* pointsPointer, const double maxDeviation );
 
-  signals:
-    void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>, double );
-    void alphaChanged( double optimal, double solid );
-    void fieldStatisticsChanged( double, double, double );
+  Q_SIGNALS:
+    void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>, const double );
+    void alphaChanged( const double optimal, const double solid );
+    void fieldStatisticsChanged( const double, const double, const double );
 
-    void isCollinearResult( bool );
+    void isCollinearResult( const bool );
     void connectPointsResult( std::vector<Point_2>* );
     void simplifyPolygonResult( Polygon_with_holes_2* );
     void simplifyPolylineResult( std::vector<Point_2>* );
@@ -72,7 +72,7 @@ class CgalWorker : public QObject {
     void alphaToPolygon( const Alpha_shape_2& A,
                          Polygon_with_holes_2& out_poly );
 
-    bool returnEarly( uint32_t runNumber );
+    bool returnEarly( const uint32_t runNumber );
 };
 
 class CgalThread : public QThread {
@@ -81,16 +81,16 @@ class CgalThread : public QThread {
     explicit CgalThread( QObject* parent = nullptr )
       : QThread( parent ) {}
 
-  public slots:
+  public Q_SLOTS:
     void requestNewRunNumber() {
       {
         QMutexLocker lock( &mutex );
         ++runNumber;
       }
-      emit runNumberChanged( runNumber );
+      Q_EMIT runNumberChanged( runNumber );
     }
 
-  signals:
+  Q_SIGNALS:
     void runNumberChanged( uint32_t );
 
   public:

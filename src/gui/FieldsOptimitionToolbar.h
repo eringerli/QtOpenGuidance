@@ -38,14 +38,14 @@ class FieldsOptimitionToolbar : public QGroupBox {
       Custom
     };
 
-  signals:
+  Q_SIGNALS:
     void recalculateField();
     void recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints );
 
-  public slots:
-    void setAlpha( double optimal, double solid );
+  public Q_SLOTS:
+    void setAlpha( const double optimal, const double solid );
 
-  private slots:
+  private Q_SLOTS:
     void on_pbRecalculate_clicked();
 
     void on_cbAlphaShape_currentTextChanged( const QString& );

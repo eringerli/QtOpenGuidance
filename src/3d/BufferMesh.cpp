@@ -21,11 +21,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "BufferMesh.h"
+#include "BufferMeshGeometry.h"
 #include <QGeometryRenderer>
 #include <QVector3D>
 #include <QVector4D>
-#include "BufferMesh.h"
-#include "BufferMeshGeometry.h"
 
 BufferMesh::BufferMesh( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometryRenderer( parent ),

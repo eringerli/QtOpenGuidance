@@ -30,13 +30,13 @@ class ValueTransmissionNumber : public ValueTransmissionBase {
   public:
     explicit ValueTransmissionNumber( int id ) : ValueTransmissionBase( id ) {}
 
-  public slots:
+  public Q_SLOTS:
     void setNumber( const double number ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
       map[QStringLiteral( "number" )] = number;
 
-      emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
+      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
 
     void dataReceive( const QByteArray& data ) {
@@ -45,11 +45,11 @@ class ValueTransmissionNumber : public ValueTransmissionBase {
       auto cbor = QCborValue::fromCbor( reader );
 
       if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        emit numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ) );
+        Q_EMIT numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ) );
       }
     }
 
-  signals:
+  Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void numberChanged( const double );
 

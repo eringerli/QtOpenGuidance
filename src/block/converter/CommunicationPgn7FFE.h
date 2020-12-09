@@ -31,10 +31,10 @@ class CommunicationPgn7ffe : public BlockBase {
       : BlockBase() {
     }
 
-  signals:
+  Q_SIGNALS:
     void  dataReceived( const QByteArray& );
 
-  public slots:
+  public Q_SLOTS:
     void setSteeringAngle( double steeringAngle ) {
       QByteArray data;
       data.resize( 8 );
@@ -57,7 +57,7 @@ class CommunicationPgn7ffe : public BlockBase {
       data[6] = char( steerangle >> 8 );
       data[7] = char( steerangle & 0xff );
 
-      emit dataReceived( data );
+      Q_EMIT dataReceived( data );
     }
 
     void setXte( double distance ) {

@@ -117,20 +117,20 @@ void SliderDock::on_slValue_valueChanged( int value ) {
   ui->dsbValue->blockSignals( true );
   ui->dsbValue->setValue( val );
   ui->dsbValue->blockSignals( false );
-  emit valueChanged( val );
+  Q_EMIT valueChanged( val );
 }
 
 void SliderDock::on_dsbValue_valueChanged( double value ) {
   ui->slValue->blockSignals( true );
   ui->slValue->setValue( int( value / ui->dsbValue->singleStep() ) );
   ui->slValue->blockSignals( false );
-  emit valueChanged( value );
+  Q_EMIT valueChanged( value );
 }
 
 void SliderDock::on_pbValueReset_clicked() {
   ui->dsbValue->setValue( defaultValue );
   ui->slValue->setValue( defaultValue / ui->dsbValue->singleStep() );
-  emit valueChanged( defaultValue );
+  Q_EMIT valueChanged( defaultValue );
 }
 
 void SliderDock::setValue( double value ) {

@@ -16,11 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "CultivatedAreaMesh.h"
+#include "CultivatedAreaMeshGeometry.h"
 #include <QGeometryRenderer>
 #include <QVector3D>
 #include <QVector4D>
-#include "CultivatedAreaMesh.h"
-#include "CultivatedAreaMeshGeometry.h"
 
 CultivatedAreaMesh::CultivatedAreaMesh( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometryRenderer( parent ),

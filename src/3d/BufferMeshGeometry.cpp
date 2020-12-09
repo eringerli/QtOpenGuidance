@@ -21,9 +21,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "BufferMeshGeometry.h"
 #include <QVector>
 #include <QVector3D>
-#include "BufferMeshGeometry.h"
 
 BufferMeshGeometry::BufferMeshGeometry( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometry( parent )

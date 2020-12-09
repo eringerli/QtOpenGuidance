@@ -33,7 +33,7 @@ class PathPrimitive {
   public:
     PathPrimitive() {}
 
-    PathPrimitive( bool anyDirection, double implementWidth, int32_t passNumber )
+    PathPrimitive( const bool anyDirection, const double implementWidth, const int32_t passNumber )
       : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
 
     virtual ~PathPrimitive() {}
@@ -73,7 +73,7 @@ class PathPrimitive {
     virtual std::shared_ptr<PathPrimitive> createReverse() {
       return nullptr;
     }
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool /*left*/ ) {
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool /*left*/ ) {
       return nullptr;
     }
 
@@ -81,11 +81,11 @@ class PathPrimitive {
       std::cout << "PathPrimitive" << std::endl;
     }
 
-    double offsetSign( Point_2 point ) {
+    double offsetSign( const Point_2 point ) {
       return leftOf( point ) ? -1 : 1;
     }
 
-    double distanceToPoint( Point_2 point ) {
+    double distanceToPoint( const Point_2 point ) {
       return std::sqrt( distanceToPointSquared( point ) );
     }
 

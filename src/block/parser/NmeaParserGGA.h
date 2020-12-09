@@ -22,6 +22,8 @@
 
 #include "../BlockBase.h"
 
+#include "../helpers/eigenHelper.h"
+
 class NmeaParserGGA : public BlockBase {
     Q_OBJECT
 
@@ -30,14 +32,14 @@ class NmeaParserGGA : public BlockBase {
       : BlockBase() {
     }
 
-  signals:
-    void globalPositionChanged( const double, const double, const double );
+  Q_SIGNALS:
+    void globalPositionChanged( const Eigen::Vector3d& );
     void fixQualityChanged( const double );
     void hdopChanged( const double );
     void numSatelitesChanged( const double );
     void ageOfDifferentialDataChanged( const double );
 
-  public slots:
+  public Q_SLOTS:
     void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
@@ -142,13 +144,13 @@ class NmeaParserGGA : public BlockBase {
 
               ++nmeaFileIterator;
 
-              emit fixQualityChanged( nmeaFileIterator->toFloat() );
+              Q_EMIT fixQualityChanged( nmeaFileIterator->toFloat() );
               ++nmeaFileIterator;
 
-              emit numSatelitesChanged( nmeaFileIterator->toFloat() );
+              Q_EMIT numSatelitesChanged( nmeaFileIterator->toFloat() );
               ++nmeaFileIterator;
 
-              emit hdopChanged( nmeaFileIterator->toFloat() );
+              Q_EMIT hdopChanged( nmeaFileIterator->toFloat() );
               ++nmeaFileIterator;
 
               double height = nmeaFileIterator->toDouble();
@@ -163,9 +165,9 @@ class NmeaParserGGA : public BlockBase {
               // skip unit of geoid seperation
               ++nmeaFileIterator;
 
-              emit ageOfDifferentialDataChanged( nmeaFileIterator->toFloat() );
+              Q_EMIT ageOfDifferentialDataChanged( nmeaFileIterator->toFloat() );
 
-              emit globalPositionChanged( latitude, longitude, height );
+              Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, height ) );
             }
           }
         }
@@ -204,7 +206,7 @@ class NmeaParserGGAFactory : public BlockFactory {
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
       b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const double ) ) ) );
       b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const double ) ) ) );

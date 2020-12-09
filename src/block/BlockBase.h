@@ -73,8 +73,6 @@ class BlockFactory : public QObject {
 
     bool isIdUnique( QGraphicsScene* scene, int id );
 
-
-
   protected:
     const QColor modelColor = QColor( QStringLiteral( "moccasin" ) );
     const QColor dockColor = QColor( QStringLiteral( "DarkSalmon" ) );

@@ -31,7 +31,6 @@
 
 #include "../BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -39,16 +38,16 @@ class TrailerModel : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
+    explicit TrailerModel( Qt3DCore::QEntity* rootEntity, const bool usePBR );
     ~TrailerModel();
 
-  public slots:
-    void setPoseHookPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
-    void setPoseTowPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
-    void setPosePivotPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+  public Q_SLOTS:
+    void setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+    void setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+    void setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
-    void setOffsetHookPointPosition( Eigen::Vector3d position );
-    void setTrackwidth( double trackwidth );
+    void setOffsetHookPointPosition( const Eigen::Vector3d& position );
+    void setTrackwidth( const double trackwidth );
 
   private:
     void setProportions();
@@ -92,7 +91,7 @@ class TrailerModelFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    TrailerModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR )
+    TrailerModelFactory( Qt3DCore::QEntity* rootEntity, const bool usePBR )
       : BlockFactory(),
         rootEntity( rootEntity ),
         usePBR( usePBR ) {}
@@ -109,11 +108,11 @@ class TrailerModelFactory : public BlockFactory {
       auto* obj = new TrailerModel( rootEntity, usePBR );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->setBrush( modelColor );
 

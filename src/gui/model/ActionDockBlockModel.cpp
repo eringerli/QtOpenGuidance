@@ -66,7 +66,7 @@ QVariant ActionDockBlockModel::headerData( int section, Qt::Orientation orientat
 
 bool ActionDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -149,22 +149,22 @@ bool ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& va
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 1:
               object->widget->setState( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
               object->widget->setCheckable( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
               object->widget->setTheme( value.toString() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
           }
         }

@@ -94,16 +94,16 @@ class PlotDockBlockBase : public BlockBase {
       return window;
     }
 
-    void setXAxisVisible( bool visible ) {
+    void setXAxisVisible( const bool visible ) {
       widget->getQCustomPlotWidget()->xAxis->setVisible( visible );
     }
-    void setYAxisVisible( bool visible ) {
+    void setYAxisVisible( const bool visible ) {
       widget->getQCustomPlotWidget()->yAxis->setVisible( visible );
     }
     void setYAxisDescription( const QString& description ) {
       widget->getQCustomPlotWidget()->yAxis->setLabel( description );
     }
-    void setAutoscrollEnabled( bool enabled ) {
+    void setAutoscrollEnabled( const bool enabled ) {
       autoScrollEnabled = enabled;
 
       if( !enabled ) {
@@ -114,11 +114,11 @@ class PlotDockBlockBase : public BlockBase {
 
       setNameHelper();
     }
-    void setWindow( double window ) {
+    void setWindow( const double window ) {
       this->window = window;
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       this->name = name;
       setNameHelper();

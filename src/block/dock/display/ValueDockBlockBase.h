@@ -82,7 +82,7 @@ class ValueDockBlockBase : public BlockBase {
     virtual void setUnitVisible( bool ) = 0;
     virtual void setUnit( const QString& ) = 0;
 
-  public slots:
+  public Q_SLOTS:
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;

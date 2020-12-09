@@ -42,11 +42,11 @@ class MyMainWindow : public KDDockWidgets::MainWindow {
 
   protected:
     void closeEvent( QCloseEvent* event ) override {
-      emit closed();
+      Q_EMIT closed();
 
       event->accept();
     }
 
-  signals:
+  Q_SIGNALS:
     void closed();
 };

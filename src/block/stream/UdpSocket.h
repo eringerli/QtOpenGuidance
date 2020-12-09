@@ -43,10 +43,10 @@ class UdpSocket : public BlockBase {
     void emitConfigSignals() override {
     }
 
-  signals:
+  Q_SIGNALS:
     void dataReceived( const QByteArray& );
 
-  public slots:
+  public Q_SLOTS:
     void setPort( double port ) {
       this->port = port;
       udpSocket->bind( quint16( port ),  QUdpSocket::DontShareAddress );
@@ -56,14 +56,14 @@ class UdpSocket : public BlockBase {
       udpSocket->writeDatagram( data, QHostAddress::Broadcast, port );
     }
 
-  protected slots:
+  protected Q_SLOTS:
     void processPendingDatagrams() {
       QByteArray datagram;
 
       while( udpSocket->hasPendingDatagrams() ) {
         datagram.resize( int( udpSocket->pendingDatagramSize() ) );
         udpSocket->readDatagram( datagram.data(), datagram.size() );
-        emit dataReceived( datagram );
+        Q_EMIT dataReceived( datagram );
       }
     }
 

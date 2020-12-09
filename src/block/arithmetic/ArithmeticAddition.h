@@ -32,7 +32,7 @@ class ArithmeticAddition : public BlockBase {
       : BlockBase() {}
 
     void emitConfigSignals() override {
-      emit numberChanged( result );
+      Q_EMIT numberChanged( result );
     }
 
     void setValueA( double number ) {
@@ -48,10 +48,10 @@ class ArithmeticAddition : public BlockBase {
   private:
     void operation() {
       result = numberA + numberB;
-      emit numberChanged( result );
+      Q_EMIT numberChanged( result );
     }
 
-  signals:
+  Q_SIGNALS:
     void numberChanged( double );
 
   public:

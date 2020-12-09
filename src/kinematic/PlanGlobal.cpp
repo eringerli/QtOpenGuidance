@@ -18,13 +18,10 @@
 
 #include "PlanGlobal.h"
 
-PlanGlobal::PlanGlobal()
-  : Plan() {}
-
 PlanGlobal::PlanGlobal( const Plan::Type type )
   : Plan( type ) {}
 
-void PlanGlobal::resetPlanWith( Plan::PrimitiveSharedPointer referencePrimitive ) {
+void PlanGlobal::resetPlanWith( const Plan::PrimitiveSharedPointer& referencePrimitive ) {
   plan->clear();
   plan->push_back( referencePrimitive );
 
@@ -46,7 +43,7 @@ void PlanGlobal::createNewPrimitiveOnTheRight() {
   }
 }
 
-void PlanGlobal::expand( const Point_2& position2D ) {
+void PlanGlobal::expand( Point_2 position2D ) {
   if( !plan->empty() ) {
     // make sure, at least pathsInReserve primitives exist on both sides of the reference
     while( ( plan->size() / 2 ) < pathsInReserve ) {

@@ -34,20 +34,20 @@ GlobalPlannerToolbar::~GlobalPlannerToolbar() {
 void GlobalPlannerToolbar::on_pbAB_clicked( bool checked ) {
   if( checked ) {
     ui->pbAB->setText( QStringLiteral( "B" ) );
-    emit setAPoint();
+    Q_EMIT setAPoint();
   } else {
     if( ui->pbAB->text() == QStringLiteral( "B" ) ) {
       ui->pbAB->setText( QStringLiteral( "+" ) );
       ui->pbAB->setCheckable( false );
-      emit setBPoint();
+      Q_EMIT setBPoint();
     } else {
-      emit setAdditionalPoint();
+      Q_EMIT setAdditionalPoint();
     }
   }
 }
 
 void GlobalPlannerToolbar::on_pbSnap_clicked() {
-  emit snap();
+  Q_EMIT snap();
 }
 
 void GlobalPlannerToolbar::resetToolbar() {
@@ -61,5 +61,5 @@ void GlobalPlannerToolbar::setToolbarToAdditionalPoint() {
 }
 
 void GlobalPlannerToolbar::on_pbAbContinuous_clicked( bool checked ) {
-  emit setAdditionalPointsContinous( checked );
+  Q_EMIT setAdditionalPointsContinous( checked );
 }

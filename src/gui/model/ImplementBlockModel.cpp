@@ -46,7 +46,7 @@ QVariant ImplementBlockModel::headerData( int section, Qt::Orientation orientati
 bool ImplementBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     // FIXME: Implement me!
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -106,7 +106,7 @@ bool ImplementBlockModel::setData( const QModelIndex& index, const QVariant& val
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
           }
         }

@@ -31,8 +31,8 @@ class ValueDock : public QGroupBox {
     explicit ValueDock( QWidget* parent = nullptr );
     ~ValueDock();
 
-  public slots:
-    void setMeter( double arg );
+  public Q_SLOTS:
+    void setMeter( const double arg );
     void setFontOfLabel( const QFont& font );
 
   public:

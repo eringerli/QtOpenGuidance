@@ -55,7 +55,7 @@ class OrientationBlockModel : public QAbstractTableModel {
   public:
     void addToCombobox( QComboBox* combobox );
 
-  public slots:
+  public Q_SLOTS:
     void resetModel();
 
   private:

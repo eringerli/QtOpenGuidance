@@ -24,73 +24,73 @@
 // axis/rotation conventions
 // https://ch.mathworks.com/help/driving/ug/coordinate-systems.html
 
+#include <QEvent>
 #include <QGuiApplication>
 #include <QSettings>
 #include <QStandardPaths>
-#include <QEvent>
 
-#include <Qt3DRender/QCamera>
 #include <Qt3DCore/QEntity>
+#include <Qt3DRender/QCamera>
 #include <Qt3DRender/QCameraLens>
 
+#include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QCommandLinkButton>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QSlider>
-#include <QtGui/QScreen>
+#include <QtWidgets/QWidget>
 
 #include <Qt3DInput/QInputAspect>
 
-#include <Qt3DRender/QMesh>
-#include <Qt3DRender/QTechnique>
-#include <Qt3DRender/QMaterial>
 #include <Qt3DRender/QEffect>
-#include <Qt3DRender/QTexture>
+#include <Qt3DRender/QMaterial>
+#include <Qt3DRender/QMesh>
+#include <Qt3DRender/QPointLight>
 #include <Qt3DRender/QRenderPass>
 #include <Qt3DRender/QSceneLoader>
-#include <Qt3DRender/QPointLight>
+#include <Qt3DRender/QTechnique>
+#include <Qt3DRender/QTexture>
 
 #include <Qt3DRender/QSortPolicy>
 
-#include <Qt3DCore/QTransform>
 #include <Qt3DCore/QAspectEngine>
+#include <Qt3DCore/QTransform>
 
 #include <Qt3DRender/QRenderAspect>
 
 #include <Qt3DExtras/QForwardRenderer>
 
-#include <Qt3DExtras/Qt3DWindow>
 #include <Qt3DExtras/QFirstPersonCameraController>
-#include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/QMetalRoughMaterial>
+#include <Qt3DExtras/QOrbitCameraController>
+#include <Qt3DExtras/Qt3DWindow>
 
-#include "gui/MyMainWindow.h"
-#include "gui/SettingsDialog.h"
+#include "gui/CameraToolbar.h"
+#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/FieldsToolbar.h"
 #include "gui/GuidanceToolbar.h"
 #include "gui/GuidanceTurning.h"
-#include "gui/dock/SliderDock.h"
+#include "gui/MyMainWindow.h"
 #include "gui/NewOpenSaveToolbar.h"
-#include "gui/CameraToolbar.h"
 #include "gui/PassToolbar.h"
-#include "gui/FieldsToolbar.h"
-#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/SettingsDialog.h"
+#include "gui/dock/SliderDock.h"
 
 #include "block/global/CameraController.h"
 #include "block/global/FieldManager.h"
 #include "block/global/FpsMeasurement.h"
+#include "block/global/GridModel.h"
 #include "block/graphical/TractorModel.h"
 #include "block/graphical/TrailerModel.h"
-#include "block/global/GridModel.h"
 
-#include "block/dock/display/XteDockBlock.h"
-#include "block/dock/display/ValueDockBlock.h"
 #include "block/dock/display/OrientationDockBlock.h"
 #include "block/dock/display/PositionDockBlock.h"
+#include "block/dock/display/ValueDockBlock.h"
+#include "block/dock/display/XteDockBlock.h"
 
-#include "block/dock/plot/ValuePlotDockBlock.h"
 #include "block/dock/plot/OrientationPlotDockBlock.h"
+#include "block/dock/plot/ValuePlotDockBlock.h"
 
 #include "block/dock/input/ActionDockBlock.h"
 #include "block/dock/input/SliderDockBlock.h"
@@ -99,17 +99,17 @@
 #include "block/guidance/PoseSynchroniser.h"
 
 #include "kinematic/FixedKinematic.h"
-#include "kinematic/TrailerKinematic.h"
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
+#include "kinematic/TrailerKinematic.h"
 
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"
 
 #include <kddockwidgets/Config.h>
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
+#include <kddockwidgets/KDDockWidgets.h>
 
 #include "gui/MyFrameworkWidgetFactory.h"
 
@@ -186,7 +186,7 @@ int main( int argc, char** argv ) {
 
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
-  mainWindow->setWindowTitle( "QtOpenGuidance" );
+  mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
   app.setWindowIcon( QIcon::fromTheme( QStringLiteral( "QtOpenGuidance" ) ) );
 
   auto* centralDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidanceView" ), KDDockWidgets::DockWidget::Option_NotClosable );
@@ -207,7 +207,7 @@ int main( int argc, char** argv ) {
 //  mainWindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
   // Root entity for Qt3D
-  auto rootEntity = new Qt3DCore::QEntity();
+  auto* rootEntity = new Qt3DCore::QEntity();
 
   // guidance toolbar
   auto* guidanceToolbar = new GuidanceToolbar( widget );
@@ -286,8 +286,8 @@ int main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( fieldsOptimitionToolbarDock->toggleAction() );
 
   // simulator docks
-  auto simulatorVelocity = new SliderDock( widget );
-  auto simulatorVelocityDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorVelocityDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorVelocity = new SliderDock( widget );
+  auto* simulatorVelocityDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorVelocityDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorVelocityDock->setWidget( simulatorVelocity );
   simulatorVelocityDock->setTitle( QStringLiteral( "Simulator Velocity" ) );
   simulatorVelocity->setDecimals( 1 );
@@ -298,8 +298,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorVelocityDock, KDDockWidgets::Location_OnBottom );
   guidanceToolbar->menu->addAction( simulatorVelocityDock->toggleAction() );
 
-  auto simulatorSteeringAngle = new SliderDock( widget );
-  auto simulatorSteeringAngleDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteeringAngleDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorSteeringAngle = new SliderDock( widget );
+  auto* simulatorSteeringAngleDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteeringAngleDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorSteeringAngleDock->setWidget( simulatorSteeringAngle );
   simulatorSteeringAngleDock->setTitle( QStringLiteral( "Simulator Steering Angle" ) );
   simulatorSteeringAngle->setDecimals( 1 );
@@ -311,8 +311,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorSteeringAngleDock, KDDockWidgets::Location_OnRight, simulatorVelocityDock );
   guidanceToolbar->menu->addAction( simulatorSteeringAngleDock->toggleAction() );
 
-  auto simulatorFrequency = new SliderDock( widget );
-  auto simulatorFrequencyDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorFrequencyDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorFrequency = new SliderDock( widget );
+  auto* simulatorFrequencyDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorFrequencyDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorFrequencyDock->setWidget( simulatorFrequency );
   simulatorFrequencyDock->setTitle( QStringLiteral( "Simulator Frequency" ) );
   simulatorFrequency->setDecimals( 0 );
@@ -323,8 +323,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorFrequencyDock, KDDockWidgets::Location_OnRight, simulatorSteeringAngleDock );
   guidanceToolbar->menu->addAction( simulatorFrequencyDock->toggleAction() );
 
-  auto simulatorRollOffset = new SliderDock( widget );
-  auto simulatorRollOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorRollOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorRollOffset = new SliderDock( widget );
+  auto* simulatorRollOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorRollOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorRollOffsetDock->setWidget( simulatorRollOffset );
   simulatorRollOffsetDock->setTitle( QStringLiteral( "Simulator Roll Offset" ) );
   simulatorRollOffset->setDecimals( 1 );
@@ -335,8 +335,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorRollOffsetDock, KDDockWidgets::Location_OnBottom, simulatorVelocityDock );
   guidanceToolbar->menu->addAction( simulatorRollOffsetDock->toggleAction() );
 
-  auto simulatorPitchOffset = new SliderDock( widget );
-  auto simulatorPitchOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorPitchOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorPitchOffset = new SliderDock( widget );
+  auto* simulatorPitchOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorPitchOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorPitchOffsetDock->setWidget( simulatorPitchOffset );
   simulatorPitchOffsetDock->setTitle( QStringLiteral( "Simulator Pitch Offset" ) );
   simulatorPitchOffset->setDecimals( 1 );
@@ -347,8 +347,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorPitchOffsetDock, KDDockWidgets::Location_OnBottom, simulatorSteeringAngleDock );
   guidanceToolbar->menu->addAction( simulatorPitchOffsetDock->toggleAction() );
 
-  auto simulatorYawOffset = new SliderDock( widget );
-  auto simulatorYawOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorYawOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorYawOffset = new SliderDock( widget );
+  auto* simulatorYawOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorYawOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorYawOffsetDock->setWidget( simulatorYawOffset );
   simulatorYawOffsetDock->setTitle( QStringLiteral( "Simulator Yaw Offset" ) );
   simulatorYawOffset->setDecimals( 1 );
@@ -359,8 +359,8 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorYawOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
   guidanceToolbar->menu->addAction( simulatorYawOffsetDock->toggleAction() );
 
-  auto simulatorSteerAngleOffset = new SliderDock( widget );
-  auto simulatorSteerAngleOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteerAngleOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorSteerAngleOffset = new SliderDock( widget );
+  auto* simulatorSteerAngleOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteerAngleOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorSteerAngleOffsetDock->setWidget( simulatorSteerAngleOffset );
   simulatorSteerAngleOffsetDock->setTitle( QStringLiteral( "Simulator SteerAngle Offset" ) );
   simulatorSteerAngleOffset->setDecimals( 1 );

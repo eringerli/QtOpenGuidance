@@ -31,7 +31,7 @@ void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
 
   QTreeWidgetItem* parentItem = nullptr;
 
-  for( auto item : qAsConst( results ) ) {
+  for( auto* item : qAsConst( results ) ) {
     // top level entry?
     if( item->parent() == nullptr ) {
       parentItem = item;
@@ -43,7 +43,7 @@ void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
     parentItem->setText( 0, getCategoryOfFactory() );
   }
 
-  auto newItem = new QTreeWidgetItem( parentItem );
+  auto* newItem = new QTreeWidgetItem( parentItem );
   newItem->setText( 0, getPrettyNameOfFactory() );
   newItem->setText( 1, getNameOfFactory() );
   newItem->setData( 0, Qt::UserRole, QVariant::fromValue( this ) );

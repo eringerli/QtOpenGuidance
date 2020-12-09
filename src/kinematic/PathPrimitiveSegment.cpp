@@ -43,16 +43,17 @@ double PathPrimitiveSegment::distanceToPointSquared( const Point_2 point ) {
 
   if( segment.collinear_has_on( ortogonalProjection ) ) {
     return distance;
-  } else {
-    double distToSource = CGAL::squared_distance( point, segment.source() );
-    double distToTarget = CGAL::squared_distance( point, segment.target() );
-
-    if( distToSource < distToTarget ) {
-      return distToSource;
-    } else {
-      return distToTarget;
-    }
   }
+
+  double distToSource = CGAL::squared_distance( point, segment.source() );
+  double distToTarget = CGAL::squared_distance( point, segment.target() );
+
+  if( distToSource < distToTarget ) {
+    return distToSource;
+  } else {
+    return distToTarget;
+  }
+
 }
 
 bool PathPrimitiveSegment::isOn( const Point_2 point ) {

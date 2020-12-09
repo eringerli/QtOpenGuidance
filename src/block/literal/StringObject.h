@@ -32,7 +32,7 @@ class StringObject : public BlockBase {
       : BlockBase() {}
 
     void emitConfigSignals() override {
-      emit stringChanged( string );
+      Q_EMIT stringChanged( string );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -51,8 +51,8 @@ class StringObject : public BlockBase {
       }
     }
 
-  signals:
-    void stringChanged( QString );
+  Q_SIGNALS:
+    void stringChanged( const QString& );
 
   public:
     QString string;
@@ -78,7 +78,7 @@ class StringFactory : public BlockFactory {
       auto* obj = new StringObject();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( QString ) ) ) );
+      b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( const QString& ) ) ) );
 
       b->setBrush( valueColor );
 

@@ -58,7 +58,7 @@ class ValueTransmissionBase : public BlockBase {
       }
     }
 
-  public slots:
+  public Q_SLOTS:
     void setTimeoutTimeMs( int value ) {
       timeoutTimeMs = value;
     }
@@ -70,7 +70,7 @@ class ValueTransmissionBase : public BlockBase {
       this->id = id;
     }
 
-  signals:
+  Q_SIGNALS:
     void timedOut( int id );
 
   protected:

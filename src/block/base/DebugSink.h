@@ -26,7 +26,6 @@
 
 #include "../BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -43,7 +42,7 @@ class DebugSink : public BlockBase {
       : BlockBase(),
         block( nullptr ) {}
 
-  public slots:
+  public Q_SLOTS:
     void setPosition( QVector3D value ) {
       if( block ) {
         qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
@@ -60,13 +59,13 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setOrientation( Eigen::Quaterniond value ) {
-      auto eulers = quaternionToEuler( value );
+    void setOrientation( const Eigen::Quaterniond& value ) {
+      auto taitBryan = quaternionToTaitBryan( value );
 
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << eulers.y() << eulers.x() << eulers.z();
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << taitBryan.y() << taitBryan.x() << taitBryan.z();
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << eulers.y() << eulers.x() << eulers.z();
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << taitBryan.y() << taitBryan.x() << taitBryan.z();
       }
     }
 
@@ -78,13 +77,13 @@ class DebugSink : public BlockBase {
       }
     }
 
-    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
-      auto eulers = quaternionToEuler( orientation );
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
+      auto taitBryan = quaternionToTaitBryan( orientation );
 
       if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << eulers.y() << eulers.x() << eulers.z() << options;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << taitBryan.y() << taitBryan.x() << taitBryan.z() << options;
       } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << position.x() << position.y() << position.z() << eulers.y() << eulers.x() << eulers.z() << options;
+        qDebug() << QDateTime::currentMSecsSinceEpoch() << position.x() << position.y() << position.z() << taitBryan.y() << taitBryan.x() << taitBryan.z() << options;
       }
     }
 
@@ -131,7 +130,7 @@ class DebugSinkFactory : public BlockFactory {
       b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( double, double, double ) ) ) );
       b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( Eigen::Vector3d ) ) ) );
       b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 

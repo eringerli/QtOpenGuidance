@@ -23,19 +23,19 @@
 #include "GeoJsonHelper.h"
 
 #include <QByteArray>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 
 #include <iostream>
 
-GeoJsonHelper::GeoJsonHelper() {}
+GeoJsonHelper::GeoJsonHelper() = default;
 
 GeoJsonHelper::GeoJsonHelper( QFile& file ) {
   parse( file );
 }
 
-GeoJsonHelper::~GeoJsonHelper() {}
+GeoJsonHelper::~GeoJsonHelper() = default;
 
 void GeoJsonHelper::addFeature( const GeoJsonHelper::GeometryType& type, const GeoJsonHelper::FeatureType& feature ) {
   members.emplace_back( std::make_pair( type, feature ) );
@@ -105,23 +105,23 @@ GeoJsonHelper::GeometryType GeoJsonHelper::deduceType( const QJsonObject& object
 
     auto& typeString = type.value();
 
-    if( typeString == "Point" ) {
+    if( typeString == QLatin1String( "Point" ) ) {
       return GeometryType::Point;
     }
 
-    if( typeString == "MultiPoint" ) {
+    if( typeString == QLatin1String( "MultiPoint" ) ) {
       return GeometryType::MultiPoint;
     }
 
-    if( typeString == "LineString" ) {
+    if( typeString == QLatin1String( "LineString" ) ) {
       return GeometryType::LineString;
     }
 
-    if( typeString == "Polygon" ) {
+    if( typeString == QLatin1String( "Polygon" ) ) {
       return GeometryType::Polygon;
     }
 
-    if( typeString == "MultiPolygon" ) {
+    if( typeString == QLatin1String( "MultiPolygon" ) ) {
       return GeometryType::MultiPolygon;
     }
   }
@@ -310,39 +310,48 @@ void GeoJsonHelper::print() {
         cout << "GeometryType::Point: " << std::get<PointType>( member.second ).format( CommaInitFmt ) << endl;
         break;
 
-      case GeometryType::MultiPoint:
-        cout << "  GeometryType::MultiPoint: ";
+      case GeometryType::MultiPoint: {
+          auto points = std::get<PointVector>( member.second );
+          cout << "  GeometryType::MultiPoint(" << points.size() << "): ";
 
-        for( const auto& point : std::get<PointVector>( member.second ) ) {
-          cout << point.format( CommaInitFmt ) << " ";
-        }
-
-        cout << endl;
-        break;
-
-      case GeometryType::LineString:
-        cout << "  GeometryType::LineString: ";
-
-        for( const auto& point : get<PointVector>( member.second ) ) {
-          cout << point.format( CommaInitFmt ) << " ";
-        }
-
-        cout << endl;
-        break;
-
-      case GeometryType::Polygon:
-        cout << "  GeometryType::Polygon";
-
-        for( const auto& vector : std::get<PointVectorVector>( member.second ) ) {
-          cout << "    Polygon: ";
-
-          for( const auto& point : vector ) {
+          for( const auto& point : points ) {
             cout << point.format( CommaInitFmt ) << " ";
           }
 
           cout << endl;
-        }
 
+        }
+        break;
+
+      case GeometryType::LineString: {
+          auto points = std::get<PointVector>( member.second );
+          cout << "  GeometryType::LineString(" << points.size() << "): ";
+
+          for( const auto& point : points ) {
+            cout << point.format( CommaInitFmt ) << " ";
+          }
+
+          cout << endl;
+
+        }
+        break;
+
+      case GeometryType::Polygon: {
+          auto polygons = std::get<PointVectorVector>( member.second );
+          cout << "  GeometryType::Polygon(" << polygons.size() << ")";
+
+          for( const auto& vector : polygons ) {
+            cout << "    Polygon(" << vector.size() << "): ";
+
+            for( const auto& point : vector ) {
+              cout << point.format( CommaInitFmt ) << " ";
+            }
+
+            cout << endl;
+          }
+
+
+        }
         break;
 
       default:

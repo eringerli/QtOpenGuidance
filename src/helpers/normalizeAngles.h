@@ -20,38 +20,44 @@
 
 #include <cmath>
 
-inline double normalizeAngleRadians( double angle ) {
-  while( angle > M_PI ) {
-    angle -= M_PI * 2;
+inline double normalizeAngleRadians( const double angle ) {
+  auto angleToConvert = angle;
+
+  while( angleToConvert > M_PI ) {
+    angleToConvert -= M_PI * 2;
   }
 
-  while( angle < -M_PI ) {
-    angle += M_PI * 2;
+  while( angleToConvert < -M_PI ) {
+    angleToConvert += M_PI * 2;
   }
 
-  return angle;
+  return angleToConvert;
 }
 
-inline double normalizeAngleRadians1pi( double angle ) {
-  while( angle > M_PI ) {
-    angle -= M_PI;
+inline double normalizeAngleRadians1pi( const double angle ) {
+  auto angleToConvert = angle;
+
+  while( angleToConvert > M_PI ) {
+    angleToConvert -= M_PI;
   }
 
-  while( angle < -M_PI ) {
-    angle += M_PI;
+  while( angleToConvert < -M_PI ) {
+    angleToConvert += M_PI;
   }
 
-  return angle;
+  return angleToConvert;
 }
 
-inline double normalizeAngleDegrees( double angle ) {
-  while( angle > 180 ) {
-    angle -= 360;
+inline double normalizeAngleDegrees( const double angle ) {
+  auto angleToConvert = angle;
+
+  while( angleToConvert > 180 ) {
+    angleToConvert -= 360;
   }
 
-  while( angle < -180 ) {
-    angle += 360;
+  while( angleToConvert < -180 ) {
+    angleToConvert += 360;
   }
 
-  return angle;
+  return angleToConvert;
 }

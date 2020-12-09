@@ -73,7 +73,7 @@ Qt::ItemFlags PlotBlockModel::flags( const QModelIndex& index ) const {
 
 bool PlotBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -164,32 +164,32 @@ bool PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, i
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 1:
               object->setXAxisVisible( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
               object->setYAxisVisible( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
               object->setYAxisDescription( value.toString() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 4:
               object->setAutoscrollEnabled( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 5:
               object->setWindow( value.toString().toDouble() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
           }
         }

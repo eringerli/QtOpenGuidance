@@ -35,7 +35,7 @@ GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   buttonGroupTurn.addButton( ui->pbLeft );
   buttonGroupTurn.setExclusive( false );
 
-  emit numSkipChanged( skipLeft, skipRight );
+  Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
 GuidanceTurning::~GuidanceTurning() {
@@ -43,30 +43,30 @@ GuidanceTurning::~GuidanceTurning() {
 }
 
 void GuidanceTurning::on_pbLeft_toggled( bool checked ) {
-  emit turnLeftToggled( checked );
+  Q_EMIT turnLeftToggled( checked );
 }
 
 void GuidanceTurning::on_pbRight_toggled( bool checked ) {
-  emit turnRightToggled( checked );
+  Q_EMIT turnRightToggled( checked );
 }
 
 void GuidanceTurning::on_pbPlusRight_clicked() {
   ++skipRight;
   ui->pbRight->setText( QString::number( skipRight ) );
-  emit numSkipChanged( skipLeft, skipRight );
+  Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
 void GuidanceTurning::on_pbPlusLeft_clicked() {
   ++skipLeft;
   ui->pbLeft->setText( QString::number( skipLeft ) );
-  emit numSkipChanged( skipLeft, skipRight );
+  Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
 void GuidanceTurning::on_pbMinusRight_clicked() {
   if( skipRight >= 2 ) {
     --skipRight;
     ui->pbRight->setText( QString::number( skipRight ) );
-    emit numSkipChanged( skipLeft, skipRight );
+    Q_EMIT numSkipChanged( skipLeft, skipRight );
   }
 }
 
@@ -74,7 +74,7 @@ void GuidanceTurning::on_pbMinusLeft_clicked() {
   if( skipLeft >= 2 ) {
     --skipLeft;
     ui->pbLeft->setText( QString::number( skipLeft ) );
-    emit numSkipChanged( skipLeft, skipRight );
+    Q_EMIT numSkipChanged( skipLeft, skipRight );
   }
 }
 

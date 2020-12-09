@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -43,7 +42,7 @@ class Implement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit Implement( QString uniqueName,
+    explicit Implement( const QString& uniqueName,
                         MyMainWindow* mainWindow,
                         KDDockWidgets::DockWidget** firstDock )
       : BlockBase(),
@@ -71,13 +70,13 @@ class Implement : public BlockBase {
         width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
       }
 
-      emit leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ) );
-      emit rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ) );
-      emit triggerLocalPose( Point_3( 0, 0, 0 ),
-                             Eigen::Quaterniond(),
-                             PoseOption::CalculateLocalOffsets |
-                             PoseOption::CalculateWithoutOrientation );
-      emit implementChanged( this );
+      Q_EMIT leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ) );
+      Q_EMIT rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ) );
+      Q_EMIT triggerLocalPose( Eigen::Vector3d( 0, 0, 0 ),
+                               Eigen::Quaterniond(),
+                               PoseOption::CalculateLocalOffsets |
+                               PoseOption::CalculateWithoutOrientation );
+      Q_EMIT implementChanged( this );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -117,22 +116,22 @@ class Implement : public BlockBase {
     }
 
     void emitImplementChanged() {
-      emit implementChanged( QPointer<Implement>( this ) );
+      Q_EMIT implementChanged( QPointer<Implement>( this ) );
 
     }
 
     void emitSectionsChanged() {
-      emit sectionsChanged();
+      Q_EMIT sectionsChanged();
     }
 
-  signals:
-    void triggerLocalPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
-    void leftEdgeChanged( Eigen::Vector3d );
-    void rightEdgeChanged( Eigen::Vector3d );
+  Q_SIGNALS:
+    void triggerLocalPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+    void leftEdgeChanged( const Eigen::Vector3d& );
+    void rightEdgeChanged( const Eigen::Vector3d& );
     void implementChanged( const QPointer<Implement> );
     void sectionsChanged();
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
@@ -192,11 +191,11 @@ class ImplementFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstDock );
       }
 
-      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
       b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
-      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( Eigen::Vector3d ) ) ) );
-      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( const Eigen::Vector3d& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( const Eigen::Vector3d& ) ) ) );
 
       model->resetModel();
 

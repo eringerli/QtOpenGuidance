@@ -32,7 +32,7 @@ PassToolbar::~PassToolbar() {
 }
 
 void PassToolbar::emitPassSettings() {
-  emit passSettingsChanged(
+  Q_EMIT passSettingsChanged(
     ui->sbForwardPasses->value(),
     ui->sbReversePasses->value(),
     ui->rbStartRight->isChecked(),
@@ -72,7 +72,7 @@ void PassToolbar::on_pbResetPassNumber_clicked() {
 }
 
 void PassToolbar::on_pbSetPassNumber_clicked() {
-  emit passNumberChanged( ui->sbPassNumber->value() );
+  Q_EMIT passNumberChanged( ui->sbPassNumber->value() );
 }
 
 void PassToolbar::on_cbMirror_stateChanged( int ) {

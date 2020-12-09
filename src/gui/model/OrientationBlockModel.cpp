@@ -70,7 +70,7 @@ QVariant OrientationBlockModel::headerData( int section, Qt::Orientation orienta
 bool OrientationBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     // FIXME: Implement me!
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -106,13 +106,13 @@ QVariant OrientationBlockModel::data( const QModelIndex& index, int role ) const
               return block->getName();
 
             case 1:
-              return qRadiansToDegrees( quaternionToEuler( object->orientation ).y() );
+              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).y() );
 
             case 2:
-              return qRadiansToDegrees( quaternionToEuler( object->orientation ).x() );
+              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).x() );
 
             case 3:
-              return qRadiansToDegrees( quaternionToEuler( object->orientation ).z() );
+              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).z() );
 
             case 4:
               return object->orientation.x();
@@ -145,58 +145,58 @@ bool OrientationBlockModel::setData( const QModelIndex& index, const QVariant& v
     if( block != nullptr ) {
       if( auto* object = qobject_cast<OrientationBlock*>( block->object ) ) {
         if( countRow++ == index.row() ) {
-          auto eulers = quaternionToEuler( object->orientation );
+          auto taitBryan = quaternionToTaitBryan( object->orientation );
 
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 1:
-              object->orientation = eulerToQuaternion( eulers.x(), value.toString().toDouble(), eulers.z() );
+              object->orientation = taitBryanToQuaternion( taitBryan.x(), value.toString().toDouble(), taitBryan.z() );
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 2:
-              object->orientation = eulerToQuaternion( value.toString().toDouble(), eulers.y(), eulers.z() );
+              object->orientation = taitBryanToQuaternion( value.toString().toDouble(), taitBryan.y(), taitBryan.z() );
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 3:
-              object->orientation = eulerToQuaternion( eulers.x(), eulers.y(), value.toString().toDouble() );
+              object->orientation = taitBryanToQuaternion( taitBryan.x(), taitBryan.y(), value.toString().toDouble() );
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 4:
               object->orientation.x() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 5:
               object->orientation.y() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 6:
               object->orientation.z() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 7:
               object->orientation.w() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              emit dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
           }
         }

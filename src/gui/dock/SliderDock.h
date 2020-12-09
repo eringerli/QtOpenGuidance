@@ -33,13 +33,13 @@ class SliderDock : public QGroupBox {
     explicit SliderDock( QWidget* parent = nullptr );
     ~SliderDock();
 
-    void setValue( double value );
+    void setValue( const double value );
     void setDecimals( const int decimals );
     void setMaximum( const double maximum );
     void setMinimum( const double minimum );
     void setDefaultValue( const double defaultValue );
     void setUnit( const QString& unit );
-    void setSliderInverted( bool inverted );
+    void setSliderInverted( const bool inverted );
 
 
     double getValue();
@@ -50,13 +50,13 @@ class SliderDock : public QGroupBox {
     const QString getUnit();
     bool getSliderInverted();
 
-  private slots:
+  private Q_SLOTS:
     void on_slValue_valueChanged( int value );
     void on_dsbValue_valueChanged( double value );
     void on_pbValueReset_clicked();
 
-  signals:
-    void valueChanged( double );
+  Q_SIGNALS:
+    void valueChanged( const double );
 
   private:
     Ui::SliderDock* ui = nullptr;

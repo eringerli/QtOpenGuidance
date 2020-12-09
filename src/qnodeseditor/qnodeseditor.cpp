@@ -29,19 +29,19 @@
 
 #include <QObject>
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
 #include <QEvent>
+#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QScrollBar>
 
 #include <QDebug>
 
-#include "qneport.h"
-#include "qneconnection.h"
 #include "qneblock.h"
+#include "qneconnection.h"
 #include "qnegestures.h"
+#include "qneport.h"
 
 #include "../gui/SettingsDialog.h"
 
@@ -66,7 +66,7 @@ void QNodesEditor::install( QGraphicsScene* s ) {
 QGraphicsItem* QNodesEditor::itemAt( QPointF pos ) {
   QList<QGraphicsItem*> items = scene->items( QRectF( pos - QPointF( 1, 1 ), QSize( 3, 3 ) ) );
 
-  for( auto item :  qAsConst( items ) ) {
+  for( auto* item :  qAsConst( items ) ) {
     if( item->type() > QGraphicsItem::UserType ) {
       return item;
     }
@@ -76,15 +76,15 @@ QGraphicsItem* QNodesEditor::itemAt( QPointF pos ) {
 }
 
 bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
-  const auto mouseEvent = static_cast< QGraphicsSceneMouseEvent*>( e );
-  const auto keyEvent = static_cast<QKeyEvent*>( e );
+  auto* const mouseEvent = static_cast< QGraphicsSceneMouseEvent*>( e );
+  auto* const keyEvent = static_cast<QKeyEvent*>( e );
 
   switch( int( e->type() ) ) {
     case QEvent::GraphicsSceneMousePress: {
 
         switch( int( mouseEvent->button() ) ) {
           case Qt::LeftButton: {
-              const auto item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+              auto* const item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
               if( item != nullptr ) {
                 const auto& constRefOfList = scene->views();
@@ -130,13 +130,13 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               SettingsDialog* settingsDialog = nullptr;
 
               for( const auto& item : constRefOfList ) {
-                const auto block = qgraphicsitem_cast<QNEBlock*>( item );
+                auto* const block = qgraphicsitem_cast<QNEBlock*>( item );
 
                 if( block != nullptr ) {
                   if( !block->systemBlock ) {
                     delete block;
 
-                    const auto dialog = qobject_cast<SettingsDialog*>( parent() );
+                    auto* const dialog = qobject_cast<SettingsDialog*>( parent() );
 
                     if( dialog != nullptr ) {
                       settingsDialog = dialog;
@@ -145,7 +145,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                 }
               }
 
-              if( settingsDialog ) {
+              if( settingsDialog != nullptr ) {
                 settingsDialog->allModelsReset();
               }
             }
@@ -157,7 +157,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
 
     case QEvent::GraphicsSceneMouseMove: {
-        const auto m = static_cast<QGraphicsSceneMouseEvent*>( e );
+        auto* const m = static_cast<QGraphicsSceneMouseEvent*>( e );
 
         if( currentConnection != nullptr ) {
           currentConnection->setPos2( mouseEvent->scenePos() );
@@ -256,9 +256,9 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
               } else {
                 auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
 
-                if( connection != nullptr ) {
-                  delete connection;
-                }
+
+                delete connection;
+
               }
             }
           }

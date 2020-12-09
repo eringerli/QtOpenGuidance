@@ -44,10 +44,10 @@ class FileStream : public BlockBase {
     void emitConfigSignals() override {
     }
 
-  signals:
+  Q_SIGNALS:
     void dataReceived( const QByteArray& );
 
-  public slots:
+  public Q_SLOTS:
     void setFilename( const QString& filename ) {
       this->filename = filename;
 
@@ -90,7 +90,7 @@ class FileStream : public BlockBase {
           if( fileStream->atEnd() ) {
             timer.stop();
           } else {
-            emit dataReceived( fileStream->readLine().toLatin1() );
+            Q_EMIT dataReceived( fileStream->readLine().toLatin1() );
           }
         }
       }

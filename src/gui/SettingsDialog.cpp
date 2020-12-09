@@ -18,9 +18,9 @@
 
 #include <QMap>
 
-#include <QtWidgets>
 #include <QObject>
 #include <QSignalBlocker>
+#include <QtWidgets>
 
 #include <QFileDialog>
 
@@ -40,25 +40,25 @@
 #include "ui_SettingsDialog.h"
 
 #include "MyMainWindow.h"
-#include <Qt3DExtras/Qt3DWindow>
 #include <Qt3DExtras/QForwardRenderer>
+#include <Qt3DExtras/Qt3DWindow>
 
-#include "../block/literal/VectorObject.h"
-#include "../block/literal/OrientationBlock.h"
 #include "../block/literal/NumberObject.h"
+#include "../block/literal/OrientationBlock.h"
 #include "../block/literal/StringObject.h"
+#include "../block/literal/VectorObject.h"
 
 #include "../block/arithmetic/ArithmeticAddition.h"
-#include "../block/arithmetic/ArithmeticSubtraction.h"
-#include "../block/arithmetic/ArithmeticMultiplication.h"
 #include "../block/arithmetic/ArithmeticDivision.h"
+#include "../block/arithmetic/ArithmeticMultiplication.h"
+#include "../block/arithmetic/ArithmeticSubtraction.h"
 
 #include "../block/comparison/ComparisonEqualTo.h"
-#include "../block/comparison/ComparisonNotEqualTo.h"
-#include "../block/comparison/ComparisonGreaterThan.h"
-#include "../block/comparison/ComparisonLessThan.h"
 #include "../block/comparison/ComparisonGreaterOrEqualTo.h"
+#include "../block/comparison/ComparisonGreaterThan.h"
 #include "../block/comparison/ComparisonLessOrEqualTo.h"
+#include "../block/comparison/ComparisonLessThan.h"
+#include "../block/comparison/ComparisonNotEqualTo.h"
 
 #include "../block/sectionControl/Implement.h"
 
@@ -67,10 +67,10 @@
 #include "../block/global/CameraController.h"
 #include "../block/global/GridModel.h"
 
+#include "../block/graphical/CultivatedAreaModel.h"
+#include "../block/graphical/SprayerModel.h"
 #include "../block/graphical/TractorModel.h"
 #include "../block/graphical/TrailerModel.h"
-#include "../block/graphical/SprayerModel.h"
-#include "../block/graphical/CultivatedAreaModel.h"
 
 #include "../block/calculation/AckermannSteering.h"
 #include "../block/calculation/AngularVelocityLimiter.h"
@@ -84,43 +84,43 @@
 #include "../block/ExtendedKalmanFilter.h"
 #include "../block/guidance/PoseSynchroniser.h"
 
-#include "../block/parser/UbxParser.h"
+#include "../block/calculation/TransverseMercatorConverter.h"
 #include "../block/parser/NmeaParserGGA.h"
 #include "../block/parser/NmeaParserHDT.h"
 #include "../block/parser/NmeaParserRMC.h"
-#include "../block/calculation/TransverseMercatorConverter.h"
+#include "../block/parser/UbxParser.h"
 
-#include "../block/global/FieldManager.h"
 #include "../block/dock/input/ActionDockBlock.h"
+#include "../block/global/FieldManager.h"
 #include "../block/global/GlobalPlanner.h"
+#include "../block/graphical/PathPlannerModel.h"
 #include "../block/guidance/LocalPlanner.h"
 #include "../block/guidance/StanleyGuidance.h"
 #include "../block/guidance/XteGuidance.h"
-#include "../block/graphical/PathPlannerModel.h"
 #include "../block/sectionControl/SectionControl.h"
 
 #include "../block/base/DebugSink.h"
 
-#include "../block/stream/UdpSocket.h"
-#include "../block/stream/FileStream.h"
-#include "../block/converter/CommunicationPgn7FFE.h"
 #include "../block/converter/CommunicationJrk.h"
+#include "../block/converter/CommunicationPgn7FFE.h"
+#include "../block/stream/FileStream.h"
+#include "../block/stream/UdpSocket.h"
 
+#include "../block/converter/ValueTransmissionBase64Data.h"
 #include "../block/converter/ValueTransmissionNumber.h"
 #include "../block/converter/ValueTransmissionQuaternion.h"
-#include "../block/converter/ValueTransmissionBase64Data.h"
 #include "../block/converter/ValueTransmissionState.h"
 
 #include "../helpers/GeographicConvertionWrapper.h"
 #include "../kinematic/FixedKinematic.h"
-#include "../kinematic/TrailerKinematic.h"
 #include "../kinematic/FixedKinematicPrimitive.h"
+#include "../kinematic/TrailerKinematic.h"
 #include "../kinematic/TrailerKinematicPrimitive.h"
 
 #include "../helpers/cgalHelper.h"
 
-#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
 SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
   QDialog( parent ),
@@ -221,7 +221,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   newOpenSaveToolbar = new NewOpenSaveToolbar( this );
   auto* newOpenSaveToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "NewOpenSaveToolbarDock" ) );
   newOpenSaveToolbarDock->setWidget( newOpenSaveToolbar );
-  newOpenSaveToolbarDock->setTitle( "New, Save, Open" );
+  newOpenSaveToolbarDock->setTitle( QStringLiteral( "New, Save, Open" ) );
   mainWindow->addDockWidget( newOpenSaveToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbarMenu->addAction( newOpenSaveToolbarDock->toggleAction() );
 
@@ -320,14 +320,14 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto fieldManagerObject = qobject_cast<FieldManager*>( fieldManagerBlock->object );
-    auto newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
+    auto* fieldManagerObject = qobject_cast<FieldManager*>( fieldManagerBlock->object );
+    auto* newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
     QObject::connect( newFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::newField );
 
-    auto openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Field" ) );
+    auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Field" ) );
     QObject::connect( openFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::openField );
 
-    auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save Field" ) );
+    auto* saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save Field" ) );
     QObject::connect( saveFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::saveField );
 
     fieldManager = fieldManagerObject;
@@ -341,17 +341,17 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
+    auto* globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
 
     QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlanner, &GlobalPlanner::setPlannerSettings );
 
-    auto newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
+    auto* newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
     QObject::connect( newFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::newField );
 
-    auto openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
+    auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
     QObject::connect( openFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::openAbLine );
 
-    auto saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
+    auto* saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
     QObject::connect( saveFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
 
     this->globalPlanner = globalPlanner;
@@ -939,13 +939,13 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
           BlockFactory* factory = nullptr;
 
           {
-            auto rootItem = ui->twBlocks->invisibleRootItem();
+            auto* rootItem = ui->twBlocks->invisibleRootItem();
 
             for( int i = 0, end = rootItem->childCount(); i < end; i++ ) {
-              auto item = rootItem->child( i );
+              auto* item = rootItem->child( i );
 
               for( int j = 0, end = item->childCount(); j < end; j++ ) {
-                auto childItem = item->child( j );
+                auto* childItem = item->child( j );
 
                 if( childItem->text( 1 ) == blockObject[QStringLiteral( "type" )].toString() ) {
                   factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( childItem->data( 0, Qt::UserRole ) ) );
@@ -1032,7 +1032,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
 void SettingsDialog::on_pbAddBlock_clicked() {
   auto results = ui->twBlocks->selectedItems();
 
-  if( results.size() >= 1 ) {
+  if( !results.empty() ) {
     auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( results.first()->data( 0, Qt::UserRole ) ) );
 
     if( factory != nullptr ) {
@@ -1056,8 +1056,8 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
   {
     const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
-    for( int i = 0, end = constRefOfList.size(); i < end; ++i ) {
-      auto* connection = qgraphicsitem_cast<QNEConnection*>( constRefOfList.at( i ) );
+    for( auto i : constRefOfList ) {
+      auto* connection = qgraphicsitem_cast<QNEConnection*>( i );
       delete connection;
     }
   }
@@ -1065,8 +1065,8 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
   {
     const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
-    for( int i = 0, end = constRefOfList.size(); i < end; ++i ) {
-      auto* block = qgraphicsitem_cast<const QNEBlock*>( constRefOfList.at( i ) );
+    for( auto i : constRefOfList ) {
+      const auto* block = qgraphicsitem_cast<const QNEBlock*>( i );
 
       if( block != nullptr ) {
         if( !block->systemBlock ) {
@@ -1082,31 +1082,31 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
 
 void SettingsDialog:: on_gbGrid_toggled( bool arg1 ) {
   saveGridValuesInSettings();
-  emit setGrid( bool( arg1 ) );
+  Q_EMIT setGrid( bool( arg1 ) );
 }
 
 void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::on_pbColor_clicked() {
@@ -1119,10 +1119,10 @@ void SettingsDialog::on_pbColor_clicked() {
     ui->lbColor->setAutoFillBackground( true );
 
     saveGridValuesInSettings();
-    emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+    Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                          float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                          float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                          gridColor, gridColorCoarse );
   }
 }
 
@@ -1177,12 +1177,12 @@ void SettingsDialog::setPathPlannerSettings() {
 }
 
 void SettingsDialog::emitAllConfigSignals() {
-  emit setGrid( ui->gbGrid->isChecked() );
+  Q_EMIT setGrid( ui->gbGrid->isChecked() );
   emitGridSettings();
 
-  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
+  Q_EMIT plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 
-  emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), ui->slCameraSmoothingPosition->value() );
+  Q_EMIT cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), ui->slCameraSmoothingPosition->value() );
 }
 
 QTreeWidget* SettingsDialog::getBlockTreeWidget() {
@@ -1508,26 +1508,26 @@ void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
 }
 
 void SettingsDialog::emitGridSettings() {
-  emit setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                      float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                      float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                      gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor, gridColorCoarse );
 }
 
 void SettingsDialog::emitSimulatorValues() {
-  emit simulatorValuesChanged( ui->dsbSimGeneralA->value(), ui->dsbSimGeneralB->value(), ui->dsbSimGeneralC->value(),
-                               ui->dsbSimGeneralCaf->value(), ui->dsbSimGeneralCar->value(), ui->dsbSimGeneralCah->value(),
-                               ui->dsbSimGeneralM->value(), ui->dsbSimGeneralIz->value(),
-                               ui->dsbSimGeneralSigmaF->value(), ui->dsbSimGeneralSigmaR->value(), ui->dsbSimGeneralSigmaH->value(),
-                               ui->dsbSimGeneralCx->value(), ui->dsbSimGeneralSlipX->value() / 100 );
+  Q_EMIT simulatorValuesChanged( ui->dsbSimGeneralA->value(), ui->dsbSimGeneralB->value(), ui->dsbSimGeneralC->value(),
+                                 ui->dsbSimGeneralCaf->value(), ui->dsbSimGeneralCar->value(), ui->dsbSimGeneralCah->value(),
+                                 ui->dsbSimGeneralM->value(), ui->dsbSimGeneralIz->value(),
+                                 ui->dsbSimGeneralSigmaF->value(), ui->dsbSimGeneralSigmaR->value(), ui->dsbSimGeneralSigmaH->value(),
+                                 ui->dsbSimGeneralCx->value(), ui->dsbSimGeneralSlipX->value() / 100 );
 }
 
 void SettingsDialog::emitNoiseStandartDeviations() {
-  emit noiseStandartDeviationsChanged( ui->dsbSimNoisePositionXY->value(),
-                                       ui->dsbSimNoisePositionZ->value(),
-                                       ui->dsbSimNoiseOrientation->value(),
-                                       ui->dsbSimNoiseAccelerometer->value(),
-                                       ui->dsbSimNoiseGyro->value() );
+  Q_EMIT noiseStandartDeviationsChanged( ui->dsbSimNoisePositionXY->value(),
+                                         ui->dsbSimNoisePositionZ->value(),
+                                         ui->dsbSimNoiseOrientation->value(),
+                                         ui->dsbSimNoiseAccelerometer->value(),
+                                         ui->dsbSimNoiseGyro->value() );
 }
 
 void SettingsDialog::on_pbColorCoarse_clicked() {
@@ -1546,7 +1546,7 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
 
 void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
-  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
+  Q_EMIT plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }
 
 void SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
@@ -1702,7 +1702,7 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
 
 void SettingsDialog::on_sbGlobalPlannerMaxDeviation_valueChanged( double ) {
   savePathPlannerValuesInSettings();
-  emit plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
+  Q_EMIT plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }
 
 void SettingsDialog::on_rbMaterialAuto_clicked() {
@@ -1955,11 +1955,11 @@ void SettingsDialog::on_dsbSimNoiseAccelerometer_valueChanged( double ) {
 }
 
 void SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
-  emit cameraSmoothingChanged( value, ui->slCameraSmoothingPosition->value() );
+  Q_EMIT cameraSmoothingChanged( value, ui->slCameraSmoothingPosition->value() );
 }
 
 void SettingsDialog::on_slCameraSmoothingPosition_valueChanged( int value ) {
-  emit cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), value );
+  Q_EMIT cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), value );
 }
 
 void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int ) {

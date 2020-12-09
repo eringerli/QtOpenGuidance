@@ -71,31 +71,31 @@ class SettingsDialog : public QDialog {
 
     void emitAllConfigSignals();
 
-  signals:
-    void setGrid( bool );
-    void setGridValues( float, float, float, float, float, float, float, QColor, QColor );
-    void plannerSettingsChanged( int, double );
+  Q_SIGNALS:
+    void setGrid( const bool );
+    void setGridValues( const float, const float, const float, const float, const float, const float, const float, const QColor, const QColor );
+    void plannerSettingsChanged( const int, const double );
 
-    void globalPlannerModelSetVisible( bool );
+    void globalPlannerModelSetVisible( const bool );
 
-    void globalPlannerModelSettingsChanged( int, int, float, int, int,
-                                            QColor, QColor, QColor, QColor );
+    void globalPlannerModelSettingsChanged( const int, const int, const float, const int, const int,
+                                            const QColor, const QColor, const QColor, const QColor );
 
-    void localPlannerModelSetVisible( bool );
-    void localPlannerModelSettingsChanged( float, float,
-                                           float,
-                                           QColor, QColor );
+    void localPlannerModelSetVisible( const bool );
+    void localPlannerModelSettingsChanged( const float, const float,
+                                           const float,
+                                           const QColor, const QColor );
 
-    void noiseStandartDeviationsChanged( double, double, double, double, double );
+    void noiseStandartDeviationsChanged( const double, const double, const double, const double, const double );
 
-    void cameraSmoothingChanged( int, int );
+    void cameraSmoothingChanged( const int, const int );
 
     void simulatorValuesChanged( const double a, const double b, const double c,
                                  const double Caf, const double Car, const double Cah,
                                  const double m, const double Iz,
                                  const double sigmaF, const double sigmaR, const double sigmaH,
                                  const double Cx, const double slip );
-  public slots:
+  public Q_SLOTS:
     void toggleVisibility();
 
     void onStart();
@@ -112,7 +112,7 @@ class SettingsDialog : public QDialog {
                              const double sigmaF, const double sigmaR, const double sigmaH,
                              const double Cx, const double slipX );
 
-  private slots:
+  private Q_SLOTS:
     void on_cbValues_currentIndexChanged( int index );
     void on_pbSetStringToFilename_clicked();
 

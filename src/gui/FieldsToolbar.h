@@ -32,11 +32,11 @@ class FieldsToolbar : public QGroupBox {
     explicit FieldsToolbar( QWidget* parent = nullptr );
     ~FieldsToolbar();
 
-  signals:
-    void continousRecordToggled( bool );
+  Q_SIGNALS:
+    void continousRecordToggled( const bool );
     void recordPoint();
 
-    void recordOnEdgeOfImplementChanged( bool right );
+    void recordOnEdgeOfImplementChanged( const bool right );
 
   private:
     Ui::FieldsToolbar* ui = nullptr;

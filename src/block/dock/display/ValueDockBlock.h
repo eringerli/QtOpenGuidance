@@ -69,29 +69,29 @@ class ValueDockBlock : public ValueDockBlockBase {
     virtual void setFont( const QFont& font ) override {
       widget->setFontOfLabel( font );
     }
-    virtual void setPrecision( int precision ) override {
+    virtual void setPrecision( const int precision ) override {
       widget->precision = precision;
     }
-    virtual void setFieldWidth( int fieldWidth ) override {
+    virtual void setFieldWidth( const int fieldWidth ) override {
       widget->fieldWidth = fieldWidth;
     }
-    virtual void setScale( double scale ) override {
+    virtual void setScale( const double scale ) override {
       widget->scale = scale;
     }
-    virtual void setUnitVisible( bool enabled ) override {
+    virtual void setUnitVisible( const bool enabled ) override {
       widget->unitEnabled = enabled;
     }
     virtual void setUnit( const QString& unit ) override {
       widget->unit = unit;
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
     }
 
-    void setValue( double value ) {
+    void setValue( const double value ) {
       widget->setMeter( value );
     }
 
@@ -144,7 +144,7 @@ class ValueDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
       }
 
-      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( const double ) ) ) );
 
       b->setBrush( dockColor );
 

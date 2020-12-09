@@ -92,7 +92,7 @@ void SectionControlToolbar::implementChanged( const QPointer<Implement>& ) {
         gridLayout->removeWidget( lbOff );
         gridLayout->removeWidget( pbAuto );
 
-        for( auto button : qAsConst( buttons ) ) {
+        for( auto* button : qAsConst( buttons ) ) {
           gridLayout->removeWidget( button );
           button->setParent( this );
           button->deleteLater();

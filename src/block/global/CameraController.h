@@ -31,7 +31,6 @@
 
 #include "../BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -90,12 +89,12 @@ class CameraController : public BlockBase {
   private:
     static constexpr float ZoomFactor = 1.1f;
     static constexpr float MinZoomDistance = 10;
-    static constexpr float MaxZoomDistance = 1000;
+    static constexpr float MaxZoomDistance = 5000;
     static constexpr float TiltAngleStep = 10;
     static constexpr float PanAngleStep = 10;
 
-  public slots:
-    void setMode( int camMode ) {
+  public Q_SLOTS:
+    void setMode( const int camMode ) {
       m_mode = camMode;
 
       if( camMode == 0 ) {
@@ -112,14 +111,14 @@ class CameraController : public BlockBase {
       }
     }
 
-    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
       if( m_mode == 0 && !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
 
         m_orientationBuffer = QQuaternion::nlerp( m_orientationBuffer, toQQuaternion( orientation ), orientationSmoothing );
-        positionBuffer = toEigenVector( position ) * positionSmoothing + positionBuffer * positionSmoothingInv;
+        positionBuffer = position * positionSmoothing + positionBuffer * positionSmoothingInv;
 
         m_cameraEntity->setPosition( toQVector3D( positionBuffer ) +
-                                     ( QQuaternion::fromEulerAngles( 0, 0, m_orientationBuffer.toEulerAngles().z() ) * m_offset ) );
+                                     ( QQuaternion::fromEulerAngles( m_orientationBuffer.toEulerAngles().x(), m_orientationBuffer.toEulerAngles().y(), m_orientationBuffer.toEulerAngles().z() ) * m_offset ) );
         m_cameraEntity->setViewCenter( toQVector3D( positionBuffer ) );
         m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
         m_cameraEntity->rollAboutViewCenter( 0 );
@@ -191,7 +190,7 @@ class CameraController : public BlockBase {
       calculateOffset();
     }
 
-    void setCameraSmoothing( int orientationSmoothing, int positionSmoothing ) {
+    void setCameraSmoothing( const int orientationSmoothing, const int positionSmoothing ) {
       this->orientationSmoothing = 1 - float( orientationSmoothing ) / 100;
 
       this->positionSmoothingInv = double( positionSmoothing ) / 100;
@@ -276,7 +275,7 @@ class CameraControllerFactory : public BlockFactory {
       auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       return b;
     }

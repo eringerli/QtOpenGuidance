@@ -43,16 +43,16 @@ class FpsMeasurement : public BlockBase {
     }
 
     void emitConfigSignals() override {
-      emit fpsChanged( 0 );
+      Q_EMIT fpsChanged( 0 );
     }
 
-  public slots:
-    void frameActionTriggered( float dt ) {
-      emit fpsChanged( 1 / dt );
+  public Q_SLOTS:
+    void frameActionTriggered( const float dt ) {
+      Q_EMIT fpsChanged( 1 / dt );
     }
 
-  signals:
-    void fpsChanged( double );
+  Q_SIGNALS:
+    void fpsChanged( const double );
 
   public:
     Qt3DLogic::QFrameAction* fpsComponent;

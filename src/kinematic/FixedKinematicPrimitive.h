@@ -30,7 +30,6 @@
 
 #include "../block/BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -41,12 +40,12 @@ class FixedKinematicPrimitive : public BlockBase {
     explicit FixedKinematicPrimitive()
       : BlockBase() {}
 
-  public slots:
-    void setOffset( Eigen::Vector3d offset ) {
+  public Q_SLOTS:
+    void setOffset( const Eigen::Vector3d& offset ) {
       this->offset = -offset;
     }
 
-    void setPose( const Point_3 position, const Eigen::Quaterniond rotation, const PoseOption::Options options ) {
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
       if( !options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         orientation = rotation;
       } else {
@@ -55,18 +54,18 @@ class FixedKinematicPrimitive : public BlockBase {
 
       Eigen::Vector3d positionCorrection = orientation * offset;
 
-      positionCalculated = Point_3( position.x() + positionCorrection.x(),
-                                    position.y() + positionCorrection.y(),
-                                    position.z() + positionCorrection.z() );
+      positionCalculated = Eigen::Vector3d( position.x() + positionCorrection.x(),
+                                            position.y() + positionCorrection.y(),
+                                            position.z() + positionCorrection.z() );
 
-      emit poseChanged( positionCalculated, orientation, options );
+      Q_EMIT poseChanged( positionCalculated, orientation, options );
     }
 
-  signals:
-    void poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+  Q_SIGNALS:
+    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
   public:
-    Point_3 positionCalculated = Point_3( 0, 0, 0 );
+    Eigen::Vector3d positionCalculated = Eigen::Vector3d( 0, 0, 0 );
     Eigen::Quaterniond orientation = Eigen::Quaterniond();
     Eigen::Vector3d offset = Eigen::Vector3d( -1, 0, 0 );
 };
@@ -91,9 +90,9 @@ class FixedKinematicPrimitiveFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Offset" ), QLatin1String( SLOT( setOffset( Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       return b;
     }

@@ -31,8 +31,8 @@ class XteDock : public QGroupBox {
     explicit XteDock( QWidget* parent = nullptr );
     ~XteDock();
 
-  public slots:
-    void setXte( double xte );
+  public Q_SLOTS:
+    void setXte( const double xte );
     void setName( const QString& name );
 
   private:

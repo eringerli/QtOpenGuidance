@@ -28,8 +28,8 @@
 #include "qneport.h"
 #include "qneblock.h"
 
-#include <QGraphicsScene>
 #include <QFontMetrics>
+#include <QGraphicsScene>
 
 #include <QPen>
 
@@ -65,7 +65,7 @@ QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool
 
 QNEPort::~QNEPort() {
   // as m_connections is also changed by the destructor of the connection, test in each iteration
-  while( m_connections.size() ) {
+  while( !m_connections.empty() ) {
     delete m_connections.back();
   }
 
@@ -138,7 +138,7 @@ QNEBlock* QNEPort::block() const {
 
 QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
-    for( auto conn : qAsConst( m_connections ) ) {
+    for( auto* conn : qAsConst( m_connections ) ) {
       conn->updatePosFromPorts();
       conn->updatePath();
     }

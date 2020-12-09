@@ -30,7 +30,7 @@ class AckermannSteering : public BlockBase {
   public:
     explicit AckermannSteering() = default;
 
-  public slots:
+  public Q_SLOTS:
     void setWheelbase( double wheelbase ) {
       m_wheelbase = wheelbase;
       m_correction = m_trackWidth / ( 2.0f * m_wheelbase );
@@ -43,43 +43,43 @@ class AckermannSteering : public BlockBase {
     void setSteeringAngle( double steerAngle ) {
       // as the cotangens (1/tan()) is used, there is no valid result for steerangle=0 -> filter it out
       if( qFuzzyIsNull( steerAngle ) ) {
-        emit steeringAngleChanged( 0 );
-        emit steeringAngleChangedLeft( 0 );
-        emit steeringAngleChangedRight( 0 );
+        Q_EMIT steeringAngleChanged( 0 );
+        Q_EMIT steeringAngleChangedLeft( 0 );
+        Q_EMIT steeringAngleChangedRight( 0 );
       } else {
-        emit steeringAngleChanged( steerAngle );
-        emit steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
-        emit steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
+        Q_EMIT steeringAngleChanged( steerAngle );
+        Q_EMIT steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
+        Q_EMIT steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
       }
     }
 
     void setSteeringAngleLeft( double steerAngle ) {
       // as the cotangens (1/tan()) is used, there is no valid result for steerangle=0 -> filter it out
       if( qFuzzyIsNull( steerAngle ) ) {
-        emit steeringAngleChanged( 0 );
-        emit steeringAngleChangedLeft( 0 );
-        emit steeringAngleChangedRight( 0 );
+        Q_EMIT steeringAngleChanged( 0 );
+        Q_EMIT steeringAngleChangedLeft( 0 );
+        Q_EMIT steeringAngleChangedRight( 0 );
       } else {
-        emit steeringAngleChangedLeft( steerAngle );
-        emit steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
-        emit steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + ( 2 * m_correction ) ) ) ) );
+        Q_EMIT steeringAngleChangedLeft( steerAngle );
+        Q_EMIT steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + m_correction ) ) ) );
+        Q_EMIT steeringAngleChangedRight( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) + ( 2 * m_correction ) ) ) ) );
       }
     }
 
     void setSteeringAngleRight( double steerAngle ) {
       // as the cotangens (1/tan()) is used, there is no valid result for steerangle=0 -> filter it out
       if( qFuzzyIsNull( steerAngle ) ) {
-        emit steeringAngleChanged( 0 );
-        emit steeringAngleChangedLeft( 0 );
-        emit steeringAngleChangedRight( 0 );
+        Q_EMIT steeringAngleChanged( 0 );
+        Q_EMIT steeringAngleChangedLeft( 0 );
+        Q_EMIT steeringAngleChangedRight( 0 );
       } else {
-        emit steeringAngleChangedRight( steerAngle );
-        emit steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - ( 2 * m_correction ) ) ) ) );
-        emit steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
+        Q_EMIT steeringAngleChangedRight( steerAngle );
+        Q_EMIT steeringAngleChangedLeft( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - ( 2 * m_correction ) ) ) ) );
+        Q_EMIT steeringAngleChanged( qRadiansToDegrees( std::atan( 1 / ( ( 1 / std::tan( qDegreesToRadians( steerAngle ) ) ) - m_correction ) ) ) );
       }
     }
 
-  signals:
+  Q_SIGNALS:
     void steeringAngleChanged( double );
     void steeringAngleChangedLeft( double );
     void steeringAngleChangedRight( double );

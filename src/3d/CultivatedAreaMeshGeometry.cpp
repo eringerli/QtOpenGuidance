@@ -16,12 +16,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include "CultivatedAreaMeshGeometry.h"
 #include <QVector>
 #include <QVector3D>
-#include "CultivatedAreaMeshGeometry.h"
 
-#include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
+#include "../kinematic/cgal.h"
 
 CultivatedAreaMeshGeometry::CultivatedAreaMeshGeometry( Qt3DCore::QNode* parent )
   : Qt3DRender::QGeometry( parent ),
@@ -78,7 +78,7 @@ CultivatedAreaMeshGeometry::CultivatedAreaMeshGeometry( Qt3DCore::QNode* parent 
 
 }
 
-CultivatedAreaMeshGeometry::~CultivatedAreaMeshGeometry() {}
+CultivatedAreaMeshGeometry::~CultivatedAreaMeshGeometry() = default;
 
 void CultivatedAreaMeshGeometry::addTrackMeshGeometry( CultivatedAreaMeshGeometry* trackMeshGeometry ) {
   {
@@ -119,8 +119,8 @@ void CultivatedAreaMeshGeometry::updateBuffers() {
 
     auto iteratorLeftPoints = trackPointsLeft.cbegin();
     auto iteratorRightPoints = trackPointsRight.cbegin();
-    float* fptr = reinterpret_cast<float*>( bufferBytes.data() );
-    uint16_t* indexPtr = reinterpret_cast<uint16_t*>( indexBytes.data() );
+    auto* fptr = reinterpret_cast<float*>( bufferBytes.data() );
+    auto* indexPtr = reinterpret_cast<uint16_t*>( indexBytes.data() );
 
     // left point
     {
@@ -229,33 +229,33 @@ void CultivatedAreaMeshGeometry::updateBuffers() {
     m_indexBuffer->setData( indexBytes );
     m_indexAttribute->setCount( indices );
 
-    emit vertexCountChanged( indices );
+    Q_EMIT vertexCountChanged( indices );
   } else {
-    emit vertexCountChanged( 0 );
+    Q_EMIT vertexCountChanged( 0 );
   }
 }
 
 void CultivatedAreaMeshGeometry::optimise( CgalThread* thread ) {
   if( trackPointsLeft.size() > 2 ) {
-    auto cgalWorkerLeft = new CgalWorker();
+    auto* cgalWorkerLeft = new CgalWorker();
     cgalWorkerLeft->moveToThread( thread );
 
     QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineLeft, cgalWorkerLeft, &CgalWorker::simplifyPolyline );
     QObject::connect( cgalWorkerLeft, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultLeft );
     waitForOptimition = !waitForOptimition;
 
-    emit simplifyPolylineLeft( &trackPointsLeft, maxDeviation );
+    Q_EMIT simplifyPolylineLeft( &trackPointsLeft, maxDeviation );
   }
 
   if( trackPointsRight.size() > 2 ) {
-    auto cgalWorkerRight = new CgalWorker();
+    auto* cgalWorkerRight = new CgalWorker();
     cgalWorkerRight->moveToThread( thread );
 
     QObject::connect( this, &CultivatedAreaMeshGeometry::simplifyPolylineRight, cgalWorkerRight, &CgalWorker::simplifyPolyline );
     QObject::connect( cgalWorkerRight, &CgalWorker::simplifyPolylineResult, this, &CultivatedAreaMeshGeometry::simplifyPolylineResultRight );
     waitForOptimition = !waitForOptimition;
 
-    emit simplifyPolylineRight( &trackPointsRight, maxDeviation );
+    Q_EMIT simplifyPolylineRight( &trackPointsRight, maxDeviation );
   }
 }
 

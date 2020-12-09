@@ -30,15 +30,15 @@ Plan::Plan( const Plan::Type type )
 }
 
 void Plan::transform( const Aff_transformation_2& transformation ) {
-  for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {
-    ( *it )->transform( transformation );
+  for( const auto& it : *plan ) {
+    it->transform( transformation );
   }
 }
 
-Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( const Point_2& position2D, double& distanceSquared ) {
+Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( Point_2 position2D, double& distanceSquared ) {
 //        QElapsedTimer timer;
 //        timer.start();
-  ConstPrimitiveIterator nearestPrimitive = plan->cend();
+  auto nearestPrimitive = plan->cend();
   distanceSquared = qInf();
 
   for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {

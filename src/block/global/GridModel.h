@@ -40,7 +40,6 @@
 
 #include "../BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -104,9 +103,9 @@ class GridModel : public BlockBase {
       m_distanceMeasurementEntity->deleteLater();
     }
 
-  public slots:
-    void setPose( const Point_3 position, Eigen::Quaterniond, PoseOption::Options ) {
-      m_distanceMeasurementTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+  public Q_SLOTS:
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& /*orientation*/, const PoseOption::Options& ) {
+      m_distanceMeasurementTransform->setTranslation( toQVector3D( position ) );
 
       QVector3D positionModulo( float( std::floor( ( position.x() ) / xStepMax ) * xStepMax ),
                                 float( std::floor( ( position.y() ) / yStepMax ) * yStepMax ),
@@ -118,7 +117,15 @@ class GridModel : public BlockBase {
       m_baseEntity->setEnabled( enabled );
     }
 
-    void setGridValues( float xStep, float yStep, float xStepCoarse, float yStepCoarse, float size, float cameraThreshold, float cameraThresholdCoarse, QColor color, QColor colorCoarse ) {
+    void setGridValues( const float xStep,
+                        const float yStep,
+                        const float xStepCoarse,
+                        const float yStepCoarse,
+                        const float size,
+                        const float cameraThreshold,
+                        const float cameraThresholdCoarse,
+                        const QColor color,
+                        const QColor colorCoarse ) {
       this->xStep = double( xStep );
       this->yStep = double( yStep );
       this->xStepCoarse = double( xStepCoarse );
@@ -219,7 +226,7 @@ class GridModel : public BlockBase {
       m_materialCoarse->setAmbient( colorCoarse );
     }
 
-    void  currentIndexChanged( int currentIndex ) {
+    void  currentIndexChanged( const int currentIndex ) {
       switch( currentIndex ) {
         case 0: {
           m_fineGridEntity->setEnabled( true );
@@ -241,7 +248,7 @@ class GridModel : public BlockBase {
 
     }
 
-  signals:
+  Q_SIGNALS:
 
   private:
     Qt3DCore::QEntity* m_distanceMeasurementEntity = nullptr;
@@ -286,7 +293,7 @@ class GridModelFactory : public BlockFactory {
       auto* obj = new GridModel( rootEntity, m_cameraEntity );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       return b;
     }

@@ -30,7 +30,7 @@ class AngularVelocityLimiter : public BlockBase {
   public:
     explicit AngularVelocityLimiter() = default;
 
-  public slots:
+  public Q_SLOTS:
     void setMaxAngularVelocity( double maxAngularVelocity ) {
       this->maxAngularVelocity = qDegreesToRadians( maxAngularVelocity );
     }
@@ -46,14 +46,14 @@ class AngularVelocityLimiter : public BlockBase {
     void setVelocity( double velocity ) {
       double maxSteeringAngleFromAngularRad = std::abs( std::atan( maxAngularVelocity * wheelbase / velocity ) );
       double maxSteeringAngleMinRad = std::min( maxSteeringAngleFromAngularRad, maxSteeringAngleRad );
-      emit maxSteeringAngleChanged( qRadiansToDegrees( maxSteeringAngleMinRad ) );
+      Q_EMIT maxSteeringAngleChanged( qRadiansToDegrees( maxSteeringAngleMinRad ) );
 
       double minRadiusPivotPoint = wheelbase / std::tan( maxSteeringAngleMinRad );
       // the minimal radius is from the turning point to the middle of steering axle -> pythagoras
-      emit minRadiusChanged( std::sqrt( ( minRadiusPivotPoint * minRadiusPivotPoint ) + ( wheelbase * wheelbase ) ) );
+      Q_EMIT minRadiusChanged( std::sqrt( ( minRadiusPivotPoint * minRadiusPivotPoint ) + ( wheelbase * wheelbase ) ) );
     }
 
-  signals:
+  Q_SIGNALS:
     void maxSteeringAngleChanged( double );
     void minRadiusChanged( double );
 

@@ -31,7 +31,7 @@ class ThreeValuesDock : public QGroupBox {
     explicit ThreeValuesDock( QWidget* parent = nullptr );
     ~ThreeValuesDock();
 
-  public slots:
+  public Q_SLOTS:
     void setFontOfLabel( const QFont& font );
 
     void setValues( const double first, const double second, const double third );

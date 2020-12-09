@@ -25,9 +25,10 @@
 
 #include "../3d/CultivatedAreaMesh.h"
 
-#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
+#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker )
@@ -59,16 +60,16 @@ CultivatedAreaModel::~CultivatedAreaModel() {
 }
 
 void CultivatedAreaModel::emitConfigSignals() {
-  emit layerChanged( m_layer );
+  Q_EMIT layerChanged( m_layer );
 }
 
-void CultivatedAreaModel::setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
+void CultivatedAreaModel::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     if( implement != nullptr ) {
       m_baseTransform->setTranslation( QVector3D( 0, 0, position.z() ) );
 
       for( size_t i = 0, end = sectionMeshes.size(); i < end; ++i ) {
-        const auto mesh = sectionMeshes.at( i );
+        auto* const mesh = sectionMeshes.at( i );
 
         if( mesh != nullptr ) {
           auto quat = toQQuaternion( orientation );
@@ -100,7 +101,7 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
     this->implement = implement;
     size_t numSections = implement->sections.size();
 
-    for( auto mesh : sectionMeshes ) {
+    for( auto* mesh : sectionMeshes ) {
       if( mesh != nullptr && mesh->vertexCount() > 3 ) {
         mesh->optimise( threadForCgalWorker );
       } else {
@@ -115,7 +116,7 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
     double sectionOffset = 0;
 
     for( size_t i = 0; i < numSections; ++i ) {
-      const auto section = implement->sections.at( i );
+      auto* const section = implement->sections.at( i );
       sectionOffset += section->widthOfSection - section->overlapLeft - section->overlapRight;
     }
 
@@ -125,7 +126,7 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
     sectionOffsets.reserve( ( numSections - 1 ) * 2 );
 
     for( size_t i = 1; i < numSections; ++i ) {
-      const auto section = implement->sections.at( i );
+      auto* const section = implement->sections.at( i );
       sectionOffset += section->overlapLeft;
       sectionOffsets.push_back( sectionOffset );
       sectionOffset -= section->widthOfSection;
@@ -136,11 +137,11 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
 }
 
 CultivatedAreaMesh* CultivatedAreaModel::createNewMesh() {
-  auto entity = new Qt3DCore::QEntity( m_baseEntity );
+  auto* entity = new Qt3DCore::QEntity( m_baseEntity );
 
   entity->addComponent( m_phongMaterial );
 
-  auto mesh = new CultivatedAreaMesh( entity );
+  auto* mesh = new CultivatedAreaMesh( entity );
   entity->addComponent( mesh );
 
   return mesh;
@@ -182,8 +183,7 @@ void CultivatedAreaModel::setSections() {
 }
 
 CultivatedAreaModelFactory::CultivatedAreaModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR )
-  : BlockFactory(),
-    rootEntity( rootEntity ),
+  : rootEntity( rootEntity ),
     usePBR( usePBR ),
     threadForCgalWorker( new CgalThread( this ) ) {
   threadForCgalWorker->start();

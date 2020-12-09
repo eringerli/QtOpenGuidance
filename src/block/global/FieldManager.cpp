@@ -21,14 +21,15 @@
 
 #include <QFileDialog>
 
-#include "../kinematic/cgal.h"
+#include "../helpers/cgalHelper.h"
+
 #include "../kinematic/CgalWorker.h"
+#include "../kinematic/cgal.h"
 
 #include "../helpers/GeoJsonHelper.h"
 
 FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-  : BlockBase(),
-    mainWindow( mainWindow ), tmw( tmw ) {
+  : mainWindow( mainWindow ), tmw( tmw ) {
 
   // test for recording
   {
@@ -115,71 +116,71 @@ void FieldManager::alphaShape() {
   if( points.size() >= 3 ) {
 
     // make a 2D copy of the recorded points
-    auto pointsCopy2D = new std::vector<Epick::Point_2>();
+    auto* pointsCopy2D = new std::vector<Epick::Point_2>();
     pointsCopy2D->reserve( points.size() );
 
     for( const auto& point : points ) {
       pointsCopy2D->emplace_back( point.x(), point.y() );
     }
 
-    emit requestNewRunNumber();
+    Q_EMIT requestNewRunNumber();
 
-    emit requestFieldOptimition( runNumber,
-                                 pointsCopy2D,
-                                 alphaType,
-                                 customAlpha,
-                                 maxDeviation,
-                                 distanceBetweenConnectPoints );
+    Q_EMIT requestFieldOptimition( runNumber,
+                                   pointsCopy2D,
+                                   alphaType,
+                                   customAlpha,
+                                   maxDeviation,
+                                   distanceBetweenConnectPoints );
   }
 }
 
-void FieldManager::setPose(const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options) {
+void FieldManager::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    this->position = position;
+    this->position = toPoint3( position );
     this->orientation = orientation;
   }
 }
 
-void FieldManager::setPoseLeftEdge(const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options) {
+void FieldManager::setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
   if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
       options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-    positionLeftEdgeOfImplement = position;
+    positionLeftEdgeOfImplement = toPoint3( position );
   } else {
-    if( recordOnRightEdgeOfImplement == false ) {
+    if( !recordOnRightEdgeOfImplement ) {
       if( recordNextPoint ) {
-        points.push_back( position );
+        points.push_back( positionLeftEdgeOfImplement );
         recordNextPoint = false;
         recalculateField();
       } else {
         if( recordContinous ) {
-          points.push_back( position );
+          points.push_back( positionLeftEdgeOfImplement );
           recordNextPoint = false;
         }
       }
 
-      emit pointsRecordedChanged( points.size() );
+      Q_EMIT pointsRecordedChanged( points.size() );
     }
   }
 }
 
-void FieldManager::setPoseRightEdge(const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options) {
+void FieldManager::setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
   if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
       options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-    positionRightEdgeOfImplement = position;
+    positionRightEdgeOfImplement = toPoint3( position );;
   } else {
-    if( recordOnRightEdgeOfImplement == true ) {
+    if( recordOnRightEdgeOfImplement ) {
       if( recordNextPoint ) {
-        points.push_back( position );
+        points.push_back( positionRightEdgeOfImplement );
         recordNextPoint = false;
         recalculateField();
       } else {
         if( recordContinous ) {
-          points.push_back( position );
+          points.push_back( positionRightEdgeOfImplement );
           recordNextPoint = false;
         }
       }
 
-      emit pointsRecordedChanged( points.size() );
+      Q_EMIT pointsRecordedChanged( points.size() );
     }
   }
 }
@@ -260,24 +261,24 @@ void FieldManager::openFieldFromFile( QFile& file ) {
 
           const auto& polygon = std::get<GeoJsonHelper::PolygonType>( member.second );
 
-          if( polygon.size() >= 1 ) {
+          if( !polygon.empty() ) {
             for( const auto& point : polygon.front() ) {
               auto tmwPoint = tmw->Forward( point );
               positions.push_back( toQVector3D( tmwPoint ) );
-              poly.push_back( convertEigenVector3ToPoint2( tmwPoint ) );
+              poly.push_back( toPoint2( tmwPoint ) );
             }
 
             currentField = std::make_shared<Polygon_with_holes_2>( poly );
 
             const auto& outerPoly = currentField->outer_boundary();
-            emit pointsInFieldBoundaryChanged( outerPoly.size() );
+            Q_EMIT pointsInFieldBoundaryChanged( outerPoly.size() );
 
             newField = true;
 
             m_segmentsMesh2->bufferUpdate( positions );
             m_segmentsEntity2->setEnabled( true );
 
-            emit fieldChanged( currentField );
+            Q_EMIT fieldChanged( currentField );
           }
         }
         break;
@@ -289,14 +290,14 @@ void FieldManager::openFieldFromFile( QFile& file ) {
           for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
             auto tmwPoint = tmw->Forward( point );
             positions.push_back( toQVector3D( tmwPoint ) );
-            points.emplace_back( convertEigenVector3ToPoint3( tmwPoint ) );
+            points.emplace_back( toPoint3( tmwPoint ) );
           }
 
           m_segmentsMesh3->bufferUpdate( positions );
           m_segmentsEntity3->setEnabled( true );
 
-          emit pointsGeneratedForFieldBoundaryChanged( 0 );
-          emit pointsRecordedChanged( points.size() );
+          Q_EMIT pointsGeneratedForFieldBoundaryChanged( 0 );
+          Q_EMIT pointsRecordedChanged( points.size() );
 
           newRawPoints = true;
         }
@@ -373,17 +374,17 @@ void FieldManager::saveFieldToFile( QFile& file ) {
   geoJsonHelper.save( file );
 }
 
-void FieldManager::alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double /*alpha*/ ) {
+void FieldManager::alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_2>& field, double /*alpha*/ ) {
   currentField = field;
 
   QVector<QVector3D> meshSegmentPoints;
 
   for( const auto& vi : field->outer_boundary() ) {
-    meshSegmentPoints << convertPoint2ToQVector3D( vi, 0.1f );
+    meshSegmentPoints << toQVector3D( vi, 0.1f );
   }
 
   meshSegmentPoints << meshSegmentPoints.first();
   m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
 
-  emit fieldChanged( currentField );
+  Q_EMIT fieldChanged( currentField );
 }

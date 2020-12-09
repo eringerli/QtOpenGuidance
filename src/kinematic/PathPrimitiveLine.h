@@ -25,7 +25,7 @@ class PathPrimitiveLine : public PathPrimitive {
     PathPrimitiveLine()
       : PathPrimitive() {}
 
-    PathPrimitiveLine( const Line_2& line, double implementWidth, bool anyDirection, int32_t passNumber );
+    PathPrimitiveLine( const Line_2& line, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
       return Type::Line;
@@ -53,7 +53,7 @@ class PathPrimitiveLine : public PathPrimitive {
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left ) override;
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool left ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveLine: " << line << std::endl;

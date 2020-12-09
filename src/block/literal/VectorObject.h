@@ -35,7 +35,7 @@ class VectorObject : public BlockBase {
       : vector( Eigen::Vector3d( 0, 0, 0 ) ) {}
 
     void emitConfigSignals() override {
-      emit vectorChanged( vector );
+      Q_EMIT vectorChanged( vector );
     }
 
     void toJSON( QJsonObject& json ) override {
@@ -64,8 +64,8 @@ class VectorObject : public BlockBase {
       }
     }
 
-  signals:
-    void vectorChanged( const Eigen::Vector3d );
+  Q_SIGNALS:
+    void vectorChanged( const Eigen::Vector3d& );
 
   public:
     Eigen::Vector3d vector;
@@ -97,7 +97,7 @@ class VectorFactory : public BlockFactory {
       auto* obj = new VectorObject();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d& ) ) ) );
 
       b->setBrush( valueColor );
 

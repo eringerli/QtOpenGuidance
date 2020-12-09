@@ -20,7 +20,7 @@
 
 void ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == timeoutTimer.timerId() ) {
-    emit timedOut( id );
+    Q_EMIT timedOut( id );
   }
 
   if( event->timerId() == repeatTimer.timerId() ) {

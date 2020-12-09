@@ -27,18 +27,18 @@
 
 #include "qneconnection.h"
 
-#include "qneport.h"
 #include "qneblock.h"
+#include "qneport.h"
 
-#include <QObject>
 #include <QBrush>
-#include <QPen>
 #include <QGraphicsScene>
+#include <QObject>
 #include <QPainter>
+#include <QPen>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonValueRef>
 

@@ -22,15 +22,15 @@
 
 class PlanGlobal : public Plan {
   public:
-    PlanGlobal();
+    PlanGlobal() = default;
     PlanGlobal( const Type type );
 
   public:
-    void resetPlanWith( PrimitiveSharedPointer referencePrimitive );
+    void resetPlanWith( const PrimitiveSharedPointer& referencePrimitive );
     void createNewPrimitiveOnTheLeft();
     void createNewPrimitiveOnTheRight();
 
-    void expand( const Point_2& position2D );
+    void expand( Point_2 position2D );
 
   public:
     std::size_t pathsInReserve = 3;

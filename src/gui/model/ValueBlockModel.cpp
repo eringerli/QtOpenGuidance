@@ -84,7 +84,7 @@ Qt::ItemFlags ValueBlockModel::flags( const QModelIndex& index ) const {
 
 bool ValueBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -184,41 +184,41 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 1:
               object->setUnitVisible( value.toBool() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
               object->setUnit( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
               object->setPrecision( value.toString().toInt() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 4:
               object->setScale( value.toString().toFloat() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 5:
               object->setFieldWidth( value.toString().toInt() );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 6: {
-                QFont font = value.value<QFont>();
+                auto font = value.value<QFont>();
                 QFont oldFont = object->getFont();
                 font.setBold( oldFont.bold() );
                 font.setPointSize( oldFont.pointSize() );
                 object->setFont( font );
-                emit dataChanged( index, index, QVector<int>() << role );
+                Q_EMIT dataChanged( index, index, QVector<int>() << role );
                 return true;
               }
 
@@ -226,7 +226,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
                 QFont font = object->getFont();
                 font.setPointSize( value.toInt() );
                 object->setFont( font );
-                emit dataChanged( index, index, QVector<int>() << role );
+                Q_EMIT dataChanged( index, index, QVector<int>() << role );
                 return true;
               }
 
@@ -234,7 +234,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
                 QFont font = object->getFont();
                 font.setBold( value.toBool() );
                 object->setFont( font );
-                emit dataChanged( index, index, QVector<int>() << role );
+                Q_EMIT dataChanged( index, index, QVector<int>() << role );
                 return true;
               }
           }

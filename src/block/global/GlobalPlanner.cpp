@@ -23,17 +23,16 @@
 
 #include <QFileDialog>
 
-#include "../kinematic/cgal.h"
 #include "../kinematic/CgalWorker.h"
+#include "../kinematic/cgal.h"
 
 #include "../helpers/GeoJsonHelper.h"
 
 #include <CGAL/Aff_transformation_3.h>
-typedef CGAL::Aff_transformation_3<Epick>                       Aff_transformation_3;
+using Aff_transformation_3 = CGAL::Aff_transformation_3<Epick>;
 
 GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw, Qt3DCore::QEntity* rootEntity )
-  : BlockBase(),
-    tmw( tmw ),
+  : tmw( tmw ),
     mainWindow( mainWindow ),
     rootEntity( rootEntity ) {
   widget = new GlobalPlannerToolbar( mainWindow );
@@ -56,7 +55,7 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
 
     aPointTransform = new Qt3DCore::QTransform( aPointEntity );
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial( aPointEntity );
+    auto* material = new Qt3DExtras::QPhongMaterial( aPointEntity );
     material->setDiffuse( QColor( "orange" ) );
 
     aPointEntity->addComponent( aPointMesh );
@@ -65,7 +64,7 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     aPointEntity->setEnabled( false );
 
     aTextEntity = new Qt3DCore::QEntity( aPointEntity );
-    Qt3DExtras::QExtrudedTextMesh* aTextMesh = new Qt3DExtras::QExtrudedTextMesh( aTextEntity );
+    auto* aTextMesh = new Qt3DExtras::QExtrudedTextMesh( aTextEntity );
     aTextMesh->setText( QStringLiteral( "A" ) );
     aTextMesh->setDepth( 0.05f );
 
@@ -89,7 +88,7 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
 
     bPointTransform = new Qt3DCore::QTransform( bPointEntity );
 
-    Qt3DExtras::QPhongMaterial* material = new Qt3DExtras::QPhongMaterial( bPointEntity );
+    auto* material = new Qt3DExtras::QPhongMaterial( bPointEntity );
     material->setDiffuse( QColor( "purple" ) );
 
     bPointEntity->addComponent( bPointMesh );
@@ -98,7 +97,7 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
     bPointEntity->setEnabled( false );
 
     bTextEntity = new Qt3DCore::QEntity( bPointEntity );
-    Qt3DExtras::QExtrudedTextMesh* bTextMesh = new Qt3DExtras::QExtrudedTextMesh( bTextEntity );
+    auto* bTextMesh = new Qt3DExtras::QExtrudedTextMesh( bTextEntity );
     bTextMesh->setText( QStringLiteral( "B" ) );
     bTextMesh->setDepth( 0.05f );
 
@@ -145,17 +144,17 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
     widget->setToolbarToAdditionalPoint();
 
     for( const auto& child : qAsConst( pointsEntity->children() ) ) {
-      if( auto childPtr = qobject_cast<Qt3DCore::QEntity*>( child ) ) {
+      if( auto* childPtr = qobject_cast<Qt3DCore::QEntity*>( child ) ) {
         childPtr->setEnabled( false );
         childPtr->deleteLater();
       }
     }
 
     for( const auto& point : *polyline ) {
-      auto entity = new Qt3DCore::QEntity( pointsEntity );
+      auto* entity = new Qt3DCore::QEntity( pointsEntity );
 
-      auto transform = new Qt3DCore::QTransform( entity );
-      transform->setTranslation( convertPoint2ToQVector3D( point ) );
+      auto* transform = new Qt3DCore::QTransform( entity );
+      transform->setTranslation( toQVector3D( point ) );
 
       entity->addComponent( pointsMaterial );
       entity->addComponent( pointsMesh );
@@ -173,7 +172,7 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
                           0 ) );
 
 
-    emit planChanged( plan );
+    Q_EMIT planChanged( plan );
   }
 
   if( polyline->size() == 2 ) {
@@ -181,8 +180,8 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
     bPoint = to3D( polyline->back() );
     abSegment = Segment_3( aPoint, bPoint );
 
-    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
-    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
+    aPointTransform->setTranslation( toQVector3D( aPoint ) );
+    bPointTransform->setTranslation( toQVector3D( bPoint ) );
     aPointEntity->setEnabled( true );
     bPointEntity->setEnabled( true );
 
@@ -194,7 +193,7 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
                           true,
                           0 ) );
 
-    emit planChanged( plan );
+    Q_EMIT planChanged( plan );
   }
 
   plan.expand( position2D );
@@ -215,11 +214,11 @@ void GlobalPlanner::createPlanAB() {
                             0 ) );
       plan.expand( position2D );
 
-      emit planChanged( plan );
+      Q_EMIT planChanged( plan );
     }
 
     if( abPolyline.size() > 2 ) {
-      emit requestPolylineSimplification( &abPolyline, 0.1 );
+      Q_EMIT requestPolylineSimplification( &abPolyline, 0.1 );
     }
   }
 }
@@ -244,8 +243,8 @@ void GlobalPlanner::snapPlanAB() {
     bPoint = bPoint.transform( transformation3D );
     abSegment = Segment_3( aPoint, bPoint );
 
-    aPointTransform->setTranslation( convertPoint3ToQVector3D( aPoint ) );
-    bPointTransform->setTranslation( convertPoint3ToQVector3D( bPoint ) );
+    aPointTransform->setTranslation( toQVector3D( aPoint ) );
+    bPointTransform->setTranslation( toQVector3D( bPoint ) );
 
 //    QElapsedTimer timer;
 //    timer.start();
@@ -327,16 +326,16 @@ void GlobalPlanner::openAbLineFromFile( QFile& file ) {
           auto index = uint16_t( 0 );
 
           for( const auto& point : std::get<GeoJsonHelper::LineStringType>( member.second ) ) {
-            auto tmwPoint = convertEigenVector3ToPoint3( tmw->Forward( point ) );
+            auto tmwPoint = toPoint3( tmw->Forward( point ) );
 
             if( index == 0 ) {
               aPoint = tmwPoint;
-              aPointTransform->setTranslation( convertPoint3ToQVector3D( tmwPoint ) );
+              aPointTransform->setTranslation( toQVector3D( tmwPoint ) );
             }
 
             if( index == 1 ) {
               bPoint = tmwPoint;
-              bPointTransform->setTranslation( convertPoint3ToQVector3D( tmwPoint ) );
+              bPointTransform->setTranslation( toQVector3D( tmwPoint ) );
               aPointEntity->setEnabled( true );
               bPointEntity->setEnabled( true );
               abSegment = Segment_3( aPoint, tmwPoint );

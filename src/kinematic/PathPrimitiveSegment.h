@@ -25,7 +25,7 @@ class PathPrimitiveSegment : public PathPrimitive {
     PathPrimitiveSegment()
       : PathPrimitive() {}
 
-    PathPrimitiveSegment( const Segment_2& segment, double implementWidth, bool anyDirection, int32_t passNumber );
+    PathPrimitiveSegment( const Segment_2& segment, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
       return Type::Segment;
@@ -55,7 +55,7 @@ class PathPrimitiveSegment : public PathPrimitive {
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left ) override;
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool left ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveSegment: " << segment << std::endl;

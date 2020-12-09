@@ -59,7 +59,7 @@ class ImplementSectionModel : public QAbstractTableModel {
 
   public:
 
-  public slots:
+  public Q_SLOTS:
     void setDatasource( QNEBlock* block );
 
   private:

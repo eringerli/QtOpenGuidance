@@ -21,8 +21,8 @@
 #include <QtCore/QDebug>
 #include <QtMath>
 
-#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
 TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
 
@@ -262,7 +262,7 @@ void TrailerModel::setProportions() {
 
 }
 
-void TrailerModel::setOffsetHookPointPosition( Eigen::Vector3d position ) {
+void TrailerModel::setOffsetHookPointPosition( const Eigen::Vector3d& position ) {
   m_offsetHookPoint = position;
   setProportions();
 }
@@ -274,23 +274,23 @@ void TrailerModel::setTrackwidth( double trackwidth ) {
   }
 }
 
-void TrailerModel::setPoseTowPoint( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
+void TrailerModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+    m_towPointTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPoseHookPoint( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
+void TrailerModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_towHookTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+    m_towHookTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPosePivotPoint( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
+void TrailerModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-    m_pivotPointTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+    m_pivotPointTransform->setTranslation( toQVector3D( position ) );
 
-    m_rootEntityTransform->setTranslation( convertPoint3ToQVector3D( position ) );
+    m_rootEntityTransform->setTranslation( toQVector3D( position ) );
     m_rootEntityTransform->setRotation( toQQuaternion( orientation ) );
   }
 }

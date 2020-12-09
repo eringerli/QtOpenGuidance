@@ -25,7 +25,7 @@ class PathPrimitiveRay : public PathPrimitive {
     PathPrimitiveRay()
       : PathPrimitive() {}
 
-    PathPrimitiveRay( const Ray_2& ray, bool reverse, double implementWidth, bool anyDirection, int32_t passNumber );
+    PathPrimitiveRay( const Ray_2& ray, const bool reverse, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
       return Type::Ray;
@@ -55,7 +55,7 @@ class PathPrimitiveRay : public PathPrimitive {
     virtual void transform( const Aff_transformation_2& transformation ) override;
 
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left ) override;
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool left ) override;
 
     virtual void print() override {
       std::cout << "PathPrimitiveRay: " << ray << std::endl;

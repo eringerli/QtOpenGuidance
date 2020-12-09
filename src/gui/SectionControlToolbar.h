@@ -37,16 +37,16 @@ class SectionControlToolbar : public QGroupBox {
   public:
     explicit SectionControlToolbar( Implement* implement, QWidget* parent = nullptr );
 
-  signals:
+  Q_SIGNALS:
 
-  public slots:
+  public Q_SLOTS:
     void sectionsChanged();
     void implementChanged( const QPointer<Implement>& );
-    void setDockLocation( Qt::DockWidgetArea area );
+    void setDockLocation( const Qt::DockWidgetArea area );
 
-  private slots:
-    void forceOnOffToggled( bool );
-    void autoToggled( bool );
+  private Q_SLOTS:
+    void forceOnOffToggled( const bool );
+    void autoToggled( const bool );
 
   private:
     QToolButton* addButtonToVector( const QString& name );

@@ -18,8 +18,8 @@
 
 #include "LocalPlanner.h"
 
-#include "../kinematic/cgal.h"
 #include "../helpers/eigenHelper.h"
+#include "../kinematic/cgal.h"
 
 #include "../kinematic/PathPrimitive.h"
 #include "../kinematic/PathPrimitiveLine.h"
@@ -32,7 +32,7 @@ namespace PS = CGAL::Polyline_simplification_2;
 
 #include <dubins/dubins.h>
 
-void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+void LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;
@@ -54,7 +54,7 @@ void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientati
 
         if( lastPrimitive->anyDirection ) {
           double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
-          double steerAngleAbsoluteDegrees = steeringAngleDegrees + qRadiansToDegrees( quaternionToEuler( orientation ).z() );
+          double steerAngleAbsoluteDegrees = steeringAngleDegrees + qRadiansToDegrees( quaternionToTaitBryan( orientation ).z() );
 
           if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
             auto reverse = lastPrimitive->createReverse();
@@ -67,7 +67,7 @@ void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientati
 
         if( plan.plan->empty() ) {
           plan.plan->push_back( lastPrimitive );
-          emit planChanged( plan );
+          Q_EMIT planChanged( plan );
         }
       }
     } else {
@@ -78,7 +78,7 @@ void LocalPlanner::setPose( const Point_3 position, Eigen::Quaterniond orientati
         if( nearestPrimitive == ( plan.plan->cend() - 1 ) ) {
           turningLeft = false;
           turningRight = false;
-          emit resetTurningStateOfDock();
+          Q_EMIT resetTurningStateOfDock();
 
           setPose( position, orientation, options );
         }
@@ -93,7 +93,7 @@ void LocalPlanner::setPlan( const Plan& plan ) {
 }
 
 void LocalPlanner::turnLeftToggled( bool state ) {
-  if( state == true ) {
+  if( state ) {
     bool existingTurn = turningLeft | turningRight;
     turningLeft = true;
     turningRight = false;
@@ -131,7 +131,7 @@ void LocalPlanner::numSkipChanged( int left, int right ) {
 void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
   if( !globalPlan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
-    const double heading = qRadiansToDegrees( quaternionToEuler( orientation ).z() );
+    const double heading = qRadiansToDegrees( quaternionToTaitBryan( orientation ).z() );
 
     if( !changeExistingTurn ) {
       positionTurnStart = position2D;
@@ -162,13 +162,13 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
       offset = -offset;
     }
 
-    emit triggerPlanPose( to3D( positionTurnStart + offset ), orientation, PoseOption::Options() );
+    Q_EMIT triggerPlanPose( toEigenVector( positionTurnStart + offset ), orientation, PoseOption::Options() );
 
     nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
 
     auto perpendicularLine = ( *nearestPrimitive )->perpendicularAtPoint( positionTurnStart );
 
-    Plan::ConstPrimitiveIterator targetLineIt = globalPlan.plan->cend();
+    auto targetLineIt = globalPlan.plan->cend();
 
     if( turningLeft ) {
       targetLineIt = nearestPrimitive + ( searchUp ? leftSkip : -leftSkip );
@@ -200,7 +200,7 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
         PS::Squared_distance_cost cost;
         PS::simplify( polyline.cbegin(), polyline.cend(), cost, PS::Stop_above_cost_threshold( 0.008 ), std::back_inserter( optimizedPolyline ) );
 
-        if( optimizedPolyline.size() ) {
+        if( !optimizedPolyline.empty() ) {
           plan.plan->clear();
 
           for( size_t i = 0, end = optimizedPolyline.size() - 1; i < end; ++i ) {
@@ -221,7 +221,7 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
                                   0, false, 0 ) );
 
           plan.type = Plan::Type::Mixed;
-          emit planChanged( plan );
+          Q_EMIT planChanged( plan );
         }
       }
     }

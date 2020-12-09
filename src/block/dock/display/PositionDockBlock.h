@@ -23,7 +23,6 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -75,29 +74,29 @@ class PositionDockBlock : public ValueDockBlockBase {
     virtual void setFont( const QFont& font ) override {
       widget->setFontOfLabel( font );
     }
-    virtual void setPrecision( int precision ) override {
+    virtual void setPrecision( const int precision ) override {
       widget->precision = precision;
     }
-    virtual void setFieldWidth( int fieldWidth ) override {
+    virtual void setFieldWidth( const int fieldWidth ) override {
       widget->fieldWidth = fieldWidth;
     }
-    virtual void setScale( double scale ) override {
+    virtual void setScale( const double scale ) override {
       widget->scale = scale;
     }
-    virtual void setUnitVisible( bool enabled ) override {
+    virtual void setUnitVisible( const bool enabled ) override {
       widget->unitEnabled = enabled;
     }
     virtual void setUnit( const QString& unit ) override {
       widget->unit = unit;
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
     }
 
-    void setPose( const Point_3 point, const Eigen::Quaterniond, const PoseOption::Options ) {
+    void setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const PoseOption::Options& ) {
       if( wgs84 ) {
         widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
       }
@@ -105,7 +104,7 @@ class PositionDockBlock : public ValueDockBlockBase {
       widget->setValues( point.x(), point.y(), point.z() );
     }
 
-    void setWGS84Position( const Eigen::Vector3d position ) {
+    void setWGS84Position( const Eigen::Vector3d& position ) {
       if( !wgs84 ) {
         widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
       }
@@ -164,8 +163,8 @@ class PositionDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
       }
 
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->setBrush( dockColor );
 

@@ -31,11 +31,11 @@ class NmeaParserHDT : public BlockBase {
       : BlockBase() {
     }
 
-  signals:
+  Q_SIGNALS:
     void orientationChanged( const Eigen::Quaterniond& );
 
 
-  public slots:
+  public Q_SLOTS:
     void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
@@ -109,9 +109,9 @@ class NmeaParserHDT : public BlockBase {
               // skip first field
               ++nmeaFileIterator;
 
-              emit orientationChanged( Eigen::Quaterniond(
-                                               Eigen::AngleAxisd( qDegreesToRadians( nmeaFileIterator->toDouble() ),
-                                                   Eigen::Vector3d::UnitZ() ) ) );
+              Q_EMIT orientationChanged( Eigen::Quaterniond(
+                                                 Eigen::AngleAxisd( qDegreesToRadians( nmeaFileIterator->toDouble() ),
+                                                     Eigen::Vector3d::UnitZ() ) ) );
             }
           }
         }

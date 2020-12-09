@@ -46,11 +46,11 @@ void GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
     enabled = true;
   }
 
-  emit simulatorChanged( enabled );
+  Q_EMIT simulatorChanged( enabled );
 }
 
 void GuidanceToolbar::on_pbSettings_clicked() {
-  emit toggleSettings();
+  Q_EMIT toggleSettings();
 }
 
 void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {

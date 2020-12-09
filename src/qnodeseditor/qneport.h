@@ -105,7 +105,7 @@ class QNEPortHelper : public QObject {
       QObject::connect( port->label->document(), &QTextDocument::contentsChanged, this, &QNEPortHelper::contentsChanged );
     }
 
-  public slots:
+  public Q_SLOTS:
     void contentsChanged() {
       bool oldState = port->label->document()->blockSignals( true );
       port->contentsChanged();

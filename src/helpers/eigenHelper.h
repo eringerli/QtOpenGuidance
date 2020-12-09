@@ -27,24 +27,24 @@
 
 #include <QQuaternion>
 
-inline Eigen::Quaterniond eulerToQuaternion( const double roll, const double pitch, const double yaw ) {
+inline Eigen::Quaterniond taitBryanToQuaternion( const double roll, const double pitch, const double yaw ) {
   Eigen::EulerAnglesXYZd euler( roll, pitch, yaw );
 
   return euler;
 }
 
-inline Eigen::Quaterniond eulerToQuaternion( const Eigen::Vector3d& eulers ) {
+inline Eigen::Quaterniond taitBryanToQuaternion( const Eigen::Vector3d& eulers ) {
   Eigen::EulerAnglesXYZd euler( eulers );
 
   return euler;
 }
 
-inline Eigen::Vector3d quaternionToEuler( const Eigen::Quaterniond& quaternion ) {
+inline Eigen::Vector3d quaternionToTaitBryan( const Eigen::Quaterniond& quaternion ) {
   Eigen::EulerAnglesXYZd euler( quaternion );
   return euler.angles();
 }
 
-inline Eigen::Quaterniond toEigenQuaternion( const QQuaternion& quaternion ) {
+inline Eigen::Quaterniond toEigenQuaternion( QQuaternion quaternion ) {
   return Eigen::Quaterniond( quaternion.scalar(), quaternion.x(), quaternion.y(), quaternion.z() );
 }
 
@@ -52,7 +52,7 @@ inline QQuaternion toQQuaternion( const Eigen::Quaterniond& quaternion ) {
   return QQuaternion( quaternion.w(), quaternion.x(), quaternion.y(), quaternion.z() );
 }
 
-inline Eigen::Vector3d toEigenVector3( const QVector3D& vec ) {
+inline Eigen::Vector3d toEigenVector( QVector3D vec ) {
   return Eigen::Vector3d( vec.x(), vec.y(), vec.z() );
 }
 

@@ -25,7 +25,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -68,17 +67,17 @@ class LocalPlanner : public BlockBase {
       widget->deleteLater();
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
     }
 
-    void setPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options );
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
     void setPlan( const Plan& plan );
 
-    void setSteeringAngle( double steeringAngle ) {
+    void setSteeringAngle( const double steeringAngle ) {
       this->steeringAngleDegrees = steeringAngle;
     }
 
@@ -90,21 +89,21 @@ class LocalPlanner : public BlockBase {
       this->minRadius = minRadius;
     }
 
-    void setForceCurrentPath( bool enabled ) {
+    void setForceCurrentPath( const bool enabled ) {
       forceCurrentPath = enabled;
     }
 
-    void turnLeftToggled( bool state );
-    void turnRightToggled( bool state );
-    void numSkipChanged( int left, int right );
+    void turnLeftToggled( const bool state );
+    void turnRightToggled( const bool state );
+    void numSkipChanged( const int left, const int right );
 
-  signals:
+  Q_SIGNALS:
     void planChanged( const Plan& );
-    void triggerPlanPose( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options );
+    void triggerPlanPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
     void resetTurningStateOfDock();
 
   public:
-    Point_3 position = Point_3( 0, 0, 0 );
+    Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
     Eigen::Quaterniond orientation = Eigen::Quaterniond();
     double steeringAngleDegrees = 0;
     double pathHysteresis = 0.5;
@@ -162,14 +161,14 @@ class LocalPlannerFactory : public BlockFactory {
 
       mainWindow->addDockWidget( object->dock, location );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
       b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( bool ) ) ) );
+      b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( const bool ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
 
       return b;

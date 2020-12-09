@@ -26,7 +26,7 @@ class ImplementSection {
 
   public:
     ImplementSection() {}
-    ImplementSection( double overlapLeft, double widthOfSection, double overlapRight )
+    ImplementSection( const double overlapLeft, const double widthOfSection, const double overlapRight )
       : overlapLeft( overlapLeft ), widthOfSection( widthOfSection ), overlapRight( overlapRight ) {}
 
   public:
@@ -46,11 +46,11 @@ class ImplementSection {
       return stateOfSection;
     }
 
-    void setState( States states ) {
+    void setState( const States states ) {
       stateOfSection = states;
     }
 
-    void setState( States states, bool enabled ) {
+    void setState( const States states, const bool enabled ) {
       if( enabled ) {
         addState( states );
       } else {
@@ -58,11 +58,11 @@ class ImplementSection {
       }
     }
 
-    void addState( States states ) {
+    void addState( const States states ) {
       stateOfSection |= states;
     }
 
-    void removeState( States states ) {
+    void removeState( const States states ) {
       stateOfSection &= ~states;
     }
 

@@ -34,16 +34,16 @@ class GuidanceToolbar : public QGroupBox {
     explicit GuidanceToolbar( QWidget* parent = nullptr );
     ~GuidanceToolbar();
 
-    void cbSimulatorSetChecked( bool enabled );
+    void cbSimulatorSetChecked( const bool enabled );
 
-  private slots:
+  private Q_SLOTS:
     void on_cbSimulator_stateChanged( int arg1 );
 
     void on_pbSettings_clicked();
 
-  signals:
+  Q_SIGNALS:
     void toggleSettings();
-    void simulatorChanged( bool );
+    void simulatorChanged( const bool );
 
   public:
     QMenu* menu = nullptr;

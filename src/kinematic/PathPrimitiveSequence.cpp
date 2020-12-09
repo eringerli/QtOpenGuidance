@@ -17,8 +17,8 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "PathPrimitiveSequence.h"
-#include "PathPrimitiveRay.h"
 #include "PathPrimitiveLine.h"
+#include "PathPrimitiveRay.h"
 #include "PathPrimitiveSegment.h"
 
 #include <QDebug>
@@ -90,8 +90,8 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createReverse() {
   std::vector<std::shared_ptr<PathPrimitive>> sequenceNew;
   std::vector<Line_2> bisectorsNew;
 
-  for( auto it = sequence.cbegin(), end = sequence.cend(); it != end; ++it ) {
-    sequenceNew.push_back( ( *it )->createReverse() );
+  for( const auto& it : sequence ) {
+    sequenceNew.push_back( it->createReverse() );
   }
 
   createBisectors( std::back_inserter( bisectorsNew ), sequenceNew );
@@ -125,8 +125,8 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
   std::vector<Line_2> bisectorsNew;
 //  std::copy( bisectors.cbegin(), bisectors.cend(), std::back_inserter( bisectorsNew ) );
 
-  for( auto it = sequence.cbegin(), end = sequence.cend(); it != end; ++it ) {
-    primitives.push_back( ( *it )->createNextPrimitive( left ) );
+  for( const auto& it : sequence ) {
+    primitives.push_back( it->createNextPrimitive( left ) );
   }
 
   createBisectors( std::back_inserter( bisectorsNew ), primitives );
@@ -195,11 +195,11 @@ void PathPrimitiveSequence::orderBisectors( std::vector<Line_2>& bisectorsToOrde
   for( size_t i = 0; i < bisectorsToOrder.size(); ++i ) {
     Point_2 pointToTest;
 
-    if( auto ray = primitives.at( i )->castToRay() ) {
+    if( const auto* ray = primitives.at( i )->castToRay() ) {
       pointToTest = ray->ray.point( 1 );
     }
 
-    if( auto segment = primitives.at( i )->castToSegment() ) {
+    if( const auto* segment = primitives.at( i )->castToSegment() ) {
       pointToTest = CGAL::midpoint( segment->segment.source(), segment->segment.target() );
     }
 
@@ -238,11 +238,7 @@ double PathPrimitiveSequence::distanceToPointSquared( const Point_2 point ) {
 }
 
 bool PathPrimitiveSequence::isOn( const Point_2 /*point*/ ) {
-  if( sequence.empty() ) {
-    return false;
-  }
-
-  return true;
+  return !sequence.empty();
 }
 
 bool PathPrimitiveSequence::leftOf( const Point_2 point ) {

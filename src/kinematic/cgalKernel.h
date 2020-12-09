@@ -47,6 +47,7 @@ typedef Epick::Line_3                                           Line_3;
 typedef Epick::Circle_2                                         Circle_2;
 typedef Epick::Iso_rectangle_2                                  Iso_rectangle_2;
 typedef Epick::Direction_2                                      Direction_2;
+typedef Epick::Plane_3                                          Plane_3;
 
 #include <CGAL/Bbox_2.h>
 typedef CGAL::Bbox_2                                            Bbox_2;

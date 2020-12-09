@@ -42,7 +42,6 @@
 
 #include "../gui/FieldsOptimitionToolbar.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -68,12 +67,12 @@ class FieldManager : public BlockBase {
   private:
     void alphaShape();
 
-  public slots:
-    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options );
+  public Q_SLOTS:
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
-    void setPoseLeftEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options );
+    void setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options );
 
-    void setPoseRightEdge( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options );
+    void setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options );
 
     void openField();
     void openFieldFromFile( QFile& file );
@@ -85,7 +84,7 @@ class FieldManager : public BlockBase {
     void saveField();
     void saveFieldToFile( QFile& file );
 
-    void setContinousRecord( bool enabled ) {
+    void setContinousRecord( const bool enabled ) {
       if( recordContinous == true && enabled == false ) {
         recalculateField();
       }
@@ -96,7 +95,7 @@ class FieldManager : public BlockBase {
       recordNextPoint = true;
     }
 
-    void recordOnEdgeOfImplementChanged( bool right ) {
+    void recordOnEdgeOfImplementChanged( const bool right ) {
       recordOnRightEdgeOfImplement = right;
     }
 
@@ -104,40 +103,45 @@ class FieldManager : public BlockBase {
       alphaShape();
     }
 
-    void setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType alphaType, double customAlpha, double maxDeviation, double distanceBetweenConnectPoints ) {
+    void setRecalculateFieldSettings( const FieldsOptimitionToolbar::AlphaType alphaType,
+                                      const double customAlpha,
+                                      const double maxDeviation,
+                                      const double distanceBetweenConnectPoints ) {
       this->alphaType = alphaType;
       this->customAlpha = customAlpha;
       this->maxDeviation = maxDeviation;
       this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
     }
 
-    void setRunNumber( uint32_t runNumber ) {
+    void setRunNumber( const uint32_t runNumber ) {
       this->runNumber = runNumber;
     }
 
-    void alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2> field, double alpha );
+    void alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_2>& field, const double alpha );
 
-    void fieldStatisticsChanged( double pointsRecorded, double pointsGeneratedForFieldBoundary, double pointsInFieldBoundary ) {
-      emit pointsRecordedChanged( pointsRecorded );
-      emit pointsGeneratedForFieldBoundaryChanged( pointsGeneratedForFieldBoundary );
-      emit pointsInFieldBoundaryChanged( pointsInFieldBoundary );
+    void fieldStatisticsChanged( const double pointsRecorded,
+                                 const double pointsGeneratedForFieldBoundary,
+                                 const double pointsInFieldBoundary ) {
+      Q_EMIT pointsRecordedChanged( pointsRecorded );
+      Q_EMIT pointsGeneratedForFieldBoundaryChanged( pointsGeneratedForFieldBoundary );
+      Q_EMIT pointsInFieldBoundaryChanged( pointsInFieldBoundary );
     }
 
-  signals:
+  Q_SIGNALS:
     void fieldChanged( std::shared_ptr<Polygon_with_holes_2> );
 
-    void alphaChanged( double optimal, double solid );
-    void requestFieldOptimition( uint32_t runNumber,
+    void alphaChanged( const double optimal, const double solid );
+    void requestFieldOptimition( const uint32_t runNumber,
                                  std::vector<Epick::Point_2>* points,
-                                 FieldsOptimitionToolbar::AlphaType alphaType,
-                                 double customAlpha,
-                                 double maxDeviation,
-                                 double distanceBetweenConnectPoints );
+                                 const FieldsOptimitionToolbar::AlphaType alphaType,
+                                 const double customAlpha,
+                                 const double maxDeviation,
+                                 const double distanceBetweenConnectPoints );
     void requestNewRunNumber();
 
-    void pointsRecordedChanged( double );
-    void pointsGeneratedForFieldBoundaryChanged( double );
-    void pointsInFieldBoundaryChanged( double );
+    void pointsRecordedChanged( const double );
+    void pointsGeneratedForFieldBoundaryChanged( const double );
+    void pointsInFieldBoundaryChanged( const double );
 
   public:
     Point_3 position = Point_3( 0, 0, 0 );
@@ -157,9 +161,6 @@ class FieldManager : public BlockBase {
     bool recordOnRightEdgeOfImplement = false;
 
   private:
-    Qt3DCore::QEntity* m_baseEntity = nullptr;
-    Qt3DCore::QTransform* m_baseTransform = nullptr;
-
     FieldsOptimitionToolbar::AlphaType alphaType = FieldsOptimitionToolbar::AlphaType::Optimal;
     double customAlpha = 10;
     double maxDeviation = 0.1;
@@ -172,6 +173,8 @@ class FieldManager : public BlockBase {
     std::shared_ptr<Polygon_with_holes_2> currentField;
     double currentAlpha = 0;
 
+    Qt3DCore::QEntity* m_baseEntity = nullptr;
+    Qt3DCore::QTransform* m_baseTransform = nullptr;
     Qt3DCore::QEntity* m_pointsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity = nullptr;
     Qt3DCore::QEntity* m_segmentsEntity2 = nullptr;
@@ -211,15 +214,15 @@ class FieldManagerFactory : public BlockFactory {
       auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Points Generated" ), QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Points Generated" ), QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( const double ) ) ) );
 
       return b;
     }

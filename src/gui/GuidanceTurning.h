@@ -34,7 +34,7 @@ class GuidanceTurning : public QGroupBox {
     explicit GuidanceTurning( QWidget* parent = nullptr );
     ~GuidanceTurning();
 
-  private slots:
+  private Q_SLOTS:
     void on_pbLeft_toggled( bool checked );
     void on_pbRight_toggled( bool checked );
     void on_pbPlusRight_clicked();
@@ -45,13 +45,13 @@ class GuidanceTurning : public QGroupBox {
     void on_pbLeft_pressed();
     void on_pbRight_pressed();
 
-  public slots:
+  public Q_SLOTS:
     void resetTurningState();
 
-  signals:
-    void turnLeftToggled( bool state );
-    void turnRightToggled( bool state );
-    void numSkipChanged( int left, int right );
+  Q_SIGNALS:
+    void turnLeftToggled( const bool state );
+    void turnRightToggled( const bool state );
+    void numSkipChanged( const int left, const int right );
 
   private:
     Ui::GuidanceTurning* ui = nullptr;

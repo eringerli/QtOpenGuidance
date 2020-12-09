@@ -32,7 +32,6 @@
 
 #include "FixedKinematicPrimitive.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -43,18 +42,18 @@ class TrailerKinematicPrimitive : public BlockBase {
     explicit TrailerKinematicPrimitive()
       : BlockBase() {}
 
-  public slots:
-    void setOffset( Eigen::Vector3d offset ) {
+  public Q_SLOTS:
+    void setOffset( const Eigen::Vector3d& offset ) {
       fixedKinematic.setOffset( offset );
     }
-    void setMaxJackknifeAngle( double maxJackknifeAngle ) {
+    void setMaxJackknifeAngle( const double maxJackknifeAngle ) {
       maxJackknifeAngleRad = qDegreesToRadians( maxJackknifeAngle );
     }
-    void setMaxAngle( double maxAngle ) {
+    void setMaxAngle( const double maxAngle ) {
       maxAngleRad = qDegreesToRadians( maxAngle );
     }
 
-    void setPose( const Point_3 position, const Eigen::Quaterniond rotation, const PoseOption::Options options ) {
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
       if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         orientation = Eigen::Quaterniond();
       } else {
@@ -67,7 +66,7 @@ class TrailerKinematicPrimitive : public BlockBase {
                                           );
 
         // the angle between tractor and trailer > maxAngleToTowingKinematic -> reset orientation to the one from the tractor
-        double angleDifferenceRad = quaternionToEuler( rotation.inverse() * orientationTmp ).z();
+        double angleDifferenceRad = quaternionToTaitBryan( rotation.inverse() * orientationTmp ).z();
 
         if( std::abs( angleDifferenceRad ) < maxJackknifeAngleRad ) {
           // limit the angle to maxAngle
@@ -84,14 +83,14 @@ class TrailerKinematicPrimitive : public BlockBase {
       fixedKinematic.setPose( position, orientation, options );
       positionCalculated = fixedKinematic.positionCalculated;
 
-      emit poseChanged( positionCalculated, orientation, options );
+      Q_EMIT poseChanged( positionCalculated, orientation, options );
     }
 
-  signals:
-    void poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options );
+  Q_SIGNALS:
+    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
   public:
-    Point_3 positionCalculated = Point_3( -1, 0, 0 );
+    Eigen::Vector3d positionCalculated = Eigen::Vector3d( -1, 0, 0 );
     Eigen::Quaterniond orientation =  Eigen::Quaterniond();
 
     double maxJackknifeAngleRad = qDegreesToRadians( double( 120 ) );
@@ -119,12 +118,12 @@ class TrailerKinematicPrimitiveFactory : public BlockFactory {
       auto* obj = new TrailerKinematicPrimitive;
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( const Eigen::Vector3d& ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       return b;
     }

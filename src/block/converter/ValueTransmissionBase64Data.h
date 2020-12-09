@@ -30,13 +30,13 @@ class ValueTransmissionBase64Data : public ValueTransmissionBase {
   public:
     explicit ValueTransmissionBase64Data( int id ) : ValueTransmissionBase( id ) {}
 
-  public slots:
+  public Q_SLOTS:
     void setData( const QByteArray& data ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "data" )] = QString( data.toBase64( QByteArray::OmitTrailingEquals ) );
+      map[QStringLiteral( "data" )] = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
 
-      emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
+      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
 
     void dataReceive( const QByteArray& data ) {
@@ -45,11 +45,11 @@ class ValueTransmissionBase64Data : public ValueTransmissionBase {
       auto cbor = QCborValue::fromCbor( reader );
 
       if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        emit dataChanged( QByteArray::fromBase64( cbor[QStringLiteral( "data" )].toString().toLatin1() ) );
+        Q_EMIT dataChanged( QByteArray::fromBase64( cbor[QStringLiteral( "data" )].toString().toLatin1() ) );
       }
     }
 
-  signals:
+  Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void dataChanged( const QByteArray& );
 

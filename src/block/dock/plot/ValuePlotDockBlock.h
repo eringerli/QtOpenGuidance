@@ -55,40 +55,40 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
       widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
 
       QSharedPointer<QCPAxisTickerDateTime> timeTicker( new QCPAxisTickerDateTime );
-      timeTicker->setDateTimeFormat( "hh:mm:ss" );
+      timeTicker->setDateTimeFormat( QStringLiteral( "hh:mm:ss" ) );
       widget->getQCustomPlotWidget()->xAxis->setTicker( timeTicker );
     }
 
     ~ValuePlotDockBlock() {
     }
 
-  public slots:
-    void addValue0( double value ) {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+  public Q_SLOTS:
+    void addValue0( const double value ) {
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, value );
 
       rescale();
     }
 
-    void addValue1( double value ) {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+    void addValue1( const double value ) {
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, value );
 
       rescale();
     }
 
-    void addValue2( double value ) {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+    void addValue2( const double value ) {
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, value );
 
       rescale();
     }
 
-    void addValue3( double value ) {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+    void addValue3( const double value ) {
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       widget->getQCustomPlotWidget()->graph( 3 )->addData( currentSecsSinceEpoch, value );
 
@@ -97,7 +97,7 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
 
   private:
     void rescale() {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       if( autoScrollEnabled ) {
         widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
@@ -155,10 +155,10 @@ class ValuePlotDockBlockFactory : public BlockFactory {
 
       QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-      b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 2" ), QLatin1String( SLOT( addValue2( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 3" ), QLatin1String( SLOT( addValue3( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Number 2" ), QLatin1String( SLOT( addValue2( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Number 3" ), QLatin1String( SLOT( addValue3( const double ) ) ) );
 
       b->setBrush( dockColor );
 

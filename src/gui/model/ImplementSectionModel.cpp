@@ -49,7 +49,7 @@ QVariant ImplementSectionModel::headerData( int section, Qt::Orientation orienta
 
 bool ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -113,19 +113,19 @@ bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& v
           case 0:
             implement->sections[index.row() + 1]->overlapLeft = qvariant_cast<double>( value );
             block->emitConfigSignals();
-            emit dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector<int>() << role );
             return true;
 
           case 1:
             implement->sections[index.row() + 1]->widthOfSection = qvariant_cast<double>( value );
             block->emitConfigSignals();
-            emit dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector<int>() << role );
             return true;
 
           case 2:
             implement->sections[index.row() + 1]->overlapRight = qvariant_cast<double>( value );
             block->emitConfigSignals();
-            emit dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector<int>() << role );
             return true;
         }
       }

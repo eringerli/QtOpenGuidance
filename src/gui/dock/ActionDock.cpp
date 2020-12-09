@@ -48,21 +48,21 @@ const QString ActionDock::getTheme() {
   return theme;
 }
 
-void ActionDock::setState( bool state ) {
+void ActionDock::setState( const bool state ) {
   if( ui->pbAction->isCheckable() ) {
     ui->pbAction->setChecked( state );
   }
 }
 
-void ActionDock::setCheckable( bool checkable ) {
+void ActionDock::setCheckable( const bool checkable ) {
   ui->pbAction->setCheckable( checkable );
 }
 
-void ActionDock::setTheme( const QString theme ) {
+void ActionDock::setTheme( const QString& theme ) {
   this->theme = theme;
   ui->pbAction->setIcon( QIcon::fromTheme( theme ) );
 }
 
 void ActionDock::on_pbAction_clicked( bool checked ) {
-  emit action( checked );
+  Q_EMIT action( checked );
 }

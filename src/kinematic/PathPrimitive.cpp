@@ -27,33 +27,37 @@
 const PathPrimitiveLine* PathPrimitive::castToLine() {
   if( getType() == Type::Line ) {
     return static_cast<PathPrimitiveLine*>( this );
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
+
 }
 
 const PathPrimitiveRay* PathPrimitive::castToRay() {
   if( getType() == Type::Ray ) {
     return static_cast<PathPrimitiveRay*>( this );
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
+
 }
 
 const PathPrimitiveSegment* PathPrimitive::castToSegment() {
   if( getType() == Type::Segment ) {
     return static_cast<PathPrimitiveSegment*>( this );
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
+
 }
 
 const PathPrimitiveSequence* PathPrimitive::castToSequence() {
   if( getType() == Type::Sequence ) {
     return static_cast<PathPrimitiveSequence*>( this );
-  } else {
-    return nullptr;
   }
+
+  return nullptr;
+
 }
 
 void PathPrimitive::setSource( const Point_2 ) {}

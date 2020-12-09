@@ -31,7 +31,6 @@
 #include "../../BlockBase.h"
 #include "PlotDockBlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -71,32 +70,32 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
       widget->getQCustomPlotWidget()->legend->setVisible( true );
 
       QSharedPointer<QCPAxisTickerDateTime> timeTicker( new QCPAxisTickerDateTime );
-      timeTicker->setDateTimeFormat( "hh:mm:ss" );
+      timeTicker->setDateTimeFormat( QStringLiteral( "hh:mm:ss" ) );
       widget->getQCustomPlotWidget()->xAxis->setTicker( timeTicker );
     }
 
     ~OrientationPlotDockBlock() {
     }
 
-  public slots:
-    void setOrientation( Eigen::Quaterniond orientation ) {
-      auto eulerAngles = quaternionToEuler( orientation );
+  public Q_SLOTS:
+    void setOrientation( const Eigen::Quaterniond& orientation ) {
+      auto taitBryan = quaternionToTaitBryan( orientation );
       double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
-      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.y() ) );
-      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.x() ) );
-      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( eulerAngles.z() ) );
+      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.y() ) );
+      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.x() ) );
+      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.z() ) );
 
       rescale();
     }
 
-    void setPose( const Point_3, const Eigen::Quaterniond orientation, const PoseOption::Options ) {
+    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& ) {
       setOrientation( orientation );
     }
 
   private:
     void rescale() {
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
       if( autoScrollEnabled ) {
         widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
@@ -154,8 +153,8 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
 
       QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->setBrush( dockColor );
 

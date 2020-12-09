@@ -106,7 +106,7 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
 }
 
 bool CgalWorker::returnEarly( uint32_t runNumber ) {
-  auto cgalThread = qobject_cast<CgalThread*>( thread() );
+  auto* cgalThread = qobject_cast<CgalThread*>( thread() );
 
   if( cgalThread != nullptr ) {
     QMutexLocker lock( &cgalThread->mutex );
@@ -131,7 +131,7 @@ bool CgalWorker::isCollinear( std::vector<Point_2>* pointsPointer, bool emitSign
   }
 
   if( emitSignal ) {
-    emit isCollinearResult( collinearity );
+    Q_EMIT isCollinearResult( collinearity );
   }
 
   return collinearity;
@@ -146,7 +146,7 @@ void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double dist
       const double distance = std::sqrt( CGAL::squared_distance( *last, *it ) );
 
       if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
-        std::size_t numPoints = std::size_t( distance / distanceBetweenConnectPoints );
+        auto numPoints = std::size_t( distance / distanceBetweenConnectPoints );
 
         if( numPoints > 1000 ) {
           numPoints = 1000;
@@ -163,18 +163,18 @@ void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double dist
   }
 
   if( emitSignal ) {
-    emit connectPointsResult( pointsPointer );
+    Q_EMIT connectPointsResult( pointsPointer );
   }
 }
 
 void CgalWorker::simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation ) {
   PS::Squared_distance_cost cost;
 
-  auto polylineOut = new std::vector<Point_2>;
+  auto* polylineOut = new std::vector<Point_2>;
 
   PS::simplify( pointsPointer->begin(), pointsPointer->end(), cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ), std::back_inserter( *polylineOut ) );
 
-  emit simplifyPolylineResult( polylineOut );
+  Q_EMIT simplifyPolylineResult( polylineOut );
 }
 
 void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal ) {
@@ -183,16 +183,16 @@ void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDevi
   *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
 
   if( emitSignal ) {
-    emit simplifyPolygonResult( out_poly );
+    Q_EMIT simplifyPolygonResult( out_poly );
   }
 }
 
-void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
+void CgalWorker::fieldOptimitionWorker( const uint32_t runNumber,
                                         std::vector<Point_2>* pointsPointer,
-                                        FieldsOptimitionToolbar::AlphaType alphaType,
-                                        double customAlpha,
-                                        double maxDeviation,
-                                        double distanceBetweenConnectPoints ) {
+                                        const FieldsOptimitionToolbar::AlphaType alphaType,
+                                        const double customAlpha,
+                                        const double maxDeviation,
+                                        const double distanceBetweenConnectPoints ) {
 
   QScopedPointer<std::vector<Point_2>> points( pointsPointer );
 
@@ -200,7 +200,7 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
     return;
   }
 
-  double numPointsRecorded = double( points->size() );
+  auto numPointsRecorded = double( points->size() );
 
   // check for collinearity: if all points are collinear, you can't calculate a triangulation and it crashes
   if( !isCollinear( pointsPointer ) ) {
@@ -222,7 +222,7 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
     double optimalAlpha = CGAL::to_double( *alphaShape.find_optimal_alpha( 1 ) );
     double solidAlpha = CGAL::to_double( alphaShape.find_alpha_solid() );
 
-    emit alphaChanged( optimalAlpha, solidAlpha );
+    Q_EMIT alphaChanged( optimalAlpha, solidAlpha );
 
     if( returnEarly( runNumber ) ) {
       return;
@@ -247,7 +247,7 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
       return;
     }
 
-    auto out_poly = new Polygon_with_holes_2();
+    auto* out_poly = new Polygon_with_holes_2();
 
     alphaToPolygon( alphaShape, *out_poly );
 
@@ -265,10 +265,10 @@ void CgalWorker::fieldOptimitionWorker( uint32_t runNumber,
     {
       CGAL::set_pretty_mode( std::cout );
 
-      emit fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
+      Q_EMIT fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
     }
 
-    emit alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
+    Q_EMIT alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
   }
 }
 

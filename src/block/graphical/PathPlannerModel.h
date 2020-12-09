@@ -43,7 +43,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -86,9 +85,9 @@ class PathPlannerModel : public BlockBase {
         viewBox = valuesObject[QStringLiteral( "viewBox" )].toDouble( 50 );
         individualSegmentColor = valuesObject[QStringLiteral( "individualSegmentColor" )].toBool( false );
         individualRayColor = valuesObject[QStringLiteral( "individualRayColor" )].toBool( false );
-        linesColor = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( "#00ff00" ) );
-        segmentsColor = QColor( valuesObject[QStringLiteral( "segmentColor" )].toString( "#00ff00" ) );
-        raysColor = QColor( valuesObject[QStringLiteral( "rayColor" )].toString( "#00ff00" ) );
+        linesColor = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+        segmentsColor = QColor( valuesObject[QStringLiteral( "segmentColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+        raysColor = QColor( valuesObject[QStringLiteral( "rayColor" )].toString( QStringLiteral( "#00ff00" ) ) );
 
         refreshColors();
       }
@@ -96,8 +95,8 @@ class PathPlannerModel : public BlockBase {
 
     void refreshColors();
 
-  public slots:
-    void setVisible( bool visible ) {
+  public Q_SLOTS:
+    void setVisible( const bool visible ) {
       baseEntity->setEnabled( visible );
     }
 
@@ -105,10 +104,10 @@ class PathPlannerModel : public BlockBase {
       this->plan = plan;
     }
 
-    void setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options );
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
   public:
-    Point_3 position = Point_3( 0, 0, 0 );
+    Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
     Eigen::Quaterniond orientation = Eigen::Quaterniond();
 
     bool visible = true;
@@ -165,7 +164,7 @@ class PathPlannerModelFactory : public BlockFactory {
       auto* obj = new PathPlannerModel( rootEntity );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
       b->setBrush( modelColor );

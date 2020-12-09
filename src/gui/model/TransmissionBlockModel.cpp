@@ -73,7 +73,7 @@ Qt::ItemFlags TransmissionBlockModel::flags( const QModelIndex& index ) const {
 
 bool TransmissionBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
-    emit headerDataChanged( orientation, section, section );
+    Q_EMIT headerDataChanged( orientation, section, section );
     return true;
   }
 
@@ -109,15 +109,15 @@ QVariant TransmissionBlockModel::data( const QModelIndex& index, int role ) cons
                   return block->getName();
 
                 case 1: {
-                    if( qobject_cast<ValueTransmissionBase64Data*>( object ) ) {
+                    if( qobject_cast<ValueTransmissionBase64Data*>( object ) != nullptr ) {
                       return QStringLiteral( "Data" );
                     }
 
-                    if( qobject_cast<ValueTransmissionNumber*>( object ) ) {
+                    if( qobject_cast<ValueTransmissionNumber*>( object ) != nullptr ) {
                       return QStringLiteral( "Number" );
                     }
 
-                    if( qobject_cast<ValueTransmissionQuaternion*>( object ) ) {
+                    if( qobject_cast<ValueTransmissionQuaternion*>( object ) != nullptr ) {
                       return QStringLiteral( "Quaternion" );
                     }
 
@@ -157,22 +157,22 @@ bool TransmissionBlockModel::setData( const QModelIndex& index, const QVariant& 
           switch( index.column() ) {
             case 0:
               block->setName( qvariant_cast<QString>( value ) );
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 2:
               object->id = value.toString().toInt();
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 3:
               object->timeoutTimeMs = value.toString().toInt();
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             case 4:
               object->repeatTimeMs = value.toString().toInt();
-              emit dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
               return true;
 
             default:

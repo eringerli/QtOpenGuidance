@@ -44,7 +44,7 @@ class SliderDockBlock : public BlockBase {
     ~SliderDockBlock();
 
     virtual void emitConfigSignals() override {
-      emit valueChanged( widget->getValue() );
+      Q_EMIT valueChanged( widget->getValue() );
     }
 
     virtual void toJSON( QJsonObject& json ) override {
@@ -104,18 +104,18 @@ class SliderDockBlock : public BlockBase {
       }
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
     }
 
-    void setValue( double value ) {
+    void setValue( const double value ) {
       widget->setValue( value );
     }
 
-  signals:
-    void valueChanged( double );
+  Q_SIGNALS:
+    void valueChanged( const double );
 
   public:
     SliderDock* widget = nullptr;
@@ -168,7 +168,7 @@ class SliderDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstSliderValueDock );
       }
 
-      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( const double ) ) ) );
 
       b->setBrush( inputDockColor );
 

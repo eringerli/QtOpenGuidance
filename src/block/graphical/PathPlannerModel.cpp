@@ -26,14 +26,14 @@
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
+#include <Qt3DRender/QAttribute>
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QTexture>
 #include <Qt3DRender/QTextureWrapMode>
-#include <Qt3DRender/QAttribute>
 
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QText2DEntity>
 #include <Qt3DExtras/QTextureMaterial>
 
@@ -56,14 +56,13 @@
 #include "../kinematic/PathPrimitiveSegment.h"
 #include "../kinematic/PathPrimitiveSequence.h"
 
-#include <QVector>
 #include <QSharedPointer>
+#include <QVector>
 #include <utility>
 
 
 PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity )
-  : BlockBase(),
-    rootEntity( rootEntity ) {
+  : rootEntity( rootEntity ) {
 
   baseEntity = new Qt3DCore::QEntity( rootEntity );
 
@@ -124,7 +123,7 @@ void PathPlannerModel::refreshColors() {
   bisectorsMaterial->setAmbient( bisectorsColor );
 }
 
-void PathPlannerModel::setPose( const Point_3 position, const Eigen::Quaterniond orientation, const PoseOption::Options options ) {
+void PathPlannerModel::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
   if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
     this->position = position;
     this->orientation = orientation;

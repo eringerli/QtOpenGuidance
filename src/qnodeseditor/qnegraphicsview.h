@@ -42,7 +42,7 @@ class QNEGraphicsView : public QGraphicsView {
       setDragMode( QGraphicsView::ScrollHandDrag );
     }
 
-  public slots:
+  public Q_SLOTS:
     void zoomIn() {
       scale( 1 + zoomFactor, 1 + zoomFactor );
     }

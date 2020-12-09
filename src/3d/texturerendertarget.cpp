@@ -3,7 +3,7 @@
 #include "texturerendertarget.h"
 
 TextureRenderTarget::TextureRenderTarget( Qt3DCore::QNode* parent,
-    const QSize& size,
+    QSize size,
     Qt3DRender::QRenderTargetOutput::AttachmentPoint attatchmentPoint ) :
   Qt3DRender::QRenderTarget( parent ),
   size( size ) {
@@ -43,7 +43,7 @@ Qt3DRender::QTexture2D* TextureRenderTarget::getTexture() {
   return texture;
 }
 
-void TextureRenderTarget::setSize( const QSize& size ) {
+void TextureRenderTarget::setSize( QSize size ) {
   this->size = size;
   texture->setSize( size.width(), size.height() );
 }

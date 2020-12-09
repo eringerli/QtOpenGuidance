@@ -33,7 +33,7 @@ class CameraToolbar : public QGroupBox {
     explicit CameraToolbar( QWidget* parent = nullptr );
     ~CameraToolbar();
 
-  private slots:
+  private Q_SLOTS:
     void on_pbUp_clicked();
 
     void on_pbDown_clicked();
@@ -50,7 +50,7 @@ class CameraToolbar : public QGroupBox {
 
     void on_comboBox_currentIndexChanged( int index );
 
-  signals:
+  Q_SIGNALS:
     void zoomIn();
     void zoomOut();
     void tiltUp();

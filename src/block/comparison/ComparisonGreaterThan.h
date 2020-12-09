@@ -32,7 +32,7 @@ class ComparisonGreaterThan : public BlockBase {
       : BlockBase() {}
 
     void emitConfigSignals() override {
-      emit stateChanged( result );
+      Q_EMIT stateChanged( result );
     }
 
     void setValueA( double number ) {
@@ -48,10 +48,10 @@ class ComparisonGreaterThan : public BlockBase {
   private:
     void operation() {
       result = numberA > numberB;
-      emit stateChanged( result );
+      Q_EMIT stateChanged( result );
     }
 
-  signals:
+  Q_SIGNALS:
     void stateChanged( bool );
 
   public:

@@ -39,9 +39,10 @@ double PathPrimitiveRay::distanceToPointSquared( const Point_2 point ) {
 
   if( ray.collinear_has_on( orthogonalProjectionPoint ) ) {
     return distance;
-  } else {
-    return CGAL::squared_distance( point, ray.source() );
   }
+
+  return CGAL::squared_distance( point, ray.source() );
+
 }
 
 bool PathPrimitiveRay::isOn( const Point_2 point ) {

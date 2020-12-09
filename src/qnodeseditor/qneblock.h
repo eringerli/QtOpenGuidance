@@ -76,7 +76,7 @@ class QNEBlock : public QGraphicsPathItem {
       return m_nextUserId++;
     }
 
-  public slots:
+  public Q_SLOTS:
     void resizeBlockWidth();
 
   public:

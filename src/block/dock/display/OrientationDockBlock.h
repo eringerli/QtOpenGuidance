@@ -29,7 +29,6 @@
 #include "../../BlockBase.h"
 #include "ValueDockBlockBase.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -75,34 +74,34 @@ class OrientationDockBlock : public ValueDockBlockBase {
     virtual void setFont( const QFont& font ) override {
       widget->setFontOfLabel( font );
     }
-    virtual void setPrecision( int precision ) override {
+    virtual void setPrecision( const int precision ) override {
       widget->precision = precision;
     }
-    virtual void setFieldWidth( int fieldWidth ) override {
+    virtual void setFieldWidth( const int fieldWidth ) override {
       widget->fieldWidth = fieldWidth;
     }
-    virtual void setScale( double scale ) override {
+    virtual void setScale( const double scale ) override {
       widget->scale = scale;
     }
-    virtual void setUnitVisible( bool enabled ) override {
+    virtual void setUnitVisible( const bool enabled ) override {
       widget->unitEnabled = enabled;
     }
     virtual void setUnit( const QString& unit ) override {
       widget->unit = unit;
     }
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
     }
 
-    void setOrientation( Eigen::Quaterniond orientation ) {
-      auto eulerAngles = quaternionToEuler( orientation );
-      widget->setValues( qRadiansToDegrees( eulerAngles.y() ), qRadiansToDegrees( eulerAngles.x() ), qRadiansToDegrees( eulerAngles.z() ) );
+    void setOrientation( const Eigen::Quaterniond& orientation ) {
+      auto taitBryan = quaternionToTaitBryan( orientation );
+      widget->setValues( qRadiansToDegrees( taitBryan.y() ), qRadiansToDegrees( taitBryan.x() ), qRadiansToDegrees( taitBryan.z() ) );
     }
 
-    void setPose( const Point_3, const Eigen::Quaterniond orientation, const PoseOption::Options ) {
+    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& ) {
       setOrientation( orientation );
     }
 
@@ -155,8 +154,8 @@ class OrientationDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
       }
 
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
 
       b->setBrush( dockColor );
 

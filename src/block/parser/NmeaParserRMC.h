@@ -22,6 +22,8 @@
 
 #include "../BlockBase.h"
 
+#include "../helpers/eigenHelper.h"
+
 class NmeaParserRMC : public BlockBase {
     Q_OBJECT
 
@@ -30,11 +32,11 @@ class NmeaParserRMC : public BlockBase {
       : BlockBase() {
     }
 
-  signals:
-    void globalPositionChanged( const double, const double, const double );
+  Q_SIGNALS:
+    void globalPositionChanged( const Eigen::Vector3d& );
     void velocityChanged( const double );
 
-  public slots:
+  public Q_SLOTS:
     void setData( const QByteArray& data ) {
       dataToParse.append( data );
       parseData();
@@ -147,8 +149,8 @@ class NmeaParserRMC : public BlockBase {
               velocity *= 463;
               velocity /= 900;
 
-              emit velocityChanged( float( velocity ) );
-              emit globalPositionChanged( latitude, longitude, 0 );
+              Q_EMIT velocityChanged( float( velocity ) );
+              Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, 0 ) );
             }
           }
         }
@@ -189,7 +191,7 @@ class NmeaParserRMCFactory : public BlockFactory {
       auto* b = createBaseBlock( scene, obj, id );
 
       b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
       b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
 
       b->setBrush( parserColor );

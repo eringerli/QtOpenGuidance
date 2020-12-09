@@ -26,12 +26,12 @@ class PathPrimitiveSequence
     PathPrimitiveSequence()
       : PathPrimitive() {}
 
-    PathPrimitiveSequence( const std::vector<Point_2>& polyline, double implementWidth, bool anyDirection, int32_t passNumber )
+    PathPrimitiveSequence( const std::vector<Point_2>& polyline, const double implementWidth, const bool anyDirection, const int32_t passNumber )
       : PathPrimitive( anyDirection, implementWidth, passNumber ) {
       updateWithPolyline( polyline );
     }
 
-    PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive>>& sequence, const std::vector<Line_2>& bisectors, double implementWidth, bool anyDirection, int32_t passNumber )
+    PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive>>& sequence, const std::vector<Line_2>& bisectors, const double implementWidth, const bool anyDirection, const int32_t passNumber )
       : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {}
 
     virtual Type getType() override {
@@ -60,7 +60,7 @@ class PathPrimitiveSequence
       std::cout << "PathPrimitiveSequence: " << std::endl;
     }
 
-    const std::shared_ptr<PathPrimitive>& findSequencePrimitive( Point_2 point ) const;
+    const std::shared_ptr<PathPrimitive>& findSequencePrimitive( const Point_2 point ) const;
 
   public:
     std::vector<Point_2> polyline;

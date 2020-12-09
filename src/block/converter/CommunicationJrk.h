@@ -31,10 +31,10 @@ class CommunicationJrk : public BlockBase {
       : BlockBase() {
     }
 
-  signals:
+  Q_SIGNALS:
     void dataReceived( const QByteArray& );
 
-  public slots:
+  public Q_SLOTS:
     void setSteeringAngle( double steeringAngle ) {
 
       QByteArray data;
@@ -44,7 +44,7 @@ class CommunicationJrk : public BlockBase {
       data[0] = char( 0xc0 | ( target & 0x1f ) );
       data[1] = char( ( target >> 5 ) & 0x7f );
 
-      emit dataReceived( data );
+      Q_EMIT dataReceived( data );
     }
 
     void setSteerZero( double steerZero ) {

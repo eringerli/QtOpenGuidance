@@ -32,7 +32,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class ActionDockBlock : public BlockBase {
@@ -50,22 +49,22 @@ class ActionDockBlock : public BlockBase {
 
     ~ActionDockBlock();
 
-  public slots:
+  public Q_SLOTS:
     void setName( const QString& name ) override {
       dock->setTitle( name );
       dock->toggleAction()->setText( QStringLiteral( "Action: " ) + name );
     }
 
-    void setCheckable( bool checkable ) {
+    void setCheckable( const bool checkable ) {
       widget->setCheckable( checkable );
     }
 
-    void setTheme( const QString theme ) {
+    void setTheme( const QString& theme ) {
       widget->setTheme( theme );
     }
 
-  signals:
-    void action( bool );
+  Q_SIGNALS:
+    void action( const bool );
 
   public:
     ActionDock* widget = nullptr;
@@ -113,7 +112,7 @@ class ActionDockBlockFactory : public BlockFactory {
         mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
       }
 
-      b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( bool ) ) ) );
+      b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( const bool ) ) ) );
 
       b->setBrush( inputDockColor );
 

@@ -32,8 +32,8 @@ class ValueTransmissionQuaternion : public ValueTransmissionBase {
   public:
     explicit ValueTransmissionQuaternion( int id ) : ValueTransmissionBase( id ) {}
 
-  public slots:
-    void setQuaternion( const Eigen::Quaterniond quaternion ) {
+  public Q_SLOTS:
+    void setQuaternion( const Eigen::Quaterniond& quaternion ) {
       QCborMap map;
       map[QStringLiteral( "channelId" )] = id;
       map[QStringLiteral( "x" )] = quaternion.x();
@@ -41,7 +41,7 @@ class ValueTransmissionQuaternion : public ValueTransmissionBase {
       map[QStringLiteral( "z" )] = quaternion.z();
       map[QStringLiteral( "w" )] = quaternion.w();
 
-      emit dataToSend( QCborValue( std::move( map ) ).toCbor() );
+      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
     }
 
     void dataReceive( const QByteArray& data ) {
@@ -56,11 +56,11 @@ class ValueTransmissionQuaternion : public ValueTransmissionBase {
         auto z = cbor[QStringLiteral( "z" )].toDouble( 0 );
         auto w = cbor[QStringLiteral( "w" )].toDouble( 0 );
 
-        emit quaternionChanged( Eigen::Quaterniond( w, x, y, z ) );
+        Q_EMIT quaternionChanged( Eigen::Quaterniond( w, x, y, z ) );
       }
     }
 
-  signals:
+  Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void quaternionChanged( const Eigen::Quaterniond );
 

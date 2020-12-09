@@ -25,7 +25,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../helpers/GeographicConvertionWrapper.h"
 
@@ -39,22 +38,22 @@ class TransverseMercatorConverter : public BlockBase {
       : BlockBase(),
         tmw( tmw ) {}
 
-  public slots:
-    void setWGS84Position( const Eigen::Vector3d position ) {
+  public Q_SLOTS:
+    void setWGS84Position( const Eigen::Vector3d& position ) {
       double x = 0;
       double y = 0;
       double z = 0;
       tmw->Forward( position.x(), position.y(), position.z(), x, y, z );
 
-      emit positionChanged( Eigen::Vector3d( x, y, z ) );
+      Q_EMIT positionChanged( Eigen::Vector3d( x, y, z ) );
     }
 
-  signals:
-    void positionChanged( const Eigen::Vector3d );
+  Q_SIGNALS:
+    void positionChanged( const Eigen::Vector3d& );
 
   public:
     virtual void emitConfigSignals() override {
-      emit positionChanged( Eigen::Vector3d( 0, 0, 0 ) );
+      Q_EMIT positionChanged( Eigen::Vector3d( 0, 0, 0 ) );
     }
 
   public:
@@ -81,9 +80,9 @@ class TransverseMercatorConverterFactory : public BlockFactory {
       auto* obj = new TransverseMercatorConverter( tmw );
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
 
       return b;
     }

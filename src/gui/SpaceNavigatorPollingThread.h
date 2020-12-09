@@ -43,9 +43,9 @@ class SpaceNavigatorPollingThread : public QThread {
       m_stopped = true;
     }
 
-  signals:
-    void steerAngleChanged( double );
-    void velocityChanged( double );
+  Q_SIGNALS:
+    void steerAngleChanged( const double );
+    void velocityChanged( const double );
 
   protected:
 
@@ -75,8 +75,8 @@ class SpaceNavigatorPollingThread : public QThread {
 
 //            qDebug() << event.motion.rx << event.motion.ry << event.motion.rz << event.motion.x << event.motion.y << event.motion.z;
 
-            emit steerAngleChanged( steerAngle );
-            emit velocityChanged( velocity );
+            Q_EMIT steerAngleChanged( steerAngle );
+            Q_EMIT velocityChanged( velocity );
           }
 
           spnav_remove_events( event.type );

@@ -27,11 +27,11 @@
 
 #include "qneblock.h"
 
-#include <QPen>
-#include <QGraphicsScene>
 #include <QFontMetrics>
-#include <QPainter>
 #include <QGraphicsScene>
+#include <QGraphicsScene>
+#include <QPainter>
+#include <QPen>
 
 #include <QGraphicsProxyWidget>
 #include <QStyleOptionGraphicsItem>
@@ -39,9 +39,9 @@
 #include <QRectF>
 #include <QtMath>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonValueRef>
 
@@ -49,8 +49,8 @@
 
 #include "../block/BlockBase.h"
 
-#include "qneport.h"
 #include "qneconnection.h"
+#include "qneport.h"
 
 int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );

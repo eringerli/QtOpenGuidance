@@ -33,12 +33,12 @@ class PassToolbar : public QGroupBox {
 
     void emitPassSettings();
 
-  signals:
-    void passSettingsChanged( int, int, bool, bool );
-    void minimalSkipChanged( int );
-    void passNumberChanged( int );
+  Q_SIGNALS:
+    void passSettingsChanged( const int, const int, const bool, const bool );
+    void minimalSkipChanged( const int );
+    void passNumberChanged( const int );
 
-  private slots:
+  private Q_SLOTS:
     void on_sbForwardPasses_valueChanged( int arg1 );
 
     void on_sbReversePasses_valueChanged( int arg1 );

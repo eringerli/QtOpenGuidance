@@ -25,7 +25,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -48,14 +47,14 @@ class StanleyGuidance : public BlockBase {
     explicit StanleyGuidance()
       : BlockBase() {}
 
-  public slots:
-    void setSteeringAngle( double steeringAngle ) {
+  public Q_SLOTS:
+    void setSteeringAngle( const double steeringAngle ) {
       steeringAngle2Ago = steeringAngle1Ago;
       steeringAngle1Ago = this->steeringAngle;
       this->steeringAngle = steeringAngle;
     }
 
-    void setPoseFrontWheels( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+    void setPoseFrontWheels( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionFrontWheels = position;
         this->orientation1AgoFrontWheels = this->orientationFrontWheels;
@@ -63,7 +62,7 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setPoseRearWheels( const Point_3 position, Eigen::Quaterniond orientation, PoseOption::Options options ) {
+    void setPoseRearWheels( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         this->positionRearWheels = position;
         this->orientation1AgoRearWheels = this->orientationRearWheels;
@@ -71,67 +70,67 @@ class StanleyGuidance : public BlockBase {
       }
     }
 
-    void setHeadingOfPathFrontWheels( double headingOfPath ) {
+    void setHeadingOfPathFrontWheels( const double headingOfPath ) {
       this->headingOfPathRadiansFrontWheels = qDegreesToRadians( headingOfPath );
     }
 
-    void setHeadingOfPathRearWheels( double headingOfPath ) {
+    void setHeadingOfPathRearWheels( const double headingOfPath ) {
       this->headingOfPathRadiansRearWheels = qDegreesToRadians( headingOfPath );
     }
 
-    void setXteFrontWheels( double distance );
+    void setXteFrontWheels( const double distance );
 
-    void setXteRearWheels( double distance );
+    void setXteRearWheels( const double distance );
 
-    void setStanleyGainKForwards( double stanleyGain ) {
+    void setStanleyGainKForwards( const double stanleyGain ) {
       this->stanleyGainKForwards = stanleyGain;
     }
-    void setStanleyGainKSoftForwards( double stanleyGain ) {
+    void setStanleyGainKSoftForwards( const double stanleyGain ) {
       this->stanleyGainKSoftForwards = stanleyGain;
     }
-    void setStanleyGainDampeningYawForwards( double stanleyGain ) {
+    void setStanleyGainDampeningYawForwards( const double stanleyGain ) {
       this->stanleyGainDampeningYawForwards = stanleyGain;
     }
-    void setStanleyGainDampeningSteeringForwards( double stanleyGain ) {
+    void setStanleyGainDampeningSteeringForwards( const double stanleyGain ) {
       this->stanleyGainDampeningSteeringForwards = stanleyGain;
     }
 
-    void setStanleyGainKReverse( double stanleyGain ) {
+    void setStanleyGainKReverse( const double stanleyGain ) {
       this->stanleyGainKReverse = stanleyGain;
     }
-    void setStanleyGainKSoftReverse( double stanleyGain ) {
+    void setStanleyGainKSoftReverse( const double stanleyGain ) {
       this->stanleyGainKSoftReverse = stanleyGain;
     }
-    void setStanleyGainDampeningYawReverse( double stanleyGain ) {
+    void setStanleyGainDampeningYawReverse( const double stanleyGain ) {
       this->stanleyGainDampeningYawReverse = stanleyGain;
     }
-    void setStanleyGainDampeningSteeringReverse( double stanleyGain ) {
+    void setStanleyGainDampeningSteeringReverse( const double stanleyGain ) {
       this->stanleyGainDampeningSteeringReverse = stanleyGain;
     }
 
-    void setVelocity( double velocity ) {
+    void setVelocity( const double velocity ) {
       this->velocity = velocity;
     }
 
-    void setMaxSteeringAngle( double maxSteeringAngle ) {
+    void setMaxSteeringAngle( const double maxSteeringAngle ) {
       this->maxSteeringAngle = maxSteeringAngle;
     }
 
     void emitConfigSignals() override {
-      emit steerAngleChanged( 0 );
+      Q_EMIT steerAngleChanged( 0 );
     }
 
-  signals:
-    void steerAngleChanged( double );
+  Q_SIGNALS:
+    void steerAngleChanged( const double );
 
   private:
 
   public:
-    Point_3 positionFrontWheels = Point_3( 0, 0, 0 );
+    Eigen::Vector3d positionFrontWheels = Eigen::Vector3d( 0, 0, 0 );
     Eigen::Quaterniond orientationFrontWheels = Eigen::Quaterniond();
     Eigen::Quaterniond orientation1AgoFrontWheels = Eigen::Quaterniond();
 
-    Point_3 positionRearWheels = Point_3( 0, 0, 0 );
+    Eigen::Vector3d positionRearWheels = Eigen::Vector3d( 0, 0, 0 );
     Eigen::Quaterniond orientationRearWheels = Eigen::Quaterniond();
     Eigen::Quaterniond orientation1AgoRearWheels = Eigen::Quaterniond();
 
@@ -178,30 +177,30 @@ class StanleyGuidanceFactory : public BlockFactory {
       auto* obj = new StanleyGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( const double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( const double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "XTE Front Wheels" ), QLatin1String( SLOT( setXteFrontWheels( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Heading of Path Front Wheels" ), QLatin1String( SLOT( setHeadingOfPathFrontWheels( double ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE Rear Wheels" ), QLatin1String( SLOT( setXteRearWheels( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Heading of Path Rear Wheels" ), QLatin1String( SLOT( setHeadingOfPathRearWheels( double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE Front Wheels" ), QLatin1String( SLOT( setXteFrontWheels( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Heading of Path Front Wheels" ), QLatin1String( SLOT( setHeadingOfPathFrontWheels( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "XTE Rear Wheels" ), QLatin1String( SLOT( setXteRearWheels( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Heading of Path Rear Wheels" ), QLatin1String( SLOT( setHeadingOfPathRearWheels( const double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Stanley Gain K Forwards" ), QLatin1String( SLOT( setStanleyGainKForwards( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Forwards" ), QLatin1String( SLOT( setStanleyGainKSoftForwards( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningYawForwards( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringForwards( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Forwards" ), QLatin1String( SLOT( setStanleyGainKForwards( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Forwards" ), QLatin1String( SLOT( setStanleyGainKSoftForwards( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningYawForwards( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Forwards" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringForwards( const double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Stanley Gain K Reverse" ), QLatin1String( SLOT( setStanleyGainKReverse( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Reverse" ), QLatin1String( SLOT( setStanleyGainKSoftReverse( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningYawReverse( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringReverse( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Reverse" ), QLatin1String( SLOT( setStanleyGainKReverse( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain K Softening Reverse" ), QLatin1String( SLOT( setStanleyGainKSoftReverse( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningYawReverse( const double ) ) ) );
+      b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Reverse" ), QLatin1String( SLOT( setStanleyGainDampeningSteeringReverse( const double ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( const double ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( const double ) ) ) );
 
       return b;
     }

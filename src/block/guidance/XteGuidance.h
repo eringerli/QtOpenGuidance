@@ -26,7 +26,6 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
 #include "../helpers/eigenHelper.h"
 #include "../kinematic/PoseOptions.h"
 
@@ -47,8 +46,8 @@ class XteGuidance : public BlockBase {
     explicit XteGuidance()
       : BlockBase() {}
 
-  public slots:
-    void setPose( const Point_3 position, const Eigen::Quaterniond, const PoseOption::Options options ) {
+  public Q_SLOTS:
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
       if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
         const Point_2 position2D = to2D( position );
 
@@ -75,16 +74,16 @@ class XteGuidance : public BlockBase {
           if( nearestPrimitive ) {
             double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
 
-            emit headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ) );
-            emit xteChanged( offsetDistance );
-            emit passNumberChanged( nearestPrimitive->passNumber );
+            Q_EMIT headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ) );
+            Q_EMIT xteChanged( offsetDistance );
+            Q_EMIT passNumberChanged( nearestPrimitive->passNumber );
             return;
           }
         }
 
-        emit headingOfPathChanged( qInf() );
-        emit xteChanged( qInf() );
-        emit passNumberChanged( qInf() );
+        Q_EMIT headingOfPathChanged( qInf() );
+        Q_EMIT xteChanged( qInf() );
+        Q_EMIT passNumberChanged( qInf() );
       }
     }
 
@@ -93,19 +92,15 @@ class XteGuidance : public BlockBase {
     }
 
     void emitConfigSignals() override {
-      emit xteChanged( qInf() );
-      emit headingOfPathChanged( qInf() );
-      emit passNumberChanged( qInf() );
+      Q_EMIT xteChanged( qInf() );
+      Q_EMIT headingOfPathChanged( qInf() );
+      Q_EMIT passNumberChanged( qInf() );
     }
 
-  signals:
-    void xteChanged( double );
-    void headingOfPathChanged( double );
-    void passNumberChanged( double );
-
-  public:
-    Point_3 position = Point_3( 0, 0, 0 );
-    Eigen::Quaterniond orientation = Eigen::Quaterniond();
+  Q_SIGNALS:
+    void xteChanged( const double );
+    void headingOfPathChanged( const double );
+    void passNumberChanged( const double );
 
   private:
     Plan plan;
@@ -130,12 +125,12 @@ class XteGuidanceFactory : public BlockFactory {
       auto* obj = new XteGuidance();
       auto* b = createBaseBlock( scene, obj, id );
 
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Point_3, const Eigen::Quaterniond, const PoseOption::Options ) ) ) );
+      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
       b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( const double ) ) ) );
 
       return b;
     }
