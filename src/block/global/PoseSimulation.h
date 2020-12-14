@@ -19,13 +19,22 @@
 #pragma once
 
 #include <random>
-#include <chrono>
+#include <memory>
 
 #include <QObject>
 
 #include <QEvent>
 #include <QBasicTimer>
 #include <QElapsedTimer>
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+#include <Qt3DExtras/QSphereMesh>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QExtrudedTextMesh>
+#include "../3d/BufferMesh.h"
+#include "../3d/BufferMeshWithNormal.h"
 
 #include <QtGlobal>
 #include <QtDebug>
@@ -43,87 +52,40 @@
 using namespace std;
 using namespace GeographicLib;
 
+#include <CGAL/Point_set_3.h>
+using PointSet_3 = CGAL::Point_set_3<Point_3>;
+
+#include <CGAL/Projection_traits_xy_3.h>
+#include <CGAL/Delaunay_triangulation_2.h>
+using ProjectionTraitsXY = CGAL::Projection_traits_xy_3<Epick>;
+using DelaunayTriangulationProjectedXY = CGAL::Delaunay_triangulation_2<ProjectionTraitsXY>;
+
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/Polygon_mesh_processing/locate.h>
+using SurfaceMesh_3 = CGAL::Surface_mesh<Point_3>;
+
 class PoseSimulation : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit PoseSimulation( GeographicConvertionWrapper* geographicConvertionWrapper );
+    explicit PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
 
-  public slots:
-    void setInterval( int interval ) {
-      m_interval = interval;
+  public Q_SLOTS:
+    void setInterval( const int interval );
+    void setSimulation( const bool enabled );
+    void setFrequency( const double frequency );
+    void setSteerAngle( const double steerAngle );
+    void setVelocity( const double velocity );
+    void setRollOffset( const double offset );
+    void setPitchOffset( const double offset );
+    void setYawOffset( const double offset );
+    void setSteerAngleOffset( const double offset );
+    void setSteerAngleFromAutosteer( const double steerAngle );
 
-      setSimulation( m_enabled );
-
-      emit intervalChanged( m_interval );
-    }
-
-    void setSimulation( bool enabled ) {
-      m_enabled = enabled;
-
-      if( enabled ) {
-        m_timer.start( m_interval, Qt::PreciseTimer, this );
-        m_time.start();
-      } else {
-        m_timer.stop();
-      }
-
-      emit simulationChanged( m_enabled );
-    }
-
-
-    void setFrequency( double frequency ) {
-      setInterval( 1000 / frequency );
-    }
-
-    void setSteerAngle( double steerAngle ) {
-      m_steerAngle = steerAngle + m_steerAngleOffset;
-    }
-
-    void setVelocity( double velocity ) {
-      m_velocity = velocity;
-    }
-
-    void setRollOffset( double offset ) {
-      m_rollOffset = offset;
-    }
-
-    void setPitchOffset( double offset ) {
-      m_pitchOffset = offset;
-    }
-
-    void setYawOffset( double offset ) {
-      m_yawOffset = offset;
-    }
-
-    void setSteerAngleOffset( double offset ) {
-      m_steerAngleOffset = offset;
-    }
-
-    void setSteerAngleFromAutosteer( double steerAngle ) {
-      m_steerAngleFromAutosteer = steerAngle + m_steerAngleOffset;
-    }
-
-
-    void setWheelbase( double wheelbase ) {
-      if( !qFuzzyIsNull( wheelbase ) ) {
-        m_wheelbase = wheelbase;
-      }
-    }
-
-    void setAntennaOffset( const Eigen::Vector3d offset ) {
-      auto offsetTmp = offset;
-      offsetTmp.x() -= b;
-      antennaKinematic.setOffset( -offsetTmp );
-    }
-
-    void setInitialWGS84Position( const Eigen::Vector3d position ) {
-      geographicConvertionWrapper->Reset( position.x(), position.y(), position.z() );
-    }
-
-    void autosteerEnabled( bool enabled ) {
-      m_autosteerEnabled = enabled;
-    }
+    void setWheelbase( const double wheelbase );
+    void setAntennaOffset( const Eigen::Vector3d& offset );
+    void setInitialWGS84Position( const Eigen::Vector3d& position );
+    void autosteerEnabled( const bool enabled );
 
     void setSimulatorValues( const double a, const double b, const double c,
                              const double Caf, const double Car, const double Cah,
@@ -131,141 +93,72 @@ class PoseSimulation : public BlockBase {
                              const double sigmaF, const double sigmaR, const double sigmaH,
                              const double Cx, const double slipX );
 
-    void setNoiseStandartDeviations( double noisePositionXY,
-                                     double noisePositionZ,
-                                     double noiseOrientation,
-                                     double noiseAccelerometer,
-                                     double noiseGyro );
+    void setNoiseStandartDeviations( const double noisePositionXY,
+                                     const double noisePositionZ,
+                                     const double noiseOrientation,
+                                     const double noiseAccelerometer,
+                                     const double noiseGyro );
+
+    void openTIN();
+    void openTINFromFile( QFile& file );
 
   protected:
     void timerEvent( QTimerEvent* event ) override;
 
-  signals:
+  Q_SIGNALS:
     void simulatorValuesChanged( const double a, const double b, const double c,
                                  const double Caf, const double Car, const double Cah,
                                  const double m, const double Iz,
                                  const double sigmaF, const double sigmaR, const double sigmaH,
                                  const double Cx, const double slip );
 
-    void simulationChanged( bool );
-    void intervalChanged( int );
+    void simulationChanged( const bool );
+    void intervalChanged( const int );
 
-    void steerAngleChanged( double );
+    void steerAngleChanged( const double );
 
-    void antennaPositionChanged( const Eigen::Vector3d );
+    void antennaPositionChanged( const Eigen::Vector3d& );
 
-    void steeringAngleChanged( double );
-    void positionChanged( const Eigen::Vector3d );
-    void globalPositionChanged( const Eigen::Vector3d );
-    void velocity3DChanged( const Eigen::Vector3d );
-    void orientationChanged( const Eigen::Quaterniond );
-    void velocityChanged( double );
+    void steeringAngleChanged( const double );
+    void positionChanged( const Eigen::Vector3d& );
+    void globalPositionChanged( const Eigen::Vector3d& );
+    void velocity3DChanged( const Eigen::Vector3d& );
+    void orientationChanged( const Eigen::Quaterniond& );
+    void velocityChanged( const double );
 
-    void imuDataChanged( const Eigen::Quaterniond, const Eigen::Vector3d, const Eigen::Vector3d );
+    void imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& );
 
 
   public:
     virtual void emitConfigSignals() override {
       qDebug() << "PoseSimulation::emitConfigSignals";
-      emit simulatorValuesChanged( a, b, c,
-                                   // N/rad -> N/°
-                                   Caf * M_PI / 180, Car * M_PI / 180, Cah * M_PI / 180,
-                                   m, Iz,
-                                   sigmaF, sigmaR, sigmaH,
-                                   Cx, slipX );
+      Q_EMIT simulatorValuesChanged( a, b, c,
+                                     // N/rad -> N/°
+                                     Caf * M_PI / 180, Car * M_PI / 180, Cah * M_PI / 180,
+                                     m, Iz,
+                                     sigmaF, sigmaR, sigmaH,
+                                     Cx, slipX );
 
-      emit steerAngleChanged( m_steerAngle );
-      emit positionChanged( Eigen::Vector3d( x, y, height ) );
-      emit orientationChanged( m_orientation );
-      emit steerAngleChanged( 0 );
-      emit velocityChanged( 0 );
+      Q_EMIT steerAngleChanged( m_steerAngle );
+      Q_EMIT positionChanged( Eigen::Vector3d( x, y, height ) );
+      Q_EMIT orientationChanged( m_orientation );
+      Q_EMIT steerAngleChanged( 0 );
+      Q_EMIT velocityChanged( 0 );
     }
 
-    virtual void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
+    virtual void toJSON( QJsonObject& json ) override;
 
-      valuesObject[QStringLiteral( "a" )] = this->a;
-      valuesObject[QStringLiteral( "b" )] = this->b;
-      valuesObject[QStringLiteral( "c" )] = this->c;
-      valuesObject[QStringLiteral( "Caf" )] = this->Caf;
-      valuesObject[QStringLiteral( "Car" )] = this->Car;
-      valuesObject[QStringLiteral( "Cah" )] = this->Cah;
-      valuesObject[QStringLiteral( "m" )] = this->m;
-      valuesObject[QStringLiteral( "Iz" )] = this->Iz;
-      valuesObject[QStringLiteral( "sigmaF" )] = this->sigmaF;
-      valuesObject[QStringLiteral( "sigmaR" )] = this->sigmaR;
-      valuesObject[QStringLiteral( "sigmaH" )] = this->sigmaH;
-      valuesObject[QStringLiteral( "Cx" )] = this->Cx;
-      valuesObject[QStringLiteral( "slip" )] = this->slipX;
-
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    virtual void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "a" )].isDouble() ) {
-          this->a = valuesObject[QStringLiteral( "a" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "b" )].isDouble() ) {
-          this->b = valuesObject[QStringLiteral( "b" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "c" )].isDouble() ) {
-          this->c = valuesObject[QStringLiteral( "c" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Caf" )].isDouble() ) {
-          this->Caf = valuesObject[QStringLiteral( "Caf" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Car" )].isDouble() ) {
-          this->Car = valuesObject[QStringLiteral( "Car" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Cah" )].isDouble() ) {
-          this->Cah = valuesObject[QStringLiteral( "Cah" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "m" )].isDouble() ) {
-          this->m = valuesObject[QStringLiteral( "m" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Iz" )].isDouble() ) {
-          this->Iz = valuesObject[QStringLiteral( "Iz" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "sigmaF" )].isDouble() ) {
-          this->sigmaF = valuesObject[QStringLiteral( "sigmaF" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "sigmaR" )].isDouble() ) {
-          this->sigmaR = valuesObject[QStringLiteral( "sigmaR" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "sigmaH" )].isDouble() ) {
-          this->sigmaH = valuesObject[QStringLiteral( "sigmaH" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Cx" )].isDouble() ) {
-          this->Cx = valuesObject[QStringLiteral( "Cx" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "slip" )].isDouble() ) {
-          this->slipX = valuesObject[QStringLiteral( "slip" )].toDouble();
-        }
-      }
-    }
+    virtual void fromJSON( QJsonObject& json ) override;
 
   private:
+    QWidget* mainWindow = nullptr;
+
     bool m_enabled = false;
     bool m_autosteerEnabled = false;
     int m_interval = 50;
 
     QBasicTimer m_timer;
-    int m_timerId;
+    int m_timerId{};
     QElapsedTimer m_time;
 
     double m_steerAngle = 0;
@@ -298,9 +191,8 @@ class PoseSimulation : public BlockBase {
     double y = 0;
     double height = 0;
     double lastHeading = 0;
-    GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
+    GeographicConvertionWrapper* tmw = nullptr;
     FixedKinematicPrimitive antennaKinematic;
-
 
     template <typename T_> using StateType = ThreeWheeledFRHRL::State<T_>;
     StateType<double> state;
@@ -317,14 +209,39 @@ class PoseSimulation : public BlockBase {
     std::normal_distribution<double> noiseAccelerometer = std::normal_distribution<double>( 0, 0.01 );
     bool noiseGyroActivated = false;
     std::normal_distribution<double> noiseGyro = std::normal_distribution<double>( 0, 0.01 );
+
+    std::unique_ptr<DelaunayTriangulationProjectedXY> tin;
+    std::unique_ptr<SurfaceMesh_3> surfaceMesh;
+    DelaunayTriangulationProjectedXY::Face_handle lastFoundFace;
+    Eigen::Quaterniond lastFoundFaceOrientation = taitBryanToQuaternion( 0, 0, 0 );
+
+    Qt3DCore::QEntity* m_baseEntity = nullptr;
+    Qt3DCore::QTransform* m_baseTransform = nullptr;
+    Qt3DCore::QEntity* m_pointsEntity = nullptr;
+    Qt3DCore::QEntity* m_terrainEntity = nullptr;
+    Qt3DCore::QEntity* m_linesEntity = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity3 = nullptr;
+    Qt3DCore::QEntity* m_segmentsEntity4 = nullptr;
+    BufferMesh* m_pointsMesh = nullptr;
+    BufferMeshWithNormal* m_terrainMesh = nullptr;
+    BufferMesh* m_linesMesh = nullptr;
+    BufferMesh* m_segmentsMesh3 = nullptr;
+    BufferMesh* m_segmentsMesh4 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_pointsMaterial = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
+    Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class PoseSimulationFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    PoseSimulationFactory( GeographicConvertionWrapper* geographicConvertionWrapper )
+    PoseSimulationFactory( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* geographicConvertionWrapper )
       : BlockFactory(),
+        mainWindow( mainWindow ),
+        rootEntity( rootEntity ),
         geographicConvertionWrapper( geographicConvertionWrapper ) {}
 
     QString getNameOfFactory() override {
@@ -336,28 +253,30 @@ class PoseSimulationFactory : public BlockFactory {
     }
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new PoseSimulation( geographicConvertionWrapper );
+      auto* obj = new PoseSimulation( mainWindow, rootEntity, geographicConvertionWrapper );
       auto* b = createBaseBlock( scene, obj, id, true );
 
-      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d ) ) ) );
+      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
+      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d ) ) ) );
-      b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d& ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond ) ) ) );
-      b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
+      b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( const double ) ) ) );
+      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
 
-      b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond, const Eigen::Vector3d, const Eigen::Vector3d ) ) ) );
+      b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
 
-      b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( bool ) ) ) );
-      b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( double ) ) ) );
+      b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( const bool ) ) ) );
+      b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( const double ) ) ) );
 
       return b;
     }
 
   private:
+    QWidget* mainWindow = nullptr;
+    Qt3DCore::QEntity* rootEntity = nullptr;
     GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };

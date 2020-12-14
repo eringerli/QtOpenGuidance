@@ -291,17 +291,23 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
                     this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory = new PoseSimulationFactory( geographicConvertionWrapperSimulator );
+  poseSimulationFactory = new PoseSimulationFactory( mainWindow, rootEntity, geographicConvertionWrapperSimulator );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
 
-  auto poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
-  QObject::connect( this, &SettingsDialog::simulatorValuesChanged,
-                    poseSimulationTmp, &PoseSimulation::setSimulatorValues );
-  QObject::connect( this, &SettingsDialog::noiseStandartDeviationsChanged,
-                    poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
-  QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged,
-                    this, &SettingsDialog::setSimulatorValues );
+  auto* poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
+
+  {
+    QObject::connect( this, &SettingsDialog::simulatorValuesChanged,
+                      poseSimulationTmp, &PoseSimulation::setSimulatorValues );
+    QObject::connect( this, &SettingsDialog::noiseStandartDeviationsChanged,
+                      poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
+    QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged,
+                      this, &SettingsDialog::setSimulatorValues );
+
+    auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Terrain Model" ) );
+    QObject::connect( openFieldAction, &QAction::triggered, poseSimulationTmp, &PoseSimulation::openTIN );
+  }
 
   // SPNAV
 #ifdef SPNAV_ENABLED
