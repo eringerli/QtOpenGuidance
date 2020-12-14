@@ -26,6 +26,7 @@
 #include "../qnodeseditor/qneblock.h"
 
 #include "../helpers/eigenHelper.h"
+#include "../helpers/anglesHelper.h"
 #include <QtMath>
 
 OrientationBlockModel::OrientationBlockModel( QGraphicsScene* scene )
@@ -39,13 +40,13 @@ QVariant OrientationBlockModel::headerData( int section, Qt::Orientation orienta
         return QStringLiteral( "Name" );
 
       case 1:
-        return QStringLiteral( "Roll" );
+        return QStringLiteral( "Yaw" );
 
       case 2:
         return QStringLiteral( "Pitch" );
 
       case 3:
-        return QStringLiteral( "Yaw" );
+        return QStringLiteral( "Roll" );
 
       case 4:
         return QStringLiteral( "x" );
@@ -106,13 +107,13 @@ QVariant OrientationBlockModel::data( const QModelIndex& index, int role ) const
               return block->getName();
 
             case 1:
-              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).y() );
+              return radiansToDegrees( getYaw( quaternionToTaitBryan( object->orientation ) ) );
 
             case 2:
-              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).x() );
+              return radiansToDegrees( getPitch( quaternionToTaitBryan( object->orientation ) ) );
 
             case 3:
-              return qRadiansToDegrees( quaternionToTaitBryan( object->orientation ).z() );
+              return radiansToDegrees( getRoll( quaternionToTaitBryan( object->orientation ) ) );
 
             case 4:
               return object->orientation.x();
@@ -154,19 +155,19 @@ bool OrientationBlockModel::setData( const QModelIndex& index, const QVariant& v
               return true;
 
             case 1:
-              object->orientation = taitBryanToQuaternion( taitBryan.x(), value.toString().toDouble(), taitBryan.z() );
+              object->orientation = taitBryanToQuaternion( degreesToRadians( value.toString().toDouble() ), getPitch( taitBryan ), getRoll( taitBryan ) );
               object->emitConfigSignals();
               Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 2:
-              object->orientation = taitBryanToQuaternion( value.toString().toDouble(), taitBryan.y(), taitBryan.z() );
+              object->orientation = taitBryanToQuaternion( getYaw( taitBryan ), degreesToRadians( value.toString().toDouble() ), getRoll( taitBryan ) );
               object->emitConfigSignals();
               Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;
 
             case 3:
-              object->orientation = taitBryanToQuaternion( taitBryan.x(), taitBryan.y(), value.toString().toDouble() );
+              object->orientation = taitBryanToQuaternion( getYaw( taitBryan ), getPitch( taitBryan ), degreesToRadians( value.toString().toDouble() ) );
               object->emitConfigSignals();
               Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
               return true;

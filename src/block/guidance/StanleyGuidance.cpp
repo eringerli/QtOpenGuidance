@@ -23,13 +23,13 @@
 void StanleyGuidance::setXteFrontWheels( double distance ) {
   if( !qIsInf( distance ) && velocity >= 0 ) {
     auto taitBryanFrontWheels = quaternionToTaitBryan( orientationFrontWheels );
-    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansFrontWheels ) - taitBryanFrontWheels.z() );
+    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansFrontWheels ) - getYaw( taitBryanFrontWheels ) );
     double stanleyXteCompensation = atan( ( stanleyGainKForwards * -distance ) / ( velocity + stanleyGainKSoftForwards ) );
     double stanleyYawDampening = /*normalizeAngleRadians*/( stanleyGainDampeningYawForwards *
-        ( ( quaternionToTaitBryan( this->orientation1AgoFrontWheels ).z() ) - taitBryanFrontWheels.z() ) -
+        ( getYaw( quaternionToTaitBryan( this->orientation1AgoFrontWheels ) ) - getYaw( taitBryanFrontWheels ) ) -
         ( yawTrajectory1AgoFrontWheels - headingOfPathRadiansFrontWheels ) );
-    double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringForwards * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
-    double steerAngleRequested = qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
+    double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringForwards * degreesToRadians( steeringAngle1Ago - steeringAngle ) );
+    double steerAngleRequested = radiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
     if( steerAngleRequested >= maxSteeringAngle ) {
       steerAngleRequested = maxSteeringAngle;
@@ -39,7 +39,7 @@ void StanleyGuidance::setXteFrontWheels( double distance ) {
       steerAngleRequested = -maxSteeringAngle;
     }
 
-    qDebug() << Qt::fixed << Qt::forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansFrontWheels ) << normalizeAngleRadians( taitBryanFrontWheels.z() );
+//    qDebug() << Qt::fixed << Qt::forcesign << qSetRealNumberPrecision( 4 ) << stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening << stanleySteeringDampening << steerAngleRequested << normalizeAngleRadians( headingOfPathRadiansFrontWheels ) << normalizeAngleRadians( taitBryanFrontWheels.z() );
 
     Q_EMIT steerAngleChanged( steerAngleRequested );
     yawTrajectory1AgoFrontWheels = headingOfPathRadiansFrontWheels;
@@ -49,13 +49,13 @@ void StanleyGuidance::setXteFrontWheels( double distance ) {
 void StanleyGuidance::setXteRearWheels( double distance ) {
   if( !qIsInf( distance ) && velocity < 0 ) {
     auto taitBryanRearWheels = quaternionToTaitBryan( orientationRearWheels );
-    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansRearWheels ) - taitBryanRearWheels.z() );
+    double stanleyYawCompensation = /*normalizeAngleRadians*/( ( headingOfPathRadiansRearWheels ) - getYaw( taitBryanRearWheels ) );
     double stanleyXteCompensation = atan( ( stanleyGainKReverse * -distance ) / ( velocity + -stanleyGainKSoftReverse ) );
     double stanleyYawDampening = /*normalizeAngleRadians*/( stanleyGainDampeningYawReverse *
-        ( ( quaternionToTaitBryan( this->orientation1AgoRearWheels ).z() ) - taitBryanRearWheels.z() ) -
+        ( getYaw( quaternionToTaitBryan( this->orientation1AgoRearWheels ) ) - getYaw( taitBryanRearWheels ) ) -
         ( yawTrajectory1AgoRearWheels - headingOfPathRadiansRearWheels ) );
-    double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringReverse * qDegreesToRadians( steeringAngle1Ago - steeringAngle ) );
-    double steerAngleRequested = -qRadiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
+    double stanleySteeringDampening = /*normalizeAngle*/( stanleyGainDampeningSteeringReverse * degreesToRadians( steeringAngle1Ago - steeringAngle ) );
+    double steerAngleRequested = -radiansToDegrees( normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
     if( steerAngleRequested >= maxSteeringAngle ) {
       steerAngleRequested = maxSteeringAngle;

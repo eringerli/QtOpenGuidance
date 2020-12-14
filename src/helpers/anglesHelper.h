@@ -61,3 +61,13 @@ inline double normalizeAngleDegrees( const double angle ) {
 
   return angleToConvert;
 }
+
+template<class T>
+inline T degreesToRadians( const T degrees ) {
+  return degrees * M_PI / 180.;
+}
+
+template<class T>
+inline T radiansToDegrees( const T radians ) {
+  return radians * 180. / M_PI;
+}

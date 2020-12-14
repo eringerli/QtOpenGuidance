@@ -54,7 +54,7 @@ void LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quater
 
         if( lastPrimitive->anyDirection ) {
           double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
-          double steerAngleAbsoluteDegrees = steeringAngleDegrees + qRadiansToDegrees( quaternionToTaitBryan( orientation ).z() );
+          double steerAngleAbsoluteDegrees = steeringAngleDegrees + radiansToDegrees( getYaw( quaternionToTaitBryan( orientation ) ) );
 
           if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
             auto reverse = lastPrimitive->createReverse();
@@ -131,11 +131,11 @@ void LocalPlanner::numSkipChanged( int left, int right ) {
 void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
   if( !globalPlan.plan->empty() ) {
     const Point_2 position2D = to2D( position );
-    const double heading = qRadiansToDegrees( quaternionToTaitBryan( orientation ).z() );
+    const double headingDegrees = radiansToDegrees( getYaw( quaternionToTaitBryan( orientation ) ) );
 
     if( !changeExistingTurn ) {
       positionTurnStart = position2D;
-      headingTurnStart = heading;
+      headingTurnStart = headingDegrees;
     }
 
     double distanceSquared = qInf();
@@ -183,7 +183,7 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
         double headingAtTargetRad = qDegreesToRadians( ( *targetLineIt )->angleAtPointDegrees( resultingPoint ) ) + ( reversedLine ? M_PI : 0 );
 
         DubinsPath dubinsPath;
-        double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( heading )};
+        double q0[] = {position2D.x(), position2D.y(), qDegreesToRadians( headingDegrees )};
         double q1[] = {resultingPoint.x(), resultingPoint.y(), headingAtTargetRad - M_PI};
 
         dubins_shortest_path( &dubinsPath, q0, q1, minRadius );

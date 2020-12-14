@@ -93,8 +93,7 @@ class OrientationBlock : public BlockBase {
             auto taitBryan = quaternionToTaitBryan( orientation );
             double heading = std::atan2( position.y() - positionStart.y(),
                                          position.x() - positionStart.x() );
-            qDebug() << taitBryan.x() << taitBryan.y() << heading;
-            orientation = taitBryanToQuaternion( taitBryan.x(), taitBryan.y(), heading );
+            orientation = taitBryanToQuaternion( heading, getPitch( taitBryan ), getRoll( taitBryan ) );
           }
 
           Q_EMIT orientationChanged( orientation );

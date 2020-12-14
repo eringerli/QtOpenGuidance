@@ -32,6 +32,7 @@
 #include "PlotDockBlockBase.h"
 
 #include "../helpers/eigenHelper.h"
+#include "../helpers/anglesHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
@@ -79,12 +80,12 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
 
   public Q_SLOTS:
     void setOrientation( const Eigen::Quaterniond& orientation ) {
-      auto taitBryan = quaternionToTaitBryan( orientation );
+      const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
       double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
-      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.y() ) );
-      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.x() ) );
-      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, qRadiansToDegrees( taitBryan.z() ) );
+      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, getRoll( taitBryanDegrees ) );
+      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, getPitch( taitBryanDegrees ) );
+      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, getYaw( taitBryanDegrees ) );
 
       rescale();
     }

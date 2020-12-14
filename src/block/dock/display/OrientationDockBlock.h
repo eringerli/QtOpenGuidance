@@ -30,6 +30,7 @@
 #include "ValueDockBlockBase.h"
 
 #include "../helpers/eigenHelper.h"
+#include "../helpers/anglesHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class OrientationDockBlock : public ValueDockBlockBase {
@@ -41,7 +42,7 @@ class OrientationDockBlock : public ValueDockBlockBase {
       : ValueDockBlockBase( uniqueName ) {
       widget = new ThreeValuesDock( mainWindow );
 
-      widget->setDescriptions( QStringLiteral( "R" ), QStringLiteral( "P" ), QStringLiteral( "H" ) );
+      widget->setDescriptions( QStringLiteral( "Y" ), QStringLiteral( "P" ), QStringLiteral( "R" ) );
     }
 
     ~OrientationDockBlock() {
@@ -97,8 +98,8 @@ class OrientationDockBlock : public ValueDockBlockBase {
     }
 
     void setOrientation( const Eigen::Quaterniond& orientation ) {
-      auto taitBryan = quaternionToTaitBryan( orientation );
-      widget->setValues( qRadiansToDegrees( taitBryan.y() ), qRadiansToDegrees( taitBryan.x() ), qRadiansToDegrees( taitBryan.z() ) );
+      const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
+      widget->setValues( getYaw( taitBryanDegrees ), getPitch( taitBryanDegrees ), getRoll( taitBryanDegrees ) );
     }
 
     void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& ) {
