@@ -112,10 +112,10 @@
 #include "../block/converter/ValueTransmissionState.h"
 
 #include "../helpers/GeographicConvertionWrapper.h"
-#include "../kinematic/FixedKinematic.h"
-#include "../kinematic/FixedKinematicPrimitive.h"
-#include "../kinematic/TrailerKinematic.h"
-#include "../kinematic/TrailerKinematicPrimitive.h"
+#include "../block/kinematic/FixedKinematic.h"
+#include "../block/kinematic/FixedKinematicPrimitive.h"
+#include "../block/kinematic/TrailerKinematic.h"
+#include "../block/kinematic/TrailerKinematicPrimitive.h"
 
 #include "../helpers/cgalHelper.h"
 

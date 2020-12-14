@@ -98,10 +98,10 @@
 #include "block/global/PoseSimulation.h"
 #include "block/guidance/PoseSynchroniser.h"
 
-#include "kinematic/FixedKinematic.h"
+#include "block/kinematic/FixedKinematic.h"
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
-#include "kinematic/TrailerKinematic.h"
+#include "block/kinematic/TrailerKinematic.h"
 
 #include "qneblock.h"
 #include "qneconnection.h"

@@ -33,6 +33,7 @@
 #include "FixedKinematicPrimitive.h"
 
 #include "../helpers/eigenHelper.h"
+#include "../helpers/anglesHelper.h"
 #include "../kinematic/PoseOptions.h"
 
 class TrailerKinematicPrimitive : public BlockBase {
@@ -47,31 +48,32 @@ class TrailerKinematicPrimitive : public BlockBase {
       fixedKinematic.setOffset( offset );
     }
     void setMaxJackknifeAngle( const double maxJackknifeAngle ) {
-      maxJackknifeAngleRad = qDegreesToRadians( maxJackknifeAngle );
+      maxJackknifeAngleRad = degreesToRadians( maxJackknifeAngle );
     }
     void setMaxAngle( const double maxAngle ) {
-      maxAngleRad = qDegreesToRadians( maxAngle );
+      maxAngleRad = degreesToRadians( maxAngle );
     }
 
     void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
       if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
         orientation = Eigen::Quaterniond();
       } else {
+        auto taitBryan = quaternionToTaitBryan( orientation );
         double angleRad = std::atan2( position.y() - positionCalculated.y(),
                                       position.x() - positionCalculated.x() );
 
         Eigen::Quaterniond orientationTmp;
-        orientationTmp = Eigen::AngleAxisd( angleRad,
-                                            Eigen::Vector3d::UnitZ()
-                                          );
+        orientationTmp = taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) )
+                         * taitBryanToQuaternion( angleRad, 0, 0 );
 
         // the angle between tractor and trailer > maxAngleToTowingKinematic -> reset orientation to the one from the tractor
-        double angleDifferenceRad = quaternionToTaitBryan( rotation.inverse() * orientationTmp ).z();
+        double angleDifferenceRad = getYaw( quaternionToTaitBryan( rotation.inverse() * orientationTmp ) );
 
         if( std::abs( angleDifferenceRad ) < maxJackknifeAngleRad ) {
           // limit the angle to maxAngle
           if( std::abs( angleDifferenceRad ) > maxAngleRad ) {
-            orientation = rotation * Eigen::AngleAxisd( maxAngleRad * ( angleDifferenceRad > 0 ? 1 : -1 ), Eigen::Vector3d::UnitZ() );
+            orientation = taitBryanToQuaternion( maxAngleRad * ( angleDifferenceRad > 0 ? 1 : -1 ), 0, 0 )
+                          * taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) );
           } else {
             orientation = orientationTmp;
           }

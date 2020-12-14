@@ -168,6 +168,10 @@ HEADERS += \
     src/block/guidance/PoseSynchroniser.h \
     src/block/guidance/StanleyGuidance.h \
     src/block/guidance/XteGuidance.h \
+    src/block/kinematic/FixedKinematic.h \
+    src/block/kinematic/FixedKinematicPrimitive.h \
+    src/block/kinematic/TrailerKinematic.h \
+    src/block/kinematic/TrailerKinematicPrimitive.h \
     src/block/literal/NumberObject.h \
     src/block/literal/OrientationBlock.h \
     src/block/literal/StringObject.h \
@@ -222,12 +226,10 @@ HEADERS += \
     src/gui/model/VectorBlockModel.h \
     src/helpers/GeoJsonHelper.h \
     src/helpers/GeographicConvertionWrapper.h \
+    src/helpers/anglesHelper.h \
     src/helpers/cgalHelper.h \
     src/helpers/eigenHelper.h \
-    src/helpers/normalizeAngles.h \
     src/kinematic/CgalWorker.h \
-    src/kinematic/FixedKinematic.h \
-    src/kinematic/FixedKinematicPrimitive.h \
     src/kinematic/PathPrimitive.h \
     src/kinematic/PathPrimitiveLine.h \
     src/kinematic/PathPrimitiveRay.h \
@@ -236,8 +238,6 @@ HEADERS += \
     src/kinematic/Plan.h \
     src/kinematic/PlanGlobal.h \
     src/kinematic/PoseOptions.h \
-    src/kinematic/TrailerKinematic.h \
-    src/kinematic/TrailerKinematicPrimitive.h \
 
 unix {
     PRECOMPILED_HEADER  = src/pch.h
