@@ -20,9 +20,10 @@ load(configure)
 
 CONFIG += c++17 ccache
 
-#unix {
-#    CONFIG += precompile_header
-#}
+unix {
+    CONFIG += precompile_header
+    QMAKE_CXXFLAGS += -Wno-ignored-attributes
+}
 
 include(build-paths.pri)
 
