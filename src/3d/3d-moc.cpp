@@ -19,5 +19,7 @@
 #include "moc_ArrowTexture.cpp"
 #include "moc_BufferMesh.cpp"
 #include "moc_BufferMeshGeometry.cpp"
+#include "moc_BufferMeshGeometryWithNormal.cpp"
+#include "moc_BufferMeshWithNormal.cpp"
 #include "moc_CultivatedAreaMesh.cpp"
 #include "moc_texturerendertarget.cpp"
