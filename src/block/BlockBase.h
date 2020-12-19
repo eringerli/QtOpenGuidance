@@ -69,7 +69,7 @@ class BlockFactory : public QObject {
 
     virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock = false );
+    QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock = false );
 
     bool isIdUnique( QGraphicsScene* scene, int id );
 

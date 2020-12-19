@@ -104,7 +104,7 @@ class SettingsDialog : public QDialog {
     void loadDefaultConfig();
     void saveDefaultConfig();
 
-    void allModelsReset();
+    void resetAllModels();
 
     void setSimulatorValues( const double a, const double b, const double c,
                              const double Caf, const double Car, const double Cah,

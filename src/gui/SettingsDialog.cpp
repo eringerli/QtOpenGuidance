@@ -216,6 +216,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mai
 
   auto* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
+  QObject::connect( nodesEditor, &QNodesEditor::resetModels, this, &SettingsDialog::resetAllModels );
 
   // new/open/save toolbar
   newOpenSaveToolbar = new NewOpenSaveToolbar( this );
@@ -864,8 +865,8 @@ void SettingsDialog::on_pbLoad_clicked() {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile(
-        QUrl::fromPercentEncoding(
-          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+              QUrl::fromPercentEncoding(
+                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
@@ -1028,11 +1029,11 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
     auto* block = qgraphicsitem_cast<QNEBlock*>( item );
 
     if( block != nullptr ) {
-      block->emitConfigSignals();
+      Q_EMIT block->emitConfigSignals();
     }
   }
 
-  allModelsReset();
+  resetAllModels();
 }
 
 void SettingsDialog::on_pbAddBlock_clicked() {
@@ -1046,7 +1047,7 @@ void SettingsDialog::on_pbAddBlock_clicked() {
       block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
     }
 
-    allModelsReset();
+    resetAllModels();
   }
 }
 
@@ -1082,7 +1083,7 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
     }
   }
 
-  allModelsReset();
+  resetAllModels();
 
 }
 
@@ -1339,7 +1340,7 @@ void SettingsDialog::pathPlannerModelReset() {
   on_cbPathPlanner_currentIndexChanged( ui->cbPathPlanner->currentIndex() );
 }
 
-void SettingsDialog::allModelsReset() {
+void SettingsDialog::resetAllModels() {
   vectorBlockModel->resetModel();
   numberBlockModel->resetModel();
   actionBlockModel->resetModel();
@@ -1976,7 +1977,7 @@ void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int )
     block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
   }
 
-  allModelsReset();
+  resetAllModels();
 }
 
 void SettingsDialog::on_dsbSimGeneralSlipX_valueChanged( double ) {

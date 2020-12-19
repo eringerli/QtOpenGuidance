@@ -31,8 +31,8 @@
 
 class QNEPort;
 
-class QNEBlock : public QGraphicsPathItem {
-    Q_GADGET
+class QNEBlock : public QObject, public QGraphicsPathItem {
+    Q_OBJECT
 
   public:
     enum { Type = QGraphicsItem::UserType + 3 };
@@ -55,7 +55,6 @@ class QNEBlock : public QGraphicsPathItem {
 
     void toJSON( QJsonObject& json );
     void fromJSON( QJsonObject& json );
-    void emitConfigSignals();
 
     int type() const override {
       return Type;
@@ -67,6 +66,9 @@ class QNEBlock : public QGraphicsPathItem {
     QNEPort* getPortWithName( const QString& name, bool output );
 
     bool systemBlock = false;
+
+  Q_SIGNALS:
+    void emitConfigSignals();
 
   public:
     static int getNextSystemId() {

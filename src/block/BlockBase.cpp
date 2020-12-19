@@ -49,7 +49,7 @@ void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
   newItem->setData( 0, Qt::UserRole, QVariant::fromValue( this ) );
 }
 
-QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, QObject* obj, int id, bool systemBlock ) {
+QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = 0;
     qDebug() << "BlockFactory::createBaseBlock: ID conflict";
@@ -61,6 +61,8 @@ QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, QObject* obj, in
 
   b->addPort( getPrettyNameOfFactory(), QLatin1String(), false, QNEPort::NamePort );
   b->addPort( getNameOfFactory(),  QLatin1String(), false, QNEPort::TypePort );
+
+  QObject::connect( b, &QNEBlock::emitConfigSignals, obj, &BlockBase::emitConfigSignals );
 
   return b;
 }

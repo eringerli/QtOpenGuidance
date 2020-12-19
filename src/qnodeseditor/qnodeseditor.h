@@ -49,6 +49,9 @@ class QNodesEditor : public QObject {
     void save( QDataStream& ds );
     void load( QDataStream& ds );
 
+  Q_SIGNALS:
+    void resetModels();
+
   private:
     QGraphicsItem* itemAt( QPointF );
 

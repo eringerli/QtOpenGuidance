@@ -227,10 +227,6 @@ void QNEBlock::fromJSON( QJsonObject& json ) {
   }
 }
 
-void QNEBlock::emitConfigSignals() {
-  qobject_cast<BlockBase*>( object )->emitConfigSignals();
-}
-
 void QNEBlock::resizeBlockWidth() {
   QFontMetrics fm( scene()->font() );
   qreal gridSpacing = fm.height() * 2;

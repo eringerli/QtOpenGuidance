@@ -43,10 +43,6 @@
 #include "qnegestures.h"
 #include "qneport.h"
 
-#include "../gui/SettingsDialog.h"
-
-#include "../block/BlockBase.h"
-
 QNodesEditor::QNodesEditor( QObject* parent ) :
   QObject( parent ) {
 }
@@ -82,197 +78,162 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
   switch( int( e->type() ) ) {
     case QEvent::GraphicsSceneMousePress: {
 
-        switch( int( mouseEvent->button() ) ) {
-          case Qt::LeftButton: {
-              auto* const item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+      switch( int( mouseEvent->button() ) ) {
+        case Qt::LeftButton: {
+          auto* const item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
 
-              if( item != nullptr ) {
-                const auto& constRefOfList = scene->views();
+          if( item != nullptr ) {
+            const auto& constRefOfList = scene->views();
 
-                for( const auto& it : constRefOfList ) {
-                  it->setDragMode( QGraphicsView::NoDrag );
-                }
-
-                currentConnection = new QNEConnection( nullptr );
-                scene->addItem( currentConnection );
-                currentConnection->setPort1( item );
-                currentConnection->setPos1( item->scenePos() );
-                currentConnection->setPos2( mouseEvent->scenePos() );
-                currentConnection->updatePath();
-
-                return true;
-              }
-
+            for( const auto& it : constRefOfList ) {
+              it->setDragMode( QGraphicsView::NoDrag );
             }
-            break;
 
-          case Qt::RightButton: {
-              isInPaningState = false;
-            }
-            break;
+            currentConnection = new QNEConnection( nullptr );
+            scene->addItem( currentConnection );
+            currentConnection->setPort1( item );
+            currentConnection->setPos1( item->scenePos() );
+            currentConnection->setPos2( mouseEvent->scenePos() );
+            currentConnection->updatePath();
+
+            return true;
+          }
+
         }
-
         break;
+
+        case Qt::RightButton: {
+          isInPaningState = false;
+        }
+        break;
+      }
+
+      break;
 
       case QEvent::KeyRelease: {
 
-          if( keyEvent->matches( QKeySequence::Delete ) ) {
-            {
-              const auto& constRefOfList = scene->selectedItems();
+        if( keyEvent->matches( QKeySequence::Delete ) ) {
+          {
+            const auto& constRefOfList = scene->selectedItems();
 
-              for( const auto& item : constRefOfList ) {
-                delete qgraphicsitem_cast<QNEConnection*>( item );
-              }
-            }
-
-            {
-              const auto& constRefOfList = scene->selectedItems();
-              SettingsDialog* settingsDialog = nullptr;
-
-              for( const auto& item : constRefOfList ) {
-                auto* const block = qgraphicsitem_cast<QNEBlock*>( item );
-
-                if( block != nullptr ) {
-                  if( !block->systemBlock ) {
-                    delete block;
-
-                    auto* const dialog = qobject_cast<SettingsDialog*>( parent() );
-
-                    if( dialog != nullptr ) {
-                      settingsDialog = dialog;
-                    }
-                  }
-                }
-              }
-
-              if( settingsDialog != nullptr ) {
-                settingsDialog->allModelsReset();
-              }
+            for( const auto& item : constRefOfList ) {
+              delete qgraphicsitem_cast<QNEConnection*>( item );
             }
           }
+
+          Q_EMIT resetModels();
         }
-        break;
       }
       break;
+    }
+    break;
 
 
     case QEvent::GraphicsSceneMouseMove: {
-        auto* const m = static_cast<QGraphicsSceneMouseEvent*>( e );
+      auto* const m = static_cast<QGraphicsSceneMouseEvent*>( e );
 
-        if( currentConnection != nullptr ) {
-          currentConnection->setPos2( mouseEvent->scenePos() );
-          currentConnection->updatePath();
-          return true;
-        }
-
-        if( m->buttons() & Qt::RightButton ) {
-          QPointF delta = m->lastScreenPos() - m->screenPos();
-
-          {
-            const auto& constRefOfList = scene->views();
-
-            for( const auto& view : constRefOfList ) {
-              double newX = view->horizontalScrollBar()->value() + delta.x();
-              double newY = view->verticalScrollBar()->value() + delta.y();
-              view->horizontalScrollBar()->setValue( int( newX ) );
-              view->verticalScrollBar()->setValue( int( newY ) );
-            }
-          }
-
-          {
-            const auto& constRefOfList = scene->views();
-
-            for( const auto& view : constRefOfList ) {
-              view->setDragMode( QGraphicsView::ScrollHandDrag );
-            }
-          }
-
-          isInPaningState = true;
-          return true;
-        }
-
-
-        break;
+      if( currentConnection != nullptr ) {
+        currentConnection->setPos2( mouseEvent->scenePos() );
+        currentConnection->updatePath();
+        return true;
       }
 
-    case QEvent::GraphicsSceneMouseRelease: {
-        if( ( currentConnection != nullptr ) && mouseEvent->button() == Qt::LeftButton ) {
-          auto* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+      if( m->buttons() & Qt::RightButton ) {
+        QPointF delta = m->lastScreenPos() - m->screenPos();
 
-          if( ( port != nullptr ) && port != currentConnection->port1() ) {
-            if( currentConnection->setPort2( port ) ) {
-              currentConnection->updatePosFromPorts();
-              currentConnection->updatePath();
-              auto* block = qobject_cast<BlockBase*> ( currentConnection->port1()->block()->object );
-
-              if( block != nullptr ) {
-                block->emitConfigSignals();
-              }
-
-              currentConnection = nullptr;
-              return true;
-            }
-
-            QNEPort* port1 = currentConnection->port1();
-            currentConnection->setPort1( port );
-
-            if( currentConnection->setPort2( port1 ) ) {
-              currentConnection->updatePosFromPorts();
-              currentConnection->updatePath();
-              auto* block = qobject_cast<BlockBase*> ( currentConnection->port1()->block()->object );
-
-              if( block != nullptr ) {
-                block->emitConfigSignals();
-              }
-
-              currentConnection = nullptr;
-              return true;
-            }
-
-          }
-
-          delete currentConnection;
-          currentConnection = nullptr;
-          return true;
-        }
-
-        if( mouseEvent->button() == Qt::RightButton ) {
-          if( !isInPaningState )  {
-            QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
-
-            if( item != nullptr ) {
-              auto* block = qgraphicsitem_cast<QNEBlock*>( item );
-
-              if( block != nullptr ) {
-                if( !block->systemBlock ) {
-                  delete block;
-
-                  auto* dialog = qobject_cast<SettingsDialog*>( parent() );
-
-                  if( dialog != nullptr ) {
-                    dialog->allModelsReset();
-                  }
-                }
-              } else {
-                auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
-
-
-                delete connection;
-
-              }
-            }
-          }
-
+        {
           const auto& constRefOfList = scene->views();
 
-          for( const auto& it : constRefOfList ) {
-            it->setDragMode( QGraphicsView::RubberBandDrag );
+          for( const auto& view : constRefOfList ) {
+            double newX = view->horizontalScrollBar()->value() + delta.x();
+            double newY = view->verticalScrollBar()->value() + delta.y();
+            view->horizontalScrollBar()->setValue( int( newX ) );
+            view->verticalScrollBar()->setValue( int( newY ) );
           }
         }
 
+        {
+          const auto& constRefOfList = scene->views();
 
-        break;
+          for( const auto& view : constRefOfList ) {
+            view->setDragMode( QGraphicsView::ScrollHandDrag );
+          }
+        }
+
+        isInPaningState = true;
+        return true;
       }
+
+
+      break;
+    }
+
+    case QEvent::GraphicsSceneMouseRelease: {
+      if( ( currentConnection != nullptr ) && mouseEvent->button() == Qt::LeftButton ) {
+        auto* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+
+        if( ( port != nullptr ) && port != currentConnection->port1() ) {
+          if( currentConnection->setPort2( port ) ) {
+            currentConnection->updatePosFromPorts();
+            currentConnection->updatePath();
+            Q_EMIT currentConnection->port1()->block()->emitConfigSignals();
+
+            currentConnection = nullptr;
+            return true;
+          }
+
+          QNEPort* port1 = currentConnection->port1();
+          currentConnection->setPort1( port );
+
+          if( currentConnection->setPort2( port1 ) ) {
+            currentConnection->updatePosFromPorts();
+            currentConnection->updatePath();
+            Q_EMIT currentConnection->port1()->block()->emitConfigSignals();
+
+            currentConnection = nullptr;
+            return true;
+          }
+
+        }
+
+        delete currentConnection;
+        currentConnection = nullptr;
+        return true;
+      }
+
+      if( mouseEvent->button() == Qt::RightButton ) {
+        if( !isInPaningState )  {
+          QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
+
+          if( item != nullptr ) {
+            auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+
+            if( block != nullptr ) {
+              if( !block->systemBlock ) {
+                delete block;
+
+                Q_EMIT resetModels();
+              }
+            } else {
+              auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
+
+
+              delete connection;
+
+            }
+          }
+        }
+
+        const auto& constRefOfList = scene->views();
+
+        for( const auto& it : constRefOfList ) {
+          it->setDragMode( QGraphicsView::RubberBandDrag );
+        }
+      }
+
+
+      break;
+    }
   }
 
   return QObject::eventFilter( o, e );
