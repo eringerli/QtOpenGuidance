@@ -46,3 +46,8 @@ build/
 .kdev4/
 
 *.kate-swp
+
+ablines/
+fields/
+terrain/
+testdata/
