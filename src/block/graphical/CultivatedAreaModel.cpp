@@ -102,10 +102,12 @@ void CultivatedAreaModel::setImplement( const QPointer<Implement>& implement ) {
     size_t numSections = implement->sections.size();
 
     for( auto* mesh : sectionMeshes ) {
-      if( mesh != nullptr && mesh->vertexCount() > 3 ) {
-        mesh->optimise( threadForCgalWorker );
-      } else {
-        mesh->deleteLater();
+      if( mesh != nullptr ) {
+        if( mesh->vertexCount() > 3 ) {
+          mesh->optimise( threadForCgalWorker );
+        } else {
+          mesh->deleteLater();
+        }
       }
     }
 
