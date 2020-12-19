@@ -32,8 +32,6 @@
 #include <QFontMetrics>
 #include <QTextDocument>
 
-#include <QDebug>
-
 class QNEBlock;
 class QNEConnection;
 

@@ -65,3 +65,5 @@ KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::Flo
 KDDockWidgets::Frame* CustomWidgetFactory::createCentralFrame( QWidgetOrQuick* parent ) const {
   return createFrame( parent, KDDockWidgets::FrameOptions() | KDDockWidgets::FrameOption_IsCentralFrame );
 }
+
+#include "MyFrameworkWidgetFactory.moc"

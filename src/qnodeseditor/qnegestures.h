@@ -38,9 +38,6 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 
-#include <QDebug>
-
-
 class QNEGestureEventFilter : public QObject {
     Q_OBJECT
 
@@ -65,7 +62,7 @@ class QNEGestureEventFilter : public QObject {
           QTouchEvent* touchEvent = static_cast<QTouchEvent*>( event );
 
           if( touchEvent->touchPoints().count() > 1 ) {
-            qDebug() << QStringLiteral( "QEvent::TouchBegin" );
+//            qDebug() << QStringLiteral( "QEvent::TouchBegin" );
             return true;
           }
         }
@@ -73,13 +70,13 @@ class QNEGestureEventFilter : public QObject {
         if( event->type() == QEvent::Gesture ) {
           QGestureEvent* gestureEvent = static_cast<QGestureEvent*>( event );
 
-          if( QGesture* swipe = gestureEvent->gesture( Qt::SwipeGesture ) ) {
-            qDebug() << "swipe" << swipe;
-          }
+//          if( QGesture* swipe = gestureEvent->gesture( Qt::SwipeGesture ) ) {
+//            qDebug() << "swipe" << swipe;
+//          }
 
-          if( QGesture* pan = gestureEvent->gesture( Qt::PanGesture ) ) {
-            qDebug() << "pan" << pan;
-          }
+//          if( QGesture* pan = gestureEvent->gesture( Qt::PanGesture ) ) {
+//            qDebug() << "pan" << pan;
+//          }
 
           if( QPinchGesture* pinch = static_cast<QPinchGesture*>( gestureEvent->gesture( Qt::PinchGesture ) ) ) {
             if( pinch->state() == Qt::GestureStarted ) {

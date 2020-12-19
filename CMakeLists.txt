@@ -291,11 +291,15 @@ set(SOURCES
 set(SOURCES ${SOURCES}
   lib/UBX_Parser/src/UBX_Parser.h)
 
+if(HAVE_SPNAV)
+  set(SOURCES ${SOURCES}
+    src/gui/SpaceNavigatorPollingThread.cpp
+    src/gui/SpaceNavigatorPollingThread.h)
+endif()
+
 add_executable(QtOpenGuidance ${SOURCES})
 
-if(${HAVE_SPNAV})
-  set(SOURCES ${SOURCES}
-    src/gui/SpaceNavigatorPollingThread.h)
+if(HAVE_SPNAV)
   target_compile_definitions(QtOpenGuidance PRIVATE SPNAV_ENABLED)
 endif()
 

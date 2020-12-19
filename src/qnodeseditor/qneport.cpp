@@ -36,8 +36,6 @@
 #include <QEvent>
 #include <QGraphicsSceneMouseEvent>
 
-#include <QDebug>
-#include <utility>
 #include <utility>
 
 #include "qneconnection.h"

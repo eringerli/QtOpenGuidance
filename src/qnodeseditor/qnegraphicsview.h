@@ -32,7 +32,6 @@
 #include <QKeyEvent>
 #include <QtMath>
 #include <QAbstractScrollArea>
-#include <QDebug>
 
 class QNEGraphicsView : public QGraphicsView {
     Q_OBJECT

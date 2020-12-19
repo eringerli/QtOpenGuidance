@@ -45,12 +45,10 @@
 #include <QJsonValue>
 #include <QJsonValueRef>
 
-#include <QDebug>
-
-#include "block/BlockBase.h"
-
 #include "qneconnection.h"
 #include "qneport.h"
+
+#include "block/BlockBase.h"
 
 int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId = int( IdRange::UserIdStart );

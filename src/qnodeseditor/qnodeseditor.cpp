@@ -36,8 +36,6 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 
-#include <QDebug>
-
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qnegestures.h"
