@@ -36,6 +36,8 @@ else()
   set(SPNAV_LIBRARY "")
 endif()
 
+set(GEOGRAPHICLIB_LIB_TYPE STATIC)
+
 add_subdirectory(lib/geographiclib/ EXCLUDE_FROM_ALL)
 add_subdirectory(lib/dubins_curves/ EXCLUDE_FROM_ALL)
 
@@ -322,7 +324,7 @@ target_link_libraries(QtOpenGuidance
   Qt5::3DInput
   Eigen3::Eigen
   KDAB::kddockwidgets
-  GeographicLib::GeographicLib
+  GeographicLib::GeographicLib_STATIC
   dubins
   CGAL::CGAL CGAL::CGAL_Core
   QCustomPlot
@@ -330,3 +332,12 @@ target_link_libraries(QtOpenGuidance
   ${SPNAV_LIBRARY})
 
 target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)
+
+install(TARGETS QtOpenGuidance)
+
+file(GLOB CONFIG_FILES ${PROJECT_SOURCE_DIR}/config/*.json)
+install(FILES ${CONFIG_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/QtOpenGuidance/config)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/icons/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/)
+
+install(FILES QtOpenGuidance.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/)

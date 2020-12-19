@@ -51,6 +51,5 @@ build() {
 }
 
 package() {
-  cd "$srcdir/QtOpenGuidance-git/build"
-  make DESTDIR="$pkgdir/" install
+  make -C "build" DESTDIR="$pkgdir" install
 }
