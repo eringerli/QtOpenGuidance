@@ -20,7 +20,7 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 // all the formulas are from https://www.xarg.org/book/kinematics/ackerman-steering/
 

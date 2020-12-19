@@ -21,16 +21,16 @@
 #include <QObject>
 #include <QVector3D>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../kinematic/PathPrimitive.h"
-#include "../kinematic/Plan.h"
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/Plan.h"
 
 #include <QVector>
 #include <QSharedPointer>

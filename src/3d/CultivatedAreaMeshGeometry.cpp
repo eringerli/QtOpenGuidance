@@ -20,8 +20,8 @@
 #include <QVector>
 #include <QVector3D>
 
-#include "../kinematic/CgalWorker.h"
-#include "../kinematic/cgal.h"
+#include "kinematic/CgalWorker.h"
+#include "kinematic/cgal.h"
 
 CultivatedAreaMeshGeometry::CultivatedAreaMeshGeometry( Qt3DCore::QNode* parent )
   : Qt3DRender::QGeometry( parent ),

@@ -28,10 +28,10 @@
 
 #include <Qt3DExtras/QCylinderMesh>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 #include "../sectionControl/Implement.h"
 

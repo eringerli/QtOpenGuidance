@@ -23,7 +23,7 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include "../3d/texturerendertarget.h"
+#include "3d/texturerendertarget.h"
 #include <Qt3DRender/QLayer>
 #include <Qt3DRender/QFrameGraphNode>
 #include <Qt3DRender/QLayerFilter>
@@ -31,10 +31,10 @@
 #include <Qt3DRender/QRenderCapture>
 #include <Qt3DRender/QRenderCaptureReply>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 #include "Implement.h"
 

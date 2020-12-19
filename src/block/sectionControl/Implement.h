@@ -16,24 +16,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../gui/model/ImplementBlockModel.h"
+#include "gui/model/ImplementBlockModel.h"
 
-#include "../gui/SectionControlToolbar.h"
+#include "gui/SectionControlToolbar.h"
 
 #pragma once
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 #include <QObject>
 
 #include <QMenu>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "ImplementSection.h"
 
-#include "../gui/MyMainWindow.h"
+#include "gui/MyMainWindow.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>

@@ -27,7 +27,7 @@
 #include <QGraphicsScene>
 #include <QSortFilterProxyModel>
 
-#include "../block/guidance/PoseSynchroniser.h"
+#include "block/guidance/PoseSynchroniser.h"
 
 #include "NewOpenSaveToolbar.h"
 
@@ -46,7 +46,7 @@
 
 #include "FontComboboxDelegate.h"
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/cgalHelper.h"
 
 class SpaceNavigatorPollingThread;
 class GeographicConvertionWrapper;

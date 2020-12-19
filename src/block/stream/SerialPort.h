@@ -22,7 +22,7 @@
 #include <QByteArray>
 #include <QSerialPort>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class SerialPort : public BlockBase {
     Q_OBJECT

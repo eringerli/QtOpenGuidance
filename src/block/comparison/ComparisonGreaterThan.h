@@ -16,13 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../gui/model/NumberBlockModel.h"
+#include "gui/model/NumberBlockModel.h"
 
 #pragma once
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class ComparisonGreaterThan : public BlockBase {
     Q_OBJECT

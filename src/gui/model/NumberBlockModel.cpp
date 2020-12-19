@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../../block/literal/NumberObject.h"
+#include "block/literal/NumberObject.h"
 
 
 #include "NumberBlockModel.h"
@@ -24,7 +24,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
 NumberBlockModel::NumberBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

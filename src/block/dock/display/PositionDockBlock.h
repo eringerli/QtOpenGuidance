@@ -23,13 +23,13 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/ThreeValuesDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/ThreeValuesDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 #include "ValueDockBlockBase.h"
 
 class PositionDockBlock : public ValueDockBlockBase {

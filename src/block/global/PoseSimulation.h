@@ -33,21 +33,23 @@
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QExtrudedTextMesh>
-#include "../3d/BufferMesh.h"
-#include "../3d/BufferMeshWithNormal.h"
+#include "3d/BufferMesh.h"
+#include "3d/BufferMeshWithNormal.h"
 
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/cgalHelper.h"
-#include "../helpers/eigenHelper.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
 
-#include "../helpers/GeographicConvertionWrapper.h"
-#include "../kinematic/FixedKinematicPrimitive.h"
+#include "helpers/GeographicConvertionWrapper.h"
+#include "block/kinematic/FixedKinematicPrimitive.h"
 
-#include "../filter/3wFRHRL/SystemModel.h"
+#include "kinematic/VehicleDynamics/Vehicle.h"
+
+#include "filter/3wFRHRL/SystemModel.h"
 
 using namespace std;
 using namespace GeographicLib;

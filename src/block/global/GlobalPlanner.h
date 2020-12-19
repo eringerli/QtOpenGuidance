@@ -29,33 +29,33 @@
 
 #include <QDebug>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../3d/BufferMesh.h"
+#include "3d/BufferMesh.h"
 
-#include "../gui/FieldsOptimitionToolbar.h"
-#include "../gui/GlobalPlannerToolbar.h"
+#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/GlobalPlannerToolbar.h"
 
-#include "../gui/MyMainWindow.h"
+#include "gui/MyMainWindow.h"
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include "../helpers/cgalHelper.h"
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../kinematic/PathPrimitive.h"
-#include "../kinematic/PathPrimitiveLine.h"
-#include "../kinematic/PathPrimitiveRay.h"
-#include "../kinematic/PathPrimitiveSegment.h"
-#include "../kinematic/PathPrimitiveSequence.h"
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/PathPrimitiveLine.h"
+#include "kinematic/PathPrimitiveRay.h"
+#include "kinematic/PathPrimitiveSegment.h"
+#include "kinematic/PathPrimitiveSequence.h"
 
-#include "../kinematic/PlanGlobal.h"
+#include "kinematic/PlanGlobal.h"
 
-#include "../helpers/GeographicConvertionWrapper.h"
+#include "helpers/GeographicConvertionWrapper.h"
 
 #include <QVector>
 #include <QSharedPointer>

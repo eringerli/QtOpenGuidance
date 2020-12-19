@@ -28,13 +28,13 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "../block/BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "FixedKinematicPrimitive.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../helpers/anglesHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "helpers/anglesHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class TrailerKinematicPrimitive : public BlockBase {
     Q_OBJECT

@@ -26,7 +26,7 @@
 
 #ifdef SERIALPORT_ENABLED
 #include <QSerialPortInfo>
-#include "../block/SerialPort.h"
+#include "block/SerialPort.h"
 #endif
 
 #include <QDebug>
@@ -43,79 +43,79 @@
 #include <Qt3DExtras/QForwardRenderer>
 #include <Qt3DExtras/Qt3DWindow>
 
-#include "../block/literal/NumberObject.h"
-#include "../block/literal/OrientationBlock.h"
-#include "../block/literal/StringObject.h"
-#include "../block/literal/VectorObject.h"
+#include "block/literal/NumberObject.h"
+#include "block/literal/OrientationBlock.h"
+#include "block/literal/StringObject.h"
+#include "block/literal/VectorObject.h"
 
-#include "../block/arithmetic/ArithmeticAddition.h"
-#include "../block/arithmetic/ArithmeticDivision.h"
-#include "../block/arithmetic/ArithmeticMultiplication.h"
-#include "../block/arithmetic/ArithmeticSubtraction.h"
+#include "block/arithmetic/ArithmeticAddition.h"
+#include "block/arithmetic/ArithmeticDivision.h"
+#include "block/arithmetic/ArithmeticMultiplication.h"
+#include "block/arithmetic/ArithmeticSubtraction.h"
 
-#include "../block/comparison/ComparisonEqualTo.h"
-#include "../block/comparison/ComparisonGreaterOrEqualTo.h"
-#include "../block/comparison/ComparisonGreaterThan.h"
-#include "../block/comparison/ComparisonLessOrEqualTo.h"
-#include "../block/comparison/ComparisonLessThan.h"
-#include "../block/comparison/ComparisonNotEqualTo.h"
+#include "block/comparison/ComparisonEqualTo.h"
+#include "block/comparison/ComparisonGreaterOrEqualTo.h"
+#include "block/comparison/ComparisonGreaterThan.h"
+#include "block/comparison/ComparisonLessOrEqualTo.h"
+#include "block/comparison/ComparisonLessThan.h"
+#include "block/comparison/ComparisonNotEqualTo.h"
 
-#include "../block/sectionControl/Implement.h"
+#include "block/sectionControl/Implement.h"
 
-#include "../block/graphical/PathPlannerModel.h"
+#include "block/graphical/PathPlannerModel.h"
 
-#include "../block/global/CameraController.h"
-#include "../block/global/GridModel.h"
+#include "block/global/CameraController.h"
+#include "block/global/GridModel.h"
 
-#include "../block/graphical/CultivatedAreaModel.h"
-#include "../block/graphical/SprayerModel.h"
-#include "../block/graphical/TractorModel.h"
-#include "../block/graphical/TrailerModel.h"
+#include "block/graphical/CultivatedAreaModel.h"
+#include "block/graphical/SprayerModel.h"
+#include "block/graphical/TractorModel.h"
+#include "block/graphical/TrailerModel.h"
 
-#include "../block/calculation/AckermannSteering.h"
-#include "../block/calculation/AngularVelocityLimiter.h"
+#include "block/calculation/AckermannSteering.h"
+#include "block/calculation/AngularVelocityLimiter.h"
 
-#include "../block/global/PoseSimulation.h"
+#include "block/global/PoseSimulation.h"
 
 #ifdef SPNAV_ENABLED
 #include "SpaceNavigatorPollingThread.h"
 #endif
 
-#include "../block/ExtendedKalmanFilter.h"
-#include "../block/guidance/PoseSynchroniser.h"
+#include "block/ExtendedKalmanFilter.h"
+#include "block/guidance/PoseSynchroniser.h"
 
-#include "../block/calculation/TransverseMercatorConverter.h"
-#include "../block/parser/NmeaParserGGA.h"
-#include "../block/parser/NmeaParserHDT.h"
-#include "../block/parser/NmeaParserRMC.h"
-#include "../block/parser/UbxParser.h"
+#include "block/calculation/TransverseMercatorConverter.h"
+#include "block/parser/NmeaParserGGA.h"
+#include "block/parser/NmeaParserHDT.h"
+#include "block/parser/NmeaParserRMC.h"
+#include "block/parser/UbxParser.h"
 
-#include "../block/dock/input/ActionDockBlock.h"
-#include "../block/global/FieldManager.h"
-#include "../block/global/GlobalPlanner.h"
-#include "../block/graphical/PathPlannerModel.h"
-#include "../block/guidance/LocalPlanner.h"
-#include "../block/guidance/StanleyGuidance.h"
-#include "../block/guidance/XteGuidance.h"
-#include "../block/sectionControl/SectionControl.h"
+#include "block/dock/input/ActionDockBlock.h"
+#include "block/global/FieldManager.h"
+#include "block/global/GlobalPlanner.h"
+#include "block/graphical/PathPlannerModel.h"
+#include "block/guidance/LocalPlanner.h"
+#include "block/guidance/StanleyGuidance.h"
+#include "block/guidance/XteGuidance.h"
+#include "block/sectionControl/SectionControl.h"
 
-#include "../block/base/DebugSink.h"
+#include "block/base/DebugSink.h"
 
-#include "../block/converter/CommunicationJrk.h"
-#include "../block/converter/CommunicationPgn7FFE.h"
-#include "../block/stream/FileStream.h"
-#include "../block/stream/UdpSocket.h"
+#include "block/converter/CommunicationJrk.h"
+#include "block/converter/CommunicationPgn7FFE.h"
+#include "block/stream/FileStream.h"
+#include "block/stream/UdpSocket.h"
 
-#include "../block/converter/ValueTransmissionBase64Data.h"
-#include "../block/converter/ValueTransmissionNumber.h"
-#include "../block/converter/ValueTransmissionQuaternion.h"
-#include "../block/converter/ValueTransmissionState.h"
+#include "block/converter/ValueTransmissionBase64Data.h"
+#include "block/converter/ValueTransmissionNumber.h"
+#include "block/converter/ValueTransmissionQuaternion.h"
+#include "block/converter/ValueTransmissionState.h"
 
-#include "../helpers/GeographicConvertionWrapper.h"
-#include "../block/kinematic/FixedKinematic.h"
-#include "../block/kinematic/FixedKinematicPrimitive.h"
-#include "../block/kinematic/TrailerKinematic.h"
-#include "../block/kinematic/TrailerKinematicPrimitive.h"
+#include "helpers/GeographicConvertionWrapper.h"
+#include "block/kinematic/FixedKinematic.h"
+#include "block/kinematic/FixedKinematicPrimitive.h"
+#include "block/kinematic/TrailerKinematic.h"
+#include "block/kinematic/TrailerKinematicPrimitive.h"
 
 #include "../helpers/cgalHelper.h"
 

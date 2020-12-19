@@ -20,9 +20,9 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
+#include "helpers/eigenHelper.h"
 
 class NmeaParserRMC : public BlockBase {
     Q_OBJECT

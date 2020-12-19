@@ -25,15 +25,15 @@
 #include <QDateTime>
 #include <QtMath>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/PlotDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/PlotDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 #include "PlotDockBlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../helpers/anglesHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "helpers/anglesHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
     Q_OBJECT

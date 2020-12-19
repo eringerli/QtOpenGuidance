@@ -18,14 +18,14 @@
 
 #include "LocalPlanner.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/cgal.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/cgal.h"
 
-#include "../kinematic/PathPrimitive.h"
-#include "../kinematic/PathPrimitiveLine.h"
-#include "../kinematic/PathPrimitiveRay.h"
-#include "../kinematic/PathPrimitiveSegment.h"
-#include "../kinematic/PathPrimitiveSequence.h"
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/PathPrimitiveLine.h"
+#include "kinematic/PathPrimitiveRay.h"
+#include "kinematic/PathPrimitiveSegment.h"
+#include "kinematic/PathPrimitiveSequence.h"
 
 #include <CGAL/Polyline_simplification_2/simplify.h>
 namespace PS = CGAL::Polyline_simplification_2;

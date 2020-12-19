@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "../kinematic/cgalKernel.h"
+#include "kinematic/cgalKernel.h"
 
-#include "../helpers/anglesHelper.h"
+#include "helpers/anglesHelper.h"
 
 // basic conversions
 inline const QVector3D toQVector3D( const Point_3& point ) {

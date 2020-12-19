@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QByteArray>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class CommunicationPgn7ffe : public BlockBase {
     Q_OBJECT

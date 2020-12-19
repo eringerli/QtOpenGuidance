@@ -27,9 +27,9 @@
 
 #include <Qt3DExtras/QConeMesh>
 
-#include "../3d/BufferMesh.h"
+#include "3d/BufferMesh.h"
 
-#include "../helpers/eigenHelper.h"
+#include "helpers/eigenHelper.h"
 
 SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
 

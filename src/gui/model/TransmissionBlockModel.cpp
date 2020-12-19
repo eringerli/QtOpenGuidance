@@ -21,12 +21,12 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
-#include "../block/converter/ValueTransmissionBase.h"
-#include "../block/converter/ValueTransmissionBase64Data.h"
-#include "../block/converter/ValueTransmissionNumber.h"
-#include "../block/converter/ValueTransmissionQuaternion.h"
+#include "block/converter/ValueTransmissionBase.h"
+#include "block/converter/ValueTransmissionBase64Data.h"
+#include "block/converter/ValueTransmissionNumber.h"
+#include "block/converter/ValueTransmissionQuaternion.h"
 
 TransmissionBlockModel::TransmissionBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

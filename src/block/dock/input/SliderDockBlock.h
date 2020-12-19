@@ -22,11 +22,11 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/SliderDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/SliderDock.h"
 
-#include "../../BlockBase.h"
-#include "../display/ValueDockBlockBase.h"
+#include "block/BlockBase.h"
+#include "block/dock/display/ValueDockBlockBase.h"
 
 class SliderDockBlock : public BlockBase {
     Q_OBJECT

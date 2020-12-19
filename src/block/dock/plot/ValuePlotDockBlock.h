@@ -24,10 +24,10 @@
 #include <QMenu>
 #include <QDateTime>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/PlotDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/PlotDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 #include "PlotDockBlockBase.h"
 
 class ValuePlotDockBlock : public PlotDockBlockBase {

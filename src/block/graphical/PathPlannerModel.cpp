@@ -39,22 +39,22 @@
 
 #include <QDebug>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
 
-#include "../helpers/cgalHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/cgalHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../kinematic/Plan.h"
+#include "kinematic/Plan.h"
 
-#include "../kinematic/PathPrimitive.h"
-#include "../kinematic/PathPrimitiveLine.h"
-#include "../kinematic/PathPrimitiveRay.h"
-#include "../kinematic/PathPrimitiveSegment.h"
-#include "../kinematic/PathPrimitiveSequence.h"
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/PathPrimitiveLine.h"
+#include "kinematic/PathPrimitiveRay.h"
+#include "kinematic/PathPrimitiveSegment.h"
+#include "kinematic/PathPrimitiveSequence.h"
 
 #include <QSharedPointer>
 #include <QVector>

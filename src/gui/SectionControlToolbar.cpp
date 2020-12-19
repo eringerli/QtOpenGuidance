@@ -18,7 +18,7 @@
 
 #include "SectionControlToolbar.h"
 
-#include "../block/sectionControl/Implement.h"
+#include "block/sectionControl/Implement.h"
 
 #include <QString>
 

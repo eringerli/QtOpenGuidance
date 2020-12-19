@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/cgalHelper.h"
 
 #include <CGAL/Aff_transformation_2.h>
 #include <CGAL/aff_transformation_tags.h>

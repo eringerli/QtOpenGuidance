@@ -21,7 +21,6 @@
 #include <cmath>
 
 #include "Eigen/Eigen"
-#include "Eigen/Geometry"
 
 #include "unsupported/Eigen/EulerAngles"
 

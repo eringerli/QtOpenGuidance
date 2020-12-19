@@ -29,10 +29,10 @@
 #include <Qt3DExtras/QCylinderMesh>
 #include <Qt3DExtras/QSphereMesh>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class TrailerModel : public BlockBase {
     Q_OBJECT

@@ -30,10 +30,10 @@
 #include <Qt3DExtras/QCuboidMesh>
 #include <Qt3DExtras/QSphereMesh>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class TractorModel : public BlockBase {
     Q_OBJECT

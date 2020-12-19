@@ -16,20 +16,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../kinematic/cgal.h"
-#include "../kinematic/CgalWorker.h"
+#include "kinematic/cgal.h"
+#include "kinematic/CgalWorker.h"
 #include "CultivatedAreaModel.h"
 
 #include <QtCore/QDebug>
 #include <QtMath>
 
-#include "../3d/CultivatedAreaMesh.h"
+#include "3d/CultivatedAreaMesh.h"
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-#include "../helpers/cgalHelper.h"
-#include "../helpers/eigenHelper.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker )
   : threadForCgalWorker( threadForCgalWorker ) {

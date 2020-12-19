@@ -21,12 +21,12 @@
 
 #include <QFileDialog>
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/cgalHelper.h"
 
-#include "../kinematic/CgalWorker.h"
-#include "../kinematic/cgal.h"
+#include "kinematic/CgalWorker.h"
+#include "kinematic/cgal.h"
 
-#include "../helpers/GeoJsonHelper.h"
+#include "helpers/GeoJsonHelper.h"
 
 FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
   : mainWindow( mainWindow ), tmw( tmw ) {

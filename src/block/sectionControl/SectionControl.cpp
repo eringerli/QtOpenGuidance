@@ -21,7 +21,7 @@
 #include <QtCore/QDebug>
 #include <QtMath>
 
-#include "../3d/texturerendertarget.h"
+#include "3d/texturerendertarget.h"
 #include <Qt3DRender/QCameraSelector>
 #include <Qt3DRender/QClearBuffers>
 #include <Qt3DRender/QFrustumCulling>
@@ -31,7 +31,7 @@
 #include <Qt3DRender/QRenderTargetSelector>
 #include <Qt3DRender/QViewport>
 
-#include "../helpers/eigenHelper.h"
+#include "helpers/eigenHelper.h"
 
 SectionControl::SectionControl( const QString& uniqueName,
                                 MyMainWindow* mainWindow,

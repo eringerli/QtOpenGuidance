@@ -22,10 +22,10 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/PlotDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/PlotDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>

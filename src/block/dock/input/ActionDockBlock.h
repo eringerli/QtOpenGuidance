@@ -22,17 +22,17 @@
 
 #include <QDebug>
 
-#include "../../BlockBase.h"
-#include "../gui/dock/ActionDock.h"
+#include "block/BlockBase.h"
+#include "gui/dock/ActionDock.h"
 
-#include "../gui/MyMainWindow.h"
+#include "gui/MyMainWindow.h"
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../kinematic/PoseOptions.h"
+#include "kinematic/PoseOptions.h"
 
 class ActionDockBlock : public BlockBase {
     Q_OBJECT

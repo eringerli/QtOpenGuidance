@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../gui/model/VectorBlockModel.h"
+#include "gui/model/VectorBlockModel.h"
 
 #pragma once
 
@@ -25,7 +25,7 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DLogic/QFrameAction>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class FpsMeasurement : public BlockBase {
     Q_OBJECT

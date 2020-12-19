@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/cgalHelper.h"
 #include "PathPrimitive.h"
 
 class Plan {

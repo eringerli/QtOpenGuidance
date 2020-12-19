@@ -22,7 +22,7 @@
 #include <QGeometry>
 #include <Qt3DRender/QBuffer>
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/cgalHelper.h"
 
 class CgalThread;
 

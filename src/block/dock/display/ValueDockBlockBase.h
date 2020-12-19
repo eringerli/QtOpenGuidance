@@ -22,7 +22,7 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>

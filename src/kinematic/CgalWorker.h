@@ -23,8 +23,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include "../helpers/cgalHelper.h"
-#include "../gui/FieldsOptimitionToolbar.h"
+#include "helpers/cgalHelper.h"
+#include "gui/FieldsOptimitionToolbar.h"
 
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Alpha_shape_2.h>

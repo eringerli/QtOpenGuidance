@@ -25,13 +25,13 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/cgalHelper.h"
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../filter/BicycleModel/SystemModel.h"
-#include "../filter/BicycleModel/ImuMeasurementModel.h"
-#include "../filter/BicycleModel/PositionMeasurementModel.h"
+#include "filter/BicycleModel/SystemModel.h"
+#include "filter/BicycleModel/ImuMeasurementModel.h"
+#include "filter/BicycleModel/PositionMeasurementModel.h"
 
 #include "kalman/ExtendedKalmanFilter.hpp"
 

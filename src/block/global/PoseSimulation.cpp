@@ -26,9 +26,9 @@
 
 #include <QDebug>
 
-#include "../helpers/GeoJsonHelper.h"
-#include "../helpers/cgalHelper.h"
-#include "../helpers/eigenHelper.h"
+#include "helpers/GeoJsonHelper.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
 
 // http://correll.cs.colorado.edu/?p=1869
 // https://github.com/correll/Introduction-to-Autonomous-Robots/releases

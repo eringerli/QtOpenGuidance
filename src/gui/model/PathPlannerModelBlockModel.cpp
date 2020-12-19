@@ -16,14 +16,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../../block/graphical/PathPlannerModel.h"
+#include "block/graphical/PathPlannerModel.h"
 
 #include "PathPlannerModelBlockModel.h"
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
 PathPlannerModelBlockModel::PathPlannerModelBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

@@ -22,7 +22,7 @@
 #include <QByteArray>
 #include <QTextStream>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class FileStream : public BlockBase {
     Q_OBJECT

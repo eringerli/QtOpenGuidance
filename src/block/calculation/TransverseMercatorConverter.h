@@ -20,13 +20,13 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../helpers/GeographicConvertionWrapper.h"
+#include "helpers/eigenHelper.h"
+#include "helpers/GeographicConvertionWrapper.h"
 
 #include <QDebug>
 

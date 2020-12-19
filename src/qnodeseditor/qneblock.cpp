@@ -47,7 +47,7 @@
 
 #include <QDebug>
 
-#include "../block/BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneconnection.h"
 #include "qneport.h"

@@ -16,14 +16,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../../block/literal/VectorObject.h"
+#include "block/literal/VectorObject.h"
 
 #include "VectorBlockModel.h"
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
 VectorBlockModel::VectorBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

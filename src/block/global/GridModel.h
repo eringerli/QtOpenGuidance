@@ -38,12 +38,12 @@
 #include <QColor>
 #include <QtMath>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../3d/BufferMesh.h"
+#include "3d/BufferMesh.h"
 
 class GridModel : public BlockBase {
     Q_OBJECT

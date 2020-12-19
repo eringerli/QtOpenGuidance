@@ -20,7 +20,7 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class ValueTransmissionBase : public BlockBase {
     Q_OBJECT

@@ -20,8 +20,8 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
-#include "../helpers/eigenHelper.h"
+#include "block/BlockBase.h"
+#include "helpers/eigenHelper.h"
 
 class NmeaParserHDT : public BlockBase {
     Q_OBJECT

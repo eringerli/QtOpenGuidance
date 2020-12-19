@@ -23,15 +23,15 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/ThreeValuesDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/ThreeValuesDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 #include "ValueDockBlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../helpers/anglesHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "helpers/anglesHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class OrientationDockBlock : public ValueDockBlockBase {
     Q_OBJECT

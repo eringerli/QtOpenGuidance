@@ -24,10 +24,10 @@
 
 #include <QByteArray>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 #include "qneblock.h"
 #include "qneport.h"

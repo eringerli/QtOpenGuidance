@@ -23,10 +23,10 @@
 #include <QSizePolicy>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/ValueDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/ValueDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 #include "ValueDockBlockBase.h"
 
 class ValueDockBlock : public ValueDockBlockBase {

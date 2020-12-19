@@ -28,7 +28,7 @@
 
 #include <QGraphicsScene>
 
-#include "../../block/sectionControl/Implement.h"
+#include "block/sectionControl/Implement.h"
 
 class ImplementSectionModel : public QAbstractTableModel {
     Q_OBJECT

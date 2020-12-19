@@ -20,11 +20,11 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "UBX_Parser.h"
 
-#include "../helpers/eigenHelper.h"
+#include "helpers/eigenHelper.h"
 
 class UBX_Parser_Helper : public QObject, public UBX_Parser {
     Q_OBJECT

@@ -28,10 +28,10 @@
 #include <QtGlobal>
 #include <QtDebug>
 
-#include "../block/BlockBase.h"
+#include "block/BlockBase.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 class FixedKinematicPrimitive : public BlockBase {
     Q_OBJECT

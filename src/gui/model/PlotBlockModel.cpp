@@ -21,9 +21,9 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
-#include "../../block/dock/plot/PlotDockBlockBase.h"
+#include "block/dock/plot/PlotDockBlockBase.h"
 
 PlotBlockModel::PlotBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

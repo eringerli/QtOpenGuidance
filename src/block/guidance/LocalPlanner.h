@@ -20,20 +20,20 @@
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
-#include "../kinematic/PathPrimitive.h"
-#include "../kinematic/Plan.h"
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/Plan.h"
 
-#include "../gui/GuidanceTurning.h"
+#include "gui/GuidanceTurning.h"
 
-#include "../gui/MyMainWindow.h"
+#include "gui/MyMainWindow.h"
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
@@ -43,7 +43,7 @@
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QExtrudedTextMesh>
-#include "../3d/BufferMesh.h"
+#include "3d/BufferMesh.h"
 
 class LocalPlanner : public BlockBase {
     Q_OBJECT

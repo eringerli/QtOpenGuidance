@@ -23,10 +23,10 @@
 
 #include <QFileDialog>
 
-#include "../kinematic/CgalWorker.h"
-#include "../kinematic/cgal.h"
+#include "kinematic/CgalWorker.h"
+#include "kinematic/cgal.h"
 
-#include "../helpers/GeoJsonHelper.h"
+#include "helpers/GeoJsonHelper.h"
 
 #include <CGAL/Aff_transformation_3.h>
 using Aff_transformation_3 = CGAL::Aff_transformation_3<Epick>;

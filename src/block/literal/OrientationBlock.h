@@ -18,14 +18,14 @@
 
 #pragma once
 
-#include "../gui/model/OrientationBlockModel.h"
+#include "gui/model/OrientationBlockModel.h"
 
-#include "../helpers/eigenHelper.h"
-#include "../kinematic/PoseOptions.h"
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
 #include <QObject>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 // algorythm from here: http://tbirdal.blogspot.com/2019/10/i-allocate-this-post-to-providing.html
 

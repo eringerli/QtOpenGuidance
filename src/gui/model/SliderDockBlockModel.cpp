@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "../../block/literal/NumberObject.h"
+#include "block/literal/NumberObject.h"
 
 
 #include "SliderDockBlockModel.h"
@@ -24,9 +24,9 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
-#include "../qnodeseditor/qneblock.h"
+#include "qneblock.h"
 
-#include "../../block/dock/input/SliderDockBlock.h"
+#include "block/dock/input/SliderDockBlock.h"
 
 SliderDockBlockModel::SliderDockBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

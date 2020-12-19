@@ -22,10 +22,10 @@
 #include <QDockWidget>
 #include <QMenu>
 
-#include "../gui/MyMainWindow.h"
-#include "../gui/dock/XteDock.h"
+#include "gui/MyMainWindow.h"
+#include "gui/dock/XteDock.h"
 
-#include "../../BlockBase.h"
+#include "block/BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>

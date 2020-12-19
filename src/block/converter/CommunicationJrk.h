@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QByteArray>
 
-#include "../BlockBase.h"
+#include "block/BlockBase.h"
 
 class CommunicationJrk : public BlockBase {
     Q_OBJECT
