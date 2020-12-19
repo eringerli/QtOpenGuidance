@@ -205,8 +205,8 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
 
           for( size_t i = 0, end = optimizedPolyline.size() - 1; i < end; ++i ) {
             plan.plan->push_back( std::make_shared<PathPrimitiveSegment>(
-                                    Segment_2( optimizedPolyline.at( i ), optimizedPolyline.at( i + 1 ) ),
-                                    0, false, 0 ) );
+                                          Segment_2( optimizedPolyline.at( i ), optimizedPolyline.at( i + 1 ) ),
+                                          0, false, 0 ) );
           }
 
           Line_2 direction = ( *targetLineIt )->supportingLine( resultingPoint );
@@ -216,9 +216,9 @@ void LocalPlanner::calculateTurning( bool changeExistingTurn ) {
           }
 
           plan.plan->push_back( std::make_shared<PathPrimitiveRay>(
-                                  Ray_2( optimizedPolyline.back(), direction ),
-                                  false,
-                                  0, false, 0 ) );
+                                        Ray_2( optimizedPolyline.back(), direction ),
+                                        false,
+                                        0, false, 0 ) );
 
           plan.type = Plan::Type::Mixed;
           Q_EMIT planChanged( plan );

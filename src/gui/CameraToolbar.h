@@ -35,15 +35,12 @@ class CameraToolbar : public QGroupBox {
 
   private Q_SLOTS:
     void on_pbUp_clicked();
-
     void on_pbDown_clicked();
 
     void on_pbZoomIn_clicked();
-
     void on_pbZoomOut_clicked();
 
     void on_pbPanLeft_clicked();
-
     void on_pbPanRight_clicked();
 
     void on_pbReset_clicked();

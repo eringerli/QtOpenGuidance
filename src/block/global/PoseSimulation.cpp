@@ -535,8 +535,8 @@ void PoseSimulation::openTIN() {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile(
-        QUrl::fromPercentEncoding(
-          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+              QUrl::fromPercentEncoding(
+                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
@@ -588,13 +588,13 @@ void PoseSimulation::openTINFromFile( QFile& file ) {
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::MultiPoint: {
-          for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
-            auto tmwPoint = tmw->Forward( point );
-            pointsForMesh << toQVector3D( tmwPoint );
-            points.emplace_back( toPoint3( tmwPoint ) );
-          }
+        for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
+          auto tmwPoint = tmw->Forward( point );
+          pointsForMesh << toQVector3D( tmwPoint );
+          points.emplace_back( toPoint3( tmwPoint ) );
         }
-        break;
+      }
+      break;
 
       default:
         break;

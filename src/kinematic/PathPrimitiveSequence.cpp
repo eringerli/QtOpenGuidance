@@ -26,8 +26,8 @@
 void PathPrimitiveSequence::createBisectors( std::back_insert_iterator<std::vector<Line_2>> bisectorsOutputIterator, const std::vector<std::shared_ptr<PathPrimitive>>& primitives ) {
   for( size_t i = 0, end = primitives.size() - 1; i < end; ++i ) {
     *bisectorsOutputIterator++ = CGAL::bisector(
-                                   sequence.at( i )->supportingLine( Point_2() ).opposite(),
-                                   sequence.at( i + 1 )->supportingLine( Point_2() ) );
+                                         sequence.at( i )->supportingLine( Point_2() ).opposite(),
+                                         sequence.at( i + 1 )->supportingLine( Point_2() ) );
   }
 }
 
@@ -41,42 +41,42 @@ void PathPrimitiveSequence::updateWithPolyline( const std::vector<Point_2>& poly
   if( polyline.size() == 2 ) {
     sequence.clear();
     sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                          std::make_shared<PathPrimitiveLine> (
-                            Line_2( polyline.at( 0 ), polyline.at( 1 ) ),
-                            implementWidth, anyDirection, passNumber ) ) );
+                                std::make_shared<PathPrimitiveLine> (
+                                        Line_2( polyline.at( 0 ), polyline.at( 1 ) ),
+                                        implementWidth, anyDirection, passNumber ) ) );
     return;
   }
 
   if( polyline.size() == 3 ) {
     sequence.clear();
     sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                          std::make_shared<PathPrimitiveRay>(
-                            Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
-                            true, implementWidth, anyDirection, passNumber ) ) );
+                                std::make_shared<PathPrimitiveRay>(
+                                        Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
+                                        true, implementWidth, anyDirection, passNumber ) ) );
     sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                          std::make_shared<PathPrimitiveRay> (
-                            Ray_2( polyline.at( 1 ), polyline.at( 2 ) ),
-                            false, implementWidth, anyDirection, passNumber ) ) );
+                                std::make_shared<PathPrimitiveRay> (
+                                        Ray_2( polyline.at( 1 ), polyline.at( 2 ) ),
+                                        false, implementWidth, anyDirection, passNumber ) ) );
   } else {
     if( polyline.size() > 3 ) {
       sequence.clear();
 
       sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                            std::make_shared<PathPrimitiveRay>(
-                              Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
-                              true, implementWidth, anyDirection, passNumber ) ) );
+                                  std::make_shared<PathPrimitiveRay>(
+                                          Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
+                                          true, implementWidth, anyDirection, passNumber ) ) );
 
       for( int i = 1, end = polyline.size() - 2; i < end; ++i ) {
         sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                              std::make_shared<PathPrimitiveSegment> (
-                                Segment_2( polyline.at( i ), polyline.at( i + 1 ) ),
-                                implementWidth, anyDirection, passNumber ) ) );
+                                    std::make_shared<PathPrimitiveSegment> (
+                                            Segment_2( polyline.at( i ), polyline.at( i + 1 ) ),
+                                            implementWidth, anyDirection, passNumber ) ) );
       }
 
       sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                            std::make_shared<PathPrimitiveRay> (
-                              Ray_2( polyline.at( polyline.size() - 2 ), polyline.at( polyline.size() - 1 ) ),
-                              false, implementWidth, anyDirection, passNumber ) ) );
+                                  std::make_shared<PathPrimitiveRay> (
+                                          Ray_2( polyline.at( polyline.size() - 2 ), polyline.at( polyline.size() - 1 ) ),
+                                          false, implementWidth, anyDirection, passNumber ) ) );
     }
   }
 
@@ -146,8 +146,8 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
               primitives.erase( primitives.cbegin() + i + 1 );
 
               bisectorsNew.at( i ) = CGAL::bisector(
-                                       primitives.at( i )->supportingLine( Point_2() ).opposite(),
-                                       primitives.at( i + 1 )->supportingLine( Point_2() ) );
+                                             primitives.at( i )->supportingLine( Point_2() ).opposite(),
+                                             primitives.at( i + 1 )->supportingLine( Point_2() ) );
               bisectorsNew.erase( bisectorsNew.cbegin() + i + 1 );
 
               // start again

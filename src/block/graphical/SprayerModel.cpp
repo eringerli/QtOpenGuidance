@@ -316,7 +316,7 @@ void SprayerModel::updateProprotions() {
 
       boomMeshes.at( i )->setLength( float( section->widthOfSection ) );
       boomTransforms.at( i )->setTranslation(
-        QVector3D( 0, float( sectionOffset ) + ( section->widthOfSection / 2 ), m_height ) );
+              QVector3D( 0, float( sectionOffset ) + ( section->widthOfSection / 2 ), m_height ) );
 
       sprayTransforms.at( i )->setScale3D( QVector3D( m_height / 3, m_height, section->widthOfSection ) );
       sprayTransforms.at( i )->setTranslation( QVector3D( 0, 0, -m_height / 2 ) );

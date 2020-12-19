@@ -25,8 +25,8 @@ PathPrimitiveLine::PathPrimitiveLine( const Line_2& line, double implementWidth,
 
 std::shared_ptr<PathPrimitive> PathPrimitiveLine::createReverse() {
   return std::make_shared<PathPrimitiveLine> (
-           line.opposite(),
-           implementWidth, anyDirection, passNumber );
+                 line.opposite(),
+                 implementWidth, anyDirection, passNumber );
 }
 
 double PathPrimitiveLine::distanceToPointSquared( const Point_2 point ) {
@@ -78,6 +78,6 @@ std::shared_ptr<PathPrimitive> PathPrimitiveLine::createNextPrimitive( bool left
   auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   return std::make_shared<PathPrimitiveLine> (
-           Line_2( line.point( 0 ) - offsetVector, line.point( 1 ) - offsetVector ),
-           implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+                 Line_2( line.point( 0 ) - offsetVector, line.point( 1 ) - offsetVector ),
+                 implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }

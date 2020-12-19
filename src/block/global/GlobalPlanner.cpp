@@ -166,10 +166,10 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
     pointsEntity->setEnabled( true );
 
     plan.resetPlanWith( make_shared<PathPrimitiveSequence>(
-                          *polyline,
-                          std::sqrt( implementSegment.squared_length() ),
-                          true,
-                          0 ) );
+                                *polyline,
+                                std::sqrt( implementSegment.squared_length() ),
+                                true,
+                                0 ) );
 
 
     Q_EMIT planChanged( plan );
@@ -188,10 +188,10 @@ void GlobalPlanner::createPlanPolyline( std::vector<Point_2>* polylinePtr ) {
     widget->setToolbarToAdditionalPoint();
 
     plan.resetPlanWith( make_shared<PathPrimitiveLine>(
-                          to2D( abSegment ).supporting_line(),
-                          std::sqrt( implementSegment.squared_length() ),
-                          true,
-                          0 ) );
+                                to2D( abSegment ).supporting_line(),
+                                std::sqrt( implementSegment.squared_length() ),
+                                true,
+                                0 ) );
 
     Q_EMIT planChanged( plan );
   }
@@ -208,10 +208,10 @@ void GlobalPlanner::createPlanAB() {
 
     if( abPolyline.size() == 2 ) {
       plan.resetPlanWith( make_shared<PathPrimitiveLine>(
-                            to2D( abSegment ).supporting_line(),
-                            std::sqrt( implementSegment.squared_length() ),
-                            true,
-                            0 ) );
+                                  to2D( abSegment ).supporting_line(),
+                                  std::sqrt( implementSegment.squared_length() ),
+                                  true,
+                                  0 ) );
       plan.expand( position2D );
 
       Q_EMIT planChanged( plan );
@@ -272,8 +272,8 @@ void GlobalPlanner::openAbLine() {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile(
-        QUrl::fromPercentEncoding(
-          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+              QUrl::fromPercentEncoding(
+                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
@@ -322,32 +322,32 @@ void GlobalPlanner::openAbLineFromFile( QFile& file ) {
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::LineString: {
-          abPolyline.clear();
-          auto index = uint16_t( 0 );
+        abPolyline.clear();
+        auto index = uint16_t( 0 );
 
-          for( const auto& point : std::get<GeoJsonHelper::LineStringType>( member.second ) ) {
-            auto tmwPoint = toPoint3( tmw->Forward( point ) );
+        for( const auto& point : std::get<GeoJsonHelper::LineStringType>( member.second ) ) {
+          auto tmwPoint = toPoint3( tmw->Forward( point ) );
 
-            if( index == 0 ) {
-              aPoint = tmwPoint;
-              aPointTransform->setTranslation( toQVector3D( tmwPoint ) );
-            }
-
-            if( index == 1 ) {
-              bPoint = tmwPoint;
-              bPointTransform->setTranslation( toQVector3D( tmwPoint ) );
-              aPointEntity->setEnabled( true );
-              bPointEntity->setEnabled( true );
-              abSegment = Segment_3( aPoint, tmwPoint );
-            }
-
-            abPolyline.push_back( to2D( tmwPoint ) );
-
-            ++index;
+          if( index == 0 ) {
+            aPoint = tmwPoint;
+            aPointTransform->setTranslation( toQVector3D( tmwPoint ) );
           }
 
+          if( index == 1 ) {
+            bPoint = tmwPoint;
+            bPointTransform->setTranslation( toQVector3D( tmwPoint ) );
+            aPointEntity->setEnabled( true );
+            bPointEntity->setEnabled( true );
+            abSegment = Segment_3( aPoint, tmwPoint );
+          }
+
+          abPolyline.push_back( to2D( tmwPoint ) );
+
+          ++index;
         }
-        break;
+
+      }
+      break;
 
       default:
         break;

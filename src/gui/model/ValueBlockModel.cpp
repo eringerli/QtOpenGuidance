@@ -213,30 +213,30 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
               return true;
 
             case 6: {
-                auto font = value.value<QFont>();
-                QFont oldFont = object->getFont();
-                font.setBold( oldFont.bold() );
-                font.setPointSize( oldFont.pointSize() );
-                object->setFont( font );
-                Q_EMIT dataChanged( index, index, QVector<int>() << role );
-                return true;
-              }
+              auto font = value.value<QFont>();
+              QFont oldFont = object->getFont();
+              font.setBold( oldFont.bold() );
+              font.setPointSize( oldFont.pointSize() );
+              object->setFont( font );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              return true;
+            }
 
             case 7: {
-                QFont font = object->getFont();
-                font.setPointSize( value.toInt() );
-                object->setFont( font );
-                Q_EMIT dataChanged( index, index, QVector<int>() << role );
-                return true;
-              }
+              QFont font = object->getFont();
+              font.setPointSize( value.toInt() );
+              object->setFont( font );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              return true;
+            }
 
             case 8: {
-                QFont font = object->getFont();
-                font.setBold( value.toBool() );
-                object->setFont( font );
-                Q_EMIT dataChanged( index, index, QVector<int>() << role );
-                return true;
-              }
+              QFont font = object->getFont();
+              font.setBold( value.toBool() );
+              object->setFont( font );
+              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              return true;
+            }
           }
         }
       }

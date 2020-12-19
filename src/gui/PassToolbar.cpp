@@ -33,10 +33,10 @@ PassToolbar::~PassToolbar() {
 
 void PassToolbar::emitPassSettings() {
   Q_EMIT passSettingsChanged(
-    ui->sbForwardPasses->value(),
-    ui->sbReversePasses->value(),
-    ui->rbStartRight->isChecked(),
-    ui->cbMirror->isChecked() );
+          ui->sbForwardPasses->value(),
+          ui->sbReversePasses->value(),
+          ui->rbStartRight->isChecked(),
+          ui->cbMirror->isChecked() );
 }
 
 void PassToolbar::on_sbForwardPasses_valueChanged( int ) {

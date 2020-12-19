@@ -29,8 +29,8 @@ PathPrimitiveRay::PathPrimitiveRay( const Ray_2& ray, bool reverse, double imple
 
 std::shared_ptr<PathPrimitive> PathPrimitiveRay::createReverse() {
   return std::make_shared<PathPrimitiveRay> (
-           ray,
-           !reverse, implementWidth, anyDirection, passNumber );
+                 ray,
+                 !reverse, implementWidth, anyDirection, passNumber );
 }
 
 double PathPrimitiveRay::distanceToPointSquared( const Point_2 point ) {
@@ -124,6 +124,6 @@ std::shared_ptr<PathPrimitive> PathPrimitiveRay::createNextPrimitive( bool left 
                       : polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   return std::make_shared<PathPrimitiveRay> (
-           Ray_2( ray.source() - offsetVector, ray.direction() ),
-           this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+                 Ray_2( ray.source() - offsetVector, ray.direction() ),
+                 this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }

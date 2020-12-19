@@ -373,67 +373,67 @@ int main( int argc, char** argv ) {
 
   // XTE dock
   BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnTop,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnTop,
+          guidanceToolbar->menu );
   xteDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value dock
   BlockFactory* valueDockBlockFactory = new ValueDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   valueDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation dock
   BlockFactory* orientationDockBlockFactory = new OrientationDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   orientationDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // position dock
   BlockFactory* positionDockBlockFactory = new PositionDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   positionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value plot dock
   BlockFactory* valuePlotDockBlockFactory = new ValuePlotDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   valuePlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation plot dock
   BlockFactory* orientationPlotDockBlockFactory = new OrientationPlotDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   orientationPlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // action dock
   BlockFactory* actionDockBlockFactory = new ActionDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   actionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // slider dock
   BlockFactory* sliderDockBlockFactory = new SliderDockBlockFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnRight,
-    guidanceToolbar->menu );
+          mainWindow,
+          KDDockWidgets::Location_OnRight,
+          guidanceToolbar->menu );
   sliderDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
 
   // implements
   auto* implementFactory = new ImplementFactory(
-    mainWindow,
-    KDDockWidgets::Location_OnBottom,
-    guidanceToolbar->menu,
-    settingDialog->implementBlockModel );
+          mainWindow,
+          KDDockWidgets::Location_OnBottom,
+          guidanceToolbar->menu,
+          settingDialog->implementBlockModel );
   implementFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // camera block

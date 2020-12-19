@@ -173,57 +173,57 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
 
             switch( type ) {
               case GeometryType::Point: {
-                  if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-                    if( auto coordinate = parseCoodinate( coordinatesJsonArray.value() ) ) {
-                      members.emplace_back( std::make_pair( type, coordinate.value() ) );
-                    }
+                if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
+                  if( auto coordinate = parseCoodinate( coordinatesJsonArray.value() ) ) {
+                    members.emplace_back( std::make_pair( type, coordinate.value() ) );
                   }
                 }
-                break;
+              }
+              break;
 
               case GeometryType::MultiPoint:
               case GeometryType::LineString: {
-                  if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-                    members.emplace_back( std::make_pair( type, parseCoordinatesArray( coordinatesJsonArray.value() ) ) );
-                  }
-
+                if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
+                  members.emplace_back( std::make_pair( type, parseCoordinatesArray( coordinatesJsonArray.value() ) ) );
                 }
-                break;
+
+              }
+              break;
 
               case GeometryType::Polygon: {
-                  if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-                    PointVectorVector polygon;
+                if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
+                  PointVectorVector polygon;
 
-                    for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
-                      if( coordinatesArray.isArray() ) {
-                        polygon.emplace_back( parseCoordinatesArray( coordinatesArray.toArray() ) );
-                      }
+                  for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
+                    if( coordinatesArray.isArray() ) {
+                      polygon.emplace_back( parseCoordinatesArray( coordinatesArray.toArray() ) );
                     }
-
-                    members.emplace_back( std::make_pair( type, polygon ) );
                   }
+
+                  members.emplace_back( std::make_pair( type, polygon ) );
                 }
-                break;
+              }
+              break;
 
               case GeometryType::MultiPolygon: {
-                  if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
+                if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
 
-                    for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
-                      PointVectorVector polygon;
+                  for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
+                    PointVectorVector polygon;
 
-                      if( coordinatesArray.isArray() ) {
-                        for( const auto& coordinatesArrayNested : coordinatesArray.toArray() ) {
-                          if( coordinatesArrayNested.isArray() ) {
-                            polygon.emplace_back( parseCoordinatesArray( coordinatesArrayNested.toArray() ) );
-                          }
+                    if( coordinatesArray.isArray() ) {
+                      for( const auto& coordinatesArrayNested : coordinatesArray.toArray() ) {
+                        if( coordinatesArrayNested.isArray() ) {
+                          polygon.emplace_back( parseCoordinatesArray( coordinatesArrayNested.toArray() ) );
                         }
                       }
-
-                      members.emplace_back( std::make_pair( GeometryType::Polygon, polygon ) );
                     }
+
+                    members.emplace_back( std::make_pair( GeometryType::Polygon, polygon ) );
                   }
                 }
-                break;
+              }
+              break;
 
               default:
                 break;
@@ -256,34 +256,34 @@ QJsonObject GeoJsonHelper::save() {
 
     switch( member.first ) {
       case GeometryType::Point: {
-          geometry[QStringLiteral( "type" )] = QStringLiteral( "Point" );
-          geometry[QStringLiteral( "coordinates" )] = assembleCoodinate( std::get<PointType>( member.second ) );
-        }
-        break;
+        geometry[QStringLiteral( "type" )] = QStringLiteral( "Point" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoodinate( std::get<PointType>( member.second ) );
+      }
+      break;
 
       case GeometryType::MultiPoint: {
-          geometry[QStringLiteral( "type" )] = QStringLiteral( "MultiPoint" );
-          geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<MultiPointType>( member.second ) );
-        }
-        break;
+        geometry[QStringLiteral( "type" )] = QStringLiteral( "MultiPoint" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<MultiPointType>( member.second ) );
+      }
+      break;
 
       case GeometryType::LineString: {
-          geometry[QStringLiteral( "type" )] = QStringLiteral( "LineString" );
-          geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<LineStringType>( member.second ) );
-        }
-        break;
+        geometry[QStringLiteral( "type" )] = QStringLiteral( "LineString" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<LineStringType>( member.second ) );
+      }
+      break;
 
       case GeometryType::Polygon: {
-          geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
-          QJsonArray coordinates;
+        geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
+        QJsonArray coordinates;
 
-          for( const auto& polygon : std::get<PolygonType>( member.second ) ) {
-            coordinates.push_back( assembleCoordinatesArray( polygon ) );
-          }
-
-          geometry[QStringLiteral( "coordinates" )] = coordinates;
+        for( const auto& polygon : std::get<PolygonType>( member.second ) ) {
+          coordinates.push_back( assembleCoordinatesArray( polygon ) );
         }
-        break;
+
+        geometry[QStringLiteral( "coordinates" )] = coordinates;
+      }
+      break;
 
       default:
         break;
@@ -311,48 +311,48 @@ void GeoJsonHelper::print() {
         break;
 
       case GeometryType::MultiPoint: {
-          auto points = std::get<PointVector>( member.second );
-          cout << "  GeometryType::MultiPoint(" << points.size() << "): ";
+        auto points = std::get<PointVector>( member.second );
+        cout << "  GeometryType::MultiPoint(" << points.size() << "): ";
 
-          for( const auto& point : points ) {
-            cout << point.format( CommaInitFmt ) << " ";
-          }
-
-          cout << endl;
-
+        for( const auto& point : points ) {
+          cout << point.format( CommaInitFmt ) << " ";
         }
-        break;
+
+        cout << endl;
+
+      }
+      break;
 
       case GeometryType::LineString: {
-          auto points = std::get<PointVector>( member.second );
-          cout << "  GeometryType::LineString(" << points.size() << "): ";
+        auto points = std::get<PointVector>( member.second );
+        cout << "  GeometryType::LineString(" << points.size() << "): ";
 
-          for( const auto& point : points ) {
+        for( const auto& point : points ) {
+          cout << point.format( CommaInitFmt ) << " ";
+        }
+
+        cout << endl;
+
+      }
+      break;
+
+      case GeometryType::Polygon: {
+        auto polygons = std::get<PointVectorVector>( member.second );
+        cout << "  GeometryType::Polygon(" << polygons.size() << ")";
+
+        for( const auto& vector : polygons ) {
+          cout << "    Polygon(" << vector.size() << "): ";
+
+          for( const auto& point : vector ) {
             cout << point.format( CommaInitFmt ) << " ";
           }
 
           cout << endl;
-
         }
-        break;
-
-      case GeometryType::Polygon: {
-          auto polygons = std::get<PointVectorVector>( member.second );
-          cout << "  GeometryType::Polygon(" << polygons.size() << ")";
-
-          for( const auto& vector : polygons ) {
-            cout << "    Polygon(" << vector.size() << "): ";
-
-            for( const auto& point : vector ) {
-              cout << point.format( CommaInitFmt ) << " ";
-            }
-
-            cout << endl;
-          }
 
 
-        }
-        break;
+      }
+      break;
 
       default:
         break;

@@ -25,16 +25,16 @@ PathPrimitiveSegment::PathPrimitiveSegment( const Segment_2& segment, double imp
 
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
   return std::make_shared<PathPrimitiveSegment> (
-           segment.opposite(),
-           implementWidth, anyDirection, passNumber );
+                 segment.opposite(),
+                 implementWidth, anyDirection, passNumber );
 }
 
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createNextPrimitive( bool left ) {
   auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   return std::make_shared<PathPrimitiveSegment> (
-           Segment_2( segment.source() - offsetVector, segment.target() - offsetVector ),
-           implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+                 Segment_2( segment.source() - offsetVector, segment.target() - offsetVector ),
+                 implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
 }
 
 double PathPrimitiveSegment::distanceToPointSquared( const Point_2 point ) {

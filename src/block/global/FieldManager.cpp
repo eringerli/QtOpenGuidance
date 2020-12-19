@@ -204,8 +204,8 @@ void FieldManager::openField() {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile(
-        QUrl::fromPercentEncoding(
-          fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+              QUrl::fromPercentEncoding(
+                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
@@ -256,52 +256,52 @@ void FieldManager::openFieldFromFile( QFile& file ) {
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::Polygon: {
-          QVector<QVector3D> positions;
-          Polygon_2 poly;
+        QVector<QVector3D> positions;
+        Polygon_2 poly;
 
-          const auto& polygon = std::get<GeoJsonHelper::PolygonType>( member.second );
+        const auto& polygon = std::get<GeoJsonHelper::PolygonType>( member.second );
 
-          if( !polygon.empty() ) {
-            for( const auto& point : polygon.front() ) {
-              auto tmwPoint = tmw->Forward( point );
-              positions.push_back( toQVector3D( tmwPoint ) );
-              poly.push_back( toPoint2( tmwPoint ) );
-            }
-
-            currentField = std::make_shared<Polygon_with_holes_2>( poly );
-
-            const auto& outerPoly = currentField->outer_boundary();
-            Q_EMIT pointsInFieldBoundaryChanged( outerPoly.size() );
-
-            newField = true;
-
-            m_segmentsMesh2->bufferUpdate( positions );
-            m_segmentsEntity2->setEnabled( true );
-
-            Q_EMIT fieldChanged( currentField );
-          }
-        }
-        break;
-
-      case GeoJsonHelper::GeometryType::MultiPoint: {
-          QVector<QVector3D> positions;
-          points.clear();
-
-          for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
+        if( !polygon.empty() ) {
+          for( const auto& point : polygon.front() ) {
             auto tmwPoint = tmw->Forward( point );
             positions.push_back( toQVector3D( tmwPoint ) );
-            points.emplace_back( toPoint3( tmwPoint ) );
+            poly.push_back( toPoint2( tmwPoint ) );
           }
 
-          m_segmentsMesh3->bufferUpdate( positions );
-          m_segmentsEntity3->setEnabled( true );
+          currentField = std::make_shared<Polygon_with_holes_2>( poly );
 
-          Q_EMIT pointsGeneratedForFieldBoundaryChanged( 0 );
-          Q_EMIT pointsRecordedChanged( points.size() );
+          const auto& outerPoly = currentField->outer_boundary();
+          Q_EMIT pointsInFieldBoundaryChanged( outerPoly.size() );
 
-          newRawPoints = true;
+          newField = true;
+
+          m_segmentsMesh2->bufferUpdate( positions );
+          m_segmentsEntity2->setEnabled( true );
+
+          Q_EMIT fieldChanged( currentField );
         }
-        break;
+      }
+      break;
+
+      case GeoJsonHelper::GeometryType::MultiPoint: {
+        QVector<QVector3D> positions;
+        points.clear();
+
+        for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
+          auto tmwPoint = tmw->Forward( point );
+          positions.push_back( toQVector3D( tmwPoint ) );
+          points.emplace_back( toPoint3( tmwPoint ) );
+        }
+
+        m_segmentsMesh3->bufferUpdate( positions );
+        m_segmentsEntity3->setEnabled( true );
+
+        Q_EMIT pointsGeneratedForFieldBoundaryChanged( 0 );
+        Q_EMIT pointsRecordedChanged( points.size() );
+
+        newRawPoints = true;
+      }
+      break;
 
       default:
         break;

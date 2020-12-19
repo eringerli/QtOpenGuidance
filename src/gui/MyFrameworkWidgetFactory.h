@@ -24,10 +24,11 @@
 #include <kddockwidgets/private/TitleBar_p.h>
 #include <QPainter>
 
-class CustomWidgetFactory : public KDDockWidgets::DefaultWidgetFactory {
-  public:
-    KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::Frame* frame ) const override;
-    KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::FloatingWindow* fw ) const override;
+Sclass CustomWidgetFactory :
+public KDDockWidgets::DefaultWidgetFactory {
+public:
+  KDDockWidgets::TitleBar * createTitleBar( KDDockWidgets::Frame * frame ) const override;
+  KDDockWidgets::TitleBar * createTitleBar( KDDockWidgets::FloatingWindow * fw ) const override;
 
-    KDDockWidgets::Frame* createCentralFrame( QWidgetOrQuick* parent ) const override;
+  KDDockWidgets::Frame * createCentralFrame( QWidgetOrQuick * parent ) const /*override*/;
 };

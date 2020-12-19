@@ -109,20 +109,20 @@ QVariant TransmissionBlockModel::data( const QModelIndex& index, int role ) cons
                   return block->getName();
 
                 case 1: {
-                    if( qobject_cast<ValueTransmissionBase64Data*>( object ) != nullptr ) {
-                      return QStringLiteral( "Data" );
-                    }
-
-                    if( qobject_cast<ValueTransmissionNumber*>( object ) != nullptr ) {
-                      return QStringLiteral( "Number" );
-                    }
-
-                    if( qobject_cast<ValueTransmissionQuaternion*>( object ) != nullptr ) {
-                      return QStringLiteral( "Quaternion" );
-                    }
-
-                    return QStringLiteral( "Unknown" );
+                  if( qobject_cast<ValueTransmissionBase64Data*>( object ) != nullptr ) {
+                    return QStringLiteral( "Data" );
                   }
+
+                  if( qobject_cast<ValueTransmissionNumber*>( object ) != nullptr ) {
+                    return QStringLiteral( "Number" );
+                  }
+
+                  if( qobject_cast<ValueTransmissionQuaternion*>( object ) != nullptr ) {
+                    return QStringLiteral( "Quaternion" );
+                  }
+
+                  return QStringLiteral( "Unknown" );
+                }
 
                 case 2:
                   return object->id;
