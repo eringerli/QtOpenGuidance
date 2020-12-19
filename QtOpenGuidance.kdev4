@@ -1,4 +1,4 @@
 [Project]
-CreatedFrom=simple-cpp.pro
-Manager=KDevQMakeManager
+CreatedFrom=CMakeLists.txt
+Manager=KDevCMakeManager
 Name=QtOpenGuidance
