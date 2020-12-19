@@ -291,22 +291,22 @@ set(SOURCES
 set(SOURCES ${SOURCES}
   lib/UBX_Parser/src/UBX_Parser.h)
 
+add_executable(QtOpenGuidance ${SOURCES})
+
 if(${HAVE_SPNAV})
   set(SOURCES ${SOURCES}
     src/gui/SpaceNavigatorPollingThread.h)
-  add_definitions(${PROJECT_NAME} -DSPNAV_ENABLED)
+  target_compile_definitions(QtOpenGuidance PRIVATE SPNAV_ENABLED)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(QtOpenGuidance PRIVATE src/)
+target_include_directories(QtOpenGuidance PRIVATE src/qnodeseditor/)
+target_include_directories(QtOpenGuidance PRIVATE lib/QCustomPlot)
+target_include_directories(QtOpenGuidance PRIVATE lib/kalman/include)
+target_include_directories(QtOpenGuidance PRIVATE lib/geographiclib/include/)
+target_include_directories(QtOpenGuidance PRIVATE lib/UBX_Parser/src/)
 
-target_include_directories(${PROJECT_NAME} PRIVATE src/)
-target_include_directories(${PROJECT_NAME} PRIVATE src/qnodeseditor/)
-target_include_directories(${PROJECT_NAME} PRIVATE lib/QCustomPlot)
-target_include_directories(${PROJECT_NAME} PRIVATE lib/kalman/include)
-target_include_directories(${PROJECT_NAME} PRIVATE lib/geographiclib/include/)
-target_include_directories(${PROJECT_NAME} PRIVATE lib/UBX_Parser/src/)
-
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(QtOpenGuidance
   Qt5::Core
   Qt5::Gui
   Qt5::Widgets
@@ -323,4 +323,4 @@ target_link_libraries(${PROJECT_NAME}
   qnodeseditor
   ${SPNAV_LIBRARY})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.h)
+target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)

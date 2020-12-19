@@ -7,7 +7,7 @@ url="https://github.com/eringerli/QtOpenGuidance"
 license=('GPL')
 groups=()
 depends=('qt5-3d' 'gmp' 'mpfr' 'kddockwidgets-eringerli-git' 'libspnav' 'boost' 'eigen')
-makedepends=('git')
+makedepends=('git' 'cmake')
 provides=("${pkgname}")
 conflicts=("${pkgname}")
 replaces=()
@@ -43,12 +43,11 @@ prepare() {
 }
 
 build() {
-  cd "$srcdir/QtOpenGuidance-git"
-  mkdir -p build
-
-  cd build
-  qmake -o Makefile ../QtOpenGuidance.pro -before PREFIX="$pkgdir/usr" -after CONFIG-=ccache
-  make
+    cmake -B build -S "QtOpenGuidance-git" \
+        -DCMAKE_BUILD_TYPE='None' \
+        -DCMAKE_INSTALL_PREFIX='/usr' \
+        -Wno-dev
+    make -C build
 }
 
 package() {
