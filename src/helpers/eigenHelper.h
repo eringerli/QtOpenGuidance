@@ -52,7 +52,7 @@ inline double& getRoll( Eigen::Vector3d& vector ) {
 }
 
 inline Eigen::Quaterniond taitBryanToQuaternion( const Eigen::Vector3d& eulers ) {
-  MyTaitBryanAngles euler( eulers );
+  MyTaitBryanAngles euler( eulers.z(), eulers.y(), eulers.x() );
   return euler;
 }
 

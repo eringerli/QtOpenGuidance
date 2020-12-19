@@ -126,7 +126,7 @@ namespace ThreeWheeledFRHRL {
               std::cout << "firstTerm" << std::endl << firstTerm << std::endl;
             }
 
-            Eigen::Vector<double, 5> secondTerm;
+            Eigen::Matrix<double, 5, 1> secondTerm;
             secondTerm <<
                        -xBuffer( StateNames::Vy ),
                        -xBuffer( StateNames::Vyaw ),
@@ -139,7 +139,7 @@ namespace ThreeWheeledFRHRL {
             }
 
 
-            Eigen::Vector<double, 5> thirdTerm;
+            Eigen::Matrix<double, 5, 1> thirdTerm;
             thirdTerm <<
                       0,
                       0,
@@ -237,7 +237,7 @@ namespace ThreeWheeledFRHRL {
 
     public:
       QStringList names;
-      Eigen::Vector<double, 5> oldResult;
+      Eigen::Matrix<double, 5, 1> oldResult;
 
     private:
       template<typename T, typename _T>

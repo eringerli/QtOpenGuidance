@@ -24,7 +24,10 @@
 //#include <kddockwidgets/widgets/SeparatorWidget_p.h>
 #include <QApplication>
 
+
 class MyTitleBar : public KDDockWidgets::TitleBar {
+    Q_OBJECT
+
   public:
     explicit MyTitleBar( KDDockWidgets::Frame* frame )
       : KDDockWidgets::TitleBar( frame ) {
