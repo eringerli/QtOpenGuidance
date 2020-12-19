@@ -323,4 +323,4 @@ target_link_libraries(${PROJECT_NAME}
   qnodeseditor
   ${SPNAV_LIBRARY})
 
-#target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.h)
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/pch.h)
