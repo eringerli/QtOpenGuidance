@@ -13,6 +13,8 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
+include(cmake/modules/LDGOLD.cmake)
+
 set(CGAL_DIR lib/CGAL-5.1.1/)
 set(Eigen3_DIR lib/eigen)
 
