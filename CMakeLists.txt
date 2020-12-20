@@ -15,6 +15,12 @@ endif()
 
 include(cmake/modules/LDGOLD.cmake)
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    message(STATUS "Found ccache")
+endif()
+
 set(CGAL_DIR lib/CGAL-5.1.1/)
 set(Eigen3_DIR lib/eigen)
 
