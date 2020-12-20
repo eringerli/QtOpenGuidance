@@ -100,7 +100,7 @@ double SliderDock::getMinimum() {
   return ui->dsbValue->minimum();
 }
 
-double SliderDock::getDefaultValue() {
+double SliderDock::getDefaultValue() const {
   return defaultValue;
 }
 

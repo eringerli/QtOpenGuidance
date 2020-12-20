@@ -46,10 +46,10 @@ class QNEPort : public QGraphicsPathItem {
     ~QNEPort();
 
     void setNEBlock( QNEBlock* );
-    void setName( const QString& n );
-    QString getName();
+    void setName( const QString& n ) const;
+    QString getName() const;
     void setIsOutput( bool o );
-    bool isOutput();
+    bool isOutput() const;
     std::vector<QNEConnection*>& connections();
     void setPortFlags( int );
 

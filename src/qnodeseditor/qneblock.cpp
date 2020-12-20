@@ -219,7 +219,7 @@ void QNEBlock::toJSON( QJsonObject& json ) {
   json[QStringLiteral( "blocks" )] = blocksArray;
 }
 
-void QNEBlock::fromJSON( QJsonObject& json ) {
+void QNEBlock::fromJSON( QJsonObject& json ) const {
   if( json[QStringLiteral( "values" )].isObject() ) {
     qobject_cast<BlockBase*>( object )->fromJSON( json );
   }

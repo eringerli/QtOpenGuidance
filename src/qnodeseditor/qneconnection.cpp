@@ -107,11 +107,11 @@ void QNEConnection::setPort1( QNEPort* p ) {
 
 bool QNEConnection::setPort2( QNEPort* p ) {
 
-  connection = QObject::connect( m_port1->block()->object, ( const char* )( m_port1->slotSignalSignature.latin1() ),
-                                 p->block()->object, ( const char* )( p->slotSignalSignature.latin1() ),
+  connection = QObject::connect( m_port1->block()->object, ( m_port1->slotSignalSignature.latin1() ),
+                                 p->block()->object, ( p->slotSignalSignature.latin1() ),
                                  Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
 
-  if( ( bool )connection ) {
+  if( connection ) {
     m_port2 = p;
     m_port2->connections().push_back( this );
 
@@ -150,7 +150,7 @@ QNEPort* QNEConnection::port2() const {
   return m_port2;
 }
 
-void QNEConnection::toJSON( QJsonObject& json ) {
+void QNEConnection::toJSON( QJsonObject& json ) const {
   QJsonArray connectionsArray = json[QStringLiteral( "connections" )].toArray();
 
   QJsonObject connectionObject;

@@ -71,7 +71,7 @@ class BlockFactory : public QObject {
 
     QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock = false );
 
-    bool isIdUnique( QGraphicsScene* scene, int id );
+    static bool isIdUnique( QGraphicsScene* scene, int id );
 
   protected:
     const QColor modelColor = QColor( QStringLiteral( "moccasin" ) );

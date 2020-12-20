@@ -70,8 +70,8 @@ QGraphicsItem* QNodesEditor::itemAt( QPointF pos ) {
 }
 
 bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
-  auto* const mouseEvent = static_cast< QGraphicsSceneMouseEvent*>( e );
-  auto* const keyEvent = static_cast<QKeyEvent*>( e );
+  auto* const mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>( e );
+  auto* const keyEvent = dynamic_cast<QKeyEvent*>( e );
 
   switch( int( e->type() ) ) {
     case QEvent::GraphicsSceneMousePress: {
@@ -128,7 +128,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
 
     case QEvent::GraphicsSceneMouseMove: {
-      auto* const m = static_cast<QGraphicsSceneMouseEvent*>( e );
+      auto* const m = dynamic_cast<QGraphicsSceneMouseEvent*>( e );
 
       if( currentConnection != nullptr ) {
         currentConnection->setPos2( mouseEvent->scenePos() );
@@ -136,7 +136,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         return true;
       }
 
-      if( m->buttons() & Qt::RightButton ) {
+      if( ( m->buttons() & Qt::RightButton ) != 0u ) {
         QPointF delta = m->lastScreenPos() - m->screenPos();
 
         {
@@ -191,7 +191,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             currentConnection = nullptr;
             return true;
           }
-
         }
 
         delete currentConnection;
@@ -213,11 +212,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                 Q_EMIT resetModels();
               }
             } else {
-              auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
-
-
-              delete connection;
-
+              delete qgraphicsitem_cast<QNEConnection*>( item );
             }
           }
         }
@@ -228,7 +223,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           it->setDragMode( QGraphicsView::RubberBandDrag );
         }
       }
-
 
       break;
     }

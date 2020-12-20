@@ -46,7 +46,7 @@ class SliderDock : public QGroupBox {
     int getDecimals();
     double getMaximum();
     double getMinimum();
-    double getDefaultValue();
+    double getDefaultValue() const;
     const QString getUnit();
     bool getSliderInverted();
 

@@ -54,7 +54,7 @@ class QNEBlock : public QObject, public QGraphicsPathItem {
     void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
     void toJSON( QJsonObject& json );
-    void fromJSON( QJsonObject& json );
+    void fromJSON( QJsonObject& json ) const;
 
     int type() const override {
       return Type;

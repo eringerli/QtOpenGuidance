@@ -26,8 +26,10 @@
 
 class CustomWidgetFactory : public KDDockWidgets::DefaultWidgetFactory {
   public:
+    CustomWidgetFactory() = default;
     KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::Frame* frame ) const override;
     KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::FloatingWindow* fw ) const override;
 
     KDDockWidgets::Frame* createCentralFrame( QWidgetOrQuick* parent ) const override;
+    Q_DISABLE_COPY( CustomWidgetFactory )
 };

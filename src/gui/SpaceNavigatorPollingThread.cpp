@@ -28,7 +28,7 @@ void SpaceNavigatorPollingThread::run() {
   while( ! m_stopped ) {
     spnav_event event;
 
-    if( spnav_poll_event( &event ) ) {
+    if( spnav_poll_event( &event ) != 0 ) {
       if( event.type == SPNAV_EVENT_MOTION ) {
 
         // The coordinate system of the space navigator is like the following:
