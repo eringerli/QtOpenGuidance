@@ -10,7 +10,7 @@ please contact me first (@eringerli on Telegram) for coordinating the effort. Th
 ## Word to the Wise
 **Read this readme through! Multiple times if something is not clear!** There's a reason why this is called "Readme": RTFM!
 
-**Please don't fork the repository, if you're not planning to do any changes to the source. There is a button with a star on the page header, besides that is the button to watch for updates. Both help you keep track of the repositories you like.**
+**Please don't fork the repository, if you're not planning to do any changes to the source to send back as Pull Request. There is a button with a star on the page header, besides that is the button to watch for updates. Both help you keep track of the repositories you like.**
 
 Forking makes it extremely hard to keep track of the improvements upstream, where a simple clone is updated in seconds. There's no sense in running an out of date version.
 
