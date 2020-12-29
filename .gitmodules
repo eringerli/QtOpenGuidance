@@ -10,9 +10,6 @@
 [submodule "lib/dubins_curves"]
 	path = lib/dubins_curves
 	url = https://github.com/rxdu/dubins_curves.git
-[submodule "lib/eigen"]
-	path = lib/eigen
-	url = https://gitlab.com/libeigen/eigen.git
 [submodule "lib/kalman"]
 	path = lib/kalman
 	url = https://github.com/mherb/kalman.git
