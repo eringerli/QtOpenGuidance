@@ -220,10 +220,6 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
           lastFoundFace = foundFace;
 
         }
-      } else {
-        auto file = QFile( "/home/christian/Documents/PlatformIO/Projects/QtOpenGuidance/terrain/test4.geojson" );
-        file.open( QIODevice::ReadOnly );
-        openTINFromFile( file );
       }
     }
 
