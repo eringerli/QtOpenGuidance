@@ -238,11 +238,12 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
       Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
 
-      m_orientation = lastFoundFaceOrientation * taitBryanToQuaternion( getYaw( quaternionToTaitBryan( m_orientation ) ), 0, 0 );
+      auto orientation = lastFoundFaceOrientation * m_orientation;
       std::cout << "lastFoundFaceOrientation: " << radiansToDegrees( quaternionToTaitBryan( lastFoundFaceOrientation ) ).format( CommaInitFmt ) << ", "
                 << "m_orientation: " << radiansToDegrees( quaternionToTaitBryan( m_orientation ) ).format( CommaInitFmt ) << std::endl;
 
-      Q_EMIT orientationChanged( m_orientation );
+      Q_EMIT orientationChanged( orientation );
+      m_orientation = orientation;
 
     }
 
