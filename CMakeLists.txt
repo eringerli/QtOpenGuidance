@@ -25,7 +25,7 @@ set(CGAL_DIR lib/CGAL-5.1.1/)
 set(Eigen3_DIR lib/eigen)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Concurrent Widgets 3DCore 3DExtras 3DRender 3DInput PrintSupport)
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+#find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(KDDockWidgets REQUIRED)
 find_package(CGAL REQUIRED COMPONENTS Core)
 
@@ -320,6 +320,8 @@ target_include_directories(QtOpenGuidance PRIVATE lib/kalman/include)
 target_include_directories(QtOpenGuidance PRIVATE lib/geographiclib/include/)
 target_include_directories(QtOpenGuidance PRIVATE lib/UBX_Parser/src/)
 
+target_include_directories(QtOpenGuidance PRIVATE lib/eigen)
+
 target_link_libraries(QtOpenGuidance
   Qt5::Core
   Qt5::Gui
@@ -328,7 +330,7 @@ target_link_libraries(QtOpenGuidance
   Qt5::3DExtras
   Qt5::3DRender
   Qt5::3DInput
-  Eigen3::Eigen
+#  Eigen3::Eigen
   KDAB::kddockwidgets
   GeographicLib::GeographicLib_STATIC
   dubins

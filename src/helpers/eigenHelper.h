@@ -24,7 +24,7 @@
 
 #include "unsupported/Eigen/EulerAngles"
 
-using MyTaitBryanSystem = Eigen::EulerSystem < Eigen::EULER_Z, -Eigen::EULER_Y, Eigen::EULER_X >;
+using MyTaitBryanSystem = Eigen::EulerSystem <Eigen::EULER_Z, -Eigen::EULER_Y, Eigen::EULER_X >;
 using MyTaitBryanAngles = Eigen::EulerAngles<double, MyTaitBryanSystem>;
 
 inline const double& getYaw( const Eigen::Vector3d& vector ) {
@@ -52,18 +52,21 @@ inline double& getRoll( Eigen::Vector3d& vector ) {
 }
 
 inline Eigen::Quaterniond taitBryanToQuaternion( const Eigen::Vector3d& eulers ) {
-  MyTaitBryanAngles euler( eulers.z(), eulers.y(), eulers.x() );
+  MyTaitBryanAngles euler( getYaw(eulers), getPitch(eulers), getRoll(eulers) );
   return euler;
 }
 
 inline Eigen::Quaterniond taitBryanToQuaternion( const double yaw, const double pitch, const double roll ) {
-  Eigen::Vector3d vec( yaw, pitch, roll );
-  return taitBryanToQuaternion( vec );
+  MyTaitBryanAngles euler( yaw, pitch, roll );
+  return euler;
 }
 
-inline Eigen::Vector3d quaternionToTaitBryan( const Eigen::Quaterniond& quaternion ) {
-  MyTaitBryanAngles euler( quaternion );
-  return euler.angles();
+inline Eigen::Vector3d quaternionToTaitBryan( const Eigen::Quaterniond& quaternion ){
+  return MyTaitBryanAngles(quaternion).angles();
+}
+
+inline double quaternionToTaitBryanYaw( const Eigen::Quaterniond& quaternion ){
+  return MyTaitBryanAngles(quaternion).alpha();
 }
 
 #ifdef QT_VERSION

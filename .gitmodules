@@ -13,3 +13,6 @@
 [submodule "lib/kalman"]
 	path = lib/kalman
 	url = https://github.com/mherb/kalman.git
+[submodule "lib/eigen"]
+	path = lib/eigen
+	url = https://gitlab.com/libeigen/eigen.git
