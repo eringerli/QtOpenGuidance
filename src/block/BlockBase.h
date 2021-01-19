@@ -23,12 +23,13 @@
 #include <QLatin1String>
 #include <QStringLiteral>
 
-#include <QtWidgets>
+class QJsonObject;
+class QComboBox;
+class QTreeWidget;
+class QGraphicsScene;
 
-//#include <QJsonObject>
-
-#include "qneblock.h"
-#include "qneport.h"
+class QNEBlock;
+class QNEPort;
 
 class BlockBase : public QObject {
     Q_OBJECT
@@ -74,12 +75,12 @@ class BlockFactory : public QObject {
     static bool isIdUnique( QGraphicsScene* scene, int id );
 
   protected:
-    const QColor modelColor = QColor( QStringLiteral( "moccasin" ) );
-    const QColor dockColor = QColor( QStringLiteral( "DarkSalmon" ) );
-    const QColor inputDockColor = QColor( QStringLiteral( "lightsalmon" ) );
-    const QColor parserColor = QColor( QStringLiteral( "mediumaquamarine" ) );
-    const QColor valueColor = QColor( QStringLiteral( "gold" ) );
-    const QColor inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
-    const QColor converterColor = QColor( QStringLiteral( "lightblue" ) );
-    const QColor arithmeticColor = QColor( QStringLiteral( "DarkKhaki" ) );
+    static const QColor modelColor;
+    static const QColor dockColor;
+    static const QColor inputDockColor;
+    static const QColor parserColor;
+    static const QColor valueColor;
+    static const QColor inputOutputColor;
+    static const QColor converterColor;
+    static const QColor arithmeticColor;
 };

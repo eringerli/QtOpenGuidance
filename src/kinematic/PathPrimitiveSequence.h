@@ -23,16 +23,9 @@
 class PathPrimitiveSequence
   : public PathPrimitive {
   public:
-    PathPrimitiveSequence()
-      : PathPrimitive() {}
-
-    PathPrimitiveSequence( const std::vector<Point_2>& polyline, const double implementWidth, const bool anyDirection, const int32_t passNumber )
-      : PathPrimitive( anyDirection, implementWidth, passNumber ) {
-      updateWithPolyline( polyline );
-    }
-
-    PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive>>& sequence, const std::vector<Line_2>& bisectors, const double implementWidth, const bool anyDirection, const int32_t passNumber )
-      : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {}
+    PathPrimitiveSequence() = default;
+    PathPrimitiveSequence( const std::vector<Point_2>& polyline, const double implementWidth, const bool anyDirection, const int32_t passNumber );
+    PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive>>& sequence, const std::vector<Line_2>& bisectors, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
       return Type::Sequence;
@@ -56,9 +49,7 @@ class PathPrimitiveSequence
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
     virtual std::shared_ptr<PathPrimitive> createNextPrimitive( bool left ) override;
 
-    virtual void print() override {
-      std::cout << "PathPrimitiveSequence: " << std::endl;
-    }
+    virtual void print() override;
 
     const std::shared_ptr<PathPrimitive>& findSequencePrimitive( const Point_2 point ) const;
 

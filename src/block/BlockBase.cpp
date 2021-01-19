@@ -18,8 +18,12 @@
 
 #include "BlockBase.h"
 
+#include "qneblock.h"
+#include "qneport.h"
+
 #include <QComboBox>
 #include <QTreeWidget>
+#include <QGraphicsScene>
 
 void BlockFactory::addToCombobox( QComboBox* combobox ) {
   combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
@@ -52,7 +56,6 @@ void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
 QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = 0;
-    qDebug() << "BlockFactory::createBaseBlock: ID conflict";
   }
 
   auto* b = new QNEBlock( obj, id, systemBlock );
@@ -83,4 +86,11 @@ bool BlockFactory::isIdUnique( QGraphicsScene* scene, int id ) {
   return true;
 }
 
-#include <QTreeWidget>
+const QColor BlockFactory::modelColor = QColor( QStringLiteral( "moccasin" ) );
+const QColor BlockFactory::dockColor = QColor( QStringLiteral( "DarkSalmon" ) );
+const QColor BlockFactory::inputDockColor = QColor( QStringLiteral( "lightsalmon" ) );
+const QColor BlockFactory::parserColor = QColor( QStringLiteral( "mediumaquamarine" ) );
+const QColor BlockFactory::valueColor = QColor( QStringLiteral( "gold" ) );
+const QColor BlockFactory::inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
+const QColor BlockFactory::converterColor = QColor( QStringLiteral( "lightblue" ) );
+const QColor BlockFactory::arithmeticColor = QColor( QStringLiteral( "DarkKhaki" ) );

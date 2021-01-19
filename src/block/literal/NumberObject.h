@@ -16,13 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "gui/model/NumberBlockModel.h"
-
 #pragma once
 
 #include <QObject>
 
 #include "block/BlockBase.h"
+
+class NumberBlockModel;
 
 class NumberObject : public BlockBase {
     Q_OBJECT
@@ -31,25 +31,10 @@ class NumberObject : public BlockBase {
     explicit NumberObject()
       : BlockBase() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT numberChanged( number );
-    }
+    void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "Number" )] = number;
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "Number" )].isDouble() ) {
-          number = valuesObject[QStringLiteral( "Number" )].toDouble();
-        }
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   Q_SIGNALS:
     void numberChanged( const double );
@@ -74,18 +59,7 @@ class NumberFactory : public BlockFactory {
       return QStringLiteral( "Literals" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new NumberObject();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ) );
-
-      b->setBrush( valueColor );
-
-      model->resetModel();
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     NumberBlockModel* model = nullptr;

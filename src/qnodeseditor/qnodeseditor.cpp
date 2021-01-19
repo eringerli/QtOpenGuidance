@@ -96,7 +96,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
             return true;
           }
-
         }
         break;
 
@@ -161,7 +160,6 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         isInPaningState = true;
         return true;
       }
-
 
       break;
     }

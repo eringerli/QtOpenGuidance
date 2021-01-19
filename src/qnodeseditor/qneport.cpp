@@ -28,7 +28,9 @@
 #include "qneport.h"
 #include "qneblock.h"
 
+#include <QTextDocument>
 #include <QFontMetrics>
+
 #include <QGraphicsScene>
 
 #include <QPen>
@@ -134,6 +136,15 @@ QNEBlock* QNEPort::block() const {
   return m_block;
 }
 
+qreal QNEPort::getWidthOfLabelBoundingRect() {
+  return marginOfText + label->boundingRect().width();
+}
+
+qreal QNEPort::getHeightOfLabelBoundingRect() {
+  QFontMetrics fm( label->font() );
+  return fm.height()/* + marginOfText*/;
+}
+
 QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
     for( auto* conn : qAsConst( m_connections ) ) {
@@ -152,4 +163,15 @@ void QNEPort::contentsChanged() {
     block->setName( label->toPlainText(), true );
     block->resizeBlockWidth();
   }
+}
+
+QNEPortHelper::QNEPortHelper( QNEPort* port )
+  : QObject(), port( port ) {
+  QObject::connect( port->label->document(), &QTextDocument::contentsChanged, this, &QNEPortHelper::contentsChanged );
+}
+
+void QNEPortHelper::contentsChanged() {
+  bool oldState = port->label->document()->blockSignals( true );
+  port->contentsChanged();
+  port->label->document()->blockSignals( oldState );
 }

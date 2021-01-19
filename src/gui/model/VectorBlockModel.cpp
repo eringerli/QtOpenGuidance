@@ -16,10 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "block/literal/VectorObject.h"
-
 #include "VectorBlockModel.h"
 
+#include "block/literal/VectorObject.h"
+
+#include <QComboBox>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 

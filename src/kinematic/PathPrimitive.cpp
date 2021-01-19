@@ -24,6 +24,9 @@
 
 #include <QtMath>
 
+PathPrimitive::PathPrimitive( const bool anyDirection, const double implementWidth, const int32_t passNumber )
+  : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
+
 const PathPrimitiveLine* PathPrimitive::castToLine() {
   if( getType() == Type::Line ) {
     return static_cast<PathPrimitiveLine*>( this );
@@ -63,3 +66,23 @@ const PathPrimitiveSequence* PathPrimitive::castToSequence() {
 void PathPrimitive::setSource( const Point_2 ) {}
 
 void PathPrimitive::setTarget( const Point_2 ) {}
+
+std::shared_ptr<PathPrimitive> PathPrimitive::createReverse() {
+  return nullptr;
+}
+
+std::shared_ptr<PathPrimitive> PathPrimitive::createNextPrimitive( const bool ) {
+  return nullptr;
+}
+
+void PathPrimitive::print() {
+  std::cout << "PathPrimitive" << std::endl;
+}
+
+double PathPrimitive::offsetSign( const Point_2 point ) {
+  return leftOf( point ) ? -1 : 1;
+}
+
+double PathPrimitive::distanceToPoint( const Point_2 point ) {
+  return std::sqrt( distanceToPointSquared( point ) );
+}

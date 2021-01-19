@@ -19,21 +19,17 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
+#include <QColor>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-
-#include <Qt3DRender/QGeometry>
-#include <Qt3DRender/QGeometryRenderer>
-
-#include <Qt3DExtras/QCylinderMesh>
+#include "3d/qt3dForwards.h"
 
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
-#include "../sectionControl/Implement.h"
+class Implement;
 
 class SprayerModel : public BlockBase {
     Q_OBJECT
@@ -90,19 +86,7 @@ class SprayerModelFactory : public BlockFactory {
       return QStringLiteral( "Graphical" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new SprayerModel( rootEntity, usePBR );
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
-      b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
-
-      b->setBrush( modelColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;

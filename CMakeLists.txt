@@ -14,11 +14,41 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 include(cmake/modules/LDGOLD.cmake)
+include(cmake/modules/UNIFY.cmake)
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-    message(STATUS "Found ccache")
+set(USE_CCACHE true
+  CACHE BOOL "use ccache for speeding up repeated builds")
+
+set(USE_PCH false
+  CACHE BOOL "use pre-compiled headers; speeds up incremental builds for the cost of much disk space")
+
+set(USE_UNITY_BUILD false
+  CACHE BOOL "use unity/jumbo build; speeds up one-time compilation by combining multiple targets into groups")
+
+if(USE_CCACHE)
+  find_program(CCACHE_PROGRAM ccache)
+  if(CCACHE_PROGRAM)
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+      message(STATUS "Using ccache")
+    else()
+      message(STATUS "Not using pre-compiled headers - enabled but not found")
+  endif()
+else()
+  message(STATUS "Not using pre-compiled headers")
+endif()
+
+if(USE_UNITY_BUILD)
+  message(STATUS "Using Unity/Jumbo build")
+  set(CMAKE_UNITY_BUILD true)
+else()
+  message(STATUS "Not using Unity/Jumbo build")
+  set(CMAKE_UNITY_BUILD false)
+endif()
+
+if(USE_PCH)
+  message(STATUS "Using pre-compiled headers")
+else()
+  message(STATUS "Not using pre-compiled headers")
 endif()
 
 set(CGAL_DIR lib/CGAL-5.1.1/)
@@ -60,8 +90,7 @@ target_link_libraries(QCustomPlot
 )
 target_compile_options(QCustomPlot PRIVATE -Wno-deprecated-declarations)
 
-# qnodeseditor
-add_library(qnodeseditor
+set(SOURCES_qnodeseditor
   src/qnodeseditor/qneblock.cpp
   src/qnodeseditor/qneblock.h
   src/qnodeseditor/qneconnection.cpp
@@ -73,6 +102,10 @@ add_library(qnodeseditor
   src/qnodeseditor/qnodeseditor.cpp
   src/qnodeseditor/qnodeseditor.h
 )
+set_source_files_properties(SOURCES_qnodeseditor PROPERTIES UNITY_GROUP "qnodeseditor")
+
+# qnodeseditor
+add_library(qnodeseditor "${SOURCES_qnodeseditor}")
 target_link_libraries(qnodeseditor
   Qt5::Core
   Qt5::Gui
@@ -80,106 +113,16 @@ target_link_libraries(qnodeseditor
 )
 target_include_directories(qnodeseditor PRIVATE src/)
 target_include_directories(qnodeseditor PRIVATE src/qnodeseditor/)
-
-set(SOURCES
-  src/3d/ArrowTexture.h
-  src/3d/BufferMesh.cpp
-  src/3d/BufferMeshGeometry.cpp
-  src/3d/BufferMeshGeometry.h
-  src/3d/BufferMeshGeometryWithNormal.cpp
-  src/3d/BufferMeshGeometryWithNormal.h
-  src/3d/BufferMesh.h
-  src/3d/BufferMeshWithNormal.cpp
-  src/3d/BufferMeshWithNormal.h
-  src/3d/CultivatedAreaMesh.cpp
-  src/3d/CultivatedAreaMeshGeometry.cpp
-  src/3d/CultivatedAreaMeshGeometry.h
-  src/3d/CultivatedAreaMesh.h
-  src/3d/texturerendertarget.cpp
-  src/3d/texturerendertarget.h
-  src/block/arithmetic/ArithmeticAddition.h
-  src/block/arithmetic/ArithmeticDivision.h
-  src/block/arithmetic/ArithmeticMultiplication.h
-  src/block/arithmetic/ArithmeticSubtraction.h
+set(SOURCES_simple
+  src/block/base/DebugSink.cpp
   src/block/base/DebugSink.h
   src/block/BlockBase.cpp
   src/block/BlockBase.h
-  src/block/calculation/AckermannSteering.h
-  src/block/calculation/AngularVelocityLimiter.h
-  src/block/calculation/TransverseMercatorConverter.h
-  src/block/comparison/ComparisonEqualTo.h
-  src/block/comparison/ComparisonGreaterOrEqualTo.h
-  src/block/comparison/ComparisonGreaterThan.h
-  src/block/comparison/ComparisonLessOrEqualTo.h
-  src/block/comparison/ComparisonLessThan.h
-  src/block/comparison/ComparisonNotEqualTo.h
-  src/block/converter/CommunicationJrk.h
-  src/block/converter/CommunicationPgn7FFE.h
-  src/block/converter/ValueTransmissionBase64Data.h
-  src/block/converter/ValueTransmissionBase.cpp
-  src/block/converter/ValueTransmissionBase.h
-  src/block/converter/ValueTransmissionNumber.h
-  src/block/converter/ValueTransmissionQuaternion.h
-  src/block/converter/ValueTransmissionState.h
-  src/block/dock/display/OrientationDockBlock.h
-  src/block/dock/display/PositionDockBlock.h
-  src/block/dock/display/ValueDockBlockBase.cpp
-  src/block/dock/display/ValueDockBlockBase.h
-  src/block/dock/display/ValueDockBlock.h
-  src/block/dock/display/XteDockBlock.cpp
-  src/block/dock/display/XteDockBlock.h
-  src/block/dock/input/ActionDockBlock.cpp
-  src/block/dock/input/ActionDockBlock.h
-  src/block/dock/input/SliderDockBlock.cpp
-  src/block/dock/input/SliderDockBlock.h
-  src/block/dock/plot/OrientationPlotDockBlock.h
-  src/block/dock/plot/PlotDockBlockBase.cpp
-  src/block/dock/plot/PlotDockBlockBase.h
-  src/block/dock/plot/ValuePlotDockBlock.h
-  src/block/ExtendedKalmanFilter.h
-  src/block/global/CameraController.h
-  src/block/global/FieldManager.cpp
-  src/block/global/FieldManager.h
-  src/block/global/FpsMeasurement.h
-  src/block/global/GlobalPlanner.cpp
-  src/block/global/GlobalPlanner.h
-  src/block/global/GridModel.h
-  src/block/global/PoseSimulation.cpp
-  src/block/global/PoseSimulation.h
-  src/block/graphical/CultivatedAreaModel.cpp
-  src/block/graphical/CultivatedAreaModel.h
-  src/block/graphical/PathPlannerModel.cpp
-  src/block/graphical/PathPlannerModel.h
-  src/block/graphical/SprayerModel.cpp
-  src/block/graphical/SprayerModel.h
-  src/block/graphical/TractorModel.cpp
-  src/block/graphical/TractorModel.h
-  src/block/graphical/TrailerModel.cpp
-  src/block/graphical/TrailerModel.h
-  src/block/guidance/LocalPlanner.cpp
-  src/block/guidance/LocalPlanner.h
-  src/block/guidance/PoseSynchroniser.h
-  src/block/guidance/StanleyGuidance.cpp
-  src/block/guidance/StanleyGuidance.h
-  src/block/guidance/XteGuidance.h
-  src/block/kinematic/FixedKinematic.h
-  src/block/kinematic/FixedKinematicPrimitive.h
-  src/block/kinematic/TrailerKinematic.h
-  src/block/kinematic/TrailerKinematicPrimitive.h
-  src/block/literal/NumberObject.h
-  src/block/literal/OrientationBlock.h
-  src/block/literal/StringObject.h
-  src/block/literal/VectorObject.h
-  src/block/parser/NmeaParserGGA.h
-  src/block/parser/NmeaParserHDT.h
-  src/block/parser/NmeaParserRMC.h
-  src/block/parser/UbxParser.h
-  src/block/sectionControl/Implement.h
-  src/block/sectionControl/ImplementSection.h
-  src/block/sectionControl/SectionControl.cpp
-  src/block/sectionControl/SectionControl.h
-  src/block/stream/FileStream.h
-  src/block/stream/UdpSocket.h
+)
+addToUnifyGroupAndSources("${SOURCES_simple}" "simpleblocks")
+
+
+set(SOURCES_filter
   src/filter/3wFRHRL/SystemModel.h
   src/filter/BicycleModel/ImuMeasurementModel.h
   src/filter/BicycleModel/PositionMeasurementModel.h
@@ -187,44 +130,75 @@ set(SOURCES
   src/filter/KinematicModel/ImuMeasurementModel.h
   src/filter/KinematicModel/PositionMeasurementModel.h
   src/filter/KinematicModel/SystemModel.h
+  src/filter/MeanMovingWindow.cpp
   src/filter/MeanMovingWindow.h
+  src/block/ExtendedKalmanFilter.cpp
+  src/block/ExtendedKalmanFilter.h
+  src/kinematic/VehicleDynamics/Tire.h
+  src/kinematic/VehicleDynamics/TireLinear.cpp
+  src/kinematic/VehicleDynamics/TireLinear.h
+  src/kinematic/VehicleDynamics/Vehicle.h
+  src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.cpp
+  src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.h
+  src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.cpp
+  src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.h
+  src/block/global/PoseSimulation.cpp
+  src/block/global/PoseSimulation.h
+  )
+addToUnifyGroupAndSources("${SOURCES_filter}" "filter")
+
+set(SOURCES_gui_toolbar
   src/gui/CameraToolbar.cpp
   src/gui/CameraToolbar.h
-  src/gui/CameraToolbar.ui
-  src/gui/dock/ActionDock.cpp
-  src/gui/dock/ActionDock.h
-  src/gui/dock/ActionDock.ui
-  src/gui/dock/PlotDock.cpp
-  src/gui/dock/PlotDock.h
-  src/gui/dock/PlotDock.ui
-  src/gui/dock/SliderDock.cpp
-  src/gui/dock/SliderDock.h
-  src/gui/dock/SliderDock.ui
-  src/gui/dock/ThreeValuesDock.cpp
-  src/gui/dock/ThreeValuesDock.h
-  src/gui/dock/ThreeValuesDock.ui
-  src/gui/dock/ValueDock.cpp
-  src/gui/dock/ValueDock.h
-  src/gui/dock/ValueDock.ui
-  src/gui/dock/XteDock.cpp
-  src/gui/dock/XteDock.h
-  src/gui/dock/XteDock.ui
   src/gui/FieldsOptimitionToolbar.cpp
   src/gui/FieldsOptimitionToolbar.h
-  src/gui/FieldsOptimitionToolbar.ui
   src/gui/FieldsToolbar.cpp
   src/gui/FieldsToolbar.h
-  src/gui/FieldsToolbar.ui
   src/gui/FontComboboxDelegate.h
+  src/gui/FontComboboxDelegate.cpp
   src/gui/GlobalPlannerToolbar.cpp
   src/gui/GlobalPlannerToolbar.h
-  src/gui/GlobalPlannerToolbar.ui
   src/gui/GuidanceToolbar.cpp
   src/gui/GuidanceToolbar.h
-  src/gui/GuidanceToolbar.ui
   src/gui/GuidanceTurning.cpp
   src/gui/GuidanceTurning.h
-  src/gui/GuidanceTurning.ui
+  src/gui/NewOpenSaveToolbar.cpp
+  src/gui/NewOpenSaveToolbar.h
+  src/gui/PassToolbar.cpp
+  src/gui/PassToolbar.h
+  src/gui/SectionControlToolbar.cpp
+  src/gui/SectionControlToolbar.h
+  )
+addToUnifyGroupAndSources("${SOURCES_gui_toolbar}" "gui")
+
+set(SOURCES_gui_windows
+  src/main.cpp
+  src/gui/SettingsDialog.cpp
+  src/gui/SettingsDialog.h
+  src/gui/MyFrameworkWidgetFactory.cpp
+  src/gui/MyFrameworkWidgetFactory.h
+  src/gui/MyMainWindow.cpp
+  src/gui/MyMainWindow.h
+  )
+addToUnifyGroupAndSources("${SOURCES_gui_windows}" "gui_windows")
+
+set(SOURCES_gui_dock
+  src/gui/dock/ActionDock.cpp
+  src/gui/dock/ActionDock.h
+  src/gui/dock/PlotDock.cpp
+  src/gui/dock/PlotDock.h
+  src/gui/dock/SliderDock.cpp
+  src/gui/dock/SliderDock.h
+  src/gui/dock/ThreeValuesDock.cpp
+  src/gui/dock/ThreeValuesDock.h
+  src/gui/dock/ValueDock.cpp
+  src/gui/dock/ValueDock.h
+  src/gui/dock/XteDock.cpp
+  src/gui/dock/XteDock.h
+  )
+addToUnifyGroupAndSources("${SOURCES_gui_dock}" "gui")
+
+set(SOURCES_model
   src/gui/model/ActionDockBlockModel.cpp
   src/gui/model/ActionDockBlockModel.h
   src/gui/model/ImplementBlockModel.cpp
@@ -249,30 +223,232 @@ set(SOURCES
   src/gui/model/ValueBlockModel.h
   src/gui/model/VectorBlockModel.cpp
   src/gui/model/VectorBlockModel.h
-  src/gui/MyFrameworkWidgetFactory.cpp
-  src/gui/MyFrameworkWidgetFactory.h
-  src/gui/MyMainWindow.h
-  src/gui/NewOpenSaveToolbar.cpp
-  src/gui/NewOpenSaveToolbar.h
-  src/gui/NewOpenSaveToolbar.ui
-  src/gui/PassToolbar.cpp
-  src/gui/PassToolbar.h
-  src/gui/PassToolbar.ui
-  src/gui/SectionControlToolbar.cpp
-  src/gui/SectionControlToolbar.h
-  src/gui/SettingsDialog.cpp
-  src/gui/SettingsDialog.h
-  src/gui/SettingsDialog.ui
-  src/helpers/anglesHelper.h
-  src/helpers/cgalHelper.h
-  src/helpers/eigenHelper.h
-  src/helpers/GeographicConvertionWrapper.h
-  src/helpers/GeoJsonHelper.cpp
-  src/helpers/GeoJsonHelper.h
+  )
+addToUnifyGroupAndSources("${SOURCES_model}" "model")
+
+set(SOURCES_cgal
   src/kinematic/cgal.h
   src/kinematic/cgalKernel.h
   src/kinematic/CgalWorker.cpp
   src/kinematic/CgalWorker.h
+  src/helpers/cgalHelper.h
+  src/3d/CultivatedAreaMeshGeometry.cpp
+  src/3d/CultivatedAreaMeshGeometry.h
+  src/block/global/FieldManager.cpp
+  src/block/global/FieldManager.h
+  src/block/global/GlobalPlanner.cpp
+  src/block/global/GlobalPlanner.h
+  )
+addToUnifyGroupAndSources("${SOURCES_cgal}" "cgal")
+
+set(SOURCES_3d
+  src/3d/ArrowTexture.cpp
+  src/3d/ArrowTexture.h
+  src/3d/BufferMesh.cpp
+  src/3d/BufferMeshGeometry.cpp
+  src/3d/BufferMeshGeometry.h
+  src/3d/BufferMeshGeometryWithNormal.cpp
+  src/3d/BufferMeshGeometryWithNormal.h
+  src/3d/BufferMesh.h
+  src/3d/BufferMeshWithNormal.cpp
+  src/3d/BufferMeshWithNormal.h
+  src/3d/CultivatedAreaMesh.cpp
+  src/3d/CultivatedAreaMesh.h
+  src/3d/texturerendertarget.cpp
+  src/3d/texturerendertarget.h
+  src/3d/qt3dForwards.h
+)
+addToUnifyGroupAndSources("${SOURCES_3d}" "3d")
+
+set(SOURCES_arithmetic
+  src/block/arithmetic/ArithmeticAddition.cpp
+  src/block/arithmetic/ArithmeticAddition.h
+  src/block/arithmetic/ArithmeticDivision.cpp
+  src/block/arithmetic/ArithmeticDivision.h
+  src/block/arithmetic/ArithmeticMultiplication.cpp
+  src/block/arithmetic/ArithmeticMultiplication.h
+  src/block/arithmetic/ArithmeticSubtraction.cpp
+  src/block/arithmetic/ArithmeticSubtraction.h
+)
+addToUnifyGroupAndSources("${SOURCES_arithmetic}" "simpleblocks")
+
+set(SOURCES_calculation
+  src/block/calculation/AckermannSteering.cpp
+  src/block/calculation/AckermannSteering.h
+  src/block/calculation/AngularVelocityLimiter.cpp
+  src/block/calculation/AngularVelocityLimiter.h
+  src/block/calculation/TransverseMercatorConverter.cpp
+  src/block/calculation/TransverseMercatorConverter.h
+)
+addToUnifyGroupAndSources("${SOURCES_calculation}" "simpleblocks")
+
+set(SOURCES_comparison
+  src/block/comparison/ComparisonEqualTo.cpp
+  src/block/comparison/ComparisonEqualTo.h
+  src/block/comparison/ComparisonGreaterOrEqualTo.cpp
+  src/block/comparison/ComparisonGreaterOrEqualTo.h
+  src/block/comparison/ComparisonGreaterThan.cpp
+  src/block/comparison/ComparisonGreaterThan.h
+  src/block/comparison/ComparisonLessOrEqualTo.cpp
+  src/block/comparison/ComparisonLessOrEqualTo.h
+  src/block/comparison/ComparisonLessThan.cpp
+  src/block/comparison/ComparisonLessThan.h
+  src/block/comparison/ComparisonNotEqualTo.cpp
+  src/block/comparison/ComparisonNotEqualTo.h
+)
+addToUnifyGroupAndSources("${SOURCES_comparison}" "simpleblocks")
+
+set(SOURCES_converter
+  src/block/converter/CommunicationJrk.cpp
+  src/block/converter/CommunicationJrk.h
+  src/block/converter/CommunicationPgn7FFE.cpp
+  src/block/converter/CommunicationPgn7FFE.h
+  src/block/converter/ValueTransmissionBase64Data.cpp
+  src/block/converter/ValueTransmissionBase64Data.h
+  src/block/converter/ValueTransmissionBase.cpp
+  src/block/converter/ValueTransmissionBase.h
+  src/block/converter/ValueTransmissionNumber.cpp
+  src/block/converter/ValueTransmissionNumber.h
+  src/block/converter/ValueTransmissionQuaternion.cpp
+  src/block/converter/ValueTransmissionQuaternion.h
+  src/block/converter/ValueTransmissionState.cpp
+  src/block/converter/ValueTransmissionState.h
+)
+addToUnifyGroupAndSources("${SOURCES_converter}" "simpleblocks")
+
+set(SOURCES_dock_display
+  src/block/dock/display/OrientationDockBlock.cpp
+  src/block/dock/display/OrientationDockBlock.h
+  src/block/dock/display/PositionDockBlock.cpp
+  src/block/dock/display/PositionDockBlock.h
+  src/block/dock/display/ValueDockBlockBase.cpp
+  src/block/dock/display/ValueDockBlockBase.h
+  src/block/dock/display/ValueDockBlock.cpp
+  src/block/dock/display/ValueDockBlock.h
+  src/block/dock/display/XteDockBlock.cpp
+  src/block/dock/display/XteDockBlock.h
+)
+addToUnifyGroupAndSources("${SOURCES_dock_display}" "dock")
+
+set(SOURCES_dock_input
+  src/block/dock/input/ActionDockBlock.cpp
+  src/block/dock/input/ActionDockBlock.h
+  src/block/dock/input/SliderDockBlock.cpp
+  src/block/dock/input/SliderDockBlock.h
+  )
+addToUnifyGroupAndSources("${SOURCES_dock_input}" "dock")
+
+set(SOURCES_dock_plot
+  src/block/dock/plot/OrientationPlotDockBlock.cpp
+  src/block/dock/plot/OrientationPlotDockBlock.h
+  src/block/dock/plot/PlotDockBlockBase.cpp
+  src/block/dock/plot/PlotDockBlockBase.h
+  src/block/dock/plot/ValuePlotDockBlock.cpp
+  src/block/dock/plot/ValuePlotDockBlock.h
+)
+addToUnifyGroupAndSources("${SOURCES_dock_plot}" "dock")
+
+set(SOURCES_global
+  src/block/global/CameraController.cpp
+  src/block/global/CameraController.h
+  src/block/global/FpsMeasurement.cpp
+  src/block/global/FpsMeasurement.h
+  src/block/global/GridModel.cpp
+  src/block/global/GridModel.h
+)
+addToUnifyGroupAndSources("${SOURCES_global}" "global")
+
+set(SOURCES_graphical
+  src/block/graphical/CultivatedAreaModel.cpp
+  src/block/graphical/CultivatedAreaModel.h
+  src/block/graphical/PathPlannerModel.cpp
+  src/block/graphical/PathPlannerModel.h
+  src/block/graphical/SprayerModel.cpp
+  src/block/graphical/SprayerModel.h
+  src/block/graphical/TractorModel.cpp
+  src/block/graphical/TractorModel.h
+  src/block/graphical/TrailerModel.cpp
+  src/block/graphical/TrailerModel.h
+)
+addToUnifyGroupAndSources("${SOURCES_graphical}" "graphical")
+
+set(SOURCES_guidance
+  src/block/guidance/LocalPlanner.cpp
+  src/block/guidance/LocalPlanner.h
+  src/block/guidance/PoseSynchroniser.cpp
+  src/block/guidance/PoseSynchroniser.h
+  src/block/guidance/StanleyGuidance.cpp
+  src/block/guidance/StanleyGuidance.h
+  src/block/guidance/XteGuidance.cpp
+  src/block/guidance/XteGuidance.h
+)
+addToUnifyGroupAndSources("${SOURCES_guidance}" "guidance")
+
+set(SOURCES_kinematic
+  src/block/kinematic/FixedKinematic.cpp
+  src/block/kinematic/FixedKinematic.h
+  src/block/kinematic/FixedKinematicPrimitive.cpp
+  src/block/kinematic/FixedKinematicPrimitive.h
+  src/block/kinematic/TrailerKinematic.cpp
+  src/block/kinematic/TrailerKinematic.h
+  src/block/kinematic/TrailerKinematicPrimitive.cpp
+  src/block/kinematic/TrailerKinematicPrimitive.h
+)
+addToUnifyGroupAndSources("${SOURCES_kinematic}" "simpleblocks2")
+
+set(SOURCES_literal
+  src/block/literal/NumberObject.cpp
+  src/block/literal/NumberObject.h
+  src/block/literal/OrientationBlock.cpp
+  src/block/literal/OrientationBlock.h
+  src/block/literal/StringObject.cpp
+  src/block/literal/StringObject.h
+  src/block/literal/VectorObject.cpp
+  src/block/literal/VectorObject.h
+  )
+addToUnifyGroupAndSources("${SOURCES_literal}" "simpleblocks2")
+
+set(SOURCES_parser
+  src/block/parser/NmeaParserGGA.cpp
+  src/block/parser/NmeaParserGGA.h
+  src/block/parser/NmeaParserHDT.cpp
+  src/block/parser/NmeaParserHDT.h
+  src/block/parser/NmeaParserRMC.cpp
+  src/block/parser/NmeaParserRMC.h
+  src/block/parser/UbxParser.cpp
+  src/block/parser/UbxParser.h
+  )
+addToUnifyGroupAndSources("${SOURCES_parser}" "simpleblocks2")
+
+set(SOURCES_sectionControl
+  src/block/sectionControl/Implement.cpp
+  src/block/sectionControl/Implement.h
+  src/block/sectionControl/ImplementSection.h
+  src/block/sectionControl/SectionControl.cpp
+  src/block/sectionControl/SectionControl.h
+  )
+addToUnifyGroupAndSources("${SOURCES_sectionControl}" "simpleblocks2")
+
+
+set(SOURCES_stream
+  src/block/stream/FileStream.cpp
+  src/block/stream/FileStream.h
+  src/block/stream/UdpSocket.cpp
+  src/block/stream/UdpSocket.h
+  )
+addToUnifyGroupAndSources("${SOURCES_stream}" "stream")
+
+set(SOURCES_helpers
+  src/helpers/anglesHelper.h
+  src/helpers/eigenHelper.h
+  src/helpers/GeographicConvertionWrapper.cpp
+  src/helpers/GeographicConvertionWrapper.h
+  src/helpers/GeoJsonHelper.cpp
+  src/helpers/GeoJsonHelper.h
+  )
+addToUnifyGroupAndSources("${SOURCES_helpers}" "helpers")
+
+set(SOURCES_kinematic
   src/kinematic/PathPrimitive.cpp
   src/kinematic/PathPrimitive.h
   src/kinematic/PathPrimitiveLine.cpp
@@ -288,26 +464,41 @@ set(SOURCES
   src/kinematic/PlanGlobal.h
   src/kinematic/Plan.h
   src/kinematic/PoseOptions.h
-  src/kinematic/VehicleDynamics/Tire.h
-  src/kinematic/VehicleDynamics/TireLinear.h
-  src/kinematic/VehicleDynamics/Vehicle.h
-  src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.cpp
-  src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.h
-  src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.cpp
-  src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.h
-  src/main.cpp
-)
+  )
+addToUnifyGroupAndSources("${SOURCES_kinematic}" "kinematic")
+
+set(SOURCES_qnodeseditor
+  src/qnodeseditor/qneblock.cpp
+  src/qnodeseditor/qneblock.h
+  src/qnodeseditor/qneconnection.cpp
+  src/qnodeseditor/qneconnection.h
+  src/qnodeseditor/qnegestures.cpp
+  src/qnodeseditor/qnegestures.h
+  src/qnodeseditor/qnegraphicsview.cpp
+  src/qnodeseditor/qnegraphicsview.h
+  src/qnodeseditor/qneport.cpp
+  src/qnodeseditor/qneport.h
+  src/qnodeseditor/qnodeseditor.cpp
+  src/qnodeseditor/qnodeseditor.h
+  )
+addToUnifyGroupAndSources("${SOURCES_qnodeseditor}" "qnodeseditor")
 
 set(SOURCES ${SOURCES}
   lib/UBX_Parser/src/UBX_Parser.h)
 
 if(HAVE_SPNAV)
-  set(SOURCES ${SOURCES}
+  set(SOURCES_spnav
     src/gui/SpaceNavigatorPollingThread.cpp
     src/gui/SpaceNavigatorPollingThread.h)
+  addToUnifyGroupAndSources("${SOURCES_spnav}" "gui_windows")
 endif()
 
 add_executable(QtOpenGuidance ${SOURCES})
+
+
+set_target_properties(QtOpenGuidance PROPERTIES
+                      UNITY_BUILD_MODE GROUP
+                      )
 
 if(HAVE_SPNAV)
   target_compile_definitions(QtOpenGuidance PRIVATE SPNAV_ENABLED)
@@ -339,7 +530,9 @@ target_link_libraries(QtOpenGuidance
   qnodeseditor
   ${SPNAV_LIBRARY})
 
-target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)
+if(USE_PCH)
+  target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)
+endif()
 
 install(TARGETS QtOpenGuidance)
 

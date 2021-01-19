@@ -18,15 +18,16 @@
 
 #include "TransmissionBlockModel.h"
 
-#include <QGraphicsItem>
-#include <QGraphicsScene>
-
-#include "qneblock.h"
-
 #include "block/converter/ValueTransmissionBase.h"
 #include "block/converter/ValueTransmissionBase64Data.h"
 #include "block/converter/ValueTransmissionNumber.h"
 #include "block/converter/ValueTransmissionQuaternion.h"
+
+#include <QComboBox>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+
+#include "qneblock.h"
 
 TransmissionBlockModel::TransmissionBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

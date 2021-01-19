@@ -19,13 +19,10 @@
 #pragma once
 
 #include <QObject>
+#include <QElapsedTimer>
 
 #include "BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
@@ -42,81 +39,29 @@ class ExtendedKalmanFilter : public BlockBase {
     using State = KinematicModel::State<T>;
 
   public:
-    explicit ExtendedKalmanFilter()
-      : BlockBase() {
-      x.setZero();
-      ekf.init( x );
-      elapsedTimer.start();
-    }
+    explicit ExtendedKalmanFilter();
 
   public Q_SLOTS:
-    void setPosition( const Eigen::Vector3d& position ) {
+    void setPosition( const Eigen::Vector3d& position );
 
-      predict();
+    void setVelocity3D( const Eigen::Vector3d& velocity3D );
 
-      KinematicModel::PositionMeasurementVector<double> measurement;
-      measurement << position.x(), position.y(), position.z(),
-                  velocity3D.x(), velocity3D.y(), velocity3D.z();
+    void setImuData( const Eigen::Quaterniond& orientation, const Eigen::Vector3d& accelerometerData, const Eigen::Vector3d& gyroData );
 
-      ekf.update( positionMeasumentModel, measurement );
+    void setOrientation( const Eigen::Quaterniond& value );
 
-      emitPoseFromEKF();
-//      qDebug() << "Cycle Time ExtendedKalmanFilter:  " << timer.nsecsElapsed() << "ns";
-    }
-
-    void setVelocity3D( const Eigen::Vector3d& velocity3D ) {
-      this->velocity3D = velocity3D;
-    }
-
-    void setImuData( const Eigen::Quaterniond& orientation, const Eigen::Vector3d& accelerometerData, const Eigen::Vector3d& gyroData ) {
-      predict();
-
-      auto taitBryan = quaternionToTaitBryan( orientation );
-
-      KinematicModel::ImuMeasurementVector<double> measurement;
-      measurement << normalizeAngleRadians( taitBryan.x() ), normalizeAngleRadians( taitBryan.y() ), normalizeAngleRadians( taitBryan.z() ),
-                  gyroData.x(), gyroData.y(), gyroData.z(),
-                  accelerometerData.x(), accelerometerData.y(), accelerometerData.z();
-
-      ekf.update( imuMeasumentModel, measurement );
-
-      emitPoseFromEKF();
-    }
-
-    void setOrientation( const Eigen::Quaterniond& value ) {
-      orientation = value;
-    }
-
-    void setOrientationCorrection( const Eigen::Quaterniond& value ) {
-      orientationCorrection = value;
-    }
+    void setOrientationCorrection( const Eigen::Quaterniond& value );
 
   private:
-    void predict() {
-      constexpr double msPerS = 1000;
-      double elapsedTime = double ( elapsedTimer.restart() ) / msPerS;
+    void predict();
 
-      ekf.predict( systemModel, elapsedTime );
-    }
-
-    void emitPoseFromEKF() {
-      auto x = ekf.getState();
-
-      this->position = x.head( 3 );
-      this->orientation = taitBryanToQuaternion( x( KinematicModel::StateNames::Roll ),
-                          x( KinematicModel::StateNames::Pitch ),
-                          x( KinematicModel::StateNames::Yaw ) );
-
-      Q_EMIT poseChanged( this->position, this->orientation, PoseOption::NoOptions );
-    }
+    void emitPoseFromEKF();
 
   Q_SIGNALS:
     void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
   public:
-    virtual void emitConfigSignals() override {
-      Q_EMIT poseChanged( position, orientation, PoseOption::NoOptions );
-    }
+    virtual void emitConfigSignals() override;
 
   public:
     Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
@@ -139,8 +84,7 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
     Q_OBJECT
 
   public:
-    ExtendedKalmanFilterFactory()
-      : BlockFactory() {}
+    ExtendedKalmanFilterFactory() {}
 
     QString getNameOfFactory() override {
       return QStringLiteral( "ExtendedKalmanFilter" );
@@ -154,19 +98,5 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
       return QStringLiteral( "Base Blocks" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ExtendedKalmanFilter();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
-      b->addInputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SLOT( setVelocity3D( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "IMU Data" ), QLatin1String( SLOT( setImuData( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
-
-      b->addInputPort( QStringLiteral( "Orientation Correction" ), QLatin1String( SLOT( setOrientationCorrection( const Eigen::Quaterniond& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

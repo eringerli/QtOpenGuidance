@@ -19,15 +19,12 @@
 #pragma once
 
 #include <QObject>
-#include <QDockWidget>
-#include <QSizePolicy>
-#include <QMenu>
 
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
-#include "gui/MyMainWindow.h"
-#include "gui/dock/ThreeValuesDock.h"
+class MyMainWindow;
+class ThreeValuesDock;
 
 #include "block/BlockBase.h"
 #include "ValueDockBlockBase.h"
@@ -37,80 +34,30 @@ class PositionDockBlock : public ValueDockBlockBase {
 
   public:
     explicit PositionDockBlock( const QString& uniqueName,
-                                MyMainWindow* mainWindow )
-      : ValueDockBlockBase( uniqueName ) {
-      widget = new ThreeValuesDock( mainWindow );
+                                MyMainWindow* mainWindow );
 
-      widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
-    }
+    ~PositionDockBlock();
 
-    ~PositionDockBlock() {
-      widget->deleteLater();
+    virtual const QFont& getFont() override;
+    virtual int getPrecision() override;
+    virtual int getFieldWidth() override;
+    virtual double getScale() override;
+    virtual bool unitVisible() override;
+    virtual const QString& getUnit() override;
 
-      if( ValueDockBlockBase::firstThreeValuesDock == dock ) {
-        ValueDockBlockBase::firstThreeValuesDock = nullptr;
-      }
-    }
-
-    virtual const QFont& getFont() override {
-      return widget->fontOfLabel();
-    }
-    virtual int getPrecision() override {
-      return widget->precision;
-    }
-    virtual int getFieldWidth() override {
-      return widget->fieldWidth;
-    }
-    virtual double getScale() override {
-      return widget->scale;
-    }
-    virtual bool unitVisible() override {
-      return widget->unitEnabled;
-    }
-    virtual const QString& getUnit() override {
-      return widget->unit;
-    }
-
-    virtual void setFont( const QFont& font ) override {
-      widget->setFontOfLabel( font );
-    }
-    virtual void setPrecision( const int precision ) override {
-      widget->precision = precision;
-    }
-    virtual void setFieldWidth( const int fieldWidth ) override {
-      widget->fieldWidth = fieldWidth;
-    }
-    virtual void setScale( const double scale ) override {
-      widget->scale = scale;
-    }
-    virtual void setUnitVisible( const bool enabled ) override {
-      widget->unitEnabled = enabled;
-    }
-    virtual void setUnit( const QString& unit ) override {
-      widget->unit = unit;
-    }
+    virtual void setFont( const QFont& font ) override;
+    virtual void setPrecision( const int precision ) override;
+    virtual void setFieldWidth( const int fieldWidth ) override;
+    virtual void setScale( const double scale ) override;
+    virtual void setUnitVisible( const bool enabled ) override;
+    virtual void setUnit( const QString& unit ) override;
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
-    }
+    void setName( const QString& name ) override;
 
-    void setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const PoseOption::Options& ) {
-      if( wgs84 ) {
-        widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
-      }
+    void setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const PoseOption::Options& );
 
-      widget->setValues( point.x(), point.y(), point.z() );
-    }
-
-    void setWGS84Position( const Eigen::Vector3d& position ) {
-      if( !wgs84 ) {
-        widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
-      }
-
-      widget->setValues( position.x(), position.y(), position.z() );
-    }
+    void setWGS84Position( const Eigen::Vector3d& position );
 
   public:
     ThreeValuesDock* widget = nullptr;
@@ -142,34 +89,7 @@ class PositionDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Position Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new PositionDockBlock( getNameOfFactory() + QString::number( id ),
-                                            mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( ValueDockBlockBase::firstThreeValuesDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        ValueDockBlockBase::firstThreeValuesDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
-      }
-
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->setBrush( dockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

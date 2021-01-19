@@ -24,6 +24,9 @@
 #include "BufferMeshGeometry.h"
 #include <QVector>
 #include <QVector3D>
+#include <Qt3DRender/QAttribute>
+#include <Qt3DRender/QBuffer>
+
 
 BufferMeshGeometry::BufferMeshGeometry( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometry( parent )

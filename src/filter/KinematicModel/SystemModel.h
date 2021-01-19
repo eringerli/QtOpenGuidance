@@ -89,7 +89,7 @@ namespace KinematicModel {
         xBuffer = x;
 
         xBuffer( StateNames::Ax ) = ( velocity - x( StateNames::Vx ) ) / deltaT;
-        xBuffer( StateNames::Vyaw ) = std::tan( qDegreesToRadians( steerAngle ) ) * velocity / wheelBase;
+        xBuffer( StateNames::Vyaw ) = std::tan( degreesToRadians( steerAngle ) ) * velocity / wheelBase;
 
         qDebug() << "TractorImuGpsFusionModel::predict 2" << xBuffer( StateNames::Ax ) << xBuffer( StateNames::Vyaw );
 

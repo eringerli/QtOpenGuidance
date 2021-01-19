@@ -23,9 +23,9 @@
 
 #pragma once
 
-#include <QAttribute>
-#include <QGeometry>
-#include <Qt3DRender/QBuffer>
+#include "3d/qt3dForwards.h"
+
+#include <Qt3DRender/QGeometry>
 
 class BufferMeshGeometryWithNormal : public Qt3DRender::QGeometry {
     Q_OBJECT

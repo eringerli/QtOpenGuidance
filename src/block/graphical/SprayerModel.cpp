@@ -18,9 +18,19 @@
 
 #include "SprayerModel.h"
 
-#include <QElapsedTimer>
-#include <QtCore/QDebug>
-#include <QtMath>
+#include "qneblock.h"
+#include "qneport.h"
+
+#include <QPointer>
+#include <QColor>
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+
+#include <Qt3DRender/QGeometry>
+#include <Qt3DRender/QGeometryRenderer>
+
+#include <Qt3DExtras/QCylinderMesh>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
@@ -28,6 +38,9 @@
 #include <Qt3DExtras/QConeMesh>
 
 #include "3d/BufferMesh.h"
+
+#include "block/sectionControl/Implement.h"
+#include "block/sectionControl/ImplementSection.h"
 
 #include "helpers/eigenHelper.h"
 
@@ -324,4 +337,18 @@ void SprayerModel::updateProprotions() {
       sectionOffset += section->overlapRight;
     }
   }
+}
+
+QNEBlock* SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new SprayerModel( rootEntity, usePBR );
+  auto* b = createBaseBlock( scene, obj, id );
+
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+
+  b->setBrush( modelColor );
+
+  return b;
 }

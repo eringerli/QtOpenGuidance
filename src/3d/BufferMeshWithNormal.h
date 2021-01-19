@@ -23,12 +23,12 @@
 
 #pragma once
 
-#include <QVector>
-#include <QObject>
-#include <QNode>
-#include <QGeometryRenderer>
+#include "3d/qt3dForwards.h"
 
-class BufferMeshGeometryWithNormal;
+#include <QObject>
+#include <QVector>
+#include <Qt3DRender/QGeometryRenderer>
+
 class QString;
 
 class BufferMeshWithNormal : public Qt3DRender::QGeometryRenderer {

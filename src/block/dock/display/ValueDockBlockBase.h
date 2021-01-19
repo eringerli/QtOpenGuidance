@@ -19,8 +19,6 @@
 #pragma once
 
 #include <QObject>
-#include <QSizePolicy>
-#include <QMenu>
 
 #include "block/BlockBase.h"
 
@@ -40,32 +38,8 @@ class ValueDockBlockBase : public BlockBase {
       dock->deleteLater();
     }
 
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-
-      valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( getFont() ) );
-      valuesObject[QStringLiteral( "Precision" )] = getPrecision();
-      valuesObject[QStringLiteral( "Scale" )] = getScale();
-      valuesObject[QStringLiteral( "FieldWitdh" )] = getFieldWidth();
-      valuesObject[QStringLiteral( "Unit" )] = getUnit();
-      valuesObject[QStringLiteral( "UnitVisible" )] = unitVisible();
-
-
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
-        setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
-        setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
-        setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );
-        setUnit( valuesObject[QStringLiteral( "Unit" )].toString( QString() ) );
-        setUnitVisible( valuesObject[QStringLiteral( "UnitVisible" )].toBool( false ) );
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   public:
     virtual const QFont& getFont() = 0;

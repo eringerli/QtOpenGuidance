@@ -21,7 +21,7 @@
 #include <QObject>
 
 #include <QGroupBox>
-#include <QMenu>
+class QMenu;
 
 namespace Ui {
   class GuidanceToolbar;

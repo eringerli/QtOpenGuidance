@@ -27,6 +27,14 @@ PathPrimitiveRay::PathPrimitiveRay( const Ray_2& ray, bool reverse, double imple
   angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
+bool PathPrimitiveRay::operator==( PathPrimitiveRay& b ) {
+  return ray == b.ray;
+}
+
+bool PathPrimitiveRay::operator==( const PathPrimitiveRay& b ) const {
+  return ray == b.ray;
+}
+
 std::shared_ptr<PathPrimitive> PathPrimitiveRay::createReverse() {
   return std::make_shared<PathPrimitiveRay> (
                  ray,
@@ -120,10 +128,14 @@ void PathPrimitiveRay::transform( const Aff_transformation_2& transformation ) {
 std::shared_ptr<PathPrimitive> PathPrimitiveRay::createNextPrimitive( bool left ) {
 
   auto offsetVector = this->reverse ?
-                      polarOffsetRad( qDegreesToRadians( angleLineDegrees - 180 ) + M_PI, left ? -implementWidth : implementWidth )
-                      : polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
+                      polarOffsetRad( degreesToRadians( angleLineDegrees - 180 ) + M_PI, left ? -implementWidth : implementWidth )
+                      : polarOffsetRad( degreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   return std::make_shared<PathPrimitiveRay> (
                  Ray_2( ray.source() - offsetVector, ray.direction() ),
                  this->reverse, implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+}
+
+void PathPrimitiveRay::print() {
+  std::cout << "PathPrimitiveRay: " << ray << std::endl;
 }

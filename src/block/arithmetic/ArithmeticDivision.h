@@ -16,11 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "gui/model/NumberBlockModel.h"
-
 #pragma once
-
-#include <QObject>
 
 #include "block/BlockBase.h"
 
@@ -31,28 +27,13 @@ class ArithmeticDivision : public BlockBase {
     explicit ArithmeticDivision()
       : BlockBase() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT numberChanged( result );
-    }
+    void emitConfigSignals() override;
 
-    void setValueA( double number ) {
-      numberA = number;
-      operation();
-    }
-
-    void setValueB( double number ) {
-      numberB = number;
-      operation();
-    }
+    void setValueA( double number );
+    void setValueB( double number );
 
   private:
-    void operation() {
-      if( !qIsNull( numberB ) ) {
-        result = numberA / numberB;
-      }
-
-      Q_EMIT numberChanged( result );
-    }
+    void operation();
 
   Q_SIGNALS:
     void numberChanged( double );
@@ -82,18 +63,5 @@ class ArithmeticDivisionFactory : public BlockFactory {
       return QStringLiteral( "Arithmetic" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ArithmeticDivision();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( double ) ) ) );
-      b->addPort( QStringLiteral( "/" ), QLatin1String(), false, QNEPort::NoBullet );
-      b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( double ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
-
-      b->setBrush( arithmeticColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

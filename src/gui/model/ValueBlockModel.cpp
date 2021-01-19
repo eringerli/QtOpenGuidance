@@ -16,16 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "block/sectionControl/Implement.h"
-
 #include "ValueBlockModel.h"
 
+#include "block/dock/display/ValueDockBlockBase.h"
+
+#include <QComboBox>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
 #include "qneblock.h"
-
-#include "block/dock/display/ValueDockBlockBase.h"
 
 ValueBlockModel::ValueBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

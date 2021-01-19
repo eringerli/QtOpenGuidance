@@ -182,7 +182,7 @@ namespace ThreeWheeledFRHRL {
 
             if( enableDebug ) {
               qDebug() << "ThreeWheeledFRHRL::predict results" <<
-                       xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw ) << qRadiansToDegrees( xBuffer( StateNames::AlphaFront ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaRear ) ) << qRadiansToDegrees( xBuffer( StateNames::AlphaHitch ) );
+                       xBuffer( StateNames::Vy ) << xBuffer( StateNames::Vyaw ) << radiansToDegrees( xBuffer( StateNames::AlphaFront ) ) << radiansToDegrees( xBuffer( StateNames::AlphaRear ) ) << radiansToDegrees( xBuffer( StateNames::AlphaHitch ) );
             }
           }
         } else if( V < 0.1 ) {

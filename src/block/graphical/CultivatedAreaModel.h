@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
@@ -39,6 +40,7 @@
 
 class CgalThread;
 class CultivatedAreaMesh;
+class Implement;
 
 class CultivatedAreaModel : public BlockBase {
     Q_OBJECT
@@ -91,20 +93,7 @@ class CultivatedAreaModelFactory : public BlockFactory {
       return QStringLiteral( "Graphical" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new CultivatedAreaModel( rootEntity, threadForCgalWorker );
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
-      b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
-
-      b->addOutputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
-
-      b->setBrush( modelColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;

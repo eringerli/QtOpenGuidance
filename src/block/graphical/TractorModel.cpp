@@ -18,8 +18,22 @@
 
 #include "TractorModel.h"
 
-#include <QtCore/QDebug>
-#include <QtMath>
+#include <QAction>
+#include <QMenu>
+#include <QBrush>
+
+#include "qneblock.h"
+#include "qneport.h"
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+
+#include <Qt3DRender/QGeometry>
+#include <Qt3DRender/QGeometryRenderer>
+
+#include <Qt3DExtras/QCylinderMesh>
+#include <Qt3DExtras/QCuboidMesh>
+#include <Qt3DExtras/QSphereMesh>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
@@ -326,4 +340,23 @@ void TractorModel::setSteeringAngleLeft( double steerAngle ) {
 void TractorModel::setSteeringAngleRight( double steerAngle ) {
   QQuaternion rotationRight = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
   m_wheelFrontRightTransform->setRotation( rotationRight );
+}
+
+QNEBlock* TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new TractorModel( rootEntity, usePBR );
+  auto* b = createBaseBlock( scene, obj, id );
+
+  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
+
+  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+
+  b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( const double ) ) ) );
+
+  b->setBrush( modelColor );
+
+  return b;
 }

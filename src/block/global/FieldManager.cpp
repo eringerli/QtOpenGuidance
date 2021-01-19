@@ -17,9 +17,28 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "FieldManager.h"
+
+#include "qneblock.h"
+#include "qneport.h"
+
 #include <QScopedPointer>
 
+#include <QFile>
 #include <QFileDialog>
+#include <QVector>
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+#include <Qt3DExtras/QSphereMesh>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QExtrudedTextMesh>
+
+#include "3d/BufferMesh.h"
+
+#include "gui/FieldsOptimitionToolbar.h"
+
+#include "kinematic/PathPrimitive.h"
 
 #include "helpers/cgalHelper.h"
 
@@ -374,7 +393,41 @@ void FieldManager::saveFieldToFile( QFile& file ) {
   geoJsonHelper.save( file );
 }
 
-void FieldManager::alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_2>& field, double /*alpha*/ ) {
+void FieldManager::setContinousRecord( const bool enabled ) {
+  if( recordContinous == true && enabled == false ) {
+    recalculateField();
+  }
+
+  recordContinous = enabled;
+}
+
+void FieldManager::recordPoint() {
+  recordNextPoint = true;
+}
+
+void FieldManager::recordOnEdgeOfImplementChanged( const bool right ) {
+  recordOnRightEdgeOfImplement = right;
+}
+
+void FieldManager::recalculateField() {
+  alphaShape();
+}
+
+void FieldManager::setRecalculateFieldSettings( const FieldsOptimitionToolbar::AlphaType alphaType,
+    const double customAlpha,
+    const double maxDeviation,
+    const double distanceBetweenConnectPoints ) {
+  this->alphaType = alphaType;
+  this->customAlpha = customAlpha;
+  this->maxDeviation = maxDeviation;
+  this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
+}
+
+void FieldManager::setRunNumber( const uint32_t runNumber ) {
+  this->runNumber = runNumber;
+}
+
+void FieldManager::alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_2>& field, const double /*alpha*/ ) {
   currentField = field;
 
   QVector<QVector3D> meshSegmentPoints;
@@ -387,4 +440,27 @@ void FieldManager::alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_
   m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
 
   Q_EMIT fieldChanged( currentField );
+}
+
+void FieldManager::fieldStatisticsChanged( const double pointsRecorded, const double pointsGeneratedForFieldBoundary, const double pointsInFieldBoundary ) {
+  Q_EMIT pointsRecordedChanged( pointsRecorded );
+  Q_EMIT pointsGeneratedForFieldBoundaryChanged( pointsGeneratedForFieldBoundary );
+  Q_EMIT pointsInFieldBoundaryChanged( pointsInFieldBoundary );
+}
+
+QNEBlock* FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
+  auto* b = createBaseBlock( scene, obj, id, true );
+
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Points Generated" ), QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( const double ) ) ) );
+
+  return b;
 }

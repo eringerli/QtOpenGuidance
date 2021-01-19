@@ -20,67 +20,34 @@
 
 #include <QObject>
 
+#include <memory>
+
 #include "block/BlockBase.h"
+
+class QBasicTimer;
 
 class ValueTransmissionBase : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit ValueTransmissionBase( const int id )
-      : BlockBase(), id( id ) {}
+    explicit ValueTransmissionBase( const int id );
 
-    virtual ~ValueTransmissionBase() {
-    }
-
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "id" )] = id;
-      valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
-      valuesObject[QStringLiteral( "repeatTimeMs" )] = repeatTimeMs;
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "id" )].isDouble() ) {
-          id = valuesObject[QStringLiteral( "id" )].toInt();
-        }
-
-        if( valuesObject[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
-          timeoutTimeMs = valuesObject[QStringLiteral( "timeoutTimeMs" )].toInt();
-        }
-
-        if( valuesObject[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
-          repeatTimeMs = valuesObject[QStringLiteral( "repeatTimeMs" )].toInt();
-        }
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   public Q_SLOTS:
-    void setTimeoutTimeMs( int value ) {
-      timeoutTimeMs = value;
-    }
-    void setRepeatTimeMs( int value ) {
-      repeatTimeMs = value;
-    }
+    void setTimeoutTimeMs( int value );
+    void setRepeatTimeMs( int value );
 
-    void setTransmissionId( int id ) {
-      this->id = id;
-    }
+    void setTransmissionId( int id );
 
   Q_SIGNALS:
     void timedOut( int id );
 
   protected:
     void timerEvent( QTimerEvent* event ) override;
-    void resetTimeout() {
-      timeoutTimer.start( timeoutTimeMs, this );
-    }
-    virtual void retransmit() {
-
-    }
+    void resetTimeout();
+    virtual void retransmit();
 
   public:
     int id = 0;
@@ -88,6 +55,6 @@ class ValueTransmissionBase : public BlockBase {
     int repeatTimeMs = 0;
 
   private:
-    QBasicTimer timeoutTimer;
-    QBasicTimer repeatTimer;
+    std::unique_ptr<QBasicTimer> timeoutTimer;
+    std::unique_ptr<QBasicTimer> repeatTimer;
 };

@@ -20,14 +20,6 @@
 
 #include <QObject>
 
-#include <QTime>
-#include <QEvent>
-#include <QBasicTimer>
-#include <QVector3D>
-
-#include <QtGlobal>
-#include <QtDebug>
-
 #include "block/BlockBase.h"
 #include "FixedKinematicPrimitive.h"
 
@@ -42,21 +34,10 @@ class FixedKinematic : public BlockBase {
       : BlockBase() {}
 
   public Q_SLOTS:
-    void setOffsetHookToPivot( const Eigen::Vector3d& offset ) {
-      hookToPivot.setOffset( offset );
-    }
-    void setOffsetPivotToTow( const Eigen::Vector3d& offset ) {
-      pivotToTow.setOffset( offset );
-    }
+    void setOffsetHookToPivot( const Eigen::Vector3d& offset );
+    void setOffsetPivotToTow( const Eigen::Vector3d& offset );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-      hookToPivot.setPose( position, orientation, options );
-      pivotToTow.setPose( hookToPivot.positionCalculated, hookToPivot.orientation, options );
-
-      Q_EMIT poseHookPointChanged( position, orientation, options );
-      Q_EMIT posePivotPointChanged( hookToPivot.positionCalculated, hookToPivot.orientation, options );
-      Q_EMIT poseTowPointChanged( pivotToTow.positionCalculated, pivotToTow.orientation, options );
-    }
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
   Q_SIGNALS:
     void poseHookPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
@@ -84,18 +65,5 @@ class FixedKinematicFactory : public BlockFactory {
       return QStringLiteral( "Calculations" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new FixedKinematic;
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

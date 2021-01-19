@@ -19,20 +19,13 @@
 #pragma once
 
 #include <QObject>
-#include <QDockWidget>
-#include <QSizePolicy>
-#include <QMenu>
-#include <QDateTime>
-#include <QtMath>
 
-#include "gui/MyMainWindow.h"
-#include "gui/dock/PlotDock.h"
+class MyMainWindow;
 
 #include "block/BlockBase.h"
 #include "PlotDockBlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "helpers/anglesHelper.h"
 #include "kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
@@ -40,71 +33,15 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
 
   public:
     explicit OrientationPlotDockBlock( const QString& uniqueName,
-                                       MyMainWindow* mainWindow )
-      : PlotDockBlockBase( uniqueName, mainWindow ) {
-
-      {
-        auto graph = widget->getQCustomPlotWidget()->addGraph();
-
-        graph->setPen( QPen( QColor( 40, 110, 255 ) ) );
-        graph->setLineStyle( QCPGraph::LineStyle::lsLine );
-        graph->setName( QStringLiteral( "Roll" ) );
-      }
-
-      {
-        auto graph = widget->getQCustomPlotWidget()->addGraph();
-
-        graph->setPen( QPen( QColor( 37, 255, 73 ) ) );
-        graph->setLineStyle( QCPGraph::LineStyle::lsLine );
-        graph->setName( QStringLiteral( "Pitch" ) );
-      }
-
-      {
-        auto graph = widget->getQCustomPlotWidget()->addGraph();
-
-        graph->setPen( QPen( QColor( 210, 138, 255 ) ) );
-        graph->setLineStyle( QCPGraph::LineStyle::lsLine );
-        graph->setName( QStringLiteral( "Yaw" ) );
-      }
-
-      widget->getQCustomPlotWidget()->axisRect()->insetLayout()->setInsetAlignment( 0, Qt::AlignTop | Qt::AlignLeft );
-      widget->getQCustomPlotWidget()->legend->setVisible( true );
-
-      QSharedPointer<QCPAxisTickerDateTime> timeTicker( new QCPAxisTickerDateTime );
-      timeTicker->setDateTimeFormat( QStringLiteral( "hh:mm:ss" ) );
-      widget->getQCustomPlotWidget()->xAxis->setTicker( timeTicker );
-    }
-
-    ~OrientationPlotDockBlock() {
-    }
+                                       MyMainWindow* mainWindow );
 
   public Q_SLOTS:
-    void setOrientation( const Eigen::Quaterniond& orientation ) {
-      const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
-      double currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+    void setOrientation( const Eigen::Quaterniond& orientation );
 
-      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, getRoll( taitBryanDegrees ) );
-      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, getPitch( taitBryanDegrees ) );
-      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, getYaw( taitBryanDegrees ) );
-
-      rescale();
-    }
-
-    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& ) {
-      setOrientation( orientation );
-    }
+    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& );
 
   private:
-    void rescale() {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      if( autoScrollEnabled ) {
-        widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
-        widget->getQCustomPlotWidget()->yAxis->rescale( true );
-      }
-
-      widget->getQCustomPlotWidget()->replot();
-    }
+    void rescale();
 };
 
 class OrientationPlotDockBlockFactory : public BlockFactory {
@@ -131,36 +68,7 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Orientation Plot Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new OrientationPlotDockBlock( getNameOfFactory() + QString::number( id ),
-          mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( PlotDockBlockBase::firstPlotDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        PlotDockBlockBase::firstPlotDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
-      }
-
-      QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
-
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->setBrush( dockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

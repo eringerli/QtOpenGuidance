@@ -19,6 +19,8 @@
 #include "NewOpenSaveToolbar.h"
 #include "ui_NewOpenSaveToolbar.h"
 
+#include <QMenu>
+
 NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) :
   QGroupBox( parent ),
   ui( new Ui::NewOpenSaveToolbar ) {

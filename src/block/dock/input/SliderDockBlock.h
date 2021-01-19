@@ -18,101 +18,35 @@
 
 #pragma once
 
-#include <QObject>
-#include <QSizePolicy>
-#include <QMenu>
-
-#include "gui/MyMainWindow.h"
-#include "gui/dock/SliderDock.h"
-
 #include "block/BlockBase.h"
-#include "block/dock/display/ValueDockBlockBase.h"
+
+#include <kddockwidgets/KDDockWidgets.h>
+
+class MyMainWindow;
+class QMenu;
+namespace KDDockWidgets {
+  class DockWidget;
+}
+class SliderDock;
 
 class SliderDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
     explicit SliderDockBlock( const QString& uniqueName,
-                              MyMainWindow* mainWindow )
-      : BlockBase() {
-      widget = new SliderDock( mainWindow );
-      dock = new KDDockWidgets::DockWidget( uniqueName );
-
-      connect( widget, &SliderDock::valueChanged, this, &SliderDockBlock::valueChanged );
-    }
+                              MyMainWindow* mainWindow );
 
     ~SliderDockBlock();
 
-    virtual void emitConfigSignals() override {
-      Q_EMIT valueChanged( widget->getValue() );
-    }
+    virtual void emitConfigSignals() override;
 
-    virtual void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "Value" )] = widget->getValue();
-      valuesObject[QStringLiteral( "Decimals" )] = widget->getDecimals();
-      valuesObject[QStringLiteral( "Maximum" )] = widget->getMaximum();
-      valuesObject[QStringLiteral( "Minimum" )] = widget->getMinimum();
-      valuesObject[QStringLiteral( "DefaultValue" )] = widget->getDefaultValue();
-      valuesObject[QStringLiteral( "Unit" )] = widget->getUnit();
-      valuesObject[QStringLiteral( "ResetOnStart" )] = widget->resetOnStart;
-      valuesObject[QStringLiteral( "SliderInverted" )] = widget->getSliderInverted();
-
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    virtual void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "ResetOnStart" )].isBool() ) {
-          widget->resetOnStart = valuesObject[QStringLiteral( "ResetOnStart" )].toBool();
-        }
-
-        if( valuesObject[QStringLiteral( "Decimals" )].isDouble() ) {
-          widget->setDecimals( valuesObject[QStringLiteral( "Decimals" )].toDouble() );
-        }
-
-        if( valuesObject[QStringLiteral( "Maximum" )].isDouble() ) {
-          widget->setMaximum( valuesObject[QStringLiteral( "Maximum" )].toDouble() );
-        }
-
-        if( valuesObject[QStringLiteral( "Minimum" )].isDouble() ) {
-          widget->setMinimum( valuesObject[QStringLiteral( "Minimum" )].toDouble() );
-        }
-
-        if( valuesObject[QStringLiteral( "DefaultValue" )].isDouble() ) {
-          widget->setDefaultValue( valuesObject[QStringLiteral( "DefaultValue" )].toDouble() );
-        }
-
-        if( valuesObject[QStringLiteral( "Unit" )].isDouble() ) {
-          widget->setUnit( valuesObject[QStringLiteral( "Unit" )].toString() );
-        }
-
-        if( valuesObject[QStringLiteral( "SliderInverted" )].isBool() ) {
-          widget->setSliderInverted( valuesObject[QStringLiteral( "SliderInverted" )].toBool() );
-        }
-
-        if( widget->resetOnStart ) {
-          widget->setValue( widget->getDefaultValue() );
-        } else {
-          if( valuesObject[QStringLiteral( "Value" )].isDouble() ) {
-            widget->setValue( valuesObject[QStringLiteral( "Value" )].toDouble() );
-          }
-        }
-
-      }
-    }
+    virtual void toJSON( QJsonObject& json ) override;
+    virtual void fromJSON( QJsonObject& json ) override;
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
-    }
+    void setName( const QString& name ) override;
 
-    void setValue( const double value ) {
-      widget->setValue( value );
-    }
+    void setValue( const double value );
 
   Q_SIGNALS:
     void valueChanged( const double );
@@ -147,33 +81,7 @@ class SliderDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Slider Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new SliderDockBlock( getNameOfFactory() + QString::number( id ),
-                                          mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( firstSliderValueDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        firstSliderValueDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstSliderValueDock );
-      }
-
-      b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( const double ) ) ) );
-
-      b->setBrush( inputDockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;
@@ -182,5 +90,4 @@ class SliderDockBlockFactory : public BlockFactory {
 
   public:
     static KDDockWidgets::DockWidget* firstSliderValueDock;
-
 };

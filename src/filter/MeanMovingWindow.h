@@ -18,39 +18,16 @@
 
 #pragma once
 
-#include <memory>
 #include <algorithm>
+#include <memory>
 
 class MeanMovingWindow {
   public:
-    MeanMovingWindow();
+    void addValue( const double value );
 
-    void addValue( const double value ) {
-      values.push_back( value );
+    void setWindow( const std::size_t window );
 
-      if( values.size() > window ) {
-        values.erase( values.begin() );
-      }
-    }
-
-    void setWindow( const std::size_t window ) {
-      this->window = window;
-      this->middle = window / 2;
-    }
-
-    double getMean() {
-      if( values.size() > middle ) {
-        std::vector<double> copy( values );
-
-        auto middleIterator = values.begin() + middle;
-
-        std::nth_element( values.begin(), middleIterator, values.end() );
-
-        return *middleIterator;
-      } else {
-        return 0;
-      }
-    }
+    double getMean();
 
   public:
     std::vector<double> values;

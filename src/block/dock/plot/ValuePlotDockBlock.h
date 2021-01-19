@@ -19,13 +19,8 @@
 #pragma once
 
 #include <QObject>
-#include <QDockWidget>
-#include <QSizePolicy>
-#include <QMenu>
-#include <QDateTime>
 
-#include "gui/MyMainWindow.h"
-#include "gui/dock/PlotDock.h"
+class MyMainWindow;
 
 #include "block/BlockBase.h"
 #include "PlotDockBlockBase.h"
@@ -35,77 +30,16 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
 
   public:
     explicit ValuePlotDockBlock( const QString& uniqueName,
-                                 MyMainWindow* mainWindow )
-      : PlotDockBlockBase( uniqueName, mainWindow ) {
-
-      widget->getQCustomPlotWidget()->addGraph();
-      widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 40, 110, 255 ) ) );
-      widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
-
-      widget->getQCustomPlotWidget()->addGraph();
-      widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 37, 255, 73 ) ) );
-      widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
-
-      widget->getQCustomPlotWidget()->addGraph();
-      widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 210, 138, 255 ) ) );
-      widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
-
-      widget->getQCustomPlotWidget()->addGraph();
-      widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 255, 90, 126 ) ) );
-      widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
-
-      QSharedPointer<QCPAxisTickerDateTime> timeTicker( new QCPAxisTickerDateTime );
-      timeTicker->setDateTimeFormat( QStringLiteral( "hh:mm:ss" ) );
-      widget->getQCustomPlotWidget()->xAxis->setTicker( timeTicker );
-    }
-
-    ~ValuePlotDockBlock() {
-    }
+                                 MyMainWindow* mainWindow );
 
   public Q_SLOTS:
-    void addValue0( const double value ) {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, value );
-
-      rescale();
-    }
-
-    void addValue1( const double value ) {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, value );
-
-      rescale();
-    }
-
-    void addValue2( const double value ) {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, value );
-
-      rescale();
-    }
-
-    void addValue3( const double value ) {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      widget->getQCustomPlotWidget()->graph( 3 )->addData( currentSecsSinceEpoch, value );
-
-      rescale();
-    }
+    void addValue0( const double value );
+    void addValue1( const double value );
+    void addValue2( const double value );
+    void addValue3( const double value );
 
   private:
-    void rescale() {
-      auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
-
-      if( autoScrollEnabled ) {
-        widget->getQCustomPlotWidget()->xAxis->setRange( currentSecsSinceEpoch - window, currentSecsSinceEpoch );
-        widget->getQCustomPlotWidget()->yAxis->rescale( true );
-      }
-
-      widget->getQCustomPlotWidget()->replot();
-    }
+    void rescale();
 };
 
 class ValuePlotDockBlockFactory : public BlockFactory {
@@ -132,38 +66,7 @@ class ValuePlotDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Value Plot Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new ValuePlotDockBlock( getNameOfFactory() + QString::number( id ),
-                                             mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( PlotDockBlockBase::firstPlotDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        PlotDockBlockBase::firstPlotDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
-      }
-
-      QObject::connect( object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
-
-      b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 2" ), QLatin1String( SLOT( addValue2( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Number 3" ), QLatin1String( SLOT( addValue3( const double ) ) ) );
-
-      b->setBrush( dockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

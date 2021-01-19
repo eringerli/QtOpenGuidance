@@ -31,25 +31,13 @@ class ComparisonNotEqualTo : public BlockBase {
     explicit ComparisonNotEqualTo()
       : BlockBase() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT stateChanged( result );
-    }
+    void emitConfigSignals() override;
 
-    void setValueA( double number ) {
-      numberA = number;
-      operation();
-    }
-
-    void setValueB( double number ) {
-      numberB = number;
-      operation();
-    }
+    void setValueA( double number );
+    void setValueB( double number );
 
   private:
-    void operation() {
-      result = !qFuzzyCompare( numberA, numberB );
-      Q_EMIT stateChanged( result );
-    }
+    void operation();
 
   Q_SIGNALS:
     void stateChanged( bool );
@@ -79,18 +67,5 @@ class ComparisonNotEqualToFactory : public BlockFactory {
       return QStringLiteral( "Comparison" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ComparisonNotEqualTo();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( double ) ) ) );
-      b->addPort( QStringLiteral( "!=" ), QLatin1String(), false, QNEPort::NoBullet );
-      b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( double ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( stateChanged( bool ) ) ) );
-
-      b->setBrush( arithmeticColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

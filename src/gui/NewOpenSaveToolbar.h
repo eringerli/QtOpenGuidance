@@ -19,7 +19,7 @@
 #pragma once
 
 #include <QGroupBox>
-#include <QMenu>
+class QMenu;
 
 namespace Ui {
   class NewOpenSaveToolbar;

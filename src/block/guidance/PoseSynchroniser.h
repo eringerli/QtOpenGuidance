@@ -22,9 +22,6 @@
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
@@ -36,25 +33,15 @@ class PoseSynchroniser : public BlockBase {
       : BlockBase() {}
 
   public Q_SLOTS:
-    void setPosition( const Eigen::Vector3d& position ) {
-      this->position = position;
-//      QElapsedTimer timer;
-//      timer.start();
-      Q_EMIT poseChanged( this->position, orientation, PoseOption::NoOptions );
-//      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
-    }
+    void setPosition( const Eigen::Vector3d& position );
 
-    void setOrientation( const Eigen::Quaterniond& value ) {
-      orientation = value;
-    }
+    void setOrientation( const Eigen::Quaterniond& value );
 
   Q_SIGNALS:
     void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
 
   public:
-    virtual void emitConfigSignals() override {
-      Q_EMIT poseChanged( position, orientation, PoseOption::NoOptions );
-    }
+    virtual void emitConfigSignals() override;
 
   public:
     Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
@@ -76,15 +63,5 @@ class PoseSynchroniserFactory : public BlockFactory {
       return QStringLiteral( "Guidance" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new PoseSynchroniser();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

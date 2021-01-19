@@ -31,47 +31,19 @@ class VectorObject : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit VectorObject()
-      : vector( Eigen::Vector3d( 0, 0, 0 ) ) {}
+    explicit VectorObject() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT vectorChanged( vector );
-    }
+    void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "X" )] = vector.x();
-      valuesObject[QStringLiteral( "Y" )] = vector.y();
-      valuesObject[QStringLiteral( "Z" )] = vector.z();
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
-          vector.x() = valuesObject[QStringLiteral( "X" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
-          vector.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
-          vector.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
-        }
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   Q_SIGNALS:
     void vectorChanged( const Eigen::Vector3d& );
 
   public:
-    Eigen::Vector3d vector;
+    Eigen::Vector3d vector = Eigen::Vector3d( 0, 0, 0 );
 };
-
-
 
 class VectorFactory : public BlockFactory {
     Q_OBJECT
@@ -93,18 +65,7 @@ class VectorFactory : public BlockFactory {
       return QStringLiteral( "3D Vector" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new VectorObject();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d& ) ) ) );
-
-      b->setBrush( valueColor );
-
-      model->resetModel();
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     VectorBlockModel* model = nullptr;

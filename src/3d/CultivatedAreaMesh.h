@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include <QVector>
 #include <QObject>
-#include <QNode>
 #include <QGeometryRenderer>
+
+#include "3d/qt3dForwards.h"
 
 #include "helpers/cgalHelper.h"
 

@@ -28,13 +28,11 @@
 #pragma once
 
 #include <QGraphicsPathItem>
-#include <QTextDocument>
-#include <QFontMetrics>
-#include <QTextDocument>
 
 class QNEBlock;
 class QNEConnection;
 
+class QNEPort;
 class QNEPortHelper;
 
 class QNEPort : public QGraphicsPathItem {
@@ -65,14 +63,9 @@ class QNEPort : public QGraphicsPathItem {
 
     QNEBlock* block() const;
 
-    qreal getWidthOfLabelBoundingRect() {
-      return marginOfText + label->boundingRect().width();
-    }
+    qreal getWidthOfLabelBoundingRect();
 
-    qreal getHeightOfLabelBoundingRect() {
-      QFontMetrics fm( label->font() );
-      return fm.height()/* + marginOfText*/;
-    }
+    qreal getHeightOfLabelBoundingRect();
 
   public:
     QLatin1String slotSignalSignature;
@@ -98,17 +91,10 @@ class QNEPortHelper : public QObject {
     Q_OBJECT
 
   public:
-    QNEPortHelper( QNEPort* port )
-      : QObject(), port( port ) {
-      QObject::connect( port->label->document(), &QTextDocument::contentsChanged, this, &QNEPortHelper::contentsChanged );
-    }
+    QNEPortHelper( QNEPort* port );
 
   public Q_SLOTS:
-    void contentsChanged() {
-      bool oldState = port->label->document()->blockSignals( true );
-      port->contentsChanged();
-      port->label->document()->blockSignals( oldState );
-    }
+    void contentsChanged();
 
   private:
     QNEPort* port = nullptr;

@@ -18,6 +18,7 @@
 
 #include <QSettings>
 #include <QStandardPaths>
+#include <QMenu>
 
 #include "GuidanceToolbar.h"
 #include "ui_GuidanceToolbar.h"

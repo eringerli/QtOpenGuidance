@@ -44,10 +44,12 @@
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "3d/BufferMesh.h"
 
 #include "helpers/cgalHelper.h"
 #include "kinematic/PoseOptions.h"
 
+#include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 
 #include "kinematic/PathPrimitive.h"
@@ -58,6 +60,8 @@
 
 #include <QSharedPointer>
 #include <QVector>
+#include <QJsonObject>
+#include <QBrush>
 #include <utility>
 
 
@@ -105,6 +109,37 @@ PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity )
   refreshColors();
 }
 
+void PathPlannerModel::toJSON( QJsonObject& json ) {
+  QJsonObject valuesObject;
+  valuesObject[QStringLiteral( "visible" )] = visible;
+  valuesObject[QStringLiteral( "zOffset" )] = zOffset;
+  valuesObject[QStringLiteral( "viewBox" )] = viewBox;
+  valuesObject[QStringLiteral( "individualSegmentColor" )] = individualSegmentColor;
+  valuesObject[QStringLiteral( "individualRayColor" )] = individualRayColor;
+  valuesObject[QStringLiteral( "lineColor" )] = linesColor.name();
+  valuesObject[QStringLiteral( "segmentColor" )] = segmentsColor.name();
+  valuesObject[QStringLiteral( "rayColor" )] = raysColor.name();
+
+  json[QStringLiteral( "values" )] = valuesObject;
+}
+
+void PathPlannerModel::fromJSON( QJsonObject& json ) {
+  if( json[QStringLiteral( "values" )].isObject() ) {
+    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+
+    visible = valuesObject[QStringLiteral( "visible" )].toBool( true );
+    zOffset = valuesObject[QStringLiteral( "zOffset" )].toDouble( 0.1 );
+    viewBox = valuesObject[QStringLiteral( "viewBox" )].toDouble( 50 );
+    individualSegmentColor = valuesObject[QStringLiteral( "individualSegmentColor" )].toBool( false );
+    individualRayColor = valuesObject[QStringLiteral( "individualRayColor" )].toBool( false );
+    linesColor = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+    segmentsColor = QColor( valuesObject[QStringLiteral( "segmentColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+    raysColor = QColor( valuesObject[QStringLiteral( "rayColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+
+    refreshColors();
+  }
+}
+
 void PathPlannerModel::refreshColors() {
   linesMaterial->setAmbient( linesColor );
 
@@ -121,6 +156,14 @@ void PathPlannerModel::refreshColors() {
   }
 
   bisectorsMaterial->setAmbient( bisectorsColor );
+}
+
+void PathPlannerModel::setVisible( const bool visible ) {
+  baseEntity->setEnabled( visible );
+}
+
+void PathPlannerModel::setPlan( const Plan& plan ) {
+  this->plan = plan;
 }
 
 void PathPlannerModel::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
@@ -271,4 +314,16 @@ void PathPlannerModel::setPose( const Eigen::Vector3d& position, const Eigen::Qu
       baseEntity->setEnabled( false );
     }
   }
+}
+
+QNEBlock* PathPlannerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new PathPlannerModel( rootEntity );
+  auto* b = createBaseBlock( scene, obj, id );
+
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+
+  b->setBrush( modelColor );
+
+  return b;
 }

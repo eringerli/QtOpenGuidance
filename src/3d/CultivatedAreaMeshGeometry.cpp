@@ -20,6 +20,11 @@
 #include <QVector>
 #include <QVector3D>
 
+#include <Qt3DCore/QNode>
+#include <Qt3DRender/QGeometryRenderer>
+#include <Qt3DRender/QAttribute>
+#include <Qt3DRender/QBuffer>
+
 #include "kinematic/CgalWorker.h"
 #include "kinematic/cgal.h"
 

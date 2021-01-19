@@ -22,76 +22,42 @@
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
-#include "kinematic/PathPrimitive.h"
-#include "kinematic/Plan.h"
+class MyMainWindow;
+class BufferMesh;
+class GuidanceTurning;
 
-#include "gui/GuidanceTurning.h"
-
-#include "gui/MyMainWindow.h"
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include "3d/BufferMesh.h"
+#include "kinematic/Plan.h"
+
+#include "3d/qt3dForwards.h"
 
 class LocalPlanner : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit LocalPlanner( const QString& uniqueName,
-                           MyMainWindow* mainWindow
-                         )
-      : BlockBase() {
-      widget = new GuidanceTurning( mainWindow );
-      dock = new KDDockWidgets::DockWidget( uniqueName );
+    explicit LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow );
 
-      QObject::connect( widget, &GuidanceTurning::turnLeftToggled, this, &LocalPlanner::turnLeftToggled );
-      QObject::connect( widget, &GuidanceTurning::turnRightToggled, this, &LocalPlanner::turnRightToggled );
-      QObject::connect( widget, &GuidanceTurning::numSkipChanged, this, &LocalPlanner::numSkipChanged );
-      QObject::connect( this, &LocalPlanner::resetTurningStateOfDock, widget, &GuidanceTurning::resetTurningState );
-    }
-
-    ~LocalPlanner() {
-      dock->deleteLater();
-      widget->deleteLater();
-    }
+    ~LocalPlanner();
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
-    }
+    void setName( const QString& name ) override;
 
     void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
     void setPlan( const Plan& plan );
 
-    void setSteeringAngle( const double steeringAngle ) {
-      this->steeringAngleDegrees = steeringAngle;
-    }
+    void setSteeringAngle( const double steeringAngle );
 
-    void setPathHysteresis( const double pathHysteresis ) {
-      this->pathHysteresis = pathHysteresis;
-    }
+    void setPathHysteresis( const double pathHysteresis );
 
-    void setMinRadius( const double minRadius ) {
-      this->minRadius = minRadius;
-    }
+    void setMinRadius( const double minRadius );
 
-    void setForceCurrentPath( const bool enabled ) {
-      forceCurrentPath = enabled;
-    }
+    void setForceCurrentPath( const bool enabled );
 
     void turnLeftToggled( const bool state );
     void turnRightToggled( const bool state );
@@ -149,30 +115,7 @@ class LocalPlannerFactory : public BlockFactory {
       return QStringLiteral( "Guidance" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* object = new LocalPlanner( getNameOfFactory() + QString::number( id ),
-                                       mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      mainWindow->addDockWidget( object->dock, location );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( const bool ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

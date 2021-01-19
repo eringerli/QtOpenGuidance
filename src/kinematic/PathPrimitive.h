@@ -31,12 +31,8 @@ class PathPrimitiveSequence;
 
 class PathPrimitive {
   public:
-    PathPrimitive() {}
-
-    PathPrimitive( const bool anyDirection, const double implementWidth, const int32_t passNumber )
-      : anyDirection( anyDirection ), implementWidth( implementWidth ), passNumber( passNumber ) {}
-
-    virtual ~PathPrimitive() {}
+    PathPrimitive() = default;
+    PathPrimitive( const bool anyDirection, const double implementWidth, const int32_t passNumber );
 
     enum class Type : uint8_t {
       Base = 0,
@@ -70,24 +66,14 @@ class PathPrimitive {
     virtual void setTarget( const Point_2 point );
     virtual void transform( const Aff_transformation_2& transformation ) = 0;
 
-    virtual std::shared_ptr<PathPrimitive> createReverse() {
-      return nullptr;
-    }
-    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool /*left*/ ) {
-      return nullptr;
-    }
+    virtual std::shared_ptr<PathPrimitive> createReverse();
+    virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool /*left*/ );
 
-    virtual void print() {
-      std::cout << "PathPrimitive" << std::endl;
-    }
+    virtual void print();
 
-    double offsetSign( const Point_2 point ) {
-      return leftOf( point ) ? -1 : 1;
-    }
+    double offsetSign( const Point_2 point );
 
-    double distanceToPoint( const Point_2 point ) {
-      return std::sqrt( distanceToPointSquared( point ) );
-    }
+    double distanceToPoint( const Point_2 point );
 
 
   public:

@@ -22,13 +22,15 @@
 #pragma once
 
 #include <QObject>
-#include <QFile>
 
 #include <cstdint>
 #include <memory>
 #include <variant>
 #include <utility>
 #include <optional>
+
+class QFile;
+class QJsonObject;
 
 #include "eigenHelper.h"
 
@@ -69,8 +71,6 @@ class GeoJsonHelper {
 
     void print();
 
-
-
   public:
     std::vector<std::pair<GeometryType, FeatureType>> members;
 
@@ -89,4 +89,3 @@ class GeoJsonHelper {
 
     GeometryType deduceType( const QJsonObject& object );
 };
-

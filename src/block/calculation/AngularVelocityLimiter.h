@@ -18,9 +18,8 @@
 
 #pragma once
 
-#include <QObject>
-
 #include "block/BlockBase.h"
+#include "helpers/anglesHelper.h"
 
 // all the formulas are from https://www.xarg.org/book/kinematics/ackerman-steering/
 
@@ -31,35 +30,21 @@ class AngularVelocityLimiter : public BlockBase {
     explicit AngularVelocityLimiter() = default;
 
   public Q_SLOTS:
-    void setMaxAngularVelocity( double maxAngularVelocity ) {
-      this->maxAngularVelocity = qDegreesToRadians( maxAngularVelocity );
-    }
+    void setMaxAngularVelocity( double maxAngularVelocity );
 
-    void setMaxSteeringAngle( double maxSteeringAngle ) {
-      this->maxSteeringAngleRad = qDegreesToRadians( maxSteeringAngle );
-    }
+    void setMaxSteeringAngle( double maxSteeringAngle );
 
-    void setWheelbase( double wheelbase ) {
-      this->wheelbase = wheelbase;
-    }
+    void setWheelbase( double wheelbase );
 
-    void setVelocity( double velocity ) {
-      double maxSteeringAngleFromAngularRad = std::abs( std::atan( maxAngularVelocity * wheelbase / velocity ) );
-      double maxSteeringAngleMinRad = std::min( maxSteeringAngleFromAngularRad, maxSteeringAngleRad );
-      Q_EMIT maxSteeringAngleChanged( qRadiansToDegrees( maxSteeringAngleMinRad ) );
-
-      double minRadiusPivotPoint = wheelbase / std::tan( maxSteeringAngleMinRad );
-      // the minimal radius is from the turning point to the middle of steering axle -> pythagoras
-      Q_EMIT minRadiusChanged( std::sqrt( ( minRadiusPivotPoint * minRadiusPivotPoint ) + ( wheelbase * wheelbase ) ) );
-    }
+    void setVelocity( double velocity );
 
   Q_SIGNALS:
     void maxSteeringAngleChanged( double );
     void minRadiusChanged( double );
 
   private:
-    double maxAngularVelocity = qDegreesToRadians( double( 5 ) );
-    double maxSteeringAngleRad = qDegreesToRadians( double( 40 ) );
+    double maxAngularVelocity = degreesToRadians( 5. );
+    double maxSteeringAngleRad = degreesToRadians( 40. );
     double wheelbase = 2.4f;
 };
 
@@ -78,20 +63,5 @@ class AngularVelocityLimiterFactory : public BlockFactory {
       return QStringLiteral( "Calculations" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new AngularVelocityLimiter();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Max Angular Velocity" ), QLatin1String( SLOT( setMaxAngularVelocity( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SIGNAL( maxSteeringAngleChanged( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Min Radius" ), QLatin1String( SIGNAL( minRadiusChanged( double ) ) ) );
-
-      return b;
-    }
-
-  private:
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

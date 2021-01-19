@@ -19,7 +19,7 @@
 #pragma once
 
 #include <QGroupBox>
-#include <QBoxLayout>
+class QBoxLayout;
 
 namespace Ui {
   class FieldsToolbar;

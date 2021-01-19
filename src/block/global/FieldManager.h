@@ -20,37 +20,20 @@
 
 #include <QObject>
 
-#include <QPointF>
-#include <QPolygonF>
-#include <QLineF>
-
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-
-#include <QDebug>
+#include "3d/qt3dForwards.h"
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include "3d/BufferMesh.h"
-
-#include "gui/FieldsOptimitionToolbar.h"
-
 #include "helpers/eigenHelper.h"
+#include "helpers/cgalHelper.h"
 #include "kinematic/PoseOptions.h"
-
-#include "kinematic/PathPrimitive.h"
 
 #include "helpers/GeographicConvertionWrapper.h"
 
-#include <QVector>
-#include <QSharedPointer>
+#include "gui/FieldsOptimitionToolbar.h"
+
+class QFile;
+
 #include <utility>
 
 class CgalThread;
@@ -84,48 +67,25 @@ class FieldManager : public BlockBase {
     void saveField();
     void saveFieldToFile( QFile& file );
 
-    void setContinousRecord( const bool enabled ) {
-      if( recordContinous == true && enabled == false ) {
-        recalculateField();
-      }
+    void setContinousRecord( const bool enabled );
+    void recordPoint();
 
-      recordContinous = enabled;
-    }
-    void recordPoint() {
-      recordNextPoint = true;
-    }
+    void recordOnEdgeOfImplementChanged( const bool right );
 
-    void recordOnEdgeOfImplementChanged( const bool right ) {
-      recordOnRightEdgeOfImplement = right;
-    }
-
-    void recalculateField() {
-      alphaShape();
-    }
+    void recalculateField();
 
     void setRecalculateFieldSettings( const FieldsOptimitionToolbar::AlphaType alphaType,
                                       const double customAlpha,
                                       const double maxDeviation,
-                                      const double distanceBetweenConnectPoints ) {
-      this->alphaType = alphaType;
-      this->customAlpha = customAlpha;
-      this->maxDeviation = maxDeviation;
-      this->distanceBetweenConnectPoints = distanceBetweenConnectPoints;
-    }
+                                      const double distanceBetweenConnectPoints );
 
-    void setRunNumber( const uint32_t runNumber ) {
-      this->runNumber = runNumber;
-    }
+    void setRunNumber( const uint32_t runNumber );
 
     void alphaShapeFinished( const std::shared_ptr<Polygon_with_holes_2>& field, const double alpha );
 
     void fieldStatisticsChanged( const double pointsRecorded,
                                  const double pointsGeneratedForFieldBoundary,
-                                 const double pointsInFieldBoundary ) {
-      Q_EMIT pointsRecordedChanged( pointsRecorded );
-      Q_EMIT pointsGeneratedForFieldBoundaryChanged( pointsGeneratedForFieldBoundary );
-      Q_EMIT pointsInFieldBoundaryChanged( pointsInFieldBoundary );
-    }
+                                 const double pointsInFieldBoundary );
 
   Q_SIGNALS:
     void fieldChanged( std::shared_ptr<Polygon_with_holes_2> );
@@ -210,22 +170,7 @@ class FieldManagerFactory : public BlockFactory {
       return QStringLiteral( "Base Blocks" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new FieldManager( mainWindow, rootEntity, tmw );
-      auto* b = createBaseBlock( scene, obj, id, true );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Points Generated" ), QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( const double ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     QWidget* mainWindow = nullptr;

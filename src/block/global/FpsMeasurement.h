@@ -16,14 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "gui/model/VectorBlockModel.h"
-
 #pragma once
 
 #include <QObject>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DLogic/QFrameAction>
+#include "3d/qt3dForwards.h"
 
 #include "block/BlockBase.h"
 
@@ -31,25 +28,13 @@ class FpsMeasurement : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity )
-      : BlockBase() {
-      fpsComponent = new Qt3DLogic::QFrameAction( rootEntity );
-      rootEntity->addComponent( fpsComponent );
-      QObject::connect( fpsComponent, &Qt3DLogic::QFrameAction::triggered, this, &FpsMeasurement::frameActionTriggered );
-    }
+    explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity );
+    ~FpsMeasurement();
 
-    ~FpsMeasurement() {
-      fpsComponent->deleteLater();
-    }
-
-    void emitConfigSignals() override {
-      Q_EMIT fpsChanged( 0 );
-    }
+    void emitConfigSignals() override;
 
   public Q_SLOTS:
-    void frameActionTriggered( const float dt ) {
-      Q_EMIT fpsChanged( 1 / dt );
-    }
+    void frameActionTriggered( const float dt );
 
   Q_SIGNALS:
     void fpsChanged( const double );
@@ -57,8 +42,6 @@ class FpsMeasurement : public BlockBase {
   public:
     Qt3DLogic::QFrameAction* fpsComponent;
 };
-
-
 
 class FpsMeasurementFactory : public BlockFactory {
     Q_OBJECT
@@ -76,14 +59,7 @@ class FpsMeasurementFactory : public BlockFactory {
       return QStringLiteral( "Graphical" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new FpsMeasurement( rootEntity );
-      auto* b = createBaseBlock( scene, obj, id, true );
-
-      b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( double ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;

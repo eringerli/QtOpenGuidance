@@ -16,13 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "gui/model/StringBlockModel.h"
-
 #pragma once
 
 #include <QObject>
 
 #include "block/BlockBase.h"
+
+class StringBlockModel;
 
 class StringObject : public BlockBase {
     Q_OBJECT
@@ -31,25 +31,10 @@ class StringObject : public BlockBase {
     explicit StringObject()
       : BlockBase() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT stringChanged( string );
-    }
+    void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "String" )] = string;
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "String" )].isString() ) {
-          string = valuesObject[QStringLiteral( "String" )].toString();
-        }
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   Q_SIGNALS:
     void stringChanged( const QString& );
@@ -74,18 +59,7 @@ class StringFactory : public BlockFactory {
       return QStringLiteral( "Literals" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new StringObject();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( const QString& ) ) ) );
-
-      b->setBrush( valueColor );
-
-      model->resetModel();
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     StringBlockModel* model = nullptr;

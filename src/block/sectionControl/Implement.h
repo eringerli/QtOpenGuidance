@@ -16,10 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "gui/model/ImplementBlockModel.h"
-
-#include "gui/SectionControlToolbar.h"
-
 #pragma once
 
 #include "helpers/eigenHelper.h"
@@ -27,13 +23,12 @@
 
 #include <QObject>
 
-#include <QMenu>
-
 #include "block/BlockBase.h"
 
-#include "ImplementSection.h"
-
-#include "gui/MyMainWindow.h"
+class MyMainWindow;
+class ImplementSection;
+class ImplementBlockModel;
+class SectionControlToolbar;
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
@@ -44,85 +39,18 @@ class Implement : public BlockBase {
   public:
     explicit Implement( const QString& uniqueName,
                         MyMainWindow* mainWindow,
-                        KDDockWidgets::DockWidget** firstDock )
-      : BlockBase(),
-        firstDock( firstDock ) {
-      widget = new SectionControlToolbar( this, mainWindow );
-      dock = new KDDockWidgets::DockWidget( uniqueName );
+                        KDDockWidgets::DockWidget** firstDock );
 
-      // add section 0: the section to control them all
-      sections.push_back( new ImplementSection( 0, 0, 0 ) );
-    }
+    ~Implement() override;
 
-    ~Implement() override {
-      if( *firstDock == dock ) {
-        *firstDock = nullptr;
-      }
+    void emitConfigSignals() override;
 
-      widget->deleteLater();
-      dock->deleteLater();
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
-    void emitConfigSignals() override {
-      double width = 0;
+    void emitImplementChanged();
 
-      for( const auto& section : qAsConst( sections ) ) {
-        width +=  section->widthOfSection - section->overlapLeft - section->overlapRight;
-      }
-
-      Q_EMIT leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ) );
-      Q_EMIT rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ) );
-      Q_EMIT triggerLocalPose( Eigen::Vector3d( 0, 0, 0 ),
-                               Eigen::Quaterniond(),
-                               PoseOption::CalculateLocalOffsets |
-                               PoseOption::CalculateWithoutOrientation );
-      Q_EMIT implementChanged( this );
-    }
-
-    void toJSON( QJsonObject& json ) override {
-      if( sections.size() > 1 ) {
-        QJsonArray array;
-
-        for( size_t i = 1; i < sections.size(); ++i ) {
-          QJsonObject sectionObject;
-          sectionObject[QStringLiteral( "overlapLeft" )] = sections[i]->overlapLeft;
-          sectionObject[QStringLiteral( "widthOfSection" )] = sections[i]->widthOfSection;
-          sectionObject[QStringLiteral( "overlapRight" )] = sections[i]->overlapRight;
-          array.append( sectionObject );
-        }
-
-        QJsonObject valuesObject;
-        valuesObject[QStringLiteral( "Sections" )] = array;
-        json[QStringLiteral( "values" )] = valuesObject;
-      }
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "Sections" )].isArray() ) {
-          QJsonArray sectionArray = valuesObject[QStringLiteral( "Sections" )].toArray();
-
-          for( const auto& sectionIndex : qAsConst( sectionArray ) ) {
-            QJsonObject sectionObject = sectionIndex.toObject();
-            sections.push_back(
-                    new ImplementSection( sectionObject[QStringLiteral( "overlapLeft" )].toDouble( 0 ),
-                                          sectionObject[QStringLiteral( "widthOfSection" )].toDouble( 0 ),
-                                          sectionObject[QStringLiteral( "overlapRight" )].toDouble( 0 ) ) );
-          }
-        }
-      }
-    }
-
-    void emitImplementChanged() {
-      Q_EMIT implementChanged( QPointer<Implement>( this ) );
-
-    }
-
-    void emitSectionsChanged() {
-      Q_EMIT sectionsChanged();
-    }
+    void emitSectionsChanged();
 
   Q_SIGNALS:
     void triggerLocalPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
@@ -132,10 +60,7 @@ class Implement : public BlockBase {
     void sectionsChanged();
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
-    }
+    void setName( const QString& name ) override;
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;
@@ -169,38 +94,7 @@ class ImplementFactory : public BlockFactory {
       return QStringLiteral( "Section Control" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new Implement( getNameOfFactory() + QString::number( id ),
-                                    mainWindow,
-                                    &firstDock );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( firstDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        firstDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstDock );
-      }
-
-      b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer<Implement> ) ) ) );
-      b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
-      b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( const Eigen::Vector3d& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( const Eigen::Vector3d& ) ) ) );
-
-      model->resetModel();
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

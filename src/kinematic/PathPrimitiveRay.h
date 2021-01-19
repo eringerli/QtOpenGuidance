@@ -22,9 +22,7 @@
 
 class PathPrimitiveRay : public PathPrimitive {
   public:
-    PathPrimitiveRay()
-      : PathPrimitive() {}
-
+    PathPrimitiveRay() = default;
     PathPrimitiveRay( const Ray_2& ray, const bool reverse, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
@@ -32,12 +30,8 @@ class PathPrimitiveRay : public PathPrimitive {
     }
 
   public:
-    bool operator==( PathPrimitiveRay& b ) {
-      return ray == b.ray;
-    }
-    bool operator==( const PathPrimitiveRay& b ) const {
-      return ray == b.ray;
-    }
+    bool operator==( PathPrimitiveRay& b );
+    bool operator==( const PathPrimitiveRay& b ) const;
 
   public:
     virtual double distanceToPointSquared( const Point_2 point ) override;
@@ -57,9 +51,7 @@ class PathPrimitiveRay : public PathPrimitive {
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
     virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool left ) override;
 
-    virtual void print() override {
-      std::cout << "PathPrimitiveRay: " << ray << std::endl;
-    }
+    virtual void print() override;
 
   public:
     double angleLineDegrees = 0;

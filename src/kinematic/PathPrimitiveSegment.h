@@ -22,9 +22,7 @@
 
 class PathPrimitiveSegment : public PathPrimitive {
   public:
-    PathPrimitiveSegment()
-      : PathPrimitive() {}
-
+    PathPrimitiveSegment() = default;
     PathPrimitiveSegment( const Segment_2& segment, const double implementWidth, const bool anyDirection, const int32_t passNumber );
 
     virtual Type getType() override {
@@ -32,12 +30,8 @@ class PathPrimitiveSegment : public PathPrimitive {
     }
 
   public:
-    bool operator==( PathPrimitiveSegment& b ) {
-      return segment == b.segment;
-    }
-    bool operator==( const PathPrimitiveSegment& b ) const {
-      return segment == b.segment;
-    }
+    bool operator==( PathPrimitiveSegment& b );
+    bool operator==( const PathPrimitiveSegment& b ) const;
 
   public:
     virtual double distanceToPointSquared( const Point_2 point ) override;
@@ -57,9 +51,7 @@ class PathPrimitiveSegment : public PathPrimitive {
     virtual std::shared_ptr<PathPrimitive> createReverse() override;
     virtual std::shared_ptr<PathPrimitive> createNextPrimitive( const bool left ) override;
 
-    virtual void print() override {
-      std::cout << "PathPrimitiveSegment: " << segment << std::endl;
-    }
+    virtual void print() override;
 
   public:
     double angleLineDegrees = 0;

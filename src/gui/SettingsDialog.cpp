@@ -96,7 +96,9 @@
 #include "block/graphical/PathPlannerModel.h"
 #include "block/guidance/LocalPlanner.h"
 #include "block/guidance/StanleyGuidance.h"
+#include "block/guidance/PoseSynchroniser.h"
 #include "block/guidance/XteGuidance.h"
+
 #include "block/sectionControl/SectionControl.h"
 
 #include "block/base/DebugSink.h"
@@ -117,12 +119,35 @@
 #include "block/kinematic/TrailerKinematic.h"
 #include "block/kinematic/TrailerKinematicPrimitive.h"
 
+#include "model/VectorBlockModel.h"
+#include "model/OrientationBlockModel.h"
+#include "model/NumberBlockModel.h"
+#include "model/ActionDockBlockModel.h"
+#include "model/SliderDockBlockModel.h"
+#include "model/StringBlockModel.h"
+#include "model/ImplementBlockModel.h"
+#include "model/PathPlannerModelBlockModel.h"
+#include "model/ImplementSectionModel.h"
+#include "model/ValueBlockModel.h"
+#include "model/TransmissionBlockModel.h"
+#include "model/PlotBlockModel.h"
+
+#include <QGraphicsScene>
+#include <QSortFilterProxyModel>
+
+#include "FontComboboxDelegate.h"
+#include "NewOpenSaveToolbar.h"
+
 #include "../helpers/cgalHelper.h"
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent ) :
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
+                                MyMainWindow* mainWindow,
+                                Qt3DExtras::Qt3DWindow* qt3dWindow,
+                                QMenu* guidanceToolbarMenu,
+                                QWidget* parent ) :
   QDialog( parent ),
   mainWindow( mainWindow ),
   qt3dWindow( qt3dWindow ),

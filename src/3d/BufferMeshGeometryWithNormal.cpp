@@ -24,6 +24,8 @@
 #include "BufferMeshGeometryWithNormal.h"
 #include <QVector>
 #include <QVector3D>
+#include <Qt3DRender/QAttribute>
+#include <Qt3DRender/QBuffer>
 
 BufferMeshGeometryWithNormal::BufferMeshGeometryWithNormal( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometry( parent )

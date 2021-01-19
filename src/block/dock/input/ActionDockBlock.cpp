@@ -18,7 +18,32 @@
 
 #include "ActionDockBlock.h"
 
+#include <QObject>
+
+#include <QMenu>
+#include <QAction>
+#include <QBrush>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
+#include "gui/MyMainWindow.h"
+#include "gui/dock/ActionDock.h"
+
+#include "block/BlockBase.h"
+#include "block/dock/display/ValueDockBlockBase.h"
+
+#include "qneblock.h"
+#include "qneport.h"
+
 KDDockWidgets::DockWidget* ActionDockBlockFactory::firstActionDock = nullptr;
+
+ActionDockBlock::ActionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) {
+  widget = new ActionDock( mainWindow );
+  dock = new KDDockWidgets::DockWidget( uniqueName );
+
+  QObject::connect( widget, &ActionDock::action, this, &ActionDockBlock::action );
+}
 
 ActionDockBlock::~ActionDockBlock() {
   widget->deleteLater();
@@ -27,4 +52,41 @@ ActionDockBlock::~ActionDockBlock() {
   if( ActionDockBlockFactory::firstActionDock == dock ) {
     ActionDockBlockFactory::firstActionDock = nullptr;
   }
+}
+
+void ActionDockBlock::setName( const QString& name ) {
+  dock->setTitle( name );
+  dock->toggleAction()->setText( QStringLiteral( "Action: " ) + name );
+}
+
+void ActionDockBlock::setCheckable( const bool checkable ) {
+  widget->setCheckable( checkable );
+}
+
+void ActionDockBlock::setTheme( const QString& theme ) {
+  widget->setTheme( theme );
+}
+
+QNEBlock* ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ),
+                                      mainWindow );
+  auto* b = createBaseBlock( scene, object, id );
+
+  object->dock->setTitle( getNameOfFactory() );
+  object->dock->setWidget( object->widget );
+
+  menu->addAction( object->dock->toggleAction() );
+
+  if( firstActionDock == nullptr ) {
+    mainWindow->addDockWidget( object->dock, location );
+    firstActionDock = object->dock;
+  } else {
+    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
+  }
+
+  b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( const bool ) ) ) );
+
+  b->setBrush( inputDockColor );
+
+  return b;
 }

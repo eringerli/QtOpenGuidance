@@ -18,8 +18,21 @@
 
 #include "TrailerModel.h"
 
-#include <QtCore/QDebug>
-#include <QtMath>
+#include <QAction>
+#include <QMenu>
+#include <QBrush>
+
+#include "qneblock.h"
+#include "qneport.h"
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+
+#include <Qt3DRender/QGeometry>
+#include <Qt3DRender/QGeometryRenderer>
+
+#include <Qt3DExtras/QCylinderMesh>
+#include <Qt3DExtras/QSphereMesh>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
@@ -293,4 +306,19 @@ void TrailerModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eig
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
     m_rootEntityTransform->setRotation( toQQuaternion( orientation ) );
   }
+}
+
+QNEBlock* TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new TrailerModel( rootEntity, usePBR );
+  auto* b = createBaseBlock( scene, obj, id );
+
+  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+
+  b->setBrush( modelColor );
+
+  return b;
 }

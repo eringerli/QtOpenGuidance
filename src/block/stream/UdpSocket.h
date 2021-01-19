@@ -19,53 +19,29 @@
 #pragma once
 
 #include <QObject>
-#include <QtNetwork>
 
 #include "block/BlockBase.h"
+
+class QUdpSocket;
 
 class UdpSocket : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit UdpSocket()
-      : BlockBase() {
-      udpSocket = new QUdpSocket( this );
-      connect( udpSocket, &QIODevice::readyRead,
-               this, &UdpSocket::processPendingDatagrams );
-    }
+    explicit UdpSocket();
 
-    ~UdpSocket() {
-      if( udpSocket ) {
-        udpSocket->deleteLater();
-      }
-    }
-
-    void emitConfigSignals() override {
-    }
+    ~UdpSocket();
 
   Q_SIGNALS:
     void dataReceived( const QByteArray& );
 
   public Q_SLOTS:
-    void setPort( double port ) {
-      this->port = port;
-      udpSocket->bind( quint16( port ),  QUdpSocket::DontShareAddress );
-    }
+    void setPort( double port );
 
-    void sendData( const QByteArray& data ) {
-      udpSocket->writeDatagram( data, QHostAddress::Broadcast, port );
-    }
+    void sendData( const QByteArray& data );
 
   protected Q_SLOTS:
-    void processPendingDatagrams() {
-      QByteArray datagram;
-
-      while( udpSocket->hasPendingDatagrams() ) {
-        datagram.resize( int( udpSocket->pendingDatagramSize() ) );
-        udpSocket->readDatagram( datagram.data(), datagram.size() );
-        Q_EMIT dataReceived( datagram );
-      }
-    }
+    void processPendingDatagrams();
 
   public:
     float port = 0;
@@ -89,17 +65,5 @@ class UdpSocketFactory : public BlockFactory {
       return QStringLiteral( "Streams" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new UdpSocket();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
-
-      b->setBrush( inputOutputColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

@@ -18,14 +18,10 @@
 
 #pragma once
 
-#include <QGuiApplication>
-#include <QMainWindow>
-#include <QSettings>
-#include <QStandardPaths>
-#include <QEvent>
-#include <QWidget>
 #include <QObject>
-#include <QCloseEvent>
+
+class QWindow;
+class QCloseEvent;
 
 #include <kddockwidgets/MainWindow.h>
 
@@ -35,17 +31,10 @@ class MyMainWindow : public KDDockWidgets::MainWindow {
   public:
     explicit MyMainWindow( const QString& uniqueName, KDDockWidgets::MainWindowOptions options,
                            const QString& affinityName = {}, // Usually not needed. Just here to show the feature.
-                           QWidget* parent = nullptr )
-      : MainWindow( uniqueName, options, parent ) {
-      setAffinityName( affinityName );
-    }
+                           QWidget* parent = nullptr );
 
   protected:
-    void closeEvent( QCloseEvent* event ) override {
-      Q_EMIT closed();
-
-      event->accept();
-    }
+    void closeEvent( QCloseEvent* event ) override;
 
   Q_SIGNALS:
     void closed();

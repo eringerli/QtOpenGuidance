@@ -16,9 +16,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "kinematic/cgal.h"
-#include "kinematic/CgalWorker.h"
 #include "CultivatedAreaModel.h"
+
+#include "qneblock.h"
+#include "qneport.h"
 
 #include <QtCore/QDebug>
 #include <QtMath>
@@ -28,8 +29,16 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
+#include "block/sectionControl/Implement.h"
+#include "block/sectionControl/ImplementSection.h"
+
+#include "kinematic/cgal.h"
+#include "kinematic/CgalWorker.h"
+
 #include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
+
+#include <QPointer>
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker )
   : threadForCgalWorker( threadForCgalWorker ) {
@@ -189,6 +198,21 @@ CultivatedAreaModelFactory::CultivatedAreaModelFactory( Qt3DCore::QEntity* rootE
     usePBR( usePBR ),
     threadForCgalWorker( new CgalThread( this ) ) {
   threadForCgalWorker->start();
+}
+
+QNEBlock* CultivatedAreaModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new CultivatedAreaModel( rootEntity, threadForCgalWorker );
+  auto* b = createBaseBlock( scene, obj, id );
+
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+
+  b->addOutputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
+
+  b->setBrush( modelColor );
+
+  return b;
 }
 
 #include "moc_CultivatedAreaModel.cpp"

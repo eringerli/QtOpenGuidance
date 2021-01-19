@@ -27,19 +27,22 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QExtrudedTextMesh>
 
-#include <QDebug>
-
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
+#include "kinematic/Plan.h"
+#include "kinematic/PlanGlobal.h"
 
-#include "3d/BufferMesh.h"
+class MyMainWindow;
+class FieldsOptimitionToolbar;
+class GlobalPlannerToolbar;
+class BufferMesh;
+class GeographicConvertionWrapper;
+class Plan;
+class PlanGlobal;
 
-#include "gui/FieldsOptimitionToolbar.h"
-#include "gui/GlobalPlannerToolbar.h"
+class CgalThread;
+class CgalWorker;
 
-#include "gui/MyMainWindow.h"
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
@@ -47,22 +50,8 @@
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
-#include "kinematic/PathPrimitive.h"
-#include "kinematic/PathPrimitiveLine.h"
-#include "kinematic/PathPrimitiveRay.h"
-#include "kinematic/PathPrimitiveSegment.h"
-#include "kinematic/PathPrimitiveSequence.h"
-
-#include "kinematic/PlanGlobal.h"
-
-#include "helpers/GeographicConvertionWrapper.h"
-
-#include <QVector>
-#include <QSharedPointer>
 #include <utility>
 
-class CgalThread;
-class CgalWorker;
 
 class GlobalPlanner : public BlockBase {
     Q_OBJECT
@@ -73,148 +62,45 @@ class GlobalPlanner : public BlockBase {
                             GeographicConvertionWrapper* tmw,
                             Qt3DCore::QEntity* rootEntity );
 
-    ~GlobalPlanner() {
-      dock->deleteLater();
-      widget->deleteLater();
-    }
+    ~GlobalPlanner();
 
   public Q_SLOTS:
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = toPoint3( position );
-        this->orientation = orientation;
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
-        auto quat = toQQuaternion( orientation );
-        aPointTransform->setRotation( quat );
-        bPointTransform->setRotation( quat );
+    void setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options );
 
-        auto position2D = to2D( position );
+    void setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options );
 
-        if( recordContinous ) {
-          abPolyline.push_back( position2D );
-        }
+    void setField( std::shared_ptr<Polygon_with_holes_2> field );
 
-//        QElapsedTimer timer;
-//        timer.start();
-        plan.expand( position2D );
-//        qDebug() << "Cycle Time plan.expandPlan:" << timer.nsecsElapsed() << "ns";
-      }
-    }
+    void setAPoint();
 
-    void setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionLeftEdgeOfImplement = toPoint3( position );
+    void setBPoint();
 
-        auto point2D = to2D( position );
+    void setAdditionalPoint();
 
-        if( implementSegment.source() != point2D ) {
-          implementSegment = Segment_2( point2D, implementSegment.target() );
-          createPlanAB();
-        }
-      }
-    }
+    void setAdditionalPointsContinous( const bool enabled );
 
-    void setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-      if( options.testFlag( PoseOption::CalculateLocalOffsets ) &&
-          options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        positionRightEdgeOfImplement = toPoint3( position );
-
-        auto point2D = to2D( position );
-
-        if( implementSegment.target() != point2D ) {
-          implementSegment = Segment_2( implementSegment.source(), point2D );
-          createPlanAB();
-        }
-      }
-    }
-
-    void setField( std::shared_ptr<Polygon_with_holes_2> field ) {
-      currentField = field;
-    }
-
-    void setAPoint() {
-      aPointTransform->setTranslation( toQVector3D( position ) );
-
-      aPointEntity->setEnabled( true );
-      bPointEntity->setEnabled( false );
-      pointsEntity->setEnabled( false );
-
-      aPoint = position;
-      abPolyline.clear();
-      abPolyline.push_back( to2D( position ) );
-    }
-
-    void setBPoint() {
-      bPointTransform->setTranslation( toQVector3D( position ) );
-      bPointEntity->setEnabled( true );
-
-      bPoint = position;
-      abPolyline.push_back( to2D( position ) );
-
-      abSegment = Segment_3( aPoint, bPoint );
-
-      createPlanAB();
-    }
-
-    void setAdditionalPoint() {
-      abPolyline.push_back( to2D( position ) );
-      createPlanAB();
-    }
-
-    void setAdditionalPointsContinous( const bool enabled ) {
-      if( recordContinous && !enabled ) {
-        Q_EMIT requestPolylineSimplification( &abPolyline, maxDeviation );
-      }
-
-      recordContinous = enabled;
-    }
-
-    void snap() {
-      snapPlanAB();
-    }
+    void snap();
 
     void openAbLine();
     void openAbLineFromFile( QFile& file );
 
-    void newField() {
-      widget->resetToolbar();
-      abPolyline.clear();
-    }
+    void newField();
 
     void saveAbLine();
     void saveAbLineToFile( QFile& file );
 
-    void setPlannerSettings( const int pathsInReserve, const double maxDeviation ) {
-      plan.pathsInReserve = pathsInReserve;
-      this->maxDeviation = maxDeviation;
-
-      if( abPolyline.size() > 2 ) {
-        Q_EMIT requestPolylineSimplification( &abPolyline, maxDeviation );
-      }
-    }
+    void setPlannerSettings( const int pathsInReserve, const double maxDeviation );
 
     void setPassSettings( const int forwardPasses,
                           const int reversePasses,
                           const bool startRight,
-                          const bool mirror ) {
-      if( ( forwardPasses == 0 || reversePasses == 0 ) ) {
-        this->forwardPasses = 0;
-        this->reversePasses = 0;
-      } else {
-        this->forwardPasses = forwardPasses;
-        this->reversePasses = reversePasses;
-      }
+                          const bool mirror );
 
-      this->startRight = startRight;
-      this->mirror = mirror;
-    }
+    void setPassNumberTo( const int /*passNumber*/ );
 
-    void setPassNumberTo( const int /*passNumber*/ ) {}
-
-    void setRunNumber( const uint32_t runNumber ) {
-      this->runNumber = runNumber;
-    }
+    void setRunNumber( const uint32_t runNumber );
 
     void createPlanPolyline( std::vector<Point_2>* polylinePtr );
 
@@ -313,30 +199,7 @@ class GlobalPlannerFactory : public BlockFactory {
       return QStringLiteral( "Guidance" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ),
-                                        mainWindow,
-                                        tmw,
-                                        rootEntity );
-      auto* b = createBaseBlock( scene, object, id, true );
-
-      object->dock->setTitle( QStringLiteral( "Global Planner" ) );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      mainWindow->addDockWidget( object->dock, location );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr<Polygon_with_holes_2> ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

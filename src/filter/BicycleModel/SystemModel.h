@@ -89,13 +89,13 @@ namespace KinematicModel {
 //        qDebug() << "TractorImuGpsFusionModel::predict" << deltaT << velocity << steerAngle << wheelBase;
 
 
-//        prediction[StateNames::XFrontWheelsFrontWheels] = x[StateNames::XFrontWheelsFrontWheels] + velocity*cos(qDegreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
-//        prediction[StateNames::YFrontWheelsFrontWheels] = x[StateNames::YFrontWheelsFrontWheels] + velocity*sin(qDegreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
+//        prediction[StateNames::XFrontWheelsFrontWheels] = x[StateNames::XFrontWheelsFrontWheels] + velocity*cos(degreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
+//        prediction[StateNames::YFrontWheelsFrontWheels] = x[StateNames::YFrontWheelsFrontWheels] + velocity*sin(degreesToRadians( steerAngle )+x[StateNames::YFrontWheelsaw]);
 
         StateType<T> xBuffer;
         xBuffer = x;
 
-//        double steerAngleRad = qDegreesToRadians(steerAngle);
+//        double steerAngleRad = degreesToRadians(steerAngle);
 
         xBuffer( StateNames::Ax ) = ( velocity - x( StateNames::Vx ) ) / deltaT;
         xBuffer( StateNames::Vyaw ) = std::tan( steerAngle ) * velocity / wheelBase;

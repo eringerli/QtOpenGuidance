@@ -17,9 +17,11 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "block/sectionControl/Implement.h"
+#include "block/sectionControl/ImplementSection.h"
 
 #include "ImplementSectionModel.h"
 
+#include <QComboBox>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 

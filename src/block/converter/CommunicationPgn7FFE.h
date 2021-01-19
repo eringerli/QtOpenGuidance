@@ -19,7 +19,6 @@
 #pragma once
 
 #include <QObject>
-#include <QByteArray>
 
 #include "block/BlockBase.h"
 
@@ -28,45 +27,17 @@ class CommunicationPgn7ffe : public BlockBase {
 
   public:
     explicit CommunicationPgn7ffe()
-      : BlockBase() {
-    }
+      : BlockBase() {}
 
   Q_SIGNALS:
     void  dataReceived( const QByteArray& );
 
   public Q_SLOTS:
-    void setSteeringAngle( double steeringAngle ) {
-      QByteArray data;
-      data.resize( 8 );
-      data[0] = char( 0x7f );
-      data[1] = char( 0xfe );
+    void setSteeringAngle( double steeringAngle );
 
-      // relais
-      data[2] = 0;
+    void setXte( double distance );
 
-      // velocity in km/4h
-      data[3] = char( velocity * 3.6f * 4.0f );
-
-      // XTE in mm
-      auto xte = int16_t( distance * 1000 );
-      data[4] = char( xte >> 8 );
-      data[5] = char( xte & 0xff );
-
-      // steerangle in °/100
-      auto steerangle = int16_t( steeringAngle * 100 );
-      data[6] = char( steerangle >> 8 );
-      data[7] = char( steerangle & 0xff );
-
-      Q_EMIT dataReceived( data );
-    }
-
-    void setXte( double distance ) {
-      this->distance = distance;
-    }
-
-    void setVelocity( double velocity ) {
-      this->velocity = velocity;
-    }
+    void setVelocity( double velocity );
 
   private:
     float distance = 0;
@@ -88,17 +59,5 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
       return QStringLiteral( "Legacy Converters" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new CommunicationPgn7ffe();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
-
-      b->setBrush( parserColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

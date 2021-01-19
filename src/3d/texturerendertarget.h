@@ -1,11 +1,14 @@
 // Copyright: see here https://github.com/florianblume/Qt3D-OffscreenRenderer
 
-#ifndef TEXTURERENDERTARGET_H
-#define TEXTURERENDERTARGET_H
+#pragma once
+
+#include <QObject>
+#include <QSize>
 
 #include <Qt3DRender/QRenderTarget>
 #include <Qt3DRender/QRenderTargetOutput>
-#include <Qt3DRender/QTexture>
+
+#include "3d/qt3dForwards.h"
 
 // Encapsulates a 2D texture that a frame graph can render into.
 class TextureRenderTarget : public Qt3DRender::QRenderTarget {
@@ -17,9 +20,7 @@ class TextureRenderTarget : public Qt3DRender::QRenderTarget {
                          = Qt3DRender::QRenderTargetOutput::Color0 );
 
     void setSize( QSize size );
-    QSize getSize() {
-      return size;
-    }
+    QSize getSize();
     Qt3DRender::QTexture2D* getTexture();
 
   private:
@@ -30,5 +31,3 @@ class TextureRenderTarget : public Qt3DRender::QRenderTarget {
     Qt3DRender::QRenderTargetOutput* depthTextureOutput;
     Qt3DRender::QTexture2D* depthTexture;
 };
-
-#endif // TEXTURERENDERTARGET_H

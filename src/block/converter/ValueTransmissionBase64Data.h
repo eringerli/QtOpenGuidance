@@ -20,41 +20,28 @@
 
 #include <QObject>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-
 #include "ValueTransmissionBase.h"
+
+#include <memory>
+
+class QCborStreamReader;
 
 class ValueTransmissionBase64Data : public ValueTransmissionBase {
     Q_OBJECT
   public:
-    explicit ValueTransmissionBase64Data( int id ) : ValueTransmissionBase( id ) {}
+    explicit ValueTransmissionBase64Data( int id );
 
   public Q_SLOTS:
-    void setData( const QByteArray& data ) {
-      QCborMap map;
-      map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "data" )] = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
+    void setData( const QByteArray& data );
 
-      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
-    }
-
-    void dataReceive( const QByteArray& data ) {
-      reader.addData( data );
-
-      auto cbor = QCborValue::fromCbor( reader );
-
-      if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        Q_EMIT dataChanged( QByteArray::fromBase64( cbor[QStringLiteral( "data" )].toString().toLatin1() ) );
-      }
-    }
+    void dataReceive( const QByteArray& data );
 
   Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void dataChanged( const QByteArray& );
 
   private:
-    QCborStreamReader reader;
+    std::unique_ptr<QCborStreamReader> reader;
 };
 
 class ValueTransmissionBase64DataFactory : public BlockFactory {
@@ -72,18 +59,5 @@ class ValueTransmissionBase64DataFactory : public BlockFactory {
       return QStringLiteral( "Value Converters" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmissionBase64Data( id );
-      auto* b = createBaseBlock( scene, obj, id, false );
-
-      b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );
-
-      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ), false );
-      b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-
-      b->setBrush( converterColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

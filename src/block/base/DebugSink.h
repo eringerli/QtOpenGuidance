@@ -18,21 +18,11 @@
 
 #pragma once
 
-#include <QObject>
-
-#include <QDateTime>
-
-#include <QByteArray>
-
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
+
 #include "kinematic/PoseOptions.h"
-
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QDebug>
 
 class DebugSink : public BlockBase {
     Q_OBJECT
@@ -43,60 +33,17 @@ class DebugSink : public BlockBase {
         block( nullptr ) {}
 
   public Q_SLOTS:
-    void setPosition( QVector3D value ) {
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
-      }
-    }
+    void setPosition( QVector3D value );
 
-    void setWGS84Position( double latitude, double longitude, double height ) {
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << latitude << longitude << height;
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << latitude << longitude << height;
-      }
-    }
+    void setWGS84Position( double latitude, double longitude, double height );
 
-    void setOrientation( const Eigen::Quaterniond& value ) {
-      auto taitBryan = quaternionToTaitBryan( value );
+    void setOrientation( const Eigen::Quaterniond& value );
 
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << taitBryan.y() << taitBryan.x() << taitBryan.z();
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << taitBryan.y() << taitBryan.x() << taitBryan.z();
-      }
-    }
+    void setSteeringAngle( double value );
 
-    void setSteeringAngle( double value ) {
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << value;
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << value;
-      }
-    }
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-      auto taitBryan = quaternionToTaitBryan( orientation );
-
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << position.x() << position.y() << position.z() << taitBryan.y() << taitBryan.x() << taitBryan.z() << options;
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << position.x() << position.y() << position.z() << taitBryan.y() << taitBryan.x() << taitBryan.z() << options;
-      }
-    }
-
-    void setData( const QByteArray& data ) {
-      if( block ) {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << block->getName() << "Data:" << data;
-      } else {
-        qDebug() << QDateTime::currentMSecsSinceEpoch() << "Data:" << data;
-      }
-    }
-  public:
-    virtual void emitConfigSignals() override {
-    }
+    void setData( const QByteArray& data );
 
   public:
     QNEBlock* block;
@@ -117,23 +64,5 @@ class DebugSinkFactory : public BlockFactory {
       return QStringLiteral( "Base Blocks" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new DebugSink;
-      auto* b = createBaseBlock( scene, obj, id );
-
-      auto debugSink = qobject_cast<DebugSink*>( obj );
-
-      if( debugSink ) {
-        debugSink->block = b;
-      }
-
-      b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( double, double, double ) ) ) );
-      b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( Eigen::Vector3d ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( Eigen::Quaterniond ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

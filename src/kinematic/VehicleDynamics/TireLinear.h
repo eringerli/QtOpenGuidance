@@ -20,10 +20,6 @@
 
 #pragma once
 
-#include <cmath>
-#include <memory>
-#include <iostream>
-
 #include "Tire.h"
 
 namespace VehicleDynamics {
@@ -33,20 +29,7 @@ namespace VehicleDynamics {
       TireLinear( double Cy ): Cy( Cy ) {}
       virtual ~TireLinear() {}
 
-      virtual double characteristic( double alpha, double, double ) {
-        double ret = - Cy * alpha;
-
-//        if( ret > 5000 ) {
-//          ret = 5000;
-//        }
-
-//        if( ret < -5000 ) {
-//          ret = -5000;
-//        }
-
-        std::cout << "Tire " << this << " Alpha: " << alpha << ", Fy: " << ret << std::endl;
-        return ret;
-      }
+      virtual double characteristic( double alpha, double, double );
 
       double Cy = 2400 * 180 / M_PI;
   };

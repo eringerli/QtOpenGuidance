@@ -20,41 +20,28 @@
 
 #include <QObject>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-
 #include "ValueTransmissionBase.h"
+
+#include <memory>
+
+#include <QCborStreamReader>
 
 class ValueTransmissionState : public ValueTransmissionBase {
     Q_OBJECT
   public:
-    explicit ValueTransmissionState( int id ) : ValueTransmissionBase( id ) {}
+    explicit ValueTransmissionState( int id );
 
   public Q_SLOTS:
-    void setState( const bool state ) {
-      QCborMap map;
-      map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "state" )] = state;
+    void setState( const bool state );
 
-      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
-    }
-
-    void dataReceive( const QByteArray& data ) {
-      reader.addData( data );
-
-      auto cbor = QCborValue::fromCbor( reader );
-
-      if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        Q_EMIT stateChanged( cbor[QStringLiteral( "state" )].toBool( false ) );
-      }
-    }
+    void dataReceive( const QByteArray& data );
 
   Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void stateChanged( const bool );
 
   private:
-    QCborStreamReader reader;
+    std::unique_ptr<QCborStreamReader> reader;
 };
 
 class ValueTransmissionStateFactory : public BlockFactory {
@@ -72,18 +59,5 @@ class ValueTransmissionStateFactory : public BlockFactory {
       return QStringLiteral( "Value Converters" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmissionState( id );
-      auto* b = createBaseBlock( scene, obj, id, false );
-
-      b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( stateChanged( const bool ) ) ), false );
-
-      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setState( const bool ) ) ), false );
-      b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-
-      b->setBrush( converterColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

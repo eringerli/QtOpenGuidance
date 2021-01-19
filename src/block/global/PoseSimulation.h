@@ -22,22 +22,10 @@
 #include <memory>
 
 #include <QObject>
-
-#include <QEvent>
 #include <QBasicTimer>
 #include <QElapsedTimer>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include "3d/BufferMesh.h"
-#include "3d/BufferMeshWithNormal.h"
-
-#include <QtGlobal>
-#include <QtDebug>
+#include "3d/qt3dForwards.h"
 
 #include "block/BlockBase.h"
 
@@ -65,6 +53,9 @@ using DelaunayTriangulationProjectedXY = CGAL::Delaunay_triangulation_2<Projecti
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/Polygon_mesh_processing/locate.h>
 using SurfaceMesh_3 = CGAL::Surface_mesh<Point_3>;
+
+class QFile;
+class BufferMeshWithNormal;
 
 class PoseSimulation : public BlockBase {
     Q_OBJECT
@@ -254,28 +245,7 @@ class PoseSimulationFactory : public BlockFactory {
       return QStringLiteral( "Base Blocks" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new PoseSimulation( mainWindow, rootEntity, geographicConvertionWrapper );
-      auto* b = createBaseBlock( scene, obj, id, true );
-
-      b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( const double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
-
-      b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( const bool ) ) ) );
-      b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( const double ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     QWidget* mainWindow = nullptr;

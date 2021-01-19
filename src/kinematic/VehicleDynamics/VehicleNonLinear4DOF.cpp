@@ -29,6 +29,22 @@
 #include "VehicleNonLinear4DOF.h"
 
 // VehicleDynamics::VehicleNonLinear4DOF takes ownership of the Tire*s
+VehicleDynamics::VehicleNonLinear4DOF::VehicleNonLinear4DOF( VehicleDynamics::Tire* frontLeftTire, VehicleDynamics::Tire* frontRightTire, VehicleDynamics::Tire* rearLeftTire, VehicleDynamics::Tire* rearRightTire )
+  : frontLeftTire( frontLeftTire ), frontRightTire( frontRightTire ), rearLeftTire( rearLeftTire ), rearRightTire( rearRightTire ) {
+
+  state.setZero();
+
+  stateNames
+      << QStringLiteral( "X" )
+      << QStringLiteral( "Y" )
+      << QStringLiteral( "Psi" )
+      << QStringLiteral( "Theta" )
+      << QStringLiteral( "V" )
+      << QStringLiteral( "AlphaT" )
+      << QStringLiteral( "dPsi" )
+      << QStringLiteral( "dTheta" );
+}
+
 void VehicleDynamics::VehicleNonLinear4DOF::step( double deltaT, double deltaF,
     double fxFrontLeft, double fxFrontRight, double fxRearLeft, double fxRearRight ) {
 

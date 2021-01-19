@@ -21,30 +21,37 @@
 #include <QObject>
 
 #include <QDialog>
-#include <QVector3D>
-#include <Qt3DCore/QEntity>
+#include <QColor>
 
-#include <QGraphicsScene>
-#include <QSortFilterProxyModel>
+class VectorBlockModel;
+class OrientationBlockModel;
+class NumberBlockModel;
+class ActionDockBlockModel;
+class SliderDockBlockModel;
+class StringBlockModel;
+class ImplementBlockModel;
+class PathPlannerModelBlockModel;
+class ImplementSectionModel;
+class ValueBlockModel;
+class TransmissionBlockModel;
+class PlotBlockModel;
+class FontComboboxDelegate;
 
-#include "block/guidance/PoseSynchroniser.h"
+class QGraphicsScene;
+class QSortFilterProxyModel;
+class QTreeWidget;
+class QTreeWidgetItem;
+class QFile;
+class QMainWindow;
+class MyMainWindow;
 
-#include "NewOpenSaveToolbar.h"
+class QNEBlock;
 
-#include "model/VectorBlockModel.h"
-#include "model/OrientationBlockModel.h"
-#include "model/NumberBlockModel.h"
-#include "model/ActionDockBlockModel.h"
-#include "model/SliderDockBlockModel.h"
-#include "model/StringBlockModel.h"
-#include "model/ImplementBlockModel.h"
-#include "model/PathPlannerModelBlockModel.h"
-#include "model/ImplementSectionModel.h"
-#include "model/ValueBlockModel.h"
-#include "model/TransmissionBlockModel.h"
-#include "model/PlotBlockModel.h"
+#include "block/BlockBase.h"
 
-#include "FontComboboxDelegate.h"
+class NewOpenSaveToolbar;
+
+#include "3d/qt3dForwards.h"
 
 #include "helpers/cgalHelper.h"
 
@@ -55,16 +62,15 @@ namespace Ui {
   class SettingsDialog;
 }
 
-class MyMainWindow;
-namespace Qt3DExtras {
-  class Qt3DWindow;
-}
-
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
   public:
-    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity, MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QMenu* guidanceToolbarMenu, QWidget* parent = nullptr );
+    explicit SettingsDialog( Qt3DCore::QEntity* rootEntity,
+                             MyMainWindow* mainWindow,
+                             Qt3DExtras::Qt3DWindow* qt3dWindow,
+                             QMenu* guidanceToolbarMenu,
+                             QWidget* parent = nullptr );
     ~SettingsDialog();
 
     QGraphicsScene* getSceneOfConfigGraphicsView();

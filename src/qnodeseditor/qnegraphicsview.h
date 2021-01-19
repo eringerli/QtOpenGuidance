@@ -28,45 +28,21 @@
 #pragma once
 
 #include <QGraphicsView>
-#include <QWheelEvent>
-#include <QKeyEvent>
-#include <QtMath>
-#include <QAbstractScrollArea>
+
+class QWidget;
+class QWheelEvent;
 
 class QNEGraphicsView : public QGraphicsView {
     Q_OBJECT
   public:
-    explicit QNEGraphicsView( QWidget* parent = nullptr )
-      : QGraphicsView( parent ) {
-      setDragMode( QGraphicsView::ScrollHandDrag );
-    }
+    explicit QNEGraphicsView( QWidget* parent = nullptr );
 
   public Q_SLOTS:
-    void zoomIn() {
-      scale( 1 + zoomFactor, 1 + zoomFactor );
-    }
-    void zoomOut() {
-      scale( 1 - zoomFactor, 1 - zoomFactor );
-    }
+    void zoomIn();
+    void zoomOut();
 
   protected:
-    void wheelEvent( QWheelEvent* event ) override {
-
-      // zoom
-      const ViewportAnchor anchor = transformationAnchor();
-      setTransformationAnchor( QGraphicsView::AnchorUnderMouse );
-      int angle = event->angleDelta().y();
-      qreal factor;
-
-      if( angle > 0 ) {
-        factor = 1 + zoomFactor;
-      } else {
-        factor = 1 - zoomFactor;
-      }
-
-      scale( factor, factor );
-      setTransformationAnchor( anchor );
-    }
+    void wheelEvent( QWheelEvent* event ) override;
 
   private:
     static constexpr qreal zoomFactor = 0.2;

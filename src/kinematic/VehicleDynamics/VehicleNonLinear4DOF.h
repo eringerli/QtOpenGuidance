@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <cmath>
 #include <memory>
 
 #include "helpers/eigenHelper.h"
@@ -30,21 +29,7 @@
 namespace VehicleDynamics {
   class VehicleNonLinear4DOF : public Vehicle {
     public:
-      VehicleNonLinear4DOF( Tire* frontLeftTire, Tire* frontRightTire, Tire* rearLeftTire, Tire* rearRightTire )
-        : frontLeftTire( frontLeftTire ), frontRightTire( frontRightTire ), rearLeftTire( rearLeftTire ), rearRightTire( rearRightTire ) {
-
-        state.setZero();
-
-        stateNames
-            << QStringLiteral( "X" )
-            << QStringLiteral( "Y" )
-            << QStringLiteral( "Psi" )
-            << QStringLiteral( "Theta" )
-            << QStringLiteral( "V" )
-            << QStringLiteral( "AlphaT" )
-            << QStringLiteral( "dPsi" )
-            << QStringLiteral( "dTheta" );
-      }
+      VehicleNonLinear4DOF( Tire* frontLeftTire, Tire* frontRightTire, Tire* rearLeftTire, Tire* rearRightTire );
       virtual ~VehicleNonLinear4DOF() {}
 
       virtual void step( double deltaT, double deltaF,

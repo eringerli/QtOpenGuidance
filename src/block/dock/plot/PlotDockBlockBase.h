@@ -19,120 +19,48 @@
 #pragma once
 
 #include <QObject>
-#include <QSizePolicy>
-#include <QMenu>
 
-#include "gui/MyMainWindow.h"
-#include "gui/dock/PlotDock.h"
+class MyMainWindow;
 
 #include "block/BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include "qcustomplot.h"
+class PlotDock;
 
 class PlotDockBlockBase : public BlockBase {
     Q_OBJECT
 
   public:
     explicit PlotDockBlockBase( const QString& uniqueName,
-                                MyMainWindow* mainWindow )
-      : BlockBase() {
-      dock = new KDDockWidgets::DockWidget( uniqueName );
-      widget = new PlotDock( mainWindow );
-    }
+                                MyMainWindow* mainWindow );
 
-    virtual ~PlotDockBlockBase() {
-      widget->deleteLater();
+    virtual ~PlotDockBlockBase();
 
-      if( PlotDockBlockBase::firstPlotDock == dock ) {
-        PlotDockBlockBase::firstPlotDock = nullptr;
-      }
-
-      dock->deleteLater();
-    }
-
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-
-      valuesObject[QStringLiteral( "XAxisVisible" )] = getXAxisVisible();
-      valuesObject[QStringLiteral( "YAxisVisible" )] = getYAxisVisible();
-      valuesObject[QStringLiteral( "YAxisDescription" )] = getYAxisDescription();
-      valuesObject[QStringLiteral( "AutoscrollEnabled" )] = getAutoscrollEnabled();
-      valuesObject[QStringLiteral( "Window" )] = getWindow();
-
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        setXAxisVisible( valuesObject[QStringLiteral( "XAxisVisible" )].toBool( false ) );
-        setYAxisVisible( valuesObject[QStringLiteral( "YAxisVisible" )].toBool( true ) );
-        setYAxisDescription( valuesObject[QStringLiteral( "YAxisDescription" )].toString( QString() ) );
-        setAutoscrollEnabled( valuesObject[QStringLiteral( "AutoscrollEnabled" )].toBool( true ) );
-        setWindow( valuesObject[QStringLiteral( "Window" )].toDouble( 20 ) );
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   public:
-    bool getXAxisVisible() {
-      return widget->getQCustomPlotWidget()->xAxis->visible();
-    }
-    bool getYAxisVisible() {
-      return widget->getQCustomPlotWidget()->yAxis->visible();
-    }
-    const QString getYAxisDescription() {
-      return widget->getQCustomPlotWidget()->yAxis->label();
-    }
-    bool getAutoscrollEnabled() {
-      return autoScrollEnabled;
-    }
-    double getWindow() {
-      return window;
-    }
+    bool getXAxisVisible();
+    bool getYAxisVisible();
+    const QString getYAxisDescription();
+    bool getAutoscrollEnabled();
+    double getWindow();
 
-    void setXAxisVisible( const bool visible ) {
-      widget->getQCustomPlotWidget()->xAxis->setVisible( visible );
-    }
-    void setYAxisVisible( const bool visible ) {
-      widget->getQCustomPlotWidget()->yAxis->setVisible( visible );
-    }
-    void setYAxisDescription( const QString& description ) {
-      widget->getQCustomPlotWidget()->yAxis->setLabel( description );
-    }
-    void setAutoscrollEnabled( const bool enabled ) {
-      autoScrollEnabled = enabled;
-
-      if( !enabled ) {
-        widget->getQCustomPlotWidget()->setInteractions( QCP::Interaction::iRangeDrag | QCP::Interaction::iRangeZoom );
-      } else {
-        widget->getQCustomPlotWidget()->setInteractions( QCP::Interaction() );
-      }
-
-      setNameHelper();
-    }
-    void setWindow( const double window ) {
-      this->window = window;
-    }
+    void setXAxisVisible( const bool visible );
+    void setYAxisVisible( const bool visible );
+    void setYAxisDescription( const QString& description );
+    void setAutoscrollEnabled( const bool enabled );
+    void setWindow( const double window );
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      this->name = name;
-      setNameHelper();
-    }
+    void setName( const QString& name ) override;
 
-    void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* ) {
-      setAutoscrollEnabled( !autoScrollEnabled );
-    }
+    void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* );
 
   private:
-    void setNameHelper() {
-      dock->setTitle( name + ( autoScrollEnabled ? QString() : QStringLiteral( " (m)" ) ) );
-      dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name );
-    }
+    void setNameHelper();
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;

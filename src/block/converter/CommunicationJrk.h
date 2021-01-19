@@ -19,7 +19,6 @@
 #pragma once
 
 #include <QObject>
-#include <QByteArray>
 
 #include "block/BlockBase.h"
 
@@ -35,25 +34,11 @@ class CommunicationJrk : public BlockBase {
     void dataReceived( const QByteArray& );
 
   public Q_SLOTS:
-    void setSteeringAngle( double steeringAngle ) {
+    void setSteeringAngle( double steeringAngle );
 
-      QByteArray data;
-      data.resize( 2 );
+    void setSteerZero( double steerZero );
 
-      int16_t target = int16_t( steeringAngle * countsPerDegree ) + int16_t( steerZero );
-      data[0] = char( 0xc0 | ( target & 0x1f ) );
-      data[1] = char( ( target >> 5 ) & 0x7f );
-
-      Q_EMIT dataReceived( data );
-    }
-
-    void setSteerZero( double steerZero ) {
-      this->steerZero = steerZero;
-    }
-
-    void setSteerCountPerDegree( double countsPerDegree ) {
-      this->countsPerDegree = countsPerDegree;
-    }
+    void setSteerCountPerDegree( double countsPerDegree );
 
   private:
     float steerZero = 2047;
@@ -75,17 +60,5 @@ class CommunicationJrkFactory : public BlockFactory {
       return QStringLiteral( "Legacy Converters" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new CommunicationJrk();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering count/°" ), QLatin1String( SLOT( setSteerCountPerDegree( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
-      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
-
-      b->setBrush( parserColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

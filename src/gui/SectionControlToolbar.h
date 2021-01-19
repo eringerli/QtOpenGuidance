@@ -21,15 +21,11 @@
 #include <QWidget>
 
 #include <QGroupBox>
-#include <QToolButton>
-#include <QLabel>
-#include <QPalette>
-#include <QGridLayout>
-#include <QDockWidget>
-
-#include <QVector>
 
 class Implement;
+class QGridLayout;
+class QLabel;
+class QToolButton;
 
 class SectionControlToolbar : public QGroupBox {
     Q_OBJECT

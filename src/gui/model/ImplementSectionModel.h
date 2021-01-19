@@ -20,15 +20,11 @@
 
 #include <QObject>
 
-#include <QComboBox>
-
 #include <QtCore/QAbstractTableModel>
 
-#include <QList>
-
-#include <QGraphicsScene>
-
-#include "block/sectionControl/Implement.h"
+class QComboBox;
+class QGraphicsScene;
+class QNEBlock;
 
 class ImplementSectionModel : public QAbstractTableModel {
     Q_OBJECT

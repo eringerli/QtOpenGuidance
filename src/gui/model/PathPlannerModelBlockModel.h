@@ -20,13 +20,10 @@
 
 #include <QObject>
 
-#include <QComboBox>
-
 #include <QtCore/QAbstractTableModel>
 
-#include <QList>
-
-#include <QGraphicsScene>
+class QComboBox;
+class QGraphicsScene;
 
 class PathPlannerModelBlockModel : public QAbstractTableModel {
     Q_OBJECT

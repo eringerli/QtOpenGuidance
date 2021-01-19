@@ -18,9 +18,12 @@
 
 #include "CultivatedAreaMesh.h"
 #include "CultivatedAreaMeshGeometry.h"
-#include <QGeometryRenderer>
 #include <QVector3D>
-#include <QVector4D>
+
+#include <Qt3DCore/QNode>
+#include <Qt3DRender/QGeometryRenderer>
+#include <Qt3DRender/QAttribute>
+#include <Qt3DRender/QBuffer>
 
 CultivatedAreaMesh::CultivatedAreaMesh( Qt3DCore::QNode* parent ) :
   Qt3DRender::QGeometryRenderer( parent ),

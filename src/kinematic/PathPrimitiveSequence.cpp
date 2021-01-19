@@ -31,6 +31,14 @@ void PathPrimitiveSequence::createBisectors( std::back_insert_iterator<std::vect
   }
 }
 
+PathPrimitiveSequence::PathPrimitiveSequence( const std::vector<Point_2>& polyline, const double implementWidth, const bool anyDirection, const int32_t passNumber )
+  : PathPrimitive( anyDirection, implementWidth, passNumber ) {
+  updateWithPolyline( polyline );
+}
+
+PathPrimitiveSequence::PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive> >& sequence, const std::vector<Line_2>& bisectors, const double implementWidth, const bool anyDirection, const int32_t passNumber )
+  : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {}
+
 void PathPrimitiveSequence::updateWithPolyline( const std::vector<Point_2>& polyline ) {
   this->polyline.clear();
   std::copy( polyline.cbegin(), polyline.cend(), std::back_inserter( this->polyline ) );
@@ -189,6 +197,10 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
 
     return std::make_shared<PathPrimitiveSequence>( primitives, bisectorsNew, implementWidth, anyDirection, passNumberNew );
   }
+}
+
+void PathPrimitiveSequence::print() {
+  std::cout << "PathPrimitiveSequence: " << std::endl;
 }
 
 void PathPrimitiveSequence::orderBisectors( std::vector<Line_2>& bisectorsToOrder, const std::vector<std::shared_ptr<PathPrimitive> >& primitives ) {

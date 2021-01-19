@@ -31,6 +31,21 @@
 #include "VehicleNonLinear3DOF.h"
 
 // VehicleDynamics::VehicleNonLinear3DOF takes ownership of the Tire*s
+VehicleDynamics::VehicleNonLinear3DOF::VehicleNonLinear3DOF( VehicleDynamics::Tire* frontTire, VehicleDynamics::Tire* rearTire )
+  : frontTire( frontTire ), rearTire( rearTire ) {
+
+  state.setZero();
+  oldDState.setZero();
+
+  stateNames
+      << QStringLiteral( "X" )
+      << QStringLiteral( "Y" )
+      << QStringLiteral( "Psi" )
+      << QStringLiteral( "V" )
+      << QStringLiteral( "AlphaT" )
+      << QStringLiteral( "dPsi" );
+}
+
 void VehicleDynamics::VehicleNonLinear3DOF::step( double deltaT, double deltaF,
     double fxFrontLeft, double fxFrontRight, double fxRearLeft, double fxRearRight ) {
   double psi = state( 2 );
@@ -51,7 +66,7 @@ void VehicleDynamics::VehicleNonLinear3DOF::step( double deltaT, double deltaF,
   double alphaFront = std::atan2( v * std::sin( alphaT ) + a * dPsi, v * std::cos( alphaT ) ) - deltaF;
   double alphaRear  = std::atan2( v * std::sin( alphaT ) - b * dPsi, v * std::cos( alphaT ) );
 
-  std::cout << "alpha: " << alphaFront << " (" << qRadiansToDegrees( alphaFront ) << "), " << alphaRear << " (" << qRadiansToDegrees( alphaRear ) << ")" << std::endl;
+  std::cout << "alpha: " << alphaFront << " (" << radiansToDegrees( alphaFront ) << "), " << alphaRear << " (" << radiansToDegrees( alphaRear ) << ")" << std::endl;
   std::cout << "operands: " << v* std::sin( alphaT ) + a* dPsi << ", " << v* std::cos( alphaT ) << std::endl;
 
 

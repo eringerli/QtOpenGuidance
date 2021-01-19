@@ -19,8 +19,14 @@
 #include "SectionControlToolbar.h"
 
 #include "block/sectionControl/Implement.h"
+#include "block/sectionControl/ImplementSection.h"
 
 #include <QString>
+#include <QPointer>
+#include <QToolButton>
+#include <QLabel>
+#include <QPalette>
+#include <QGridLayout>
 
 SectionControlToolbar::SectionControlToolbar( Implement* implement, QWidget* parent )
   : QGroupBox( parent ),

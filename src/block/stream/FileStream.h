@@ -19,82 +19,35 @@
 #pragma once
 
 #include <QObject>
-#include <QByteArray>
-#include <QTextStream>
 
 #include "block/BlockBase.h"
+
+#include "QBasicTimer"
+
+class QFile;
+class QByteArray;
+class QTextStream;
 
 class FileStream : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit FileStream()
-      : BlockBase() {
-      fileStream = new QTextStream();
-    }
+    explicit FileStream();
 
-    ~FileStream() override {
-      if( file ) {
-        file->deleteLater();
-      }
-
-      delete fileStream;
-    }
-
-    void emitConfigSignals() override {
-    }
+    ~FileStream() override;
 
   Q_SIGNALS:
     void dataReceived( const QByteArray& );
 
   public Q_SLOTS:
-    void setFilename( const QString& filename ) {
-      this->filename = filename;
+    void setFilename( const QString& filename );
 
-      if( file ) {
-        fileStream->setDevice( nullptr );
-        file->close();
-        file->deleteLater();
-        file = nullptr;
-      }
+    void setLinerate( double linerate );
 
-      file = new QFile( filename );
-
-      if( file->open( QFile::ReadWrite | QFile::Append | QFile::Text ) ) {
-        fileStream->setDevice( file );
-        fileStream->seek( 0 );
-        timer.start( 1000 / linerate, Qt::PreciseTimer, this );
-      } else {
-        qDebug() << "fail";
-      }
-    }
-
-    void setLinerate( double linerate ) {
-      this->linerate = linerate;
-
-      if( qFuzzyIsNull( linerate ) ) {
-        timer.stop();
-      } else {
-        timer.start( int( 1000 / linerate ), Qt::PreciseTimer, this );
-      }
-    }
-
-    void sendData( const QByteArray& data ) {
-      *fileStream << data;
-    }
+    void sendData( const QByteArray& data );
 
   protected:
-    void timerEvent( QTimerEvent* event ) override {
-      if( event->timerId() == timer.timerId() ) {
-        if( file && fileStream ) {
-          if( fileStream->atEnd() ) {
-            timer.stop();
-          } else {
-            Q_EMIT dataReceived( fileStream->readLine().toLatin1() );
-          }
-        }
-      }
-    }
+    void timerEvent( QTimerEvent* event ) override;
 
   public:
     QString filename;
@@ -122,18 +75,5 @@ class FileStreamFactory : public BlockFactory {
       return QStringLiteral( "Streams" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new FileStream();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "File" ), QLatin1String( SLOT( setFilename( const QString& ) ) ) );
-      b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
-
-      b->setBrush( valueColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

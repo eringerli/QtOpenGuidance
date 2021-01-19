@@ -20,48 +20,30 @@
 
 #include <QObject>
 
-#include <QDebug>
-
 #include "block/BlockBase.h"
-#include "gui/dock/ActionDock.h"
 
-#include "gui/MyMainWindow.h"
+class MyMainWindow;
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "kinematic/PoseOptions.h"
+
+class ActionDock;
 
 class ActionDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
     explicit ActionDockBlock( const QString& uniqueName,
-                              MyMainWindow* mainWindow )
-      : BlockBase() {
-      widget = new ActionDock( mainWindow );
-      dock = new KDDockWidgets::DockWidget( uniqueName );
-
-      QObject::connect( widget, &ActionDock::action, this, &ActionDockBlock::action );
-    }
-
+                              MyMainWindow* mainWindow );
     ~ActionDockBlock();
 
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "Action: " ) + name );
-    }
+    void setName( const QString& name ) override;
 
-    void setCheckable( const bool checkable ) {
-      widget->setCheckable( checkable );
-    }
+    void setCheckable( const bool checkable );
 
-    void setTheme( const QString& theme ) {
-      widget->setTheme( theme );
-    }
+    void setTheme( const QString& theme );
 
   Q_SIGNALS:
     void action( const bool );
@@ -95,29 +77,7 @@ class ActionDockBlockFactory : public BlockFactory {
       return QStringLiteral( "Action Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ),
-                                          mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( firstActionDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        firstActionDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
-      }
-
-      b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( const bool ) ) ) );
-
-      b->setBrush( inputDockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

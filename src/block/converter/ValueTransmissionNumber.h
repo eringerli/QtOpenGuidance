@@ -20,41 +20,28 @@
 
 #include <QObject>
 
-#include <QJsonDocument>
-#include <QJsonObject>
-
 #include "ValueTransmissionBase.h"
+
+#include <memory>
+
+class QCborStreamReader;
 
 class ValueTransmissionNumber : public ValueTransmissionBase {
     Q_OBJECT
   public:
-    explicit ValueTransmissionNumber( int id ) : ValueTransmissionBase( id ) {}
+    explicit ValueTransmissionNumber( int id );
 
   public Q_SLOTS:
-    void setNumber( const double number ) {
-      QCborMap map;
-      map[QStringLiteral( "channelId" )] = id;
-      map[QStringLiteral( "number" )] = number;
+    void setNumber( const double number );
 
-      Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
-    }
-
-    void dataReceive( const QByteArray& data ) {
-      reader.addData( data );
-
-      auto cbor = QCborValue::fromCbor( reader );
-
-      if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-        Q_EMIT numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ) );
-      }
-    }
+    void dataReceive( const QByteArray& data );
 
   Q_SIGNALS:
     void dataToSend( const QByteArray& );
     void numberChanged( const double );
 
   private:
-    QCborStreamReader reader;
+    std::unique_ptr<QCborStreamReader> reader;
 };
 
 class ValueTransmissionNumberFactory : public BlockFactory {
@@ -72,18 +59,5 @@ class ValueTransmissionNumberFactory : public BlockFactory {
       return QStringLiteral( "Value Converters" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new ValueTransmissionNumber( id );
-      auto* b = createBaseBlock( scene, obj, id, false );
-
-      b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-      b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ), false );
-
-      b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( const double ) ) ), false );
-      b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
-
-      b->setBrush( converterColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

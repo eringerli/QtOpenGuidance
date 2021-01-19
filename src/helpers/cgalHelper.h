@@ -89,7 +89,7 @@ inline Vector_2 polarOffsetRad( const double angleRad, const double distance ) {
 }
 
 inline Vector_2 polarOffsetDegrees( const double angleDegrees, const double distance ) {
-  double angleRad = qDegreesToRadians( angleDegrees );
+  double angleRad = degreesToRadians( angleDegrees );
   return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
 }
 
@@ -104,5 +104,5 @@ inline double angleOfLineDegrees( const Line_2& line ) {
 }
 
 inline double angleOfLineRadians( const Line_2& line ) {
-  return qDegreesToRadians( angleOfLineDegrees( line ) );
+  return degreesToRadians( angleOfLineDegrees( line ) );
 }

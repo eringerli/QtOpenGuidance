@@ -28,6 +28,10 @@
 #include <QGuiApplication>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QDesktopWidget>
+#include <QMenu>
+#include <QAction>
+
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DRender/QCamera>
@@ -83,6 +87,8 @@
 #include "block/global/GridModel.h"
 #include "block/graphical/TractorModel.h"
 #include "block/graphical/TrailerModel.h"
+
+#include "block/sectionControl/Implement.h"
 
 #include "block/dock/display/OrientationDockBlock.h"
 #include "block/dock/display/PositionDockBlock.h"
@@ -195,16 +201,6 @@ int main( int argc, char** argv ) {
   mainWindow->addDockWidgetAsTab( centralDock );
 
   auto* widget = new QWidget( mainWindow );
-//  mainWindow->setCentralWidget( container );
-//  mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
-//  mainWindow->setDockOptions( QMainWindow::AnimatedDocks |
-//                              QMainWindow::AllowNestedDocks |
-//                              QMainWindow::AllowTabbedDocks |
-//                              QMainWindow::VerticalTabs );
-//  mainWindow->setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
-//  mainWindow->setCorner( Qt::BottomLeftCorner, Qt::BottomDockWidgetArea );
-//  mainWindow->setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
-//  mainWindow->setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 
   // Root entity for Qt3D
   auto* rootEntity = new Qt3DCore::QEntity();
@@ -218,9 +214,6 @@ int main( int argc, char** argv ) {
 
   // Create setting Window
   auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, view, guidanceToolbar->menu, widget );
-
-//  auto* input = new Qt3DInput::QInputAspect;
-//  view->registerAspect( input );
 
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();

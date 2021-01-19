@@ -19,24 +19,21 @@
 #pragma once
 
 #include <QObject>
-
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-
-#include "3d/texturerendertarget.h"
-#include <Qt3DRender/QLayer>
-#include <Qt3DRender/QFrameGraphNode>
-#include <Qt3DRender/QLayerFilter>
-#include <Qt3DRender/QCamera>
-#include <Qt3DRender/QRenderCapture>
-#include <Qt3DRender/QRenderCaptureReply>
+#include <QPointer>
 
 #include "block/BlockBase.h"
+
+#include "3d/qt3dForwards.h"
+
+#include <kddockwidgets/KDDockWidgets.h>
+#include <kddockwidgets/DockWidget.h>
 
 #include "helpers/eigenHelper.h"
 #include "kinematic/PoseOptions.h"
 
-#include "Implement.h"
+class MyMainWindow;
+class Implement;
+class QLabel;
 
 class SectionControl : public BlockBase {
     Q_OBJECT
@@ -117,31 +114,7 @@ class SectionControlFactory : public BlockFactory {
       return QStringLiteral( "Section Control" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new SectionControl( getNameOfFactory() + QString::number( id ),
-                                         mainWindow,
-                                         rootEntity,
-                                         frameGraphParent );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->labelTurnOnTexture );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      mainWindow->addDockWidget( object->dock, location );
-
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
-      b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
-      b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

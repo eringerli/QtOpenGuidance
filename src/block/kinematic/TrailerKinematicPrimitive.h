@@ -20,21 +20,14 @@
 
 #include <QObject>
 
-#include <QTime>
-#include <QEvent>
-#include <QBasicTimer>
-#include <QVector3D>
-
-#include <QtGlobal>
-#include <QtDebug>
-
 #include "block/BlockBase.h"
 
 #include "FixedKinematicPrimitive.h"
 
 #include "helpers/eigenHelper.h"
-#include "helpers/anglesHelper.h"
 #include "kinematic/PoseOptions.h"
+
+#include "helpers/anglesHelper.h"
 
 class TrailerKinematicPrimitive : public BlockBase {
     Q_OBJECT
@@ -44,49 +37,11 @@ class TrailerKinematicPrimitive : public BlockBase {
       : BlockBase() {}
 
   public Q_SLOTS:
-    void setOffset( const Eigen::Vector3d& offset ) {
-      fixedKinematic.setOffset( offset );
-    }
-    void setMaxJackknifeAngle( const double maxJackknifeAngle ) {
-      maxJackknifeAngleRad = degreesToRadians( maxJackknifeAngle );
-    }
-    void setMaxAngle( const double maxAngle ) {
-      maxAngleRad = degreesToRadians( maxAngle );
-    }
+    void setOffset( const Eigen::Vector3d& offset );
+    void setMaxJackknifeAngle( const double maxJackknifeAngle );
+    void setMaxAngle( const double maxAngle );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
-      if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-        orientation = Eigen::Quaterniond();
-      } else {
-        auto taitBryan = quaternionToTaitBryan( orientation );
-        double angleRad = std::atan2( position.y() - positionCalculated.y(),
-                                      position.x() - positionCalculated.x() );
-
-        Eigen::Quaterniond orientationTmp;
-        orientationTmp = taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) )
-                         * taitBryanToQuaternion( angleRad, 0, 0 );
-
-        // the angle between tractor and trailer > maxAngleToTowingKinematic -> reset orientation to the one from the tractor
-        double angleDifferenceRad = getYaw( quaternionToTaitBryan( rotation.inverse() * orientationTmp ) );
-
-        if( std::abs( angleDifferenceRad ) < maxJackknifeAngleRad ) {
-          // limit the angle to maxAngle
-          if( std::abs( angleDifferenceRad ) > maxAngleRad ) {
-            orientation = taitBryanToQuaternion( maxAngleRad * ( angleDifferenceRad > 0 ? 1 : -1 ), 0, 0 )
-                          * taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) );
-          } else {
-            orientation = orientationTmp;
-          }
-        } else {
-          orientation = rotation;
-        }
-      }
-
-      fixedKinematic.setPose( position, orientation, options );
-      positionCalculated = fixedKinematic.positionCalculated;
-
-      Q_EMIT poseChanged( positionCalculated, orientation, options );
-    }
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options );
 
   Q_SIGNALS:
     void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
@@ -95,8 +50,8 @@ class TrailerKinematicPrimitive : public BlockBase {
     Eigen::Vector3d positionCalculated = Eigen::Vector3d( -1, 0, 0 );
     Eigen::Quaterniond orientation =  Eigen::Quaterniond();
 
-    double maxJackknifeAngleRad = qDegreesToRadians( double( 120 ) );
-    double maxAngleRad = qDegreesToRadians( double( 150 ) );
+    double maxJackknifeAngleRad = degreesToRadians( double( 120 ) );
+    double maxAngleRad = degreesToRadians( double( 150 ) );
 
     FixedKinematicPrimitive fixedKinematic;
 };
@@ -116,17 +71,5 @@ class TrailerKinematicPrimitiveFactory : public BlockFactory {
       return QStringLiteral( "Calculations" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new TrailerKinematicPrimitive;
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( const Eigen::Vector3d& ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

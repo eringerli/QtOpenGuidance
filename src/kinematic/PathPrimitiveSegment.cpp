@@ -23,6 +23,14 @@ PathPrimitiveSegment::PathPrimitiveSegment( const Segment_2& segment, double imp
   angleLineDegrees = angleOfLineDegrees( supportLine );
 }
 
+bool PathPrimitiveSegment::operator==( PathPrimitiveSegment& b ) {
+  return segment == b.segment;
+}
+
+bool PathPrimitiveSegment::operator==( const PathPrimitiveSegment& b ) const {
+  return segment == b.segment;
+}
+
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
   return std::make_shared<PathPrimitiveSegment> (
                  segment.opposite(),
@@ -30,11 +38,15 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createReverse() {
 }
 
 std::shared_ptr<PathPrimitive> PathPrimitiveSegment::createNextPrimitive( bool left ) {
-  auto offsetVector = polarOffsetRad( qDegreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
+  auto offsetVector = polarOffsetRad( degreesToRadians( angleLineDegrees ) + M_PI, left ? implementWidth : -implementWidth );
 
   return std::make_shared<PathPrimitiveSegment> (
                  Segment_2( segment.source() - offsetVector, segment.target() - offsetVector ),
                  implementWidth, anyDirection, passNumber + ( left ? 1 : -1 ) );
+}
+
+void PathPrimitiveSegment::print() {
+  std::cout << "PathPrimitiveSegment: " << segment << std::endl;
 }
 
 double PathPrimitiveSegment::distanceToPointSquared( const Point_2 point ) {

@@ -20,15 +20,7 @@
 
 #include <QObject>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-
-#include <Qt3DRender/QGeometry>
-#include <Qt3DRender/QGeometryRenderer>
-
-#include <Qt3DExtras/QCylinderMesh>
-#include <Qt3DExtras/QCuboidMesh>
-#include <Qt3DExtras/QSphereMesh>
+#include "3d/qt3dForwards.h"
 
 #include "block/BlockBase.h"
 
@@ -108,24 +100,7 @@ class TractorModelFactory : public BlockFactory {
       return QStringLiteral( "Graphical" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new TractorModel( rootEntity, usePBR );
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
-
-      b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-
-      b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( const double ) ) ) );
-      b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( const double ) ) ) );
-
-      b->setBrush( modelColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     Qt3DCore::QEntity* rootEntity = nullptr;

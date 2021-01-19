@@ -19,41 +19,29 @@
 #pragma once
 
 #include <QObject>
-#include <QDockWidget>
-#include <QMenu>
 
-#include "gui/MyMainWindow.h"
-#include "gui/dock/XteDock.h"
+class MyMainWindow;
+class XteDock;
 
 #include "block/BlockBase.h"
 
 #include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
 
+
 class XteDockBlock : public BlockBase {
     Q_OBJECT
 
   public:
     explicit XteDockBlock( const QString& uniqueName,
-                           MyMainWindow* mainWindow )
-      : BlockBase() {
-      widget = new XteDock( mainWindow );
-      dock = new KDDockWidgets::DockWidget( uniqueName );
-    }
+                           MyMainWindow* mainWindow );
 
     ~XteDockBlock();
 
-
   public Q_SLOTS:
-    void setName( const QString& name ) override {
-      dock->setTitle( name );
-      dock->toggleAction()->setText( QStringLiteral( "XTE: " ) + name );
-      widget->setName( name );
-    }
+    void setName( const QString& name ) override;
 
-    void setXte( const double xte ) {
-      widget->setXte( xte );
-    }
+    void setXte( const double xte );
 
   public:
     KDDockWidgets::DockWidget* dock = nullptr;
@@ -84,33 +72,7 @@ class XteDockBlockFactory : public BlockFactory {
       return QStringLiteral( "XTE Dock" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      if( id != 0 && !isIdUnique( scene, id ) ) {
-        id = QNEBlock::getNextUserId();
-      }
-
-      auto* object = new XteDockBlock( getNameOfFactory() + QString::number( id ),
-                                       mainWindow );
-      auto* b = createBaseBlock( scene, object, id );
-
-      object->dock->setTitle( getNameOfFactory() );
-      object->dock->setWidget( object->widget );
-
-      menu->addAction( object->dock->toggleAction() );
-
-      if( firstDock == nullptr ) {
-        mainWindow->addDockWidget( object->dock, location );
-        firstDock = object->dock;
-      } else {
-        mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnRight, firstDock );
-      }
-
-      b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( const double ) ) ) );
-
-      b->setBrush( dockColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     MyMainWindow* mainWindow = nullptr;

@@ -22,6 +22,8 @@
 
 #include "GeoJsonHelper.h"
 
+
+#include <QFile>
 #include <QByteArray>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -290,7 +292,6 @@ QJsonObject GeoJsonHelper::save() {
     }
 
     feature[QStringLiteral( "geometry" )] = geometry;
-
     features.push_back( feature );
   }
 
@@ -349,8 +350,6 @@ void GeoJsonHelper::print() {
 
           cout << endl;
         }
-
-
       }
       break;
 

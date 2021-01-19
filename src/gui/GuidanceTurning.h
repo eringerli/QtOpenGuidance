@@ -19,7 +19,6 @@
 #pragma once
 
 #include <QGroupBox>
-#include <QHBoxLayout>
 
 #include <QButtonGroup>
 

@@ -18,8 +18,26 @@
 
 #include "SectionControl.h"
 
-#include <QtCore/QDebug>
-#include <QtMath>
+#include "qneblock.h"
+#include "qneport.h"
+
+#include <QMenu>
+#include <QAction>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QQuaternion>
+#include <QVector3D>
+
+#include "gui/MyMainWindow.h"
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+
+#include <Qt3DRender/QLayer>
+#include <Qt3DRender/QFrameGraphNode>
+#include <Qt3DRender/QLayerFilter>
+#include <Qt3DRender/QCamera>
 
 #include "3d/texturerendertarget.h"
 #include <Qt3DRender/QCameraSelector>
@@ -29,14 +47,18 @@
 #include <Qt3DRender/QRenderCaptureReply>
 #include <Qt3DRender/QRenderSurfaceSelector>
 #include <Qt3DRender/QRenderTargetSelector>
+#include <Qt3DRender/QRenderTarget>
 #include <Qt3DRender/QViewport>
+
+#include "block/sectionControl/Implement.h"
+#include "block/sectionControl/ImplementSection.h"
+
+#include "3d/texturerendertarget.h"
 
 #include "helpers/eigenHelper.h"
 
-SectionControl::SectionControl( const QString& uniqueName,
-                                MyMainWindow* mainWindow,
-                                Qt3DCore::QEntity* rootEntity,
-                                Qt3DRender::QFrameGraphNode* frameGraphParent )
+// order is important! Crashes if a parent entity is removed first!
+SectionControl::SectionControl( const QString& uniqueName, MyMainWindow* mainWindow, Qt3DCore::QEntity* rootEntity, Qt3DRender::QFrameGraphNode* frameGraphParent )
   : frameGraphParent( frameGraphParent ) {
 
   auto* layout = new QVBoxLayout;
@@ -117,7 +139,6 @@ SectionControl::SectionControl( const QString& uniqueName,
   requestRenderCaptureTurnOnTexture();
 }
 
-// order is important! Crashes if a parent entity is removed first!
 SectionControl::~SectionControl() {
   frameGraph->deleteLater();
   replyTurnOnTexture->deleteLater();
@@ -177,7 +198,7 @@ void SectionControl::setImplement( const QPointer<Implement>& implement ) {
     }
 
     double totalWidth = sectionOffsets.front() - sectionOffsets.back();
-//    double totalSpace = 0;
+    //    double totalSpace = 0;
 
 
     qDebug() << "SectionControl::setImplement" << sectionOffsets.front() << sectionOffsets.back() << totalWidthOfSections << totalWidth << totalWidthOfSections / totalWidth << totalWidth / totalWidthOfSections;
@@ -205,14 +226,14 @@ void SectionControl::setImplement( const QPointer<Implement>& implement ) {
 
 void SectionControl::setSections() {
   if( implement != nullptr ) {
-//    size_t numSections = implement->sections.size();
+    //    size_t numSections = implement->sections.size();
 
-//    const auto& section0 = implement->sections.at( 0 );
-//    const auto& state0 = section0->state();
-//    const bool globalForceOff = state0.testFlag( ImplementSection::State::ForceOff );
-//    const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn );
+    //    const auto& section0 = implement->sections.at( 0 );
+    //    const auto& state0 = section0->state();
+    //    const bool globalForceOff = state0.testFlag( ImplementSection::State::ForceOff );
+    //    const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn );
 
-//    for( size_t i = 1; i < numSections; ++i ) {
+    //    for( size_t i = 1; i < numSections; ++i ) {
 //      size_t sectionIndex = i - 1;
 //      const auto& section = implement->sections.at( i );
 //      const auto& state = section->state();
@@ -345,4 +366,30 @@ void SectionControl::requestRenderCaptureTurnOffTexture() {
 
   replyTurnOffTexture = renderCaptureTurnOffTexture->requestCapture();
   QObject::connect( replyTurnOffTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOffTexture );
+}
+
+QNEBlock* SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
+  if( id != 0 && !isIdUnique( scene, id ) ) {
+    id = QNEBlock::getNextUserId();
+  }
+
+  auto* object = new SectionControl( getNameOfFactory() + QString::number( id ),
+                                     mainWindow,
+                                     rootEntity,
+                                     frameGraphParent );
+  auto* b = createBaseBlock( scene, object, id );
+
+  object->dock->setTitle( getNameOfFactory() );
+  object->dock->setWidget( object->labelTurnOnTexture );
+
+  menu->addAction( object->dock->toggleAction() );
+
+  mainWindow->addDockWidget( object->dock, location );
+
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+  b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
+
+  return b;
 }

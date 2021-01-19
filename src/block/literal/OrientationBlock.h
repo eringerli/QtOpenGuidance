@@ -18,118 +18,33 @@
 
 #pragma once
 
-#include "gui/model/OrientationBlockModel.h"
-
-#include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
-
 #include <QObject>
 
 #include "block/BlockBase.h"
 
-// algorythm from here: http://tbirdal.blogspot.com/2019/10/i-allocate-this-post-to-providing.html
+#include "helpers/eigenHelper.h"
+#include "kinematic/PoseOptions.h"
 
+class OrientationBlockModel;
+
+// algorythm from here: http://tbirdal.blogspot.com/2019/10/i-allocate-this-post-to-providing.html
 class OrientationBlock : public BlockBase {
     Q_OBJECT
 
   public:
     explicit OrientationBlock() {}
 
-    void emitConfigSignals() override {
-      Q_EMIT orientationChanged( orientation );
-    }
+    void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override {
-      QJsonObject valuesObject;
-      valuesObject[QStringLiteral( "X" )] = orientation.x();
-      valuesObject[QStringLiteral( "Y" )] = orientation.y();
-      valuesObject[QStringLiteral( "Z" )] = orientation.z();
-      valuesObject[QStringLiteral( "W" )] = orientation.w();
-      json[QStringLiteral( "values" )] = valuesObject;
-    }
-
-    void fromJSON( QJsonObject& json ) override {
-      if( json[QStringLiteral( "values" )].isObject() ) {
-        QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-        if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
-          orientation.x() = valuesObject[QStringLiteral( "X" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
-          orientation.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
-          orientation.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
-        }
-
-        if( valuesObject[QStringLiteral( "W" )].isDouble() ) {
-          orientation.w() = valuesObject[QStringLiteral( "W" )].toDouble();
-        }
-      }
-    }
+    void toJSON( QJsonObject& json ) override;
+    void fromJSON( QJsonObject& json ) override;
 
   public Q_SLOTS:
-    void setAveragerEnabled( const bool enabled ) {
-      averagerEnabledOld = averagerEnabled;
-      averagerEnabled = enabled;
+    void setAveragerEnabled( const bool enabled );
 
-      if( averagerEnabledOld != averagerEnabled ) {
-        if( averagerEnabled == true ) {
-          A.setZero();
-          numMeasurements = 0;
-          positionStart = position;
-        } else {
-          A = ( 1.0 / numMeasurements ) * A;
+    void setOrientation( const Eigen::Quaterniond& orientation );
 
-          Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig( A );
-
-          Eigen::Vector4d qavg = eig.eigenvectors().col( 3 );
-
-          orientation = Eigen::Quaterniond( qavg );
-
-          if( position != positionStart ) {
-            auto taitBryan = quaternionToTaitBryan( orientation );
-            double heading = std::atan2( position.y() - positionStart.y(),
-                                         position.x() - positionStart.x() );
-            orientation = taitBryanToQuaternion( heading, getPitch( taitBryan ), getRoll( taitBryan ) );
-          }
-
-          Q_EMIT orientationChanged( orientation );
-        }
-      }
-    }
-
-    void setOrientation( const Eigen::Quaterniond& orientation ) {
-      if( averagerEnabled ) {
-        ++numMeasurements;
-        Eigen::Vector4d q( orientation.x(), orientation.y(), orientation.z(), orientation.w() );
-
-        if( q[0] < 0 ) {
-          q = -q;
-        }
-
-        A = q * q.adjoint() + A;
-      }
-    }
-
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-      if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
-        this->position = position;
-
-        if( averagerEnabled ) {
-          ++numMeasurements;
-          Eigen::Vector4d q( orientation.x(), orientation.y(), orientation.z(), orientation.w() );
-
-          if( q[0] < 0 ) {
-            q = -q;
-          }
-
-          A = q * q.adjoint() + A;
-        }
-      }
-    }
+    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
 
   Q_SIGNALS:
     void orientationChanged( const Eigen::Quaterniond& );
@@ -163,22 +78,7 @@ class OrientationBlockFactory : public BlockFactory {
       return QStringLiteral( "Literals" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new OrientationBlock();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( bool ) ) ) );
-      b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-      b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( Eigen::Quaterniond ) ) ) );
-
-      b->setBrush( valueColor );
-
-      model->resetModel();
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
   private:
     OrientationBlockModel* model = nullptr;

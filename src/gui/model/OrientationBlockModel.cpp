@@ -16,10 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "block/literal/OrientationBlock.h"
-
 #include "OrientationBlockModel.h"
 
+#include "block/literal/OrientationBlock.h"
+
+#include <QComboBox>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
@@ -27,7 +28,6 @@
 
 #include "helpers/eigenHelper.h"
 #include "helpers/anglesHelper.h"
-#include <QtMath>
 
 OrientationBlockModel::OrientationBlockModel( QGraphicsScene* scene )
   : scene( scene ) {

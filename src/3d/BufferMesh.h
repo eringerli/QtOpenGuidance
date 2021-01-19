@@ -25,11 +25,9 @@
 
 #include <QVector>
 #include <QObject>
-#include <QNode>
 #include <QGeometryRenderer>
 
-class BufferMeshGeometry;
-class QString;
+#include "3d/qt3dForwards.h"
 
 class BufferMesh : public Qt3DRender::QGeometryRenderer {
     Q_OBJECT

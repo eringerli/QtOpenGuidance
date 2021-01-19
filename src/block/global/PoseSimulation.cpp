@@ -18,11 +18,30 @@
 
 #include "PoseSimulation.h"
 
+#include "qneblock.h"
+#include "qneport.h"
+
 #include <QEvent>
 #include <QTime>
 #include <QtMath>
 
+#include <QFile>
 #include <QFileDialog>
+#include <QJsonObject>
+
+#include <QEvent>
+#include <QBasicTimer>
+#include <QElapsedTimer>
+
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+#include <Qt3DExtras/QSphereMesh>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QExtrudedTextMesh>
+
+#include "3d/BufferMesh.h"
+#include "3d/BufferMeshWithNormal.h"
 
 #include <QDebug>
 
@@ -57,11 +76,6 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEnti
   state.setZero();
 
   setSimulation( false );
-
-
-
-
-
 
   noiseGenerator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
 
@@ -152,7 +166,7 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     {
       auto& V = m_velocity;
-      auto deltaF = qDegreesToRadians( steerAngle );
+      auto deltaF = degreesToRadians( steerAngle );
 
       {
         constexpr double MinDeltaT = 0.001;
@@ -671,6 +685,29 @@ void PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset ) {
   auto offsetTmp = offset;
   offsetTmp.x() -= b;
   antennaKinematic.setOffset( -offsetTmp );
+}
+
+QNEBlock* PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new PoseSimulation( mainWindow, rootEntity, geographicConvertionWrapper );
+  auto* b = createBaseBlock( scene, obj, id, true );
+
+  b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d& ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
+
+  b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( const bool ) ) ) );
+  b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( const double ) ) ) );
+
+  return b;
 }
 
 #include "moc_PoseSimulation.cpp"

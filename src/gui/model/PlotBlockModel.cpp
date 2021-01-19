@@ -18,12 +18,13 @@
 
 #include "PlotBlockModel.h"
 
+#include "block/dock/plot/PlotDockBlockBase.h"
+
+#include <QComboBox>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
 #include "qneblock.h"
-
-#include "block/dock/plot/PlotDockBlockBase.h"
 
 PlotBlockModel::PlotBlockModel( QGraphicsScene* scene )
   : scene( scene ) {
