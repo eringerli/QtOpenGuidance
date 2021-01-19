@@ -51,7 +51,7 @@ else()
   message(STATUS "Not using pre-compiled headers")
 endif()
 
-set(CGAL_DIR lib/CGAL-5.1.1/)
+set(CGAL_DIR lib/CGAL-5.2/)
 set(Eigen3_DIR lib/eigen)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Concurrent Widgets 3DCore 3DExtras 3DRender 3DInput PrintSupport)
