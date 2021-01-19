@@ -24,10 +24,6 @@
 
 #include <QFileDialog>
 
-#ifdef SERIALPORT_ENABLED
-#include <QSerialPortInfo>
-#include "block/SerialPort.h"
-#endif
 
 #include <QDebug>
 
@@ -107,6 +103,11 @@
 #include "block/converter/CommunicationPgn7FFE.h"
 #include "block/stream/FileStream.h"
 #include "block/stream/UdpSocket.h"
+
+#ifdef SERIALPORT_ENABLED
+#include <QSerialPortInfo>
+#include "block/stream/SerialPort.h"
+#endif
 
 #include "block/converter/ValueTransmissionBase64Data.h"
 #include "block/converter/ValueTransmissionNumber.h"

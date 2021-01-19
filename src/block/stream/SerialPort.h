@@ -19,65 +19,34 @@
 #pragma once
 
 #include <QObject>
-#include <QByteArray>
-#include <QSerialPort>
 
 #include "block/BlockBase.h"
+
+class QSerialPort;
 
 class SerialPort : public BlockBase {
     Q_OBJECT
 
   public:
-    explicit SerialPort()
-      : BlockBase() {
-      serialPort = new QSerialPort( this );
-      connect( serialPort, &QIODevice::readyRead,
-               this, &SerialPort::processPendingData );
-    }
-
-    ~SerialPort() {
-      if( serialPort ) {
-        serialPort->deleteLater();
-      }
-    }
-
-    void emitConfigSignals() override {
-    }
+    explicit SerialPort();
+    ~SerialPort();
 
   signals:
     void  dataReceived( const QByteArray& );
 
   public slots:
-    void setPort( const QString& port ) {
-      this->port = port;
-      serialPort->close();
-      serialPort->setPortName( port );
-      serialPort->open( QIODevice::ReadWrite );
-    }
+    void setPort( const QString& port );
 
-    void setBaudrate( double baudrate ) {
-      this->baudrate = baudrate;
-      serialPort->setBaudRate( qint32( baudrate ) );
-    }
+    void setBaudrate( double baudrate );
 
-    void sendData( const QByteArray& data ) {
-      serialPort->write( data );
-    }
+    void sendData( const QByteArray& data );
 
   protected slots:
-    void processPendingData() {
-      QByteArray datagram;
-
-      while( serialPort->bytesAvailable() ) {
-        datagram.resize( int( serialPort->bytesAvailable() ) );
-        serialPort->read( datagram.data(), datagram.size() );
-        emit dataReceived( datagram );
-      }
-    }
+    void processPendingData();
 
   public:
     QString port;
-    float baudrate = 0;
+    double baudrate = 0;
 
   private:
     QSerialPort* serialPort = nullptr;
@@ -98,18 +67,5 @@ class SerialPortFactory : public BlockFactory {
       return QStringLiteral( "Streams" );
     }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override {
-      auto* obj = new SerialPort();
-      auto* b = createBaseBlock( scene, obj, id );
-
-      b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( QString ) ) ) );
-      b->addInputPort( QStringLiteral( "Baudrate" ), QLatin1String( SLOT( setBaudrate( double ) ) ) );
-      b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
-
-      b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
-
-      b->setBrush( inputOutputColor );
-
-      return b;
-    }
+    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

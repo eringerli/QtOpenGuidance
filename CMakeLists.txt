@@ -55,6 +55,7 @@ set(CGAL_DIR lib/CGAL-5.2/)
 set(Eigen3_DIR lib/eigen)
 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Concurrent Widgets 3DCore 3DExtras 3DRender 3DInput PrintSupport)
+find_package(Qt5 COMPONENTS SerialPort)
 #find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(KDDockWidgets REQUIRED)
 find_package(CGAL REQUIRED COMPONENTS Core)
@@ -438,6 +439,16 @@ set(SOURCES_stream
   )
 addToUnifyGroupAndSources("${SOURCES_stream}" "stream")
 
+if(Qt5SerialPort_DIR)
+  set(SOURCES_serialport
+    src/block/stream/SerialPort.cpp
+    src/block/stream/SerialPort.h
+    )
+  addToUnifyGroupAndSources("${SOURCES_serialport}" "stream")
+
+  set(QTSERIAL_LIBRARY "Qt5::SerialPort")
+endif()
+
 set(SOURCES_helpers
   src/helpers/anglesHelper.h
   src/helpers/eigenHelper.h
@@ -504,6 +515,10 @@ if(HAVE_SPNAV)
   target_compile_definitions(QtOpenGuidance PRIVATE SPNAV_ENABLED)
 endif()
 
+if(Qt5SerialPort_DIR)
+  target_compile_definitions(QtOpenGuidance PRIVATE SERIALPORT_ENABLED)
+endif()
+
 target_include_directories(QtOpenGuidance PRIVATE src/)
 target_include_directories(QtOpenGuidance PRIVATE src/qnodeseditor/)
 target_include_directories(QtOpenGuidance PRIVATE lib/QCustomPlot)
@@ -521,6 +536,7 @@ target_link_libraries(QtOpenGuidance
   Qt5::3DExtras
   Qt5::3DRender
   Qt5::3DInput
+  ${QTSERIAL_LIBRARY}
 #  Eigen3::Eigen
   KDAB::kddockwidgets
   GeographicLib::GeographicLib_STATIC
