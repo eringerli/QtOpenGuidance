@@ -15,10 +15,10 @@ backup=()
 options=()
 install=
 source=('QtOpenGuidance-git::git+https://github.com/eringerli/QtOpenGuidance'
-        'https://github.com/CGAL/cgal/releases/download/v5.1.1/CGAL-5.1.1.tar.xz')
+        'https://github.com/CGAL/cgal/releases/download/v5.2/CGAL-5.2.tar.xz')
 noextract=()
 sha256sums=('SKIP'
-            '162250d37ab85017041ad190afa1ef5146f8b08ed908d890a64d8dbaa5910ca0')
+            '744c86edb6e020ab0238f95ffeb9cf8363d98cde17ebb897d3ea93dac4145923')
 
 # Please refer to the 'USING VCS SOURCES' section of the PKGBUILD man page for
 # a description of each element in the source array.
@@ -37,8 +37,8 @@ prepare() {
   git submodule update
 
   cd lib/
-  if [ ! -L "CGAL-5.1.1" ]; then
-    ln -s "$srcdir/CGAL-5.1.1"
+  if [ ! -L "CGAL-5.2" ]; then
+    ln -s "$srcdir/CGAL-5.2"
   fi
 }
 
@@ -46,7 +46,10 @@ build() {
     cmake -B build -S "QtOpenGuidance-git" \
         -DCMAKE_BUILD_TYPE='None' \
         -DCMAKE_INSTALL_PREFIX='/usr' \
-        -Wno-dev
+        -Wno-dev \
+        -DUSE_UNITY=true \
+        -DUSE_CCACHE=true \
+        -DUSE_PCH=false
     make -C build
 }
 

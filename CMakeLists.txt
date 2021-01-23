@@ -22,7 +22,7 @@ set(USE_CCACHE true
 set(USE_PCH false
   CACHE BOOL "use pre-compiled headers; speeds up incremental builds for the cost of much disk space")
 
-set(USE_UNITY_BUILD false
+set(USE_UNITY false
   CACHE BOOL "use unity/jumbo build; speeds up one-time compilation by combining multiple targets into groups")
 
 if(USE_CCACHE)
@@ -37,7 +37,7 @@ else()
   message(STATUS "Not using pre-compiled headers")
 endif()
 
-if(USE_UNITY_BUILD)
+if(USE_UNITY)
   message(STATUS "Using Unity/Jumbo build")
   set(CMAKE_UNITY_BUILD true)
 else()
