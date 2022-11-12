@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.16)
 
 project(QtOpenGuidance VERSION 0.9.0 LANGUAGES CXX C)
 
@@ -18,6 +18,9 @@ include(cmake/modules/UNIFY.cmake)
 set(USE_CCACHE true
   CACHE BOOL "use ccache for speeding up repeated builds")
 
+set(USE_DISTCC true
+  CACHE BOOL "use distcc for speeding up builds")
+
 set(USE_PCH false
   CACHE BOOL "use pre-compiled headers; speeds up incremental builds for the cost of much disk space")
 
@@ -27,14 +30,32 @@ set(USE_UNITY false
 if(USE_CCACHE)
   find_program(CCACHE_PROGRAM ccache)
   if(CCACHE_PROGRAM)
-      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-      message(STATUS "Using ccache")
-    else()
-      message(STATUS "Not using pre-compiled headers - enabled but not found")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    message(STATUS "Using ccache")
+  else()
+    set(CCACHE_PROGRAM "")
+    message(STATUS "Not using ccache - enabled but not found")
   endif()
 else()
-  message(STATUS "Not using pre-compiled headers")
+  message(STATUS "Not using ccache")
+  set(CCACHE_PROGRAM "")
 endif()
+
+if(USE_DISTCC)
+  find_program(DISTCC_PROGRAM distcc)
+  if(DISTCC_PROGRAM)
+    #      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${DISTCC_PROGRAM}")
+    message(STATUS "Using distcc")
+  else()
+    set(DISTCC_PROGRAM "")
+    message(STATUS "Not using distcc - enabled but not found")
+  endif()
+else()
+  message(STATUS "Not using distcc")
+  set(DISTCC_PROGRAM "")
+endif()
+
+set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM} ${DISTCC_PROGRAM}")
 
 if(USE_UNITY)
   message(STATUS "Using Unity/Jumbo build")
