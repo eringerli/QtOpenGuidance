@@ -103,8 +103,8 @@ git clone --recursive https://github.com/eringerli/QtOpenGuidance
 
 # get CGAL
 cd QtOpenGuidance/lib/
-wget https://github.com/CGAL/cgal/releases/download/v5.2/CGAL-5.2.tar.xz
-tar xf CGAL-5.2.tar.xz
+wget https://github.com/CGAL/cgal/releases/download/v5.5.1/CGAL-5.5.1.tar.xz
+tar xf CGAL-5.5.1.tar.xz
 
 # build QtOpenGuidance
 cd /c/qtopenguidance/

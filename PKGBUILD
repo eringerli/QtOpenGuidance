@@ -15,10 +15,10 @@ backup=()
 options=()
 install=
 source=('QtOpenGuidance-git::git+https://github.com/eringerli/QtOpenGuidance'
-        'https://github.com/CGAL/cgal/releases/download/v5.2/CGAL-5.2.tar.xz')
+        'https://github.com/CGAL/cgal/releases/download/v5.5.1/CGAL-5.5.1.tar.xz')
 noextract=()
 sha256sums=('SKIP'
-            '744c86edb6e020ab0238f95ffeb9cf8363d98cde17ebb897d3ea93dac4145923')
+            '091630def028facdcaf00eb5b68ad79eddac1b855cca6e87eef18a031566edfc')
 
 # Please refer to the 'USING VCS SOURCES' section of the PKGBUILD man page for
 # a description of each element in the source array.
@@ -37,8 +37,8 @@ prepare() {
   git submodule update
 
   cd lib/
-  if [ ! -L "CGAL-5.2" ]; then
-    ln -s "$srcdir/CGAL-5.2"
+  if [ ! -L "CGAL-5.5.1" ]; then
+    ln -s "$srcdir/CGAL-5.5.1"
   fi
 }
 
