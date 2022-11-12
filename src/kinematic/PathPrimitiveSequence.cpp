@@ -21,71 +21,66 @@
 #include "PathPrimitiveRay.h"
 #include "PathPrimitiveSegment.h"
 
-#include <QDebug>
+#include <map>
 
-void PathPrimitiveSequence::createBisectors( std::back_insert_iterator<std::vector<Line_2>> bisectorsOutputIterator, const std::vector<std::shared_ptr<PathPrimitive>>& primitives ) {
-  for( size_t i = 0, end = primitives.size() - 1; i < end; ++i ) {
-    *bisectorsOutputIterator++ = CGAL::bisector(
-                                         sequence.at( i )->supportingLine( Point_2() ).opposite(),
-                                         sequence.at( i + 1 )->supportingLine( Point_2() ) );
-  }
-}
+#include <chrono>
 
-PathPrimitiveSequence::PathPrimitiveSequence( const std::vector<Point_2>& polyline, const double implementWidth, const bool anyDirection, const int32_t passNumber )
-  : PathPrimitive( anyDirection, implementWidth, passNumber ) {
+PathPrimitiveSequence::PathPrimitiveSequence( const std::vector< Point_2 >& polyline,
+                                              const double                  implementWidth,
+                                              const bool                    anyDirection,
+                                              const int32_t                 passNumber )
+    : PathPrimitive( anyDirection, implementWidth, passNumber ) {
   updateWithPolyline( polyline );
 }
 
-PathPrimitiveSequence::PathPrimitiveSequence( const std::vector<std::shared_ptr<PathPrimitive> >& sequence, const std::vector<Line_2>& bisectors, const double implementWidth, const bool anyDirection, const int32_t passNumber )
-  : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {}
+PathPrimitiveSequence::PathPrimitiveSequence( const std::vector< std::shared_ptr< PathPrimitive > >& sequence,
+                                              const std::vector< Line_2 >&                           bisectors,
+                                              const double                                           implementWidth,
+                                              const bool                                             anyDirection,
+                                              const int32_t                                          passNumber )
+    : PathPrimitive( anyDirection, implementWidth, passNumber ), sequence( sequence ), bisectors( bisectors ) {
+  orderBisectors( this->bisectors, this->sequence );
+}
 
-void PathPrimitiveSequence::updateWithPolyline( const std::vector<Point_2>& polyline ) {
+void
+PathPrimitiveSequence::updateWithPolyline( const std::vector< Point_2 >& polyline ) {
   this->polyline.clear();
   std::copy( polyline.cbegin(), polyline.cend(), std::back_inserter( this->polyline ) );
 
   supportLine = Line_2( polyline.front(), polyline.back() );
 
-
   if( polyline.size() == 2 ) {
     sequence.clear();
-    sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                std::make_shared<PathPrimitiveLine> (
-                                        Line_2( polyline.at( 0 ), polyline.at( 1 ) ),
-                                        implementWidth, anyDirection, passNumber ) ) );
+    sequence.push_back( std::static_pointer_cast< PathPrimitive >(
+      std::make_shared< PathPrimitiveLine >( Line_2( polyline.at( 0 ), polyline.at( 1 ) ), implementWidth, anyDirection, passNumber ) ) );
     return;
   }
 
   if( polyline.size() == 3 ) {
     sequence.clear();
-    sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                std::make_shared<PathPrimitiveRay>(
-                                        Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
-                                        true, implementWidth, anyDirection, passNumber ) ) );
-    sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                std::make_shared<PathPrimitiveRay> (
-                                        Ray_2( polyline.at( 1 ), polyline.at( 2 ) ),
-                                        false, implementWidth, anyDirection, passNumber ) ) );
-  } else {
-    if( polyline.size() > 3 ) {
-      sequence.clear();
+    sequence.push_back( std::static_pointer_cast< PathPrimitive >( std::make_shared< PathPrimitiveRay >(
+      Ray_2( polyline.at( 1 ), polyline.at( 0 ) ), true, implementWidth, anyDirection, passNumber ) ) );
+    sequence.push_back( std::static_pointer_cast< PathPrimitive >( std::make_shared< PathPrimitiveRay >(
+      Ray_2( polyline.at( 1 ), polyline.at( 2 ) ), false, implementWidth, anyDirection, passNumber ) ) );
+  }
 
-      sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                  std::make_shared<PathPrimitiveRay>(
-                                          Ray_2( polyline.at( 1 ), polyline.at( 0 ) ),
-                                          true, implementWidth, anyDirection, passNumber ) ) );
+  if( polyline.size() > 3 ) {
+    sequence.clear();
 
-      for( int i = 1, end = polyline.size() - 2; i < end; ++i ) {
-        sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                    std::make_shared<PathPrimitiveSegment> (
-                                            Segment_2( polyline.at( i ), polyline.at( i + 1 ) ),
-                                            implementWidth, anyDirection, passNumber ) ) );
-      }
+    sequence.push_back( std::static_pointer_cast< PathPrimitive >( std::make_shared< PathPrimitiveRay >(
+      Ray_2( polyline.at( 1 ), polyline.at( 0 ) ), true, implementWidth, anyDirection, passNumber ) ) );
 
-      sequence.push_back( std::static_pointer_cast<PathPrimitive>(
-                                  std::make_shared<PathPrimitiveRay> (
-                                          Ray_2( polyline.at( polyline.size() - 2 ), polyline.at( polyline.size() - 1 ) ),
-                                          false, implementWidth, anyDirection, passNumber ) ) );
+    for( int i = 1, end = polyline.size() - 2; i < end; ++i ) {
+      sequence.push_back( std::static_pointer_cast< PathPrimitive >( std::make_shared< PathPrimitiveSegment >(
+        Segment_2( polyline.at( i ), polyline.at( i + 1 ) ), implementWidth, anyDirection, passNumber ) ) );
     }
+
+    sequence.push_back( std::static_pointer_cast< PathPrimitive >(
+      std::make_shared< PathPrimitiveRay >( Ray_2( polyline.at( polyline.size() - 2 ), polyline.at( polyline.size() - 1 ) ),
+                                            false,
+                                            implementWidth,
+                                            anyDirection,
+                                            passNumber ) ) );
   }
 
   bisectors.clear();
@@ -94,9 +89,10 @@ void PathPrimitiveSequence::updateWithPolyline( const std::vector<Point_2>& poly
   orderBisectors( bisectors, sequence );
 }
 
-std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createReverse() {
-  std::vector<std::shared_ptr<PathPrimitive>> sequenceNew;
-  std::vector<Line_2> bisectorsNew;
+std::shared_ptr< PathPrimitive >
+PathPrimitiveSequence::createReverse() {
+  std::vector< std::shared_ptr< PathPrimitive > > sequenceNew;
+  std::vector< Line_2 >                           bisectorsNew;
 
   for( const auto& it : sequence ) {
     sequenceNew.push_back( it->createReverse() );
@@ -106,32 +102,39 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createReverse() {
 
   orderBisectors( bisectorsNew, sequenceNew );
 
-  return std::make_shared<PathPrimitiveSequence>( sequenceNew, bisectorsNew, implementWidth, anyDirection, passNumber );
+  return std::make_shared< PathPrimitiveSequence >( sequenceNew, bisectorsNew, implementWidth, anyDirection, passNumber );
 }
 
-std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool left ) {
+std::shared_ptr< PathPrimitive >
+PathPrimitiveSequence::createNextPrimitive( bool left ) {
   int passNumberNew = passNumber + ( left ? 1 : -1 );
 
   if( sequence.size() == 1 ) {
-    return std::make_shared<PathPrimitiveLine>( sequence.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
+    return std::make_shared< PathPrimitiveLine >(
+      sequence.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
   }
 
-  // This removes all segments in the list which would get artifacts if stretched/squashed.
+  // This removes all segments in the list which would get artifacts if
+  // stretched/squashed.
   //
-  // First, we move all the primitives one implement further (by calling createNextPrimitive() on them),
-  // then we construct a straight skeleton (not a complete one, just bisectors between adjacent primitives).
-  // Then we remove all segments which the bisectors on each side intersect within the implement width and
-  // create/adjust the bisectors. Then we intersect the primitives with this skeleton to get the new points.
+  // First, we move all the primitives one implement further (by calling
+  // createNextPrimitive() on them), then we construct a straight skeleton (not
+  // a complete one, just bisectors between adjacent primitives). Then we remove
+  // all segments which the bisectors on each side intersect within the
+  // implement width and create/adjust the bisectors. Then we intersect the
+  // primitives with this skeleton to get the new points.
   //
-  // Some magic happens to keep the data valid and the indices in range; the rays are not removed in any case
-  // and the algorythm needs a ray on either side of the primitives-vector. Also the bisectors get saved and
-  // oriented to accelerate the lookup of the nearest primitive.
+  // Some magic happens to keep the data valid and the indices in range; the
+  // rays are not removed in any case and the algorythm needs a ray on either
+  // side of the primitives-vector. Also the bisectors get saved and oriented to
+  // accelerate the lookup of the nearest primitive.
   //
   // This gets valid results for reasonable inputs.
 
-  std::vector<std::shared_ptr<PathPrimitive>> primitives;
-  std::vector<Line_2> bisectorsNew;
-//  std::copy( bisectors.cbegin(), bisectors.cend(), std::back_inserter( bisectorsNew ) );
+  std::vector< std::shared_ptr< PathPrimitive > > primitives;
+  std::vector< Line_2 >                           bisectorsNew;
+  //  std::copy( bisectors.cbegin(), bisectors.cend(), std::back_inserter(
+  //  bisectorsNew ) );
 
   for( const auto& it : sequence ) {
     primitives.push_back( it->createNextPrimitive( left ) );
@@ -146,16 +149,15 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
       auto result = CGAL::intersection( bisectorsNew.at( i ), bisectorsNew.at( i + 1 ) );
 
       if( result ) {
-        if( const Point_2* point = boost::get<Point_2>( &*result ) ) {
+        if( const Point_2* point = boost::get< Point_2 >( &*result ) ) {
           if( left != ( primitives.at( i + 1 )->leftOf( *point ) ) ) {
             double distanceSquared = CGAL::squared_distance( primitives.at( i + 1 )->supportingLine( Point_2() ), *point );
 
             if( distanceSquared < implementWidthSquared ) {
               primitives.erase( primitives.cbegin() + i + 1 );
 
-              bisectorsNew.at( i ) = CGAL::bisector(
-                                             primitives.at( i )->supportingLine( Point_2() ).opposite(),
-                                             primitives.at( i + 1 )->supportingLine( Point_2() ) );
+              bisectorsNew.at( i ) = CGAL::bisector( primitives.at( i )->supportingLine( Point_2() ).opposite(),
+                                                     primitives.at( i + 1 )->supportingLine( Point_2() ) );
               bisectorsNew.erase( bisectorsNew.cbegin() + i + 1 );
 
               // start again
@@ -174,10 +176,11 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
 
   // extend the primitives
   for( size_t i = 0; i < primitives.size() - 1; ++i ) {
-    auto result2 = CGAL::intersection( primitives.at( i )->supportingLine( Point_2() ), primitives.at( i + 1 )->supportingLine( Point_2() ) );
+    auto result2 =
+      CGAL::intersection( primitives.at( i )->supportingLine( Point_2() ), primitives.at( i + 1 )->supportingLine( Point_2() ) );
 
     if( result2 ) {
-      if( const Point_2* point2 = boost::get<Point_2>( &*result2 ) ) {
+      if( const Point_2* point2 = boost::get< Point_2 >( &*result2 ) ) {
         if( primitives.at( i )->getType() == PathPrimitive::Type::Ray ) {
           primitives.at( i )->setSource( *point2 );
         } else {
@@ -192,56 +195,70 @@ std::shared_ptr<PathPrimitive> PathPrimitiveSequence::createNextPrimitive( bool 
   // create the new sequence
   {
     if( primitives.size() == 1 ) {
-      return std::make_shared<PathPrimitiveLine>( primitives.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
+      return std::make_shared< PathPrimitiveLine >(
+        primitives.front()->supportingLine( Point_2() ), implementWidth, anyDirection, passNumberNew );
     }
 
-    return std::make_shared<PathPrimitiveSequence>( primitives, bisectorsNew, implementWidth, anyDirection, passNumberNew );
+    return std::make_shared< PathPrimitiveSequence >( primitives, bisectorsNew, implementWidth, anyDirection, passNumberNew );
   }
 }
 
-void PathPrimitiveSequence::print() {
+void
+PathPrimitiveSequence::print() {
   std::cout << "PathPrimitiveSequence: " << std::endl;
 }
 
-void PathPrimitiveSequence::orderBisectors( std::vector<Line_2>& bisectorsToOrder, const std::vector<std::shared_ptr<PathPrimitive> >& primitives ) {
-  for( size_t i = 0; i < bisectorsToOrder.size(); ++i ) {
-    Point_2 pointToTest;
+const size_t
+PathPrimitiveSequence::findSequencePrimitiveIndex( Point_2 point ) const {
+  auto start = std::chrono::high_resolution_clock::now();
 
-    if( const auto* ray = primitives.at( i )->castToRay() ) {
-      pointToTest = ray->ray.point( 1 );
-    }
-
-    if( const auto* segment = primitives.at( i )->castToSegment() ) {
-      pointToTest = CGAL::midpoint( segment->segment.source(), segment->segment.target() );
-    }
-
-    if( bisectorsToOrder.at( i ).has_on_positive_side( pointToTest ) ) {
-      bisectorsToOrder.at( i ) = bisectorsToOrder.at( i ).opposite();
-    }
-  }
-}
-
-const std::shared_ptr<PathPrimitive>& PathPrimitiveSequence::findSequencePrimitive( Point_2 point ) const {
   if( sequence.size() < 2 ) {
-    return sequence.front();
+    return 0;
   }
+
+  std::multimap< double, int > foundPrimitivesIndexes;
 
   if( bisectors.front().has_on_negative_side( point ) ) {
-    return sequence.front();
+    foundPrimitivesIndexes.insert( { sequence.at( 0 )->distanceToPointSquared( point ), 0 } );
   }
 
   if( sequence.size() > 1 ) {
     for( size_t i = 1, end = sequence.size() - 1; i < end; ++i ) {
       if( bisectors.at( i - 1 ).has_on_positive_side( point ) && bisectors.at( i ).has_on_negative_side( point ) ) {
-        return sequence.at( i );
+        foundPrimitivesIndexes.insert( { sequence.at( i )->distanceToPointSquared( point ), i } );
       }
     }
   }
 
-  return sequence.back();
+  if( bisectors.back().has_on_positive_side( point ) ) {
+    foundPrimitivesIndexes.insert( { sequence.at( sequence.size() - 1 )->distanceToPointSquared( point ), sequence.size() - 1 } );
+  }
+
+  //  {
+  //    std::cout << "findSequencePrimitiveIndex "
+  //              << std::chrono::duration_cast< std::chrono::microseconds >(
+  //                   std::chrono::high_resolution_clock::now() - start )
+  //                   .count()
+  //              << "us" << std::endl;
+  //    start = std::chrono::high_resolution_clock::now();
+  //  }
+
+  //  std::cout << "foundPrimitivesIndexes: " << std::endl;
+  //  for( const auto& item : foundPrimitivesIndexes ) {
+  //    std::cout << item.first << ":" << item.second << ", ";
+  //  }
+  //  std::cout << std::endl;
+
+  return foundPrimitivesIndexes.begin()->second;
 }
 
-double PathPrimitiveSequence::distanceToPointSquared( const Point_2 point ) {
+const std::shared_ptr< PathPrimitive >&
+PathPrimitiveSequence::findSequencePrimitive( Point_2 point ) const {
+  return sequence.at( findSequencePrimitiveIndex( point ) );
+}
+
+double
+PathPrimitiveSequence::distanceToPointSquared( const Point_2 point ) {
   if( sequence.empty() ) {
     return 0;
   }
@@ -249,11 +266,13 @@ double PathPrimitiveSequence::distanceToPointSquared( const Point_2 point ) {
   return findSequencePrimitive( point )->distanceToPointSquared( point );
 }
 
-bool PathPrimitiveSequence::isOn( const Point_2 /*point*/ ) {
+bool
+PathPrimitiveSequence::isOn( const Point_2 /*point*/ ) {
   return !sequence.empty();
 }
 
-bool PathPrimitiveSequence::leftOf( const Point_2 point ) {
+bool
+PathPrimitiveSequence::leftOf( const Point_2 point ) {
   if( sequence.empty() ) {
     return false;
   }
@@ -261,7 +280,8 @@ bool PathPrimitiveSequence::leftOf( const Point_2 point ) {
   return findSequencePrimitive( point )->leftOf( point );
 }
 
-double PathPrimitiveSequence::angleAtPointDegrees( const Point_2 point ) {
+double
+PathPrimitiveSequence::angleAtPointDegrees( const Point_2 point ) {
   if( sequence.empty() ) {
     return 0;
   }
@@ -269,7 +289,8 @@ double PathPrimitiveSequence::angleAtPointDegrees( const Point_2 point ) {
   return findSequencePrimitive( point )->angleAtPointDegrees( point );
 }
 
-bool PathPrimitiveSequence::intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) {
+bool
+PathPrimitiveSequence::intersectWithLine( const Line_2& lineToIntersect, Point_2& resultingPoint ) {
   for( const auto& it : sequence ) {
     if( it->intersectWithLine( lineToIntersect, resultingPoint ) ) {
       return true;
@@ -279,7 +300,8 @@ bool PathPrimitiveSequence::intersectWithLine( const Line_2& lineToIntersect, Po
   return false;
 }
 
-Line_2 PathPrimitiveSequence::perpendicularAtPoint( const Point_2 point ) {
+Line_2
+PathPrimitiveSequence::perpendicularAtPoint( const Point_2 point ) {
   if( sequence.empty() ) {
     return {};
   }
@@ -287,7 +309,8 @@ Line_2 PathPrimitiveSequence::perpendicularAtPoint( const Point_2 point ) {
   return findSequencePrimitive( point )->perpendicularAtPoint( point );
 }
 
-Point_2 PathPrimitiveSequence::orthogonalProjection( const Point_2 point ) {
+Point_2
+PathPrimitiveSequence::orthogonalProjection( const Point_2 point ) {
   if( sequence.empty() ) {
     return {};
   }
@@ -295,7 +318,8 @@ Point_2 PathPrimitiveSequence::orthogonalProjection( const Point_2 point ) {
   return findSequencePrimitive( point )->orthogonalProjection( point );
 }
 
-Line_2& PathPrimitiveSequence::supportingLine( const Point_2 point ) {
+Line_2&
+PathPrimitiveSequence::supportingLine( const Point_2 point ) {
   if( sequence.empty() ) {
     return supportLine;
   }
@@ -303,7 +327,8 @@ Line_2& PathPrimitiveSequence::supportingLine( const Point_2 point ) {
   return findSequencePrimitive( point )->supportingLine( point );
 }
 
-void PathPrimitiveSequence::transform( const Aff_transformation_2& transformation ) {
+void
+PathPrimitiveSequence::transform( const Aff_transformation_2& transformation ) {
   for( const auto& it : sequence ) {
     it->transform( transformation );
   }

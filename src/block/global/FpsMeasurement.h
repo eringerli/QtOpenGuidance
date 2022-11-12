@@ -25,42 +25,36 @@
 #include "block/BlockBase.h"
 
 class FpsMeasurement : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity );
-    ~FpsMeasurement();
+public:
+  explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity );
+  ~FpsMeasurement();
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-  public Q_SLOTS:
-    void frameActionTriggered( const float dt );
+public Q_SLOTS:
+  void frameActionTriggered( const float dt );
 
-  Q_SIGNALS:
-    void fpsChanged( const double );
+Q_SIGNALS:
+  void fpsChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  public:
-    Qt3DLogic::QFrameAction* fpsComponent;
+public:
+  Qt3DLogic::QFrameAction* fpsComponent;
 };
 
 class FpsMeasurementFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    FpsMeasurementFactory( Qt3DCore::QEntity* rootEntity )
-      : BlockFactory(),
-        rootEntity( rootEntity ) {}
+public:
+  FpsMeasurementFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread ), rootEntity( rootEntity ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Fps Measurement" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Fps Measurement" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Graphical" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    Qt3DCore::QEntity* rootEntity = nullptr;
+private:
+  Qt3DCore::QEntity* rootEntity = nullptr;
 };

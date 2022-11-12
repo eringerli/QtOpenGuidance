@@ -24,13 +24,13 @@
 
 namespace VehicleDynamics {
   class TireLinear : public Tire {
-    public:
-      TireLinear() {}
-      TireLinear( double Cy ): Cy( Cy ) {}
-      virtual ~TireLinear() {}
+  public:
+    TireLinear() {}
+    TireLinear( double Cy ) : Cy( Cy ) {}
+    virtual ~TireLinear() {}
 
-      virtual double characteristic( double alpha, double, double );
+    virtual double characteristic( double alpha, double, double );
 
-      double Cy = 2400 * 180 / M_PI;
+    double Cy = 2400 * 180 / M_PI;
   };
 }

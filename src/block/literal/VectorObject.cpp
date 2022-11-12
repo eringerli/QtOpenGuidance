@@ -26,19 +26,22 @@
 #include <QBrush>
 #include <QJsonObject>
 
-void VectorObject::emitConfigSignals() {
+void
+VectorObject::emitConfigSignals() {
   Q_EMIT vectorChanged( vector );
 }
 
-void VectorObject::toJSON( QJsonObject& json ) {
+void
+VectorObject::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = vector.x();
   valuesObject[QStringLiteral( "Y" )] = vector.y();
   valuesObject[QStringLiteral( "Z" )] = vector.z();
-  json[QStringLiteral( "values" )] = valuesObject;
+  json[QStringLiteral( "values" )]    = valuesObject;
 }
 
-void VectorObject::fromJSON( QJsonObject& json ) {
+void
+VectorObject::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -56,9 +59,11 @@ void VectorObject::fromJSON( QJsonObject& json ) {
   }
 }
 
-QNEBlock* VectorFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+VectorFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new VectorObject();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d& ) ) ) );
 

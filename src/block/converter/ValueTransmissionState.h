@@ -27,37 +27,32 @@
 #include <QCborStreamReader>
 
 class ValueTransmissionState : public ValueTransmissionBase {
-    Q_OBJECT
-  public:
-    explicit ValueTransmissionState( int id );
+  Q_OBJECT
+public:
+  explicit ValueTransmissionState( int id );
 
-  public Q_SLOTS:
-    void setState( const bool state );
+public Q_SLOTS:
+  void setState( ACTION_SIGNATURE_SLOT );
 
-    void dataReceive( const QByteArray& data );
+  void dataReceive( const QByteArray& data );
 
-  Q_SIGNALS:
-    void dataToSend( const QByteArray& );
-    void stateChanged( const bool );
+Q_SIGNALS:
+  void dataToSend( const QByteArray& );
+  void stateChanged( const bool );
 
-  private:
-    std::unique_ptr<QCborStreamReader> reader;
+private:
+  std::unique_ptr< QCborStreamReader > reader;
 };
 
 class ValueTransmissionStateFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ValueTransmissionStateFactory()
-      : BlockFactory() {}
+public:
+  ValueTransmissionStateFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Value Transmit State" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit State" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Value Converters" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

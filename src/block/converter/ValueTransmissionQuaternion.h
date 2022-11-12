@@ -29,37 +29,32 @@
 class QCborStreamReader;
 
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
-    Q_OBJECT
-  public:
-    explicit ValueTransmissionQuaternion( int id );
+  Q_OBJECT
+public:
+  explicit ValueTransmissionQuaternion( int id );
 
-  public Q_SLOTS:
-    void setQuaternion( const Eigen::Quaterniond& quaternion );
+public Q_SLOTS:
+  void setQuaternion( const Eigen::Quaterniond& quaternion );
 
-    void dataReceive( const QByteArray& data );
+  void dataReceive( const QByteArray& data );
 
-  Q_SIGNALS:
-    void dataToSend( const QByteArray& );
-    void quaternionChanged( const Eigen::Quaterniond );
+Q_SIGNALS:
+  void dataToSend( const QByteArray& );
+  void quaternionChanged( const Eigen::Quaterniond );
 
-  private:
-    std::unique_ptr<QCborStreamReader> reader;
+private:
+  std::unique_ptr< QCborStreamReader > reader;
 };
 
 class ValueTransmissionQuaternionFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ValueTransmissionQuaternionFactory()
-      : BlockFactory() {}
+public:
+  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Value Transmit Quaternion" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit Quaternion" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Value Converters" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

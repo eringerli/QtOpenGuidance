@@ -20,54 +20,32 @@
 
 #include <cmath>
 
-inline double normalizeAngleRadians( const double angle ) {
-  auto angleToConvert = angle;
-
-  while( angleToConvert > M_PI ) {
-    angleToConvert -= M_PI * 2;
-  }
-
-  while( angleToConvert < -M_PI ) {
-    angleToConvert += M_PI * 2;
-  }
-
-  return angleToConvert;
+template< class T >
+constexpr T
+normalizeAngleRadians( const T angle ) {
+  return std::remainder( angle + T( M_PI ) * 2, T( M_PI ) * 2 );
 }
 
-inline double normalizeAngleRadians1pi( const double angle ) {
-  auto angleToConvert = angle;
-
-  while( angleToConvert > M_PI ) {
-    angleToConvert -= M_PI;
-  }
-
-  while( angleToConvert < -M_PI ) {
-    angleToConvert += M_PI;
-  }
-
-  return angleToConvert;
+template< class T >
+constexpr T
+normalizeAngleRadians1pi( const T angle ) {
+  return std::remainder( angle + T( M_PI ), T( M_PI ) );
 }
 
-inline double normalizeAngleDegrees( const double angle ) {
-  auto angleToConvert = angle;
-
-  while( angleToConvert > 180 ) {
-    angleToConvert -= 360;
-  }
-
-  while( angleToConvert < -180 ) {
-    angleToConvert += 360;
-  }
-
-  return angleToConvert;
+template< class T >
+constexpr T
+normalizeAngleDegrees( const T angle ) {
+  return std::remainder( angle + T( 360. ), T( 360. ) );
 }
 
-template<class T>
-inline T degreesToRadians( const T degrees ) {
-  return degrees * M_PI / 180.;
+template< class T >
+constexpr T
+degreesToRadians( const T degrees ) {
+  return degrees * ( M_PI / 180. );
 }
 
-template<class T>
-inline T radiansToDegrees( const T radians ) {
-  return radians * 180. / M_PI;
+template< class T >
+constexpr T
+radiansToDegrees( const T radians ) {
+  return radians * ( 180. / M_PI );
 }

@@ -21,47 +21,40 @@
 #include "block/BlockBase.h"
 
 class ArithmeticSubtraction : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ArithmeticSubtraction()
-      : BlockBase() {}
+public:
+  explicit ArithmeticSubtraction() : BlockBase() {}
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void setValueA( double number );
-    void setValueB( double number );
+public Q_SLOTS:
+  void setValueA( NUMBER_SIGNATURE_SLOT );
+  void setValueB( NUMBER_SIGNATURE_SLOT );
 
-  private:
-    void operation();
+Q_SIGNALS:
+  void numberChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  Q_SIGNALS:
-    void numberChanged( double );
+private:
+  void operation();
 
-  public:
-    double numberA = 0;
-    double numberB = 0;
-    double result = 0;
+public:
+  double numberA = 0;
+  double numberB = 0;
+  double result  = 0;
 };
 
 class ArithmeticSubtractionFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ArithmeticSubtractionFactory()
-      : BlockFactory() {}
+public:
+  ArithmeticSubtractionFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "ArithmeticSubtraction" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "ArithmeticSubtraction" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "Arithmetic Subtraction" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "Arithmetic Subtraction" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Arithmetic" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Arithmetic" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

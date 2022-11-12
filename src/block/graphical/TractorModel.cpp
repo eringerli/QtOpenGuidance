@@ -19,8 +19,8 @@
 #include "TractorModel.h"
 
 #include <QAction>
-#include <QMenu>
 #include <QBrush>
+#include <QMenu>
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -28,22 +28,22 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QGeometry>
+#include <Qt3DCore/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 
-#include <Qt3DExtras/QCylinderMesh>
 #include <Qt3DExtras/QCuboidMesh>
+#include <Qt3DExtras/QCylinderMesh>
 #include <Qt3DExtras/QSphereMesh>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
 TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
-  m_rootEntity = new Qt3DCore::QEntity( rootEntity );
+  m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
-  const QColor colorBody = QColor( QRgb( 0x665423 ) );
+  const QColor colorBody   = QColor( QRgb( 0x665423 ) );
   const QColor colorWheels = usePBR ? QColor( QRgb( 0x668823 ) ) : QColor( QRgb( 0x475f18 ) );
 
   constexpr float metalness = 0.1f;
@@ -53,7 +53,7 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
   {
     m_baseEntity = new Qt3DCore::QEntity( m_rootEntity );
 
-    m_baseMesh = new Qt3DExtras::QCuboidMesh( m_baseEntity );
+    m_baseMesh      = new Qt3DExtras::QCuboidMesh( m_baseEntity );
     m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
 
     if( usePBR ) {
@@ -168,7 +168,8 @@ TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
     m_wheelBackRightEntity->addComponent( m_wheelBackRightTransform );
   }
 
-  // most dimensions are dependent on the wheelbase -> the code for that is in the slot setWheelbase(float)
+  // most dimensions are dependent on the wheelbase -> the code for that is in the slot
+  // setWheelbase(float)
   setWheelbase( m_wheelbase );
 
   // everything in world-coordinates... (add to rootEntity, not m_rootEntity)
@@ -269,21 +270,28 @@ TractorModel::~TractorModel() {
   m_rootEntity->deleteLater();
 }
 
-void TractorModel::setWheelbase( double wheelbase ) {
-  if( !qFuzzyIsNull( wheelbase ) ) {
-    m_wheelbase = wheelbase;
-    setProportions();
+void
+TractorModel::setWheelbase( double wheelbase, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    if( !qFuzzyIsNull( wheelbase ) ) {
+      m_wheelbase = wheelbase;
+      setProportions();
+    }
   }
 }
 
-void TractorModel::setTrackwidth( double trackwidth ) {
-  if( !qFuzzyIsNull( trackwidth ) ) {
-    m_trackwidth = trackwidth;
-    setProportions();
+void
+TractorModel::setTrackwidth( double trackwidth, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    if( !qFuzzyIsNull( trackwidth ) ) {
+      m_trackwidth = trackwidth;
+      setProportions();
+    }
   }
 }
 
-void TractorModel::setProportions() {
+void
+TractorModel::setProportions() {
   float offsetForWheels = m_trackwidth / 2;
 
   // base
@@ -299,33 +307,41 @@ void TractorModel::setProportions() {
   {
     m_wheelFrontMesh->setRadius( m_wheelbase / 4 );
     m_wheelFrontMesh->setLength( m_wheelbase / 5 );
-    m_wheelFrontLeftTransform->setTranslation( QVector3D( m_wheelbase, offsetForWheels + m_wheelFrontMesh->length() / 2, m_wheelFrontMesh->radius() ) );
-    m_wheelFrontRightTransform->setTranslation( QVector3D( m_wheelbase, -( offsetForWheels + m_wheelFrontMesh->length() / 2 ),  m_wheelFrontMesh->radius() ) );
+    m_wheelFrontLeftTransform->setTranslation(
+      QVector3D( m_wheelbase, offsetForWheels + m_wheelFrontMesh->length() / 2, m_wheelFrontMesh->radius() ) );
+    m_wheelFrontRightTransform->setTranslation(
+      QVector3D( m_wheelbase, -( offsetForWheels + m_wheelFrontMesh->length() / 2 ), m_wheelFrontMesh->radius() ) );
   }
 
   // wheels back
   {
     m_wheelBackMesh->setRadius( m_wheelbase / 2 );
     m_wheelBackMesh->setLength( m_wheelbase / 5 );
-    m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2,  m_wheelBackMesh->radius() ) );
-    m_wheelBackRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ),  m_wheelBackMesh->radius() ) );
+    m_wheelBackLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelBackMesh->length() / 2, m_wheelBackMesh->radius() ) );
+    m_wheelBackRightTransform->setTranslation(
+      QVector3D( 0, -( offsetForWheels + m_wheelBackMesh->length() / 2 ), m_wheelBackMesh->radius() ) );
   }
 }
 
-void TractorModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TractorModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_towPointTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TractorModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TractorModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_towHookTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TractorModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TractorModel::setPosePivotPoint( const Eigen::Vector3d&           position,
+                                 const Eigen::Quaterniond&        orientation,
+                                 const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_pivotPointTransform->setTranslation( toQVector3D( position ) );
 
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
@@ -333,28 +349,44 @@ void TractorModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eig
   }
 }
 
-void TractorModel::setSteeringAngleLeft( double steerAngle ) {
-  QQuaternion rotationLeft = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
-  m_wheelFrontLeftTransform->setRotation( rotationLeft );
+void
+TractorModel::setSteeringAngleLeft( double steerAngle, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    QQuaternion rotationLeft = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
+    m_wheelFrontLeftTransform->setRotation( rotationLeft );
+  }
 }
-void TractorModel::setSteeringAngleRight( double steerAngle ) {
-  QQuaternion rotationRight = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
-  m_wheelFrontRightTransform->setRotation( rotationRight );
+
+void
+TractorModel::setSteeringAngleRight( double steerAngle, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    QQuaternion rotationRight = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
+    m_wheelFrontRightTransform->setRotation( rotationRight );
+  }
 }
 
-QNEBlock* TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TractorModel( rootEntity, usePBR );
-  auto* b = createBaseBlock( scene, obj, id );
+QNEBlock*
+TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* object = new TractorModel( rootEntity, usePBR );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
-  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPoseHookPoint ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPosePivotPoint ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPoseTowPoint ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setSteeringAngleLeft ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setSteeringAngleRight ) );
 
   b->setBrush( modelColor );
 

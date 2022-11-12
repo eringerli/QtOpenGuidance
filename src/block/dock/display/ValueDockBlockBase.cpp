@@ -19,31 +19,32 @@
 
 #include "gui/MyMainWindow.h"
 
-#include <QJsonObject>
 #include <QBrush>
+#include <QJsonObject>
 
-KDDockWidgets::DockWidget* ValueDockBlockBase::firstValueDock = nullptr;
+KDDockWidgets::DockWidget* ValueDockBlockBase::firstValueDock       = nullptr;
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstThreeValuesDock = nullptr;
 
-void ValueDockBlockBase::toJSON( QJsonObject& json ) {
+void
+ValueDockBlockBase::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
 
-  valuesObject[QStringLiteral( "Font" )] = QJsonValue::fromVariant( QVariant( getFont() ) );
-  valuesObject[QStringLiteral( "Precision" )] = getPrecision();
-  valuesObject[QStringLiteral( "Scale" )] = getScale();
-  valuesObject[QStringLiteral( "FieldWitdh" )] = getFieldWidth();
-  valuesObject[QStringLiteral( "Unit" )] = getUnit();
+  valuesObject[QStringLiteral( "Font" )]        = QJsonValue::fromVariant( QVariant( getFont() ) );
+  valuesObject[QStringLiteral( "Precision" )]   = getPrecision();
+  valuesObject[QStringLiteral( "Scale" )]       = getScale();
+  valuesObject[QStringLiteral( "FieldWitdh" )]  = getFieldWidth();
+  valuesObject[QStringLiteral( "Unit" )]        = getUnit();
   valuesObject[QStringLiteral( "UnitVisible" )] = unitVisible();
-
 
   json[QStringLiteral( "values" )] = valuesObject;
 }
 
-void ValueDockBlockBase::fromJSON( QJsonObject& json ) {
+void
+ValueDockBlockBase::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
-    setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value<QFont>() );
+    setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value< QFont >() );
     setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
     setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
     setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );

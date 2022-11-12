@@ -22,14 +22,12 @@
 #include "qneport.h"
 
 #include <QBrush>
-#include <QFile>
 #include <QByteArray>
+#include <QFile>
 #include <QTextStream>
 #include <QTimerEvent>
 
-FileStream::FileStream() {
-  fileStream = new QTextStream();
-}
+FileStream::FileStream() { fileStream = new QTextStream(); }
 
 FileStream::~FileStream() {
   if( file ) {
@@ -39,7 +37,8 @@ FileStream::~FileStream() {
   delete fileStream;
 }
 
-void FileStream::setFilename( const QString& filename ) {
+void
+FileStream::setFilename( const QString& filename ) {
   this->filename = filename;
 
   if( file ) {
@@ -56,11 +55,12 @@ void FileStream::setFilename( const QString& filename ) {
     fileStream->seek( 0 );
     timer.start( 1000 / linerate, Qt::PreciseTimer, this );
   } else {
-//    qDebug() << "fail";
+    //    qDebug() << "fail";
   }
 }
 
-void FileStream::setLinerate( double linerate ) {
+void
+FileStream::setLinerate( double linerate, const CalculationOption::Options ) {
   this->linerate = linerate;
 
   if( qFuzzyIsNull( linerate ) ) {
@@ -70,11 +70,13 @@ void FileStream::setLinerate( double linerate ) {
   }
 }
 
-void FileStream::sendData( const QByteArray& data ) {
+void
+FileStream::sendData( const QByteArray& data ) {
   *fileStream << data;
 }
 
-void FileStream::timerEvent( QTimerEvent* event ) {
+void
+FileStream::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == timer.timerId() ) {
     if( file && fileStream ) {
       if( fileStream->atEnd() ) {
@@ -86,12 +88,14 @@ void FileStream::timerEvent( QTimerEvent* event ) {
   }
 }
 
-QNEBlock* FileStreamFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+FileStreamFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new FileStream();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "File" ), QLatin1String( SLOT( setFilename( const QString& ) ) ) );
-  b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( double ) ) ) );
+  b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );

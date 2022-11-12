@@ -26,47 +26,40 @@
 #include "TrailerKinematicPrimitive.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class TrailerKinematic : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit TrailerKinematic()
-      : BlockBase() {}
+public:
+  explicit TrailerKinematic() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setOffsetHookToPivot( const Eigen::Vector3d& offset );
-    void setOffsetPivotToTow( const Eigen::Vector3d& offset );
-    void setMaxJackknifeAngle( const double maxAngle );
-    void setMaxAngle( const double maxAngle );
+public Q_SLOTS:
+  void setOffsetHookToPivot( const Eigen::Vector3d& offset );
+  void setOffsetPivotToTow( const Eigen::Vector3d& offset );
+  void setMaxJackknifeAngle( NUMBER_SIGNATURE_SLOT );
+  void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-  Q_SIGNALS:
-    void poseHookPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void posePivotPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void poseTowPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+Q_SIGNALS:
+  void poseHookPointChanged( POSE_SIGNATURE_SIGNAL );
+  void posePivotPointChanged( POSE_SIGNATURE_SIGNAL );
+  void poseTowPointChanged( POSE_SIGNATURE_SIGNAL );
 
-  private:
-    TrailerKinematicPrimitive hookToPivot;
-    FixedKinematicPrimitive pivotToTow;
+private:
+  TrailerKinematicPrimitive hookToPivot;
+  FixedKinematicPrimitive   pivotToTow;
 };
 
 class TrailerKinematicFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    TrailerKinematicFactory()
-      : BlockFactory() {}
+public:
+  TrailerKinematicFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Trailer Kinematic" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Trailer Kinematic" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

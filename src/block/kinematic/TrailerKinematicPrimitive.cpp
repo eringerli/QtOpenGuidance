@@ -22,63 +22,83 @@
 #include "qneport.h"
 
 #include "helpers/anglesHelper.h"
+#include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
 
-void TrailerKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
+#include <iostream>
+
+void
+TrailerKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
   fixedKinematic.setOffset( offset );
 }
 
-void TrailerKinematicPrimitive::setMaxJackknifeAngle( const double maxJackknifeAngle ) {
+void
+TrailerKinematicPrimitive::setMaxJackknifeAngle( const double maxJackknifeAngle, CalculationOption::Options ) {
   maxJackknifeAngleRad = degreesToRadians( maxJackknifeAngle );
 }
 
-void TrailerKinematicPrimitive::setMaxAngle( const double maxAngle ) {
+void
+TrailerKinematicPrimitive::setMaxAngle( const double maxAngle, CalculationOption::Options ) {
   maxAngleRad = degreesToRadians( maxAngle );
 }
 
-void TrailerKinematicPrimitive::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
-  if( options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
-    orientation = Eigen::Quaterniond();
+void
+TrailerKinematicPrimitive::setPose( const Eigen::Vector3d&           position,
+                                    const Eigen::Quaterniond&        rotation,
+                                    const CalculationOption::Options options ) {
+  if( options.testFlag( CalculationOption::NoOrientation ) ) {
+    fixedKinematic.setPose( position, Eigen::Quaterniond( 0, 0, 0, 0 ), options );
+    Q_EMIT poseChanged( fixedKinematic.positionCalculated, Eigen::Quaterniond( 0, 0, 0, 0 ), options );
   } else {
-    auto taitBryan = quaternionToTaitBryan( orientation );
-    double angleRad = std::atan2( position.y() - positionCalculated.y(),
-                                  position.x() - positionCalculated.x() );
+    auto absoluteOrientationOfPlane = getAbsoluteOrientation( rotation );
+    auto absoluteHeading            = ( orientation.inverse() * absoluteOrientationOfPlane ).inverse();
 
-    Eigen::Quaterniond orientationTmp;
-    orientationTmp = taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) )
-                     * taitBryanToQuaternion( angleRad, 0, 0 );
+    fixedKinematic.setPose( lastPosition, absoluteHeading, options );
 
-    // the angle between tractor and trailer > maxAngleToTowingKinematic -> reset orientation to the one from the tractor
+    double angleRad =
+      std::atan2( position.y() - fixedKinematic.positionCalculated.y(), position.x() - fixedKinematic.positionCalculated.x() );
+
+    auto orientationTmp = taitBryanToQuaternion( angleRad, 0, 0 );
+
+    // the angle between tractor and trailer > maxAngleToTowingKinematic -> reset
+    // orientation to the one from the tractor
     double angleDifferenceRad = getYaw( quaternionToTaitBryan( rotation.inverse() * orientationTmp ) );
+    auto   heading            = Eigen::Quaterniond( 0, 0, 0, 0 );
 
     if( std::abs( angleDifferenceRad ) < maxJackknifeAngleRad ) {
       // limit the angle to maxAngle
       if( std::abs( angleDifferenceRad ) > maxAngleRad ) {
-        orientation = taitBryanToQuaternion( maxAngleRad * ( angleDifferenceRad > 0 ? 1 : -1 ), 0, 0 )
-                      * taitBryanToQuaternion( 0, getPitch( taitBryan ), getRoll( taitBryan ) );
+        heading = taitBryanToQuaternion( std::copysign( maxAngleRad, angleDifferenceRad ), 0, 0 );
       } else {
-        orientation = orientationTmp;
+        heading = orientationTmp;
       }
     } else {
-      orientation = rotation;
+      heading = rotation;
     }
+
+    orientation = absoluteOrientationOfPlane * heading;
+
+    fixedKinematic.setPose( position, orientation, options );
+    positionCalculated = fixedKinematic.positionCalculated;
+
+    lastPosition = position;
+
+    Q_EMIT poseChanged( positionCalculated, orientation, options );
   }
-
-  fixedKinematic.setPose( position, orientation, options );
-  positionCalculated = fixedKinematic.positionCalculated;
-
-  Q_EMIT poseChanged( positionCalculated, orientation, options );
 }
 
-QNEBlock* TrailerKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+TrailerKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new TrailerKinematicPrimitive;
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
   return b;
 }

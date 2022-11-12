@@ -25,19 +25,16 @@
 
 #include <cmath>
 
-ThreeValuesDock::ThreeValuesDock( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::ThreeValuesDock ) {
+ThreeValuesDock::ThreeValuesDock( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::ThreeValuesDock ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
 }
 
-ThreeValuesDock::~ThreeValuesDock() {
-  delete ui;
-}
+ThreeValuesDock::~ThreeValuesDock() { delete ui; }
 
-void ThreeValuesDock::setFontOfLabel( const QFont& font ) {
+void
+ThreeValuesDock::setFontOfLabel( const QFont& font ) {
   ui->lbFirst->setFont( font );
   ui->lbSecond->setFont( font );
   ui->lbThird->setFont( font );
@@ -46,14 +43,16 @@ void ThreeValuesDock::setFontOfLabel( const QFont& font ) {
   ui->lbThirdDesc->setFont( font );
 }
 
-void ThreeValuesDock::setDescriptions( const QString& first, const QString& second, const QString& third ) {
+void
+ThreeValuesDock::setDescriptions( const QString& first, const QString& second, const QString& third ) {
   ui->lbFirstDesc->setText( first );
   ui->lbSecondDesc->setText( second );
   ui->lbThirdDesc->setText( third );
 }
 
-void ThreeValuesDock::setValues( const double first, const double second, const double third ) {
-  double values[] = {double( first ), double( second ), double( third )};
+void
+ThreeValuesDock::setValues( const double first, const double second, const double third ) {
+  double values[] = { double( first ), double( second ), double( third ) };
 
   for( double& val : values ) {
     if( ( val > 0 ) && ( ( val ) < ( 1 / qPow( 10, precision ) ) ) ) {
@@ -78,6 +77,7 @@ void ThreeValuesDock::setValues( const double first, const double second, const 
   }
 }
 
-const QFont& ThreeValuesDock::fontOfLabel() {
+const QFont&
+ThreeValuesDock::fontOfLabel() {
   return ui->lbFirst->font();
 }

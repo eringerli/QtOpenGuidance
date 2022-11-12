@@ -23,23 +23,30 @@
 
 #include "helpers/anglesHelper.h"
 
-void TrailerKinematic::setOffsetHookToPivot( const Eigen::Vector3d& offset ) {
+void
+TrailerKinematic::setOffsetHookToPivot( const Eigen::Vector3d& offset ) {
   hookToPivot.setOffset( offset );
 }
 
-void TrailerKinematic::setOffsetPivotToTow( const Eigen::Vector3d& offset ) {
+void
+TrailerKinematic::setOffsetPivotToTow( const Eigen::Vector3d& offset ) {
   pivotToTow.setOffset( offset );
 }
 
-void TrailerKinematic::setMaxJackknifeAngle( const double maxAngle ) {
+void
+TrailerKinematic::setMaxJackknifeAngle( const double maxAngle, CalculationOption::Options ) {
   hookToPivot.setMaxJackknifeAngle( maxAngle );
 }
 
-void TrailerKinematic::setMaxAngle( const double maxAngle ) {
+void
+TrailerKinematic::setMaxAngle( const double maxAngle, CalculationOption::Options ) {
   hookToPivot.setMaxAngle( maxAngle );
 }
 
-void TrailerKinematic::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
+void
+TrailerKinematic::setPose( const Eigen::Vector3d&           position,
+                           const Eigen::Quaterniond&        orientation,
+                           const CalculationOption::Options options ) {
   hookToPivot.setPose( position, orientation, options );
   pivotToTow.setPose( hookToPivot.positionCalculated, hookToPivot.orientation, options );
 
@@ -48,19 +55,21 @@ void TrailerKinematic::setPose( const Eigen::Vector3d& position, const Eigen::Qu
   Q_EMIT poseTowPointChanged( pivotToTow.positionCalculated, pivotToTow.orientation, options );
 }
 
-QNEBlock* TrailerKinematicFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+TrailerKinematicFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new TrailerKinematic();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( POSE_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( POSE_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( POSE_SIGNATURE ) ) ) );
 
   return b;
 }

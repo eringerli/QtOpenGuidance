@@ -16,30 +16,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "kinematic/cgal.h"
+#include <ThreadWeaver/ThreadWeaver>
+
 #include "CgalWorker.h"
+#include "kinematic/cgal.h"
 
 #include <CGAL/point_generators_2.h>
 
 #include <CGAL/Polyline_simplification_2/simplify.h>
 namespace PS = CGAL::Polyline_simplification_2;
 
-CgalWorker::CgalWorker( QObject* parent ) : QObject( parent ) {
+CgalWorker::CgalWorker( QObject* parent ) : QObject( parent ) {}
 
-}
-
-void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& out_poly ) {
+void
+CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& out_poly ) {
   using Vertex_handle = typename Alpha_shape_2::Vertex_handle;
-  using Edge = typename Alpha_shape_2::Edge;
-  using EdgeVector = std::vector<Edge>;
+  using Edge          = typename Alpha_shape_2::Edge;
+  using EdgeVector    = std::vector< Edge >;
 
   // form vertex to vertex map
-  std::map<Vertex_handle, EdgeVector> v_edges_map;
+  std::map< Vertex_handle, EdgeVector > v_edges_map;
 
   for( auto it = A.alpha_shape_edges_begin(); it != A.alpha_shape_edges_end(); ++it ) {
-    auto edge = *it;  // edge <=> pair<face_handle, vertex id>
-    const int vid = edge.second;
-    auto v = edge.first->vertex( ( vid + 1 ) % 3 );
+    auto      edge = *it; // edge <=> pair<face_handle, vertex id>
+    const int vid  = edge.second;
+    auto      v    = edge.first->vertex( ( vid + 1 ) % 3 );
 
     if( v_edges_map.count( v ) == 0 ) {
       v_edges_map[v] = EdgeVector();
@@ -49,11 +50,11 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   }
 
   // form all possible boundaries
-  std::vector<Polygon_2> polies;
-  std::vector<double> lengths;
-  double max_length = 0;
-  std::size_t max_id = 0;
-  std::set<Edge> existing_edges;
+  std::vector< Polygon_2 > polies;
+  std::vector< double >    lengths;
+  double                   max_length = 0;
+  std::size_t              max_id     = 0;
+  std::set< Edge >         existing_edges;
 
   for( auto it = v_edges_map.cbegin(), end = v_edges_map.cend(); it != end; ++it ) {
     if( existing_edges.count( ( *it ).second.front() ) != 0u ) {
@@ -61,8 +62,8 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
     }
 
     auto begin_v = ( *it ).first;
-    auto next_e = ( *it ).second.front();
-    auto next_v = next_e.first->vertex( ( next_e.second + 2 ) % 3 );
+    auto next_e  = ( *it ).second.front();
+    auto next_v  = next_e.first->vertex( ( next_e.second + 2 ) % 3 );
 
     Polygon_2 poly;
     poly.push_back( next_v->point() );
@@ -91,7 +92,7 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
 
     if( max_length < length ) {
       max_length = length;
-      max_id = polies.size();
+      max_id     = polies.size();
     }
 
     polies.push_back( poly );
@@ -105,8 +106,9 @@ void CgalWorker::alphaToPolygon( const Alpha_shape_2& A, Polygon_with_holes_2& o
   out_poly = Polygon_with_holes_2( outer_poly, polies.begin(), polies.end() );
 }
 
-bool CgalWorker::returnEarly( uint32_t runNumber ) {
-  auto* cgalThread = qobject_cast<CgalThread*>( thread() );
+bool
+CgalWorker::returnEarly( uint32_t runNumber ) {
+  auto* cgalThread = qobject_cast< CgalThread* >( thread() );
 
   if( cgalThread != nullptr ) {
     QMutexLocker lock( &cgalThread->mutex );
@@ -119,7 +121,8 @@ bool CgalWorker::returnEarly( uint32_t runNumber ) {
   return false;
 }
 
-bool CgalWorker::isCollinear( std::vector<Point_2>* pointsPointer, bool emitSignal ) {
+bool
+CgalWorker::isCollinear( std::vector< Point_2 >* pointsPointer, bool emitSignal ) {
   bool collinearity = true;
 
   for( std::size_t i = 0, end = pointsPointer->size(); i < ( end - 2 ); ++i ) {
@@ -137,12 +140,10 @@ bool CgalWorker::isCollinear( std::vector<Point_2>* pointsPointer, bool emitSign
   return collinearity;
 }
 
-void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal ) {
+void
+CgalWorker::connectPoints( std::vector< Point_2 >* pointsPointer, double distanceBetweenConnectPoints, bool emitSignal ) {
   if( distanceBetweenConnectPoints > 0 && pointsPointer->size() >= 2 ) {
-
-    for( auto last = pointsPointer->cbegin(), it = pointsPointer->cbegin() + 1, end = pointsPointer->cend();
-         it != end;
-         ++it, ++last ) {
+    for( auto last = pointsPointer->cbegin(), it = pointsPointer->cbegin() + 1, end = pointsPointer->cend(); it != end; ++it, ++last ) {
       const double distance = std::sqrt( CGAL::squared_distance( *last, *it ) );
 
       if( ( distance - 0.01 ) > distanceBetweenConnectPoints ) {
@@ -167,17 +168,8 @@ void CgalWorker::connectPoints( std::vector<Point_2>* pointsPointer, double dist
   }
 }
 
-void CgalWorker::simplifyPolyline( std::vector<Point_2>* pointsPointer, double maxDeviation ) {
-  PS::Squared_distance_cost cost;
-
-  auto* polylineOut = new std::vector<Point_2>;
-
-  PS::simplify( pointsPointer->begin(), pointsPointer->end(), cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ), std::back_inserter( *polylineOut ) );
-
-  Q_EMIT simplifyPolylineResult( polylineOut );
-}
-
-void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal ) {
+void
+CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDeviation, bool emitSignal ) {
   PS::Squared_distance_cost cost;
 
   *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
@@ -187,14 +179,64 @@ void CgalWorker::simplifyPolygon( Polygon_with_holes_2* out_poly, double maxDevi
   }
 }
 
-void CgalWorker::fieldOptimitionWorker( const uint32_t runNumber,
-                                        std::vector<Point_2>* pointsPointer,
-                                        const FieldsOptimitionToolbar::AlphaType alphaType,
-                                        const double customAlpha,
-                                        const double maxDeviation,
-                                        const double distanceBetweenConnectPoints ) {
+void
+CgalWorker::simplifyPolyline_2( std::vector< Point_2 >* pointsPointer, double maxDeviation ) {
+  PS::Squared_distance_cost cost;
 
-  QScopedPointer<std::vector<Point_2>> points( pointsPointer );
+  auto* polylineOut = new std::vector< Point_2 >;
+
+  PS::simplify( pointsPointer->begin(),
+                pointsPointer->end(),
+                cost,
+                PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ),
+                std::back_inserter( *polylineOut ) );
+
+  Q_EMIT simplifyPolylineResult_2( polylineOut );
+}
+
+#include <CGAL/Projection_traits_xy_3.h>
+#include <CGAL/Projection_traits_xz_3.h>
+typedef CGAL::Projection_traits_xy_3< Epick > Epick_3_2xy;
+typedef CGAL::Projection_traits_xz_3< Epick > Epick_3_2xz;
+
+typedef CGAL::Polygon_2< Epick_3_2xy >                                                                   Polygon_3_2xy;
+typedef PS::Vertex_base_2< Epick_3_2xy >                                                                 Vb_3_2xy;
+typedef CGAL::Constrained_triangulation_face_base_2< Epick_3_2xy >                                       Fb_3_2xy;
+typedef CGAL::Triangulation_data_structure_2< Vb_3_2xy, Fb_3_2xy >                                       TDS_3_2xy;
+typedef CGAL::Constrained_Delaunay_triangulation_2< Epick_3_2xy, TDS_3_2xy, CGAL::Exact_predicates_tag > CDT_3_2xy;
+typedef CGAL::Constrained_triangulation_plus_2< CDT_3_2xy >                                              CT_3_2xy;
+
+void
+CgalWorker::simplifyPolyline_3( std::vector< Point_3 >* pointsPointer, double maxDeviation ) {
+  PS::Squared_distance_cost cost;
+
+  CT_3_2xy      ct;
+  Polygon_3_2xy polygon( pointsPointer->cbegin(), pointsPointer->cend() );
+  ct.insert_constraint( polygon );
+
+  auto* polylineOut = new std::vector< Point_3 >;
+
+  PS::simplify( ct, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
+
+  for( auto cit = ct.constraints_begin(), citend = ct.constraints_end(); cit != citend; ++cit ) {
+    //    std::cout << "simplified polyline" << std::endl;
+    for( auto vit = ct.points_in_constraint_begin( *cit ), vitend = ct.points_in_constraint_end( *cit ); vit != vitend; ++vit ) {
+      //      std::cout << *vit << std::endl;
+      polylineOut->push_back( *vit );
+    }
+  }
+
+  Q_EMIT simplifyPolylineResult_3( polylineOut );
+}
+
+void
+CgalWorker::fieldOptimitionWorker( const uint32_t                           runNumber,
+                                   std::vector< Point_2 >*                  pointsPointer,
+                                   const FieldsOptimitionToolbar::AlphaType alphaType,
+                                   const double                             customAlpha,
+                                   const double                             maxDeviation,
+                                   const double                             distanceBetweenConnectPoints ) {
+  QScopedPointer< std::vector< Point_2 > > points( pointsPointer );
 
   if( returnEarly( runNumber ) ) {
     return;
@@ -202,25 +244,23 @@ void CgalWorker::fieldOptimitionWorker( const uint32_t runNumber,
 
   auto numPointsRecorded = double( points->size() );
 
-  // check for collinearity: if all points are collinear, you can't calculate a triangulation and it crashes
+  // check for collinearity: if all points are collinear, you can't calculate a
+  // triangulation and it crashes
   if( !isCollinear( pointsPointer ) ) {
-
     connectPoints( pointsPointer, distanceBetweenConnectPoints );
 
     if( returnEarly( runNumber ) ) {
       return;
     }
 
-    Alpha_shape_2 alphaShape( points->begin(), points->end(),
-                              Epick::FT( 0 ),
-                              Alpha_shape_2::REGULARIZED );
+    Alpha_shape_2 alphaShape( points->begin(), points->end(), Epick::FT( 0 ), Alpha_shape_2::REGULARIZED );
 
     if( returnEarly( runNumber ) ) {
       return;
     }
 
     double optimalAlpha = CGAL::to_double( *alphaShape.find_optimal_alpha( 1 ) );
-    double solidAlpha = CGAL::to_double( alphaShape.find_alpha_solid() );
+    double solidAlpha   = CGAL::to_double( alphaShape.find_alpha_solid() );
 
     Q_EMIT alphaChanged( optimalAlpha, solidAlpha );
 
@@ -261,14 +301,9 @@ void CgalWorker::fieldOptimitionWorker( const uint32_t runNumber,
       return;
     }
 
-    // traverse the vertices and the edges
-    {
-      CGAL::set_pretty_mode( std::cout );
+    Q_EMIT fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
 
-      Q_EMIT fieldStatisticsChanged( numPointsRecorded, double( points->size() ), double( out_poly->outer_boundary().size() ) );
-    }
-
-    Q_EMIT alphaShapeFinished( std::shared_ptr<Polygon_with_holes_2>( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
+    Q_EMIT alphaShapeFinished( std::shared_ptr< Polygon_with_holes_2 >( out_poly ), CGAL::to_double( alphaShape.get_alpha() ) );
   }
 }
 

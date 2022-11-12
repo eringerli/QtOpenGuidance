@@ -29,16 +29,16 @@
 #include <QFileDialog>
 #include <QJsonObject>
 
-#include <QEvent>
 #include <QBasicTimer>
 #include <QElapsedTimer>
+#include <QEvent>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QExtrudedTextMesh>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QSphereMesh>
 
 #include "3d/BufferMesh.h"
 #include "3d/BufferMeshWithNormal.h"
@@ -66,28 +66,36 @@
 
 //#include <CGAL/Polygon_mesh_processing/locate.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
-namespace PMP = CGAL::Polygon_mesh_processing;
-using vertex_descriptor = boost::graph_traits<SurfaceMesh_3>::vertex_descriptor;
-using face_descriptor = boost::graph_traits<SurfaceMesh_3>::face_descriptor;
+namespace PMP           = CGAL::Polygon_mesh_processing;
+using vertex_descriptor = boost::graph_traits< SurfaceMesh_3 >::vertex_descriptor;
+using face_descriptor   = boost::graph_traits< SurfaceMesh_3 >::face_descriptor;
 
 PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-  : mainWindow( mainWindow ), tmw( tmw ) {
-
+    : mainWindow( mainWindow ), tmw( tmw ) {
   state.setZero();
 
   setSimulation( false );
 
   noiseGenerator.seed( std::chrono::system_clock::now().time_since_epoch().count() );
 
+  frontLeftTire  = std::make_unique< VehicleDynamics::TireLinear >( 2400 * 180 / M_PI );
+  frontRightTire = std::make_unique< VehicleDynamics::TireLinear >( 2400 * 180 / M_PI );
+  rearLeftTire   = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
+  rearRightTire  = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
+
+  vehicleDynamics =
+    std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >( frontLeftTire.get(),
+                                                               /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
+
   // test for recording
   {
-    m_baseEntity = new Qt3DCore::QEntity( rootEntity );
+    m_baseEntity    = new Qt3DCore::QEntity( rootEntity );
     m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
     m_baseEntity->addComponent( m_baseTransform );
 
-    m_pointsEntity = new Qt3DCore::QEntity( m_baseEntity );
-    m_terrainEntity = new Qt3DCore::QEntity( m_baseEntity );
-    m_linesEntity = new Qt3DCore::QEntity( m_baseEntity );
+    m_pointsEntity    = new Qt3DCore::QEntity( m_baseEntity );
+    m_terrainEntity   = new Qt3DCore::QEntity( m_baseEntity );
+    m_linesEntity     = new Qt3DCore::QEntity( m_baseEntity );
     m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
     m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
     m_terrainEntity->setEnabled( false );
@@ -95,27 +103,27 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEnti
     m_segmentsEntity3->setEnabled( false );
 
     m_pointsMesh = new BufferMesh( m_pointsEntity );
-    m_pointsMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
+    m_pointsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
     m_pointsEntity->addComponent( m_pointsMesh );
 
     m_terrainMesh = new BufferMeshWithNormal( m_terrainEntity );
-    m_terrainMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
+    m_terrainMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Triangles );
     m_terrainEntity->addComponent( m_terrainMesh );
 
     m_linesMesh = new BufferMesh( m_linesEntity );
-    m_linesMesh->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
+    m_linesMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Lines );
     m_linesEntity->addComponent( m_linesMesh );
 
     m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-    m_segmentsMesh3->setPrimitiveType( Qt3DRender::QGeometryRenderer::Points );
+    m_segmentsMesh3->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
     m_segmentsEntity3->addComponent( m_segmentsMesh3 );
 
     m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
-    m_segmentsMesh4->setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
+    m_segmentsMesh4->view()->setPrimitiveType( Qt3DCore::QGeometryView::Lines );
     m_segmentsEntity4->addComponent( m_segmentsMesh4 );
 
-    m_pointsMaterial = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
-    m_segmentsMaterial = new Qt3DExtras::QPhongMaterial( m_terrainEntity );
+    m_pointsMaterial    = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
+    m_segmentsMaterial  = new Qt3DExtras::QPhongMaterial( m_terrainEntity );
     m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_linesEntity );
     m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
     m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
@@ -135,11 +143,15 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEnti
   }
 }
 
-void PoseSimulation::timerEvent( QTimerEvent* event ) {
+void
+PoseSimulation::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == m_timer.timerId() ) {
-    constexpr double msPerS = 1000;
-    double deltaT = double ( m_time.restart() ) / msPerS;
-    double steerAngle = 0;
+    constexpr double msPerS     = 1000;
+    double           deltaT     = double( m_time.restart() ) / msPerS;
+    double           steerAngle = 0;
+
+    QElapsedTimer timer;
+    timer.start();
 
     if( m_autosteerEnabled ) {
       steerAngle = m_steerAngleFromAutosteer;
@@ -147,45 +159,44 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
       steerAngle = m_steerAngle;
     }
 
-    Q_EMIT steeringAngleChanged( steerAngle );
-    Q_EMIT velocityChanged( m_velocity );
+    Q_EMIT steeringAngleChanged( steerAngle, CalculationOption::Option::None );
+    Q_EMIT velocityChanged( m_velocity, CalculationOption::Option::None );
 
-    auto rollPitchYaw = ( lastFoundFaceOrientation
-                          * taitBryanToQuaternion( 0, 0, state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) )
-                        ).conjugate()
-                        * taitBryanToQuaternion( 0, 0, state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) );
+    auto rollPitchYaw =
+      ( lastFoundFaceOrientation * taitBryanToQuaternion( 0, 0, state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) ) ).conjugate() *
+      taitBryanToQuaternion( 0, 0, state( int( ThreeWheeledFRHRL::StateNames::Yaw ) ) );
 
-    auto taitBryanAngles = quaternionToTaitBryan( rollPitchYaw );
+    //    auto taitBryanAngles = quaternionToTaitBryan( rollPitchYaw );
 
-//    state( int( ThreeWheeledFRHRL::StateNames::Roll ) ) = taitBryanAngles.y();
-//    state( int( ThreeWheeledFRHRL::StateNames::Pitch ) ) = taitBryanAngles.x();
+    //    state( int( ThreeWheeledFRHRL::StateNames::Roll ) ) = taitBryanAngles.y();
+    //    state( int( ThreeWheeledFRHRL::StateNames::Pitch ) ) = taitBryanAngles.x();
+    //    {
+    //      std::cout << "taitBryanAngles: "<<printQuaternionAsTaitBryanDegrees(
+    //      rollPitchYaw )<< std::endl;
+    //    }
+
     {
-      Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
-      std::cout << "taitBryanAngles: " << ( taitBryanAngles * 180 / M_PI ).format( CommaInitFmt ) << std::endl;
-    }
+      auto& V      = m_velocity;
+      auto  deltaF = degreesToRadians( steerAngle );
 
-    {
-      auto& V = m_velocity;
-      auto deltaF = degreesToRadians( steerAngle );
+      /*if(V>1 || V<-1)*/ {
+        constexpr double MinDeltaT = 0.0001;
+        double           factor    = std::floor( deltaT / MinDeltaT );
+        double           deltaT2   = deltaT / factor;
 
-      {
-        constexpr double MinDeltaT = 0.001;
-        double factor = std::floor( deltaT / MinDeltaT );
-        double deltaT2 = deltaT / factor;
-
-//        std::cout << "factor, deltaT, deltaT2" << factor << deltaT << deltaT2 << std::endl;
+        //        std::cout << "factor, deltaT, deltaT2" << factor << deltaT << deltaT2 <<
+        //        std::endl;
 
         for( int i = 0; i < factor; ++i ) {
-          StateType<double> prediction;
-//          qDebug() << "PoseSimulation::timerEvent" << Caf << Car << Cah;
-          simulatorModel.predict( state, deltaT2,
-                                  V, deltaF,
-                                  a, b, c,
-                                  Caf, Car, Cah,
-                                  m, Iz,
-                                  sigmaF, sigmaR, sigmaH,
-                                  Cx, slipX,
-                                  prediction );
+          // constexpr double K = 300000;
+          // double force = K *
+          // (V-vehicleDynamics->state(long(VehicleDynamics::VehicleNonLinear3DOF::StateNames::V)));
+
+          // vehicleDynamics->step(deltaT2, deltaF, force, force, force, force);
+
+          StateType< double > prediction;
+          //          qDebug() << "PoseSimulation::timerEvent" << Caf << Car << Cah;
+          simulatorModel.predict( state, deltaT2, V, deltaF, a, b, c, Caf, Car, Cah, m, Iz, sigmaF, sigmaR, sigmaH, Cx, slipX, prediction );
           state = prediction;
         }
       }
@@ -193,50 +204,52 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     {
       if( tin && surfaceMesh ) {
-        auto point = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
+        auto point     = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Z ) ) );
         auto foundFace = tin->locate( point, lastFoundFace );
-        /*if(lastFoundFace != foundFace) */{
-
+        /*if(lastFoundFace != foundFace) */ {
           if( !tin->is_infinite( foundFace ) ) {
-            Eigen::Vector3d points[] = {
-              toEigenVector( foundFace->vertex( 0 )->point() ),
-              toEigenVector( foundFace->vertex( 1 )->point() ),
-              toEigenVector( foundFace->vertex( 2 )->point() )
-            };
+            Eigen::Vector3d points[] = { toEigenVector( foundFace->vertex( 0 )->point() ),
+                                         toEigenVector( foundFace->vertex( 1 )->point() ),
+                                         toEigenVector( foundFace->vertex( 2 )->point() ) };
 
-            auto plane = Plane_3( foundFace->vertex( 0 )->point(),
-                                  foundFace->vertex( 1 )->point(),
-                                  foundFace->vertex( 2 )->point() );
-            auto line = Line_3( point, Vector_3( 0, 0, 1 ) );
+            auto plane = Plane_3( foundFace->vertex( 0 )->point(), foundFace->vertex( 1 )->point(), foundFace->vertex( 2 )->point() );
+            auto line  = Line_3( point, Vector_3( 0, 0, 1 ) );
 
             auto result = CGAL::intersection( plane, line );
 
             if( result ) {
-              if( auto* const projectedPoint = boost::get<Point_3>( &*result ) ) {
-                state( int( ThreeWheeledFRHRL::StateNames::Z ) ) = projectedPoint->z() + 2;
+              if( auto* const projectedPoint = boost::get< Point_3 >( &*result ) ) {
+                state( int( ThreeWheeledFRHRL::StateNames::Z ) ) = projectedPoint->z() /*+ 2*/;
               }
             }
 
             // https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/geometry-of-a-triangle
-            auto normalVector = ( points[1] - points[0] ).cross( points[2] - points[0] );
+            auto normalVector        = ( points[1] - points[0] ).cross( points[2] - points[0] );
             lastFoundFaceOrientation = Eigen::Quaterniond::FromTwoVectors( Eigen::Vector3d::UnitZ(), normalVector );
 
-            Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
+            //            {
+            //              std::cout << "lastFoundFaceOrientation:
+            //              "<<printQuaternionAsTaitBryanDegrees( lastFoundFaceOrientation
+            //              )
+            //               << ", normalVector:
+            //               "<<printVector(normalVector.normalized())<< std::endl;
+            //            }
 
-            std::cout << "lastFoundFaceOrientation: " << ( quaternionToTaitBryan( lastFoundFaceOrientation ) * 180 / M_PI ).format( CommaInitFmt ) << ", normalVector: " << normalVector.format( CommaInitFmt ) << std::endl;
           } else {
-            std::cout << "tin->is_infinite( foundFace )" << std::endl;
+            //            std::cout << "tin->is_infinite( foundFace )" << std::endl;
             lastFoundFaceOrientation = taitBryanToQuaternion( 0, 0, 0 );
           }
 
           lastFoundFace = foundFace;
-
         }
+      } else {
+        auto file = QFile( "/home/christian/Schreibtisch/QtOpenGuidance/terrain/test4.geojson" );
+        file.open( QIODevice::ReadOnly );
+        openTINFromFile( file );
       }
     }
-
 
     // orientation
     {
@@ -250,60 +263,59 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
                                                state( int( ThreeWheeledFRHRL::StateNames::Roll ) ) );
       }
 
-      Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
-
       auto orientation = lastFoundFaceOrientation * m_orientation;
-      std::cout << "lastFoundFaceOrientation: " << radiansToDegrees( quaternionToTaitBryan( lastFoundFaceOrientation ) ).format( CommaInitFmt ) << ", "
-                << "m_orientation: " << radiansToDegrees( quaternionToTaitBryan( m_orientation ) ).format( CommaInitFmt ) << std::endl;
+
+      //        std::cout << "lastFoundFaceOrientation: " <<
+      //        printQuaternionAsTaitBryanDegrees( lastFoundFaceOrientation )
+      //                  << ", m_orientation: " <<
+      //                  printQuaternionAsTaitBryanDegrees(m_orientation) << std::endl;
 
       Q_EMIT orientationChanged( orientation );
       m_orientation = orientation;
-
     }
 
     {
       /*static uint8_t counter = 0;
 
-      if( ++counter >= 10 )*/ {
-//        counter = 0;
+      if( ++counter >= 10 )*/
+      {
+        //        counter = 0;
 
         if( noisePositionXYActivated || noisePositionZActivated ) {
           antennaKinematic.setPose( Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::X ) ) + noisePositionXY( noiseGenerator ),
-                                    state( int( ThreeWheeledFRHRL::StateNames::Y ) ) + noisePositionXY( noiseGenerator ),
-                                    state( int( ThreeWheeledFRHRL::StateNames::Z ) ) + noisePositionZ( noiseGenerator ) ),
+                                                     state( int( ThreeWheeledFRHRL::StateNames::Y ) ) + noisePositionXY( noiseGenerator ),
+                                                     state( int( ThreeWheeledFRHRL::StateNames::Z ) ) + noisePositionZ( noiseGenerator ) ),
                                     m_orientation,
-                                    PoseOption::Options() );
+                                    CalculationOption::Option::None );
         } else {
           antennaKinematic.setPose( Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
-                                    state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
-                                    state( int( ThreeWheeledFRHRL::StateNames::Z ) ) ),
+                                                     state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
+                                                     state( int( ThreeWheeledFRHRL::StateNames::Z ) ) ),
                                     m_orientation,
-                                    PoseOption::Options() );
+                                    CalculationOption::Option::None );
         }
 
         Q_EMIT velocity3DChanged( Eigen::Vector3d( state( int( ThreeWheeledFRHRL::StateNames::Vx ) ),
-                                  state( int( ThreeWheeledFRHRL::StateNames::Vy ) ),
-                                  state( int( ThreeWheeledFRHRL::StateNames::Vz ) ) ) );
+                                                   state( int( ThreeWheeledFRHRL::StateNames::Vy ) ),
+                                                   state( int( ThreeWheeledFRHRL::StateNames::Vz ) ) ) );
 
         // emit signal with antenna offset
         Q_EMIT positionChanged( antennaKinematic.positionCalculated );
-
 
         // in global coordinates: WGS84
         {
           double latitude, longitude, height;
           tmw->Reverse( antennaKinematic.positionCalculated.x(),
                         antennaKinematic.positionCalculated.y(),
-                        antennaKinematic.positionCalculated.z(), latitude, longitude, height );
+                        antennaKinematic.positionCalculated.z(),
+                        latitude,
+                        longitude,
+                        height );
 
-//      QElapsedTimer timer;
-//      timer.start();
           Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, height ) );
-
         }
       }
     }
-
 
     Eigen::Vector3d accelerometerData;
 
@@ -330,31 +342,78 @@ void PoseSimulation::timerEvent( QTimerEvent* event ) {
     }
 
     Q_EMIT imuDataChanged( m_orientation, accelerometerData, gyroData );
-//      qDebug() << "Cycle Time PoseSimulation:    " << timer.nsecsElapsed() << "ns";
+
+    //    std::cout
+    //      << "Simulator: Alpha F/R/H: "
+    //      << radiansToDegrees( state( int( ThreeWheeledFRHRL::StateNames::AlphaFront ) )
+    //      )
+    //      << ", "
+    //      << radiansToDegrees( state( int( ThreeWheeledFRHRL::StateNames::AlphaRear ) )
+    //      )
+    //      << ", "
+    //      << radiansToDegrees( state( int( ThreeWheeledFRHRL::StateNames::AlphaHitch ) )
+    //      )
+    //      << std::endl;
+
+    double processingTime = double( timer.nsecsElapsed() ) / 1.e6;
+
+    Q_EMIT processingTimeChanged( processingTime, CalculationOption::Option::None );
+    Q_EMIT maxProcessingTimeChanged( double( m_interval ), CalculationOption::Option::None );
+
+    //    qDebug() << "Cycle Time PoseSimulation:" << Qt::fixed << qSetRealNumberPrecision( 4 ) << qSetFieldWidth( 7 ) <<
+    //    processingTime
+    //             << "ms";
   }
 }
 
-void PoseSimulation::toJSON( QJsonObject& json ) {
+void
+PoseSimulation::emitConfigSignals() {
+  qDebug() << "PoseSimulation::emitConfigSignals";
+  Q_EMIT simulatorValuesChanged( a,
+                                 b,
+                                 c,
+                                 // N/rad -> N/°
+                                 Caf * M_PI / 180,
+                                 Car * M_PI / 180,
+                                 Cah * M_PI / 180,
+                                 m,
+                                 Iz,
+                                 sigmaF,
+                                 sigmaR,
+                                 sigmaH,
+                                 Cx,
+                                 slipX );
+
+  Q_EMIT steerAngleChanged( m_steerAngle, CalculationOption::Option::None );
+  Q_EMIT positionChanged( Eigen::Vector3d( x, y, height ) );
+  Q_EMIT orientationChanged( m_orientation );
+  Q_EMIT steerAngleChanged( 0, CalculationOption::Option::None );
+  Q_EMIT velocityChanged( 0, CalculationOption::Option::None );
+}
+
+void
+PoseSimulation::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
 
-  valuesObject[QStringLiteral( "a" )] = this->a;
-  valuesObject[QStringLiteral( "b" )] = this->b;
-  valuesObject[QStringLiteral( "c" )] = this->c;
-  valuesObject[QStringLiteral( "Caf" )] = this->Caf;
-  valuesObject[QStringLiteral( "Car" )] = this->Car;
-  valuesObject[QStringLiteral( "Cah" )] = this->Cah;
-  valuesObject[QStringLiteral( "m" )] = this->m;
-  valuesObject[QStringLiteral( "Iz" )] = this->Iz;
+  valuesObject[QStringLiteral( "a" )]      = this->a;
+  valuesObject[QStringLiteral( "b" )]      = this->b;
+  valuesObject[QStringLiteral( "c" )]      = this->c;
+  valuesObject[QStringLiteral( "Caf" )]    = this->Caf;
+  valuesObject[QStringLiteral( "Car" )]    = this->Car;
+  valuesObject[QStringLiteral( "Cah" )]    = this->Cah;
+  valuesObject[QStringLiteral( "m" )]      = this->m;
+  valuesObject[QStringLiteral( "Iz" )]     = this->Iz;
   valuesObject[QStringLiteral( "sigmaF" )] = this->sigmaF;
   valuesObject[QStringLiteral( "sigmaR" )] = this->sigmaR;
   valuesObject[QStringLiteral( "sigmaH" )] = this->sigmaH;
-  valuesObject[QStringLiteral( "Cx" )] = this->Cx;
-  valuesObject[QStringLiteral( "slip" )] = this->slipX;
+  valuesObject[QStringLiteral( "Cx" )]     = this->Cx;
+  valuesObject[QStringLiteral( "slip" )]   = this->slipX;
 
   json[QStringLiteral( "values" )] = valuesObject;
 }
 
-void PoseSimulation::fromJSON( QJsonObject& json ) {
+void
+PoseSimulation::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -412,15 +471,20 @@ void PoseSimulation::fromJSON( QJsonObject& json ) {
   }
 }
 
-void PoseSimulation::setInterval( int interval ) {
+void
+PoseSimulation::setInterval( int interval ) {
   m_interval = interval;
 
   setSimulation( m_enabled );
 
   Q_EMIT intervalChanged( m_interval );
+  Q_EMIT maxProcessingTimeChanged( double( m_interval ), CalculationOption::Option::None );
 }
 
-void PoseSimulation::setSimulation( bool enabled ) {
+void
+PoseSimulation::setSimulation( bool enabled ) {
+  qDebug() << "PoseSimulation::setSimulation" << enabled;
+
   m_enabled = enabled;
 
   if( enabled ) {
@@ -433,126 +497,126 @@ void PoseSimulation::setSimulation( bool enabled ) {
   Q_EMIT simulationChanged( m_enabled );
 }
 
-void PoseSimulation::setFrequency( double frequency ) {
+void
+PoseSimulation::setFrequency( double frequency, const CalculationOption::Options ) {
   setInterval( 1000 / frequency );
 }
 
-void PoseSimulation::setSteerAngle( double steerAngle ) {
-  m_steerAngle = steerAngle + m_steerAngleOffset;
+void
+PoseSimulation::setSteerAngle( double steerAngle, const CalculationOption::Options ) {
+  m_steerAngle = steerAngle;
 }
 
-void PoseSimulation::setVelocity( double velocity ) {
+void
+PoseSimulation::setVelocity( double velocity, const CalculationOption::Options ) {
   m_velocity = velocity;
 }
 
-void PoseSimulation::setRollOffset( double offset ) {
-  m_rollOffset = offset;
+void
+PoseSimulation::setSteerAngleFromAutosteer( double steerAngle, const CalculationOption::Options ) {
+  m_steerAngleFromAutosteer = steerAngle;
 }
 
-void PoseSimulation::setPitchOffset( double offset ) {
-  m_pitchOffset = offset;
-}
-
-void PoseSimulation::setYawOffset( double offset ) {
-  m_yawOffset = offset;
-}
-
-void PoseSimulation::setSteerAngleOffset( double offset ) {
-  m_steerAngleOffset = offset;
-}
-
-void PoseSimulation::setSteerAngleFromAutosteer( double steerAngle ) {
-  m_steerAngleFromAutosteer = steerAngle + m_steerAngleOffset;
-}
-
-void PoseSimulation::setInitialWGS84Position( const Eigen::Vector3d& position ) {
+void
+PoseSimulation::setInitialWGS84Position( const Eigen::Vector3d& position ) {
   tmw->Reset( position.x(), position.y(), position.z() );
 }
 
-void PoseSimulation::autosteerEnabled( bool enabled ) {
+void
+PoseSimulation::autosteerEnabled( bool enabled ) {
   m_autosteerEnabled = enabled;
 }
 
-void PoseSimulation::setSimulatorValues( const double a, const double b, const double c, const double Caf, const double Car, const double Cah, const double m, const double Iz, const double sigmaF, const double sigmaR, const double sigmaH, const double Cx, const double slipX ) {
+void
+PoseSimulation::setSimulatorValues( const double a,
+                                    const double b,
+                                    const double c,
+                                    const double Caf,
+                                    const double Car,
+                                    const double Cah,
+                                    const double m,
+                                    const double Iz,
+                                    const double sigmaF,
+                                    const double sigmaR,
+                                    const double sigmaH,
+                                    const double Cx,
+                                    const double slipX ) {
   this->a = a;
   this->b = b;
   this->c = c;
   // N/° -> N/rad
-  this->Caf = Caf * 180 / M_PI;
-  this->Car = Car * 180 / M_PI;
-  this->Cah = Cah * 180 / M_PI;
-  this->m = m;
-  this->Iz = Iz;
+  this->Caf    = Caf * 180 / M_PI;
+  this->Car    = Car * 180 / M_PI;
+  this->Cah    = Cah * 180 / M_PI;
+  this->m      = m;
+  this->Iz     = Iz;
   this->sigmaF = sigmaF;
   this->sigmaR = sigmaR;
   this->sigmaH = sigmaH;
-  this->Cx = Cx;
-  this->slipX = slipX;
+  this->Cx     = Cx;
+  this->slipX  = slipX;
 }
 
-void PoseSimulation::setNoiseStandartDeviations( double noisePositionXY, double noisePositionZ, double noiseOrientation, double noiseAccelerometer, double noiseGyro ) {
+void
+PoseSimulation::setNoiseStandartDeviations(
+  double noisePositionXY, double noisePositionZ, double noiseOrientation, double noiseAccelerometer, double noiseGyro ) {
   if( !qIsNull( noisePositionXY ) ) {
     noisePositionXYActivated = true;
-    this->noisePositionXY = std::normal_distribution<double>( 0, noisePositionXY );
+    this->noisePositionXY    = std::normal_distribution< double >( 0, noisePositionXY );
   } else {
     noisePositionXYActivated = false;
   }
 
   if( !qIsNull( noisePositionZ ) ) {
     noisePositionZActivated = true;
-    this->noisePositionZ = std::normal_distribution<double>( 0, noisePositionZ );
+    this->noisePositionZ    = std::normal_distribution< double >( 0, noisePositionZ );
   } else {
     noisePositionZActivated = false;
   }
 
   if( !qIsNull( noiseOrientation ) ) {
     noiseOrientationActivated = true;
-    this->noiseOrientation = std::normal_distribution<double>( 0, noiseOrientation );
+    this->noiseOrientation    = std::normal_distribution< double >( 0, noiseOrientation );
   } else {
     noiseOrientationActivated = false;
   }
 
   if( !qIsNull( noiseAccelerometer ) ) {
     noiseAccelerometerActivated = true;
-    this->noiseAccelerometer = std::normal_distribution<double>( 0, noiseAccelerometer );
+    this->noiseAccelerometer    = std::normal_distribution< double >( 0, noiseAccelerometer );
   } else {
     noiseAccelerometerActivated = false;
   }
 
   if( !qIsNull( noiseGyro ) ) {
     noiseGyroActivated = true;
-    this->noiseGyro = std::normal_distribution<double>( 0, noiseGyro );
+    this->noiseGyro    = std::normal_distribution< double >( 0, noiseGyro );
   } else {
     noiseGyroActivated = false;
   }
 }
 
-void PoseSimulation::openTIN() {
+void
+PoseSimulation::openTIN() {
   QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
   QString dir;
 
-  auto* fileDialog = new QFileDialog( mainWindow,
-                                      tr( "Open Saved Field" ),
-                                      dir,
-                                      selectedFilter );
+  auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved Field" ), dir, selectedFilter );
   fileDialog->setFileMode( QFileDialog::ExistingFile );
   fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
 
   // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
-  // the signals instead of using the static functions for the dialogs
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect
+  // to the signals instead of using the static functions for the dialogs
 #ifdef Q_OS_ANDROID
   QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
-      QFile loadFile(
-              QUrl::fromPercentEncoding(
-                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+      QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
       } else {
-
         openFieldFromFile( loadFile );
       }
     }
@@ -563,7 +627,7 @@ void PoseSimulation::openTIN() {
     fileDialog->deleteLater();
   } );
 #else
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString & fileName ) {
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString& fileName ) {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile( fileName );
@@ -571,7 +635,6 @@ void PoseSimulation::openTIN() {
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
       } else {
-
         openTINFromFile( loadFile );
       }
     }
@@ -589,23 +652,23 @@ void PoseSimulation::openTIN() {
   fileDialog->open();
 }
 
-void PoseSimulation::openTINFromFile( QFile& file ) {
+void
+PoseSimulation::openTINFromFile( QFile& file ) {
   auto geoJsonHelper = GeoJsonHelper( file );
   geoJsonHelper.print();
 
-  std::vector<Point_3> points;
-  QVector<QVector3D> pointsForMesh;
+  std::vector< Point_3 > points;
+  QVector< QVector3D >   pointsForMesh;
 
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::MultiPoint: {
-        for( const auto& point : std::get<GeoJsonHelper::MultiPointType>( member.second ) ) {
+        for( const auto& point : std::get< GeoJsonHelper::MultiPointType >( member.second ) ) {
           auto tmwPoint = tmw->Forward( point );
           pointsForMesh << toQVector3D( tmwPoint );
           points.emplace_back( toPoint3( tmwPoint ) );
         }
-      }
-      break;
+      } break;
 
       default:
         break;
@@ -615,81 +678,84 @@ void PoseSimulation::openTINFromFile( QFile& file ) {
   m_pointsMesh->bufferUpdate( pointsForMesh );
   m_pointsEntity->setEnabled( true );
 
-  tin = make_unique<DelaunayTriangulationProjectedXY>( points.cbegin(), points.cend() );
-  surfaceMesh = make_unique<SurfaceMesh_3>();
+  tin         = make_unique< DelaunayTriangulationProjectedXY >( points.cbegin(), points.cend() );
+  surfaceMesh = make_unique< SurfaceMesh_3 >();
   CGAL::copy_face_graph( *tin, *surfaceMesh );
 
-  auto vnormals = surfaceMesh->add_property_map<vertex_descriptor, Vector_3>( "v:normals", CGAL::NULL_VECTOR ).first;
-  auto fnormals = surfaceMesh->add_property_map<face_descriptor, Vector_3>( "f:normals", CGAL::NULL_VECTOR ).first;
+  auto vnormals = surfaceMesh->add_property_map< vertex_descriptor, Vector_3 >( "v:normals", CGAL::NULL_VECTOR ).first;
+  auto fnormals = surfaceMesh->add_property_map< face_descriptor, Vector_3 >( "f:normals", CGAL::NULL_VECTOR ).first;
 
   PMP::compute_normals( *surfaceMesh, vnormals, fnormals );
-  std::cout << "Vertex normals :" << std::endl;
-
-  for( vertex_descriptor vd : vertices( *surfaceMesh ) ) {
-    std::cout << vnormals[vd] << std::endl;
-  }
+  //  std::cout << "Vertex normals :" << std::endl;
+  //
+  //  for( vertex_descriptor vd : vertices( *surfaceMesh ) ) {
+  //    std::cout << vnormals[vd] << std::endl;
+  //  }
 
   Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
 
   auto ppm = get( CGAL::vertex_point, *surfaceMesh );
 
-  QVector<QVector3D> trianglesWithNormals;
+  QVector< QVector3D > trianglesWithNormals;
 
-  std::cout << "Face normals :" << std::endl;
+  //  std::cout << "Face normals :" << std::endl;
 
   for( face_descriptor fd : faces( *surfaceMesh ) ) {
-    auto normal = fnormals[fd];
+    auto       normal       = fnormals[fd];
     const auto normalVector = toQVector3D( normal );
 
-//    std::vector<QVector3D> points;
+    //    std::vector<QVector3D> points;
     for( vertex_descriptor vd : CGAL::vertices_around_face( surfaceMesh->halfedge( fd ), *surfaceMesh ) ) {
-//       points.emplace_back(convertPoint3ToQVector3D( get( ppm, vd ) ));
+      //       points.emplace_back(convertPoint3ToQVector3D( get( ppm, vd ) ));
       trianglesWithNormals << toQVector3D( get( ppm, vd ) );
-//      trianglesWithNormals << convertVector3ToQVector3D(vnormals[vd]);
+      //      trianglesWithNormals << convertVector3ToQVector3D(vnormals[vd]);
       trianglesWithNormals << normalVector;
     }
 
     auto quaternion = Eigen::Quaterniond::FromTwoVectors( Eigen::Vector3d( 0, 0, 1 ), toEigenVector( normal ) );
 
-    std::cout << "vector: " << normal << " Euler: " << ( quaternionToTaitBryan( quaternion ) * 180 / M_PI ).format( CommaInitFmt ) << std::endl;
+    //    std::cout << "vector: " << normal << " Euler: " << ( quaternionToTaitBryan(
+    //    quaternion ) * 180 / M_PI ).format( CommaInitFmt ) << std::endl;
   }
 
   m_terrainMesh->bufferUpdate( trianglesWithNormals );
   m_terrainEntity->setEnabled( true );
 
-
-  QVector<QVector3D> lines;
+  QVector< QVector3D > lines;
 
   for( const auto& edge : surfaceMesh->edges() ) {
-
     auto point1 = surfaceMesh->point( surfaceMesh->vertex( edge, 0 ) );
     auto point2 = surfaceMesh->point( surfaceMesh->vertex( edge, 1 ) );
 
-    std::cout << "line: " << point1 << ", " << point2 << std::endl;
+    //    std::cout << "line: " << point1 << ", " << point2 << std::endl;
 
     lines << toQVector3D( point1 );
-    lines <<  toQVector3D( point2 );
+    lines << toQVector3D( point2 );
   }
 
   m_linesMesh->bufferUpdate( lines );
   m_linesEntity->setEnabled( true );
 }
 
-void PoseSimulation::setWheelbase( double wheelbase ) {
+void
+PoseSimulation::setWheelbase( double wheelbase, const CalculationOption::Options ) {
   if( !qFuzzyIsNull( wheelbase ) ) {
     m_wheelbase = wheelbase;
   }
 }
 
-void PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset ) {
+void
+PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset ) {
   auto offsetTmp = offset;
   offsetTmp.x() -= b;
   antennaKinematic.setOffset( -offsetTmp );
 }
 
-QNEBlock* PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new PoseSimulation( mainWindow, rootEntity, geographicConvertionWrapper );
-  auto* b = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id, true );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );
@@ -699,13 +765,18 @@ QNEBlock* PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
   b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "IMU Data" ), QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort(
+    QStringLiteral( "IMU Data" ),
+    QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( const bool ) ) ) );
-  b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Processing Time [ms]" ), QLatin1String( SIGNAL( processingTimeChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Max Processing Time [ms]" ), QLatin1String( SIGNAL( maxProcessingTimeChanged( NUMBER_SIGNATURE ) ) ) );
+
+  b->addInputPort( QStringLiteral( "Autosteer Enabled" ), QLatin1String( SLOT( autosteerEnabled( ACTION_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Autosteer Steering Angle" ), QLatin1String( SLOT( setSteerAngleFromAutosteer( NUMBER_SIGNATURE ) ) ) );
 
   return b;
 }

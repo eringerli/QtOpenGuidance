@@ -21,9 +21,7 @@
 
 #include <QDebug>
 
-ActionDock::ActionDock( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::ActionDock ) {
+ActionDock::ActionDock( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::ActionDock ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
@@ -32,37 +30,42 @@ ActionDock::ActionDock( QWidget* parent ) :
   setTheme( theme );
 }
 
-ActionDock::~ActionDock() {
-  delete ui;
-}
+ActionDock::~ActionDock() { delete ui; }
 
-bool ActionDock::state() {
+bool
+ActionDock::state() {
   return ui->pbAction->isChecked();
 }
 
-bool ActionDock::isCheckable() {
+bool
+ActionDock::isCheckable() {
   return ui->pbAction->isCheckable();
 }
 
-const QString ActionDock::getTheme() {
+const QString
+ActionDock::getTheme() {
   return theme;
 }
 
-void ActionDock::setState( const bool state ) {
+void
+ActionDock::setState( const bool state ) {
   if( ui->pbAction->isCheckable() ) {
     ui->pbAction->setChecked( state );
   }
 }
 
-void ActionDock::setCheckable( const bool checkable ) {
+void
+ActionDock::setCheckable( const bool checkable ) {
   ui->pbAction->setCheckable( checkable );
 }
 
-void ActionDock::setTheme( const QString& theme ) {
+void
+ActionDock::setTheme( const QString& theme ) {
   this->theme = theme;
   ui->pbAction->setIcon( QIcon::fromTheme( theme ) );
 }
 
-void ActionDock::on_pbAction_clicked( bool checked ) {
+void
+ActionDock::on_pbAction_clicked( bool checked ) {
   Q_EMIT action( checked );
 }

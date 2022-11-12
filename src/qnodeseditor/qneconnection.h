@@ -27,42 +27,39 @@
 
 #pragma once
 
-#include <QObject>
 #include <QGraphicsPathItem>
+#include <QObject>
 
 class QNEPort;
 
 class QNEConnection : public QGraphicsPathItem {
-  public:
-    enum { Type = QGraphicsItem::UserType + 2 };
+public:
+  enum { Type = QGraphicsItem::UserType + 2 };
 
-    QNEConnection( QGraphicsItem* parent = nullptr );
-    ~QNEConnection();
+  QNEConnection( QGraphicsItem* parent = nullptr );
+  ~QNEConnection();
 
-    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+  void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-    void setPos1( QPointF p );
-    void setPos2( QPointF p );
+  void setPos1( QPointF p );
+  void setPos2( QPointF p );
 
-    void setPort1( QNEPort* p );
-    bool setPort2( QNEPort* p );
-    void updatePosFromPorts();
-    void updatePath();
-    QNEPort* port1() const;
-    QNEPort* port2() const;
+  void     setPort1( QNEPort* p );
+  bool     setPort2( QNEPort* p );
+  void     updatePosFromPorts();
+  void     updatePath();
+  QNEPort* port1() const;
+  QNEPort* port2() const;
 
-    int type() const override {
-      return Type;
-    }
+  int type() const override { return Type; }
 
-    void toJSON( QJsonObject& json ) const;
+  void toJSON( QJsonObject& json ) const;
 
-  private:
-    QPointF pos1;
-    QPointF pos2;
-    QNEPort* m_port1 = nullptr;
-    QNEPort* m_port2 = nullptr;
+private:
+  QPointF  pos1;
+  QPointF  pos2;
+  QNEPort* m_port1 = nullptr;
+  QNEPort* m_port2 = nullptr;
 
-    QMetaObject::Connection connection;
+  QMetaObject::Connection connection;
 };
-

@@ -18,41 +18,37 @@
 
 #include "qnegestures.h"
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGestureEvent>
-#include <QPinchGesture>
 #include <QEvent>
+#include <QGestureEvent>
+#include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
 #include <QKeyEvent>
+#include <QPinchGesture>
 #include <QScrollBar>
 
-QNEGestureEventFilter::QNEGestureEventFilter( QObject* parent )
-  : QObject( parent ) {
-  parent->installEventFilter( this );
-}
+QNEGestureEventFilter::QNEGestureEventFilter( QObject* parent ) : QObject( parent ) { parent->installEventFilter( this ); }
 
-bool QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
-
-  QGraphicsView* view = qobject_cast<QGraphicsView*>( object );
+bool
+QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
+  QGraphicsView* view = qobject_cast< QGraphicsView* >( object );
 
   if( view ) {
-
-    static QTransform originalTransform = QTransform();
-    static int originalScrollbarHorizontal = 0;
-    static int originalScrollbarVertical = 0;
+    static QTransform originalTransform           = QTransform();
+    static int        originalScrollbarHorizontal = 0;
+    static int        originalScrollbarVertical   = 0;
 
     if( event->type() == QEvent::TouchBegin ) {
-      QTouchEvent* touchEvent = static_cast<QTouchEvent*>( event );
+      QTouchEvent* touchEvent = static_cast< QTouchEvent* >( event );
 
-      if( touchEvent->touchPoints().count() > 1 ) {
+      if( touchEvent->points().count() > 1 ) {
         //            qDebug() << QStringLiteral( "QEvent::TouchBegin" );
         return true;
       }
     }
 
     if( event->type() == QEvent::Gesture ) {
-      QGestureEvent* gestureEvent = static_cast<QGestureEvent*>( event );
+      QGestureEvent* gestureEvent = static_cast< QGestureEvent* >( event );
 
       //          if( QGesture* swipe = gestureEvent->gesture( Qt::SwipeGesture ) ) {
       //            qDebug() << "swipe" << swipe;
@@ -62,11 +58,11 @@ bool QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
       //            qDebug() << "pan" << pan;
       //          }
 
-      if( QPinchGesture* pinch = static_cast<QPinchGesture*>( gestureEvent->gesture( Qt::PinchGesture ) ) ) {
+      if( QPinchGesture* pinch = static_cast< QPinchGesture* >( gestureEvent->gesture( Qt::PinchGesture ) ) ) {
         if( pinch->state() == Qt::GestureStarted ) {
-          originalTransform = view->transform();
+          originalTransform           = view->transform();
           originalScrollbarHorizontal = view->horizontalScrollBar()->value();
-          originalScrollbarVertical = view->verticalScrollBar()->value();
+          originalScrollbarVertical   = view->verticalScrollBar()->value();
         }
 
         QTransform currentTransform = originalTransform;
@@ -103,13 +99,16 @@ bool QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
     //              const QTouchEvent::TouchPoint& touchPoint0 = touchPoints.first();
     //              const QTouchEvent::TouchPoint& touchPoint1 = touchPoints.last();
 
-    //              QLineF currentScaleLine = QLineF( touchPoint0.pos(), touchPoint1.pos() );
-    //              QLineF originalScaleLine = QLineF( touchPoint0.startPos(), touchPoint1.startPos() );
+    //              QLineF currentScaleLine = QLineF( touchPoint0.pos(), touchPoint1.pos()
+    //              ); QLineF originalScaleLine = QLineF( touchPoint0.startPos(),
+    //              touchPoint1.startPos() );
 
-    //              qreal currentScaleFactor = currentScaleLine.length() / originalScaleLine.length();
-    //              QLineF panLine( originalScaleLine.center(), currentScaleLine.center() );
+    //              qreal currentScaleFactor = currentScaleLine.length() /
+    //              originalScaleLine.length(); QLineF panLine(
+    //              originalScaleLine.center(), currentScaleLine.center() );
 
-    //              qDebug() << currentScaleFactor << panLine << panLine.dx() << panLine.dy();
+    //              qDebug() << currentScaleFactor << panLine << panLine.dx() <<
+    //              panLine.dy();
 
     //              QTransform currentTransform = originalTransform;
 
@@ -119,8 +118,9 @@ bool QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
 
     //              view->setTransform( currentTransform );
 
-    //              view->horizontalScrollBar()->setValue( originalScrollbarHorizontal - int(panLine.dx()) );
-    //              view->verticalScrollBar()->setValue( originalScrollbarVertical - int(panLine.dy()) );
+    //              view->horizontalScrollBar()->setValue( originalScrollbarHorizontal -
+    //              int(panLine.dx()) ); view->verticalScrollBar()->setValue(
+    //              originalScrollbarVertical - int(panLine.dy()) );
     //            }
 
     //            return true;
@@ -130,7 +130,6 @@ bool QNEGestureEventFilter::eventFilter( QObject* object, QEvent* event ) {
     //          default:
     //            break;
     //        }
-
   }
 
   return false;

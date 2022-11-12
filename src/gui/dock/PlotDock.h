@@ -27,16 +27,15 @@ namespace Ui {
 }
 
 class PlotDock : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit PlotDock( QWidget* parent = nullptr );
-    ~PlotDock();
+public:
+  explicit PlotDock( QWidget* parent = nullptr );
+  ~PlotDock();
 
-  public:
-    QCustomPlot* getQCustomPlotWidget();
+public:
+  QCustomPlot* getQCustomPlotWidget();
 
-  private:
-    Ui::PlotDock* ui;
+private:
+  Ui::PlotDock* ui;
 };
-

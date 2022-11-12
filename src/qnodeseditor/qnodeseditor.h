@@ -36,28 +36,26 @@ class QPointF;
 class QNEBlock;
 
 class QNodesEditor : public QObject {
+  Q_OBJECT
 
-    Q_OBJECT
+public:
+  explicit QNodesEditor( QObject* parent = nullptr );
 
-  public:
-    explicit QNodesEditor( QObject* parent = nullptr );
+  void install( QGraphicsScene* scene );
 
-    void install( QGraphicsScene* scene );
+  bool eventFilter( QObject*, QEvent* ) override;
 
-    bool eventFilter( QObject*, QEvent* ) override;
+  void save( QDataStream& ds );
+  void load( QDataStream& ds );
 
-    void save( QDataStream& ds );
-    void load( QDataStream& ds );
+Q_SIGNALS:
+  void resetModels();
 
-  Q_SIGNALS:
-    void resetModels();
+private:
+  QGraphicsItem* itemAt( QPointF );
 
-  private:
-    QGraphicsItem* itemAt( QPointF );
-
-  private:
-    QGraphicsScene* scene = nullptr;
-    QNEConnection* currentConnection = nullptr;
-    bool isInPaningState = false;
+private:
+  QGraphicsScene* scene             = nullptr;
+  QNEConnection*  currentConnection = nullptr;
+  bool            isInPaningState   = false;
 };
-

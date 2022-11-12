@@ -26,11 +26,10 @@
 
 #include "qneblock.h"
 
-PlotBlockModel::PlotBlockModel( QGraphicsScene* scene )
-  : scene( scene ) {
-}
+PlotBlockModel::PlotBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
 
-QVariant PlotBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant
+PlotBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -59,7 +58,8 @@ QVariant PlotBlockModel::headerData( int section, Qt::Orientation orientation, i
   return QVariant();
 }
 
-Qt::ItemFlags PlotBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags
+PlotBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -69,10 +69,10 @@ Qt::ItemFlags PlotBlockModel::flags( const QModelIndex& index ) const {
   }
 
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
-
 }
 
-bool PlotBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool
+PlotBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     Q_EMIT headerDataChanged( orientation, section, section );
     return true;
@@ -81,17 +81,18 @@ bool PlotBlockModel::setHeaderData( int section, Qt::Orientation orientation, co
   return false;
 }
 
-
-int PlotBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int
+PlotBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return countBuffer;
 }
 
-int PlotBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int
+PlotBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 6;
 }
 
-QVariant PlotBlockModel::data( const QModelIndex& index, int role ) const {
-
+QVariant
+PlotBlockModel::data( const QModelIndex& index, int role ) const {
   if( index.isValid() ) {
     if( role == Qt::CheckStateRole ) {
       int countRow = 0;
@@ -99,10 +100,10 @@ QVariant PlotBlockModel::data( const QModelIndex& index, int role ) const {
       const auto& constRefOfList = scene->items();
 
       for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<PlotDockBlockBase*>( block->object ) ) {
+          if( auto* object = qobject_cast< PlotDockBlockBase* >( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 1:
@@ -126,10 +127,10 @@ QVariant PlotBlockModel::data( const QModelIndex& index, int role ) const {
       const auto& constRefOfList = scene->items();
 
       for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<PlotDockBlockBase*>( block->object ) ) {
+          if( auto* object = qobject_cast< PlotDockBlockBase* >( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 0:
@@ -151,46 +152,47 @@ QVariant PlotBlockModel::data( const QModelIndex& index, int role ) const {
   return QVariant();
 }
 
-bool PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool
+PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<PlotDockBlockBase*>( block->object ) ) {
+      if( auto* object = qobject_cast< PlotDockBlockBase* >( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
-              block->setName( qvariant_cast<QString>( value ) );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              block->setName( qvariant_cast< QString >( value ) );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 1:
               object->setXAxisVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 2:
               object->setYAxisVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 3:
               object->setYAxisDescription( value.toString() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 4:
               object->setAutoscrollEnabled( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 5:
               object->setWindow( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
           }
         }
@@ -201,17 +203,18 @@ bool PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, i
   return false;
 }
 
-void PlotBlockModel::resetModel() {
+void
+PlotBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<PlotDockBlockBase*>( block->object ) != nullptr ) {
+      if( qobject_cast< PlotDockBlockBase* >( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

@@ -51,9 +51,7 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
 
 QNEConnection::~QNEConnection() {
   if( m_port1 != nullptr ) {
-    for( auto it = m_port1->connections().cbegin(), end = m_port1->connections().cend();
-         it != end;
-         ++it ) {
+    for( auto it = m_port1->connections().cbegin(), end = m_port1->connections().cend(); it != end; ++it ) {
       if( ( *it ) == this ) {
         m_port1->connections().erase( it );
         break;
@@ -62,9 +60,7 @@ QNEConnection::~QNEConnection() {
   }
 
   if( m_port2 != nullptr ) {
-    for( auto it = m_port2->connections().cbegin(), end =  m_port2->connections().cend();
-         it != end;
-         ++it ) {
+    for( auto it = m_port2->connections().cbegin(), end = m_port2->connections().cend(); it != end; ++it ) {
       if( ( *it ) == this ) {
         m_port2->connections().erase( it );
         break;
@@ -75,8 +71,8 @@ QNEConnection::~QNEConnection() {
   QObject::disconnect( connection );
 }
 
-
-void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* ) {
+void
+QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem*, QWidget* ) {
   if( isSelected() ) {
     painter->setPen( QPen( Qt::red, 3 ) );
     painter->setBrush( Qt::NoBrush );
@@ -90,25 +86,29 @@ void QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem*, Q
   painter->drawPath( path() );
 }
 
-void QNEConnection::setPos1( QPointF p ) {
+void
+QNEConnection::setPos1( QPointF p ) {
   pos1 = p;
 }
 
-void QNEConnection::setPos2( QPointF p ) {
+void
+QNEConnection::setPos2( QPointF p ) {
   pos2 = p;
 }
 
-
-void QNEConnection::setPort1( QNEPort* p ) {
+void
+QNEConnection::setPort1( QNEPort* p ) {
   m_port1 = p;
 
   m_port1->connections().push_back( this );
 }
 
-bool QNEConnection::setPort2( QNEPort* p ) {
-
-  connection = QObject::connect( m_port1->block()->object, ( m_port1->slotSignalSignature.latin1() ),
-                                 p->block()->object, ( p->slotSignalSignature.latin1() ),
+bool
+QNEConnection::setPort2( QNEPort* p ) {
+  connection = QObject::connect( m_port1->block()->object,
+                                 ( m_port1->slotSignalSignature.latin1() ),
+                                 p->block()->object,
+                                 ( p->slotSignalSignature.latin1() ),
                                  Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
 
   if( connection ) {
@@ -121,12 +121,14 @@ bool QNEConnection::setPort2( QNEPort* p ) {
   return false;
 }
 
-void QNEConnection::updatePosFromPorts() {
+void
+QNEConnection::updatePosFromPorts() {
   pos1 = m_port1->scenePos();
   pos2 = m_port2->scenePos();
 }
 
-void QNEConnection::updatePath() {
+void
+QNEConnection::updatePath() {
   QPainterPath p;
 
   p.moveTo( pos1 );
@@ -142,22 +144,25 @@ void QNEConnection::updatePath() {
   setPath( p );
 }
 
-QNEPort* QNEConnection::port1() const {
+QNEPort*
+QNEConnection::port1() const {
   return m_port1;
 }
 
-QNEPort* QNEConnection::port2() const {
+QNEPort*
+QNEConnection::port2() const {
   return m_port2;
 }
 
-void QNEConnection::toJSON( QJsonObject& json ) const {
+void
+QNEConnection::toJSON( QJsonObject& json ) const {
   QJsonArray connectionsArray = json[QStringLiteral( "connections" )].toArray();
 
   QJsonObject connectionObject;
-  connectionObject[QStringLiteral( "idFrom" )] = port1()->block()->id;
+  connectionObject[QStringLiteral( "idFrom" )]   = port1()->block()->id;
   connectionObject[QStringLiteral( "portFrom" )] = port1()->getName();
-  connectionObject[QStringLiteral( "idTo" )] =  port2()->block()->id;
-  connectionObject[QStringLiteral( "portTo" )] = port2()->getName();
+  connectionObject[QStringLiteral( "idTo" )]     = port2()->block()->id;
+  connectionObject[QStringLiteral( "portTo" )]   = port2()->getName();
   connectionsArray.append( connectionObject );
 
   json[QStringLiteral( "connections" )] = connectionsArray;

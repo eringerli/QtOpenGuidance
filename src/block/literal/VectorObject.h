@@ -28,45 +28,37 @@
 #include "block/BlockBase.h"
 
 class VectorObject : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit VectorObject() {}
+public:
+  explicit VectorObject() {}
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-  Q_SIGNALS:
-    void vectorChanged( const Eigen::Vector3d& );
+Q_SIGNALS:
+  void vectorChanged( const Eigen::Vector3d& );
 
-  public:
-    Eigen::Vector3d vector = Eigen::Vector3d( 0, 0, 0 );
+public:
+  Eigen::Vector3d vector = Eigen::Vector3d( 0, 0, 0 );
 };
 
 class VectorFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    VectorFactory( VectorBlockModel* model )
-      : BlockFactory(),
-        model( model ) {}
+public:
+  VectorFactory( QThread* thread, VectorBlockModel* model ) : BlockFactory( thread ), model( model ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Vector3D" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Vector3D" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Literals" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "3D Vector" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "3D Vector" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    VectorBlockModel* model = nullptr;
+private:
+  VectorBlockModel* model = nullptr;
 };

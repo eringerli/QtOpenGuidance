@@ -23,39 +23,45 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-QNEBlock* ArithmeticDivisionFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticDivision();
-  auto* b = createBaseBlock( scene, obj, id );
-
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( double ) ) ) );
-  b->addPort( QStringLiteral( "/" ), QLatin1String(), false, QNEPort::NoBullet );
-  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( double ) ) ) );
-
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
-
-  b->setBrush( arithmeticColor );
-
-  return b;
+void
+ArithmeticDivision::emitConfigSignals() {
+  Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-void ArithmeticDivision::emitConfigSignals() {
-  Q_EMIT numberChanged( result );
-}
-
-void ArithmeticDivision::setValueA( double number ) {
+void
+ArithmeticDivision::setValueA( double number, const CalculationOption::Options ) {
   numberA = number;
   operation();
 }
 
-void ArithmeticDivision::setValueB( double number ) {
+void
+ArithmeticDivision::setValueB( double number, const CalculationOption::Options ) {
   numberB = number;
   operation();
 }
 
-void ArithmeticDivision::operation() {
+void
+ArithmeticDivision::operation() {
   if( !qIsNull( numberB ) ) {
     result = numberA / numberB;
   }
 
-  Q_EMIT numberChanged( result );
+  Q_EMIT numberChanged( result, CalculationOption::Option::None );
+}
+
+QNEBlock*
+ArithmeticDivisionFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new ArithmeticDivision();
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+
+  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  b->addPort( QStringLiteral( "/" ), QLatin1String(), false, QNEPort::NoBullet );
+  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+
+  b->setBrush( arithmeticColor );
+
+  return b;
 }

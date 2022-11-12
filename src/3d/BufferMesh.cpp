@@ -22,27 +22,18 @@
 */
 
 #include "BufferMesh.h"
-#include "BufferMeshGeometry.h"
-#include <QGeometryRenderer>
+#include "BufferMeshGeometryView.h"
 #include <QVector3D>
 #include <QVector4D>
 
-BufferMesh::BufferMesh( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent ),
-  m_bufferMeshGeo( new BufferMeshGeometry( this ) ) {
-  setInstanceCount( 1 );
-  setIndexOffset( 0 );
-  setFirstInstance( 0 );
-  setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
+BufferMesh::BufferMesh( Qt3DCore::QNode* parent ) : Qt3DRender::QGeometryRenderer( parent ) {
+  auto* geometryView = new BufferMeshGeometryView( this );
+  QGeometryRenderer::setView( geometryView );
 }
 
-BufferMesh::~BufferMesh() {
-  m_bufferMeshGeo->deleteLater();
-}
+BufferMesh::~BufferMesh() {}
 
-void BufferMesh::bufferUpdate( const QVector<QVector3D>& pos ) {
-  m_bufferMeshGeo->updatePoints( pos );
-
-  setVertexCount( m_bufferMeshGeo->vertexCount() );
-  setGeometry( m_bufferMeshGeo );
+void
+BufferMesh::bufferUpdate( const QVector< QVector3D >& pos ) {
+  static_cast< BufferMeshGeometryView* >( view() )->bufferUpdate( pos );
 }

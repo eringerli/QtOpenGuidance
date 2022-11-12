@@ -20,53 +20,66 @@
 
 #include "3d/qt3dForwards.h"
 
-#include <Qt3DRender/QGeometry>
+#include <QPointer>
+#include <Qt3DCore/QGeometry>
 
 #include "helpers/cgalHelper.h"
 
+#include "job/CultivatedAreaOptimitionController.h"
+
 class CgalThread;
 
-class CultivatedAreaMeshGeometry : public Qt3DRender::QGeometry {
-    Q_OBJECT
+class CultivatedAreaMeshGeometry : public Qt3DCore::QGeometry {
+  Q_OBJECT
 
-  public:
-    CultivatedAreaMeshGeometry( Qt3DCore::QNode* parent = nullptr );
-    ~CultivatedAreaMeshGeometry();
-    int vertexCount();
+public:
+  CultivatedAreaMeshGeometry( Qt3DCore::QNode* parent = nullptr );
+  ~CultivatedAreaMeshGeometry();
+  int vertexCount();
 
-    void addPoints( const Point_2 pointLeft, const Point_2 pointRight );
-    void addPointLeft( const Point_2 point );
-    void addPointRight( const Point_2 point );
+  void addPoints( const Point_3 pointLeft, const Point_3 pointRight, const QVector3D normalVector );
+  void addPointLeft( const Point_3 point, const QVector3D normalVector );
+  void addPointRight( const Point_3 point, const QVector3D normalVector );
 
-    void addTrackMeshGeometry( CultivatedAreaMeshGeometry* trackMeshGeometry );
+  void clear();
 
-    void optimise( CgalThread* thread );
+  void addTrackMeshGeometry( CultivatedAreaMeshGeometry* trackMeshGeometry );
 
-  private:
-    void addPointLeftWithoutUpdate( const Point_2 point );
-    void addPointRightWithoutUpdate( const Point_2 point );
-    void updateBuffers();
+  void optimise();
 
-  Q_SIGNALS:
-    void simplifyPolylineLeft( std::vector<Point_2>* pointsPointer, double maxDeviation );
-    void simplifyPolylineRight( std::vector<Point_2>* pointsPointer, double maxDeviation );
-    void vertexCountChanged( int );
+private:
+  void addPointLeftWithoutUpdate( const Point_3 point, const QVector3D normalVector );
+  void addPointRightWithoutUpdate( const Point_3 point, const QVector3D normalVector );
+  void updateBuffers();
 
-  private Q_SLOTS:
-    void simplifyPolylineResultLeft( std::vector<Point_2>* );
-    void simplifyPolylineResultRight( std::vector<Point_2>* );
+Q_SIGNALS:
+  void simplifyPolylineLeft( std::vector< Point_3 >* pointsPointer, double maxDeviation );
+  void simplifyPolylineRight( std::vector< Point_3 >* pointsPointer, double maxDeviation );
 
-  private:
-    Qt3DRender::QAttribute* m_positionAttribute = nullptr;
-    Qt3DRender::QAttribute* m_normalAttribute = nullptr;
-    Qt3DRender::QAttribute* m_tangentAttribute = nullptr;
-    Qt3DRender::QAttribute* m_indexAttribute = nullptr;
-    Qt3DRender::QBuffer* m_vertexBuffer = nullptr;
-    Qt3DRender::QBuffer* m_indexBuffer = nullptr;
+public Q_SLOTS:
+  void simplifyPolylineResultLeft( std::shared_ptr< std::vector< Point_3 > >   resultPoints,
+                                   std::shared_ptr< std::vector< QVector3D > > resultNormals,
+                                   const double                                maxDeviation );
+  void simplifyPolylineResultRight( std::shared_ptr< std::vector< Point_3 > >   resultPoints,
+                                    std::shared_ptr< std::vector< QVector3D > > resultNormals,
+                                    const double                                maxDeviation );
 
-    std::vector<Point_2> trackPointsLeft;
-    std::vector<Point_2> trackPointsRight;
-    double maxDeviation = 0.003;
+private:
+  Qt3DCore::QAttribute* m_positionAttribute = nullptr;
+  Qt3DCore::QAttribute* m_normalAttribute   = nullptr;
+  Qt3DCore::QAttribute* m_tangentAttribute  = nullptr;
+  Qt3DCore::QAttribute* m_indexAttribute    = nullptr;
+  Qt3DCore::QBuffer*    m_vertexBuffer      = nullptr;
+  Qt3DCore::QBuffer*    m_indexBuffer       = nullptr;
 
-    bool waitForOptimition = false;
+  std::shared_ptr< std::vector< Point_3 > >   trackPointsLeft;
+  std::shared_ptr< std::vector< Point_3 > >   trackPointsRight;
+  std::shared_ptr< std::vector< QVector3D > > trackNormalsLeft;
+  std::shared_ptr< std::vector< QVector3D > > trackNormalsRight;
+  double                                      maxDeviation = 0.1;
+
+  bool waitForOptimition = false;
+
+  QPointer< CultivatedAreaOptimitionController > cultivatedAreaOptimitionControllerLeft;
+  QPointer< CultivatedAreaOptimitionController > cultivatedAreaOptimitionControllerRight;
 };

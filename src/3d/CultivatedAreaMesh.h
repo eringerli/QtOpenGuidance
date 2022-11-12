@@ -19,30 +19,30 @@
 #pragma once
 
 #include <QObject>
-#include <QGeometryRenderer>
+#include <Qt3DRender/QGeometryRenderer>
 
 #include "3d/qt3dForwards.h"
 
 #include "helpers/cgalHelper.h"
+#include "helpers/eigenHelper.h"
 
 class CgalThread;
 class CultivatedAreaMeshGeometry;
 
 class CultivatedAreaMesh : public Qt3DRender::QGeometryRenderer {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit CultivatedAreaMesh( Qt3DCore::QNode* parent = nullptr );
-    ~CultivatedAreaMesh();
+public:
+  explicit CultivatedAreaMesh( Qt3DCore::QNode* parent = nullptr );
+  ~CultivatedAreaMesh();
 
-    void addPoints( const Point_2 point1, const Point_2 point2 );
-    void addPointLeft( const Point_2 point );
-    void addPointRight( const Point_2 point );
+  void addPoints( const Point_3 point1, const Point_3 point2, const QVector3D normalVector );
+  void addPointLeft( const Point_3 point, const QVector3D normalVector );
+  void addPointRight( const Point_3 point, const QVector3D normalVector );
 
-    void addTrackMesh( CultivatedAreaMesh* trackMesh );
+  void clear();
 
-    void optimise( CgalThread* thread );
+  void addTrackMesh( CultivatedAreaMesh* trackMesh );
 
-  private:
-    CultivatedAreaMeshGeometry* m_trackMeshGeometry = nullptr;
+  void optimise();
 };

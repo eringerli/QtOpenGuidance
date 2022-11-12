@@ -23,19 +23,16 @@
 
 #include <cmath>
 
-ValueDock::ValueDock( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::ValueDock ) {
+ValueDock::ValueDock( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::ValueDock ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
 }
 
-ValueDock::~ValueDock() {
-  delete ui;
-}
+ValueDock::~ValueDock() { delete ui; }
 
-void ValueDock::setMeter( double arg ) {
+void
+ValueDock::setMeter( double arg ) {
   auto meter = double( arg );
   meter *= scale;
 
@@ -54,10 +51,12 @@ void ValueDock::setMeter( double arg ) {
   }
 }
 
-void ValueDock::setFontOfLabel( const QFont& font ) {
+void
+ValueDock::setFontOfLabel( const QFont& font ) {
   ui->lbMeter->setFont( font );
 }
 
-const QFont& ValueDock::fontOfLabel() {
+const QFont&
+ValueDock::fontOfLabel() {
   return ui->lbMeter->font();
 }

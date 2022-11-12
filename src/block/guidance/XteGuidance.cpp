@@ -24,13 +24,14 @@
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 
-void XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::NoXte ) ) {
     const Point_2 position2D = to2D( position );
 
     if( !plan.plan->empty() ) {
-      double distanceSquared = qInf();
-      std::shared_ptr<PathPrimitive> nearestPrimitive = nullptr;
+      double                           distanceSquared  = qInf();
+      std::shared_ptr< PathPrimitive > nearestPrimitive = nullptr;
 
       for( const auto& pathPrimitive : *plan.plan ) {
         if( plan.type == Plan::Type::OnlyLines || pathPrimitive->isOn( position2D ) ) {
@@ -38,7 +39,7 @@ void XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quatern
 
           if( currentDistanceSquared < distanceSquared ) {
             nearestPrimitive = pathPrimitive;
-            distanceSquared = currentDistanceSquared;
+            distanceSquared  = currentDistanceSquared;
           } else {
             if( plan.type == Plan::Type::OnlyLines ) {
               // the plan is ordered, so we can take the fast way out...
@@ -51,39 +52,46 @@ void XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quatern
       if( nearestPrimitive ) {
         double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
 
-        Q_EMIT headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ) );
-        Q_EMIT xteChanged( offsetDistance );
-        Q_EMIT passNumberChanged( nearestPrimitive->passNumber );
+        Q_EMIT headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ), options );
+        Q_EMIT curvatureOfPathChanged( nearestPrimitive->curvature(), options );
+        Q_EMIT xteChanged( offsetDistance, options );
+        Q_EMIT passNumberChanged( nearestPrimitive->passNumber, options );
         return;
       }
     }
 
-    Q_EMIT headingOfPathChanged( qInf() );
-    Q_EMIT xteChanged( qInf() );
-    Q_EMIT passNumberChanged( qInf() );
+    Q_EMIT headingOfPathChanged( qInf(), options );
+    Q_EMIT xteChanged( qInf(), options );
+    Q_EMIT curvatureOfPathChanged( 0, options );
+    Q_EMIT passNumberChanged( qInf(), options );
   }
 }
 
-void XteGuidance::setPlan( const Plan& plan ) {
+void
+XteGuidance::setPlan( const Plan& plan ) {
   this->plan = plan;
 }
 
-void XteGuidance::emitConfigSignals() {
-  Q_EMIT xteChanged( qInf() );
-  Q_EMIT headingOfPathChanged( qInf() );
-  Q_EMIT passNumberChanged( qInf() );
+void
+XteGuidance::emitConfigSignals() {
+  Q_EMIT xteChanged( qInf(), CalculationOption::Option::None );
+  Q_EMIT headingOfPathChanged( qInf(), CalculationOption::Option::None );
+  Q_EMIT passNumberChanged( qInf(), CalculationOption::Option::None );
 }
 
-QNEBlock* XteGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+XteGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new XteGuidance();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  b->addOutputPort( QStringLiteral( "Curvature of Path" ), QLatin1String( SIGNAL( curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
   return b;
 }

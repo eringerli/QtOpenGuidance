@@ -25,47 +25,42 @@
 class QSerialPort;
 
 class SerialPort : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit SerialPort();
-    ~SerialPort();
+public:
+  explicit SerialPort();
+  ~SerialPort();
 
-  signals:
-    void  dataReceived( const QByteArray& );
+signals:
+  void dataReceived( const QByteArray& );
 
-  public slots:
-    void setPort( const QString& port );
+public slots:
+  void setPort( const QString& port );
 
-    void setBaudrate( double baudrate );
+  void setBaudrate( NUMBER_SIGNATURE_SLOT );
 
-    void sendData( const QByteArray& data );
+  void sendData( const QByteArray& data );
 
-  protected slots:
-    void processPendingData();
+protected slots:
+  void processPendingData();
 
-  public:
-    QString port;
-    double baudrate = 0;
+public:
+  QString port;
+  double  baudrate = 0;
 
-  private:
-    QSerialPort* serialPort = nullptr;
+private:
+  QSerialPort* serialPort = nullptr;
 };
 
 class SerialPortFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    SerialPortFactory()
-      : BlockFactory() {}
+public:
+  SerialPortFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Serial Port" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Serial Port" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Streams" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

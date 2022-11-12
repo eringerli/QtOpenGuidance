@@ -23,41 +23,35 @@
 #include "block/BlockBase.h"
 
 class CommunicationPgn7ffe : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit CommunicationPgn7ffe()
-      : BlockBase() {}
+public:
+  explicit CommunicationPgn7ffe() : BlockBase() {}
 
-  Q_SIGNALS:
-    void  dataReceived( const QByteArray& );
+Q_SIGNALS:
+  void dataReceived( const QByteArray& );
 
-  public Q_SLOTS:
-    void setSteeringAngle( double steeringAngle );
+public Q_SLOTS:
+  void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setXte( double distance );
+  void setXte( NUMBER_SIGNATURE_SLOT );
 
-    void setVelocity( double velocity );
+  void setVelocity( NUMBER_SIGNATURE_SLOT );
 
-  private:
-    float distance = 0;
-    float velocity = 0;
+private:
+  float distance = 0;
+  float velocity = 0;
 };
 
 class CommunicationPgn7ffeFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    CommunicationPgn7ffeFactory()
-      : BlockFactory() {}
+public:
+  CommunicationPgn7ffeFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Communication PGN 7FFE" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Communication PGN 7FFE" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Legacy Converters" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Legacy Converters" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

@@ -26,16 +26,19 @@ class QCloseEvent;
 #include <kddockwidgets/MainWindow.h>
 
 class MyMainWindow : public KDDockWidgets::MainWindow {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit MyMainWindow( const QString& uniqueName, KDDockWidgets::MainWindowOptions options,
-                           const QString& affinityName = {}, // Usually not needed. Just here to show the feature.
-                           QWidget* parent = nullptr );
+public:
+  explicit MyMainWindow( const QString&                   uniqueName,
+                         KDDockWidgets::MainWindowOptions options,
+                         const QString&                   affinityName = {},
+                         QWidget*                         parent       = nullptr );
 
-  protected:
-    void closeEvent( QCloseEvent* event ) override;
+  void readSettings();
 
-  Q_SIGNALS:
-    void closed();
+protected:
+  void closeEvent( QCloseEvent* event ) override;
+
+Q_SIGNALS:
+  void closed();
 };

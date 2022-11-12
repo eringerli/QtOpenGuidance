@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GuidanceTurning</class>
- <widget class="QGroupBox" name="GuidanceTurning">
+ <class>GuidanceTurningToolbar</class>
+ <widget class="QGroupBox" name="GuidanceTurningToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>266</width>
-    <height>86</height>
+    <width>287</width>
+    <height>107</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,7 +35,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>30</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -121,7 +120,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>30</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>

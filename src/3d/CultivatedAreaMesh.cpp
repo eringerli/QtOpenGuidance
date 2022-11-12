@@ -17,46 +17,49 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "CultivatedAreaMesh.h"
-#include "CultivatedAreaMeshGeometry.h"
+#include "CultivatedAreaMeshGeometryView.h"
 #include <QVector3D>
 
+#include <Qt3DCore/QAttribute>
+#include <Qt3DCore/QBuffer>
 #include <Qt3DCore/QNode>
 #include <Qt3DRender/QGeometryRenderer>
-#include <Qt3DRender/QAttribute>
-#include <Qt3DRender/QBuffer>
 
-CultivatedAreaMesh::CultivatedAreaMesh( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent ),
-  m_trackMeshGeometry( new CultivatedAreaMeshGeometry( this ) ) {
-  setInstanceCount( 1 );
-  setIndexOffset( 0 );
-  setFirstInstance( 0 );
-  setPrimitiveType( Qt3DRender::QGeometryRenderer::Triangles );
-  setGeometry( m_trackMeshGeometry );
-
-  QObject::connect( m_trackMeshGeometry, &CultivatedAreaMeshGeometry::vertexCountChanged, this, &QGeometryRenderer::setVertexCount );
+CultivatedAreaMesh::CultivatedAreaMesh( Qt3DCore::QNode* parent ) : Qt3DRender::QGeometryRenderer( parent ) {
+  auto* geometryView = new CultivatedAreaMeshGeometryView( this );
+  QGeometryRenderer::setView( geometryView );
 }
 
-CultivatedAreaMesh::~CultivatedAreaMesh() {
-  m_trackMeshGeometry->deleteLater();
+CultivatedAreaMesh::~CultivatedAreaMesh() { view()->setEnabled( false ); }
+
+void
+CultivatedAreaMesh::addPoints( const Point_3 point1, const Point_3 point2, const QVector3D normalVector ) {
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->addPoints( point1, point2, normalVector );
 }
 
-void CultivatedAreaMesh::addPoints( const Point_2 point1, const Point_2 point2 ) {
-  m_trackMeshGeometry->addPoints( point1, point2 );
+void
+CultivatedAreaMesh::addPointLeft( const Point_3 point, const QVector3D normalVector ) {
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->addPointLeft( point, normalVector );
 }
 
-void CultivatedAreaMesh::addPointLeft( const Point_2 point ) {
-  m_trackMeshGeometry->addPointLeft( point );
+void
+CultivatedAreaMesh::addPointRight( const Point_3 point, const QVector3D normalVector ) {
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->addPointRight( point, normalVector );
 }
 
-void CultivatedAreaMesh::addPointRight( const Point_2 point ) {
-  m_trackMeshGeometry->addPointRight( point );
+void
+CultivatedAreaMesh::clear() {
+  qDebug() << "CultivatedAreaMesh::clear()";
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->clear();
 }
 
-void CultivatedAreaMesh::addTrackMesh( CultivatedAreaMesh* trackMesh ) {
-  m_trackMeshGeometry->addTrackMeshGeometry( trackMesh->m_trackMeshGeometry );
+void
+CultivatedAreaMesh::addTrackMesh( CultivatedAreaMesh* trackMesh ) {
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->addTrackMesh(
+    static_cast< CultivatedAreaMeshGeometryView* >( trackMesh->view() ) );
 }
 
-void CultivatedAreaMesh::optimise( CgalThread* thread ) {
-  m_trackMeshGeometry->optimise( thread );
+void
+CultivatedAreaMesh::optimise() {
+  static_cast< CultivatedAreaMeshGeometryView* >( view() )->optimise();
 }

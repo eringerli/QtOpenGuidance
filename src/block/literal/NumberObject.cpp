@@ -26,17 +26,20 @@
 #include <QBrush>
 #include <QJsonObject>
 
-void NumberObject::emitConfigSignals() {
-  Q_EMIT numberChanged( number );
+void
+NumberObject::emitConfigSignals() {
+  Q_EMIT numberChanged( number, CalculationOption::Option::None );
 }
 
-void NumberObject::toJSON( QJsonObject& json ) {
+void
+NumberObject::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "Number" )] = number;
-  json[QStringLiteral( "values" )] = valuesObject;
+  json[QStringLiteral( "values" )]         = valuesObject;
 }
 
-void NumberObject::fromJSON( QJsonObject& json ) {
+void
+NumberObject::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -46,11 +49,13 @@ void NumberObject::fromJSON( QJsonObject& json ) {
   }
 }
 
-QNEBlock* NumberFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+NumberFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new NumberObject();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
 
   b->setBrush( valueColor );
 

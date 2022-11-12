@@ -30,13 +30,11 @@
 #include <QObject>
 
 class QNEGestureEventFilter : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    QNEGestureEventFilter( QObject* parent = nullptr );
+public:
+  QNEGestureEventFilter( QObject* parent = nullptr );
 
-  protected:
-    bool eventFilter( QObject* object, QEvent* event ) override;
-
+protected:
+  bool eventFilter( QObject* object, QEvent* event ) override;
 };
-

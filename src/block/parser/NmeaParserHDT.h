@@ -24,47 +24,36 @@
 #include "helpers/eigenHelper.h"
 
 class NmeaParserHDT : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit NmeaParserHDT()
-      : BlockBase() {
-    }
+public:
+  explicit NmeaParserHDT() : BlockBase() {}
 
-  Q_SIGNALS:
-    void orientationChanged( const Eigen::Quaterniond& );
+Q_SIGNALS:
+  void orientationChanged( const Eigen::Quaterniond& );
 
+public Q_SLOTS:
+  void setData( const QByteArray& data );
 
-  public Q_SLOTS:
-    void setData( const QByteArray& data );
+public:
+  void parseData();
 
-  public:
-    void parseData();
-
-  public:
-
-  private:
-    QByteArray dataToParse;
+public:
+private:
+  QByteArray dataToParse;
 };
 
 class NmeaParserHDTFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    NmeaParserHDTFactory()
-      : BlockFactory() {}
+public:
+  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser HDT" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser HDT" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Parsers" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser for HDT sentences" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for HDT sentences" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

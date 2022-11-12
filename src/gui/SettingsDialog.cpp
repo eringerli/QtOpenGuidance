@@ -24,7 +24,6 @@
 
 #include <QFileDialog>
 
-
 #include <QDebug>
 
 #include "qneblock.h"
@@ -74,7 +73,11 @@
 #include "block/global/PoseSimulation.h"
 
 #ifdef SPNAV_ENABLED
-#include "SpaceNavigatorPollingThread.h"
+  #include "SpaceNavigatorPollingThread.h"
+#endif
+
+#ifdef SDL2_ENABLED
+  #include "SdlInputPollingThread.h"
 #endif
 
 #include "block/ExtendedKalmanFilter.h"
@@ -88,11 +91,11 @@
 
 #include "block/dock/input/ActionDockBlock.h"
 #include "block/global/FieldManager.h"
-#include "block/global/GlobalPlanner.h"
 #include "block/graphical/PathPlannerModel.h"
+#include "block/guidance/GlobalPlanner.h"
 #include "block/guidance/LocalPlanner.h"
-#include "block/guidance/StanleyGuidance.h"
 #include "block/guidance/PoseSynchroniser.h"
+#include "block/guidance/StanleyGuidance.h"
 #include "block/guidance/XteGuidance.h"
 
 #include "block/sectionControl/SectionControl.h"
@@ -105,8 +108,8 @@
 #include "block/stream/UdpSocket.h"
 
 #ifdef SERIALPORT_ENABLED
-#include <QSerialPortInfo>
-#include "block/stream/SerialPort.h"
+  #include "block/stream/SerialPort.h"
+  #include <QSerialPortInfo>
 #endif
 
 #include "block/converter/ValueTransmissionBase64Data.h"
@@ -114,24 +117,24 @@
 #include "block/converter/ValueTransmissionQuaternion.h"
 #include "block/converter/ValueTransmissionState.h"
 
-#include "helpers/GeographicConvertionWrapper.h"
 #include "block/kinematic/FixedKinematic.h"
 #include "block/kinematic/FixedKinematicPrimitive.h"
 #include "block/kinematic/TrailerKinematic.h"
 #include "block/kinematic/TrailerKinematicPrimitive.h"
+#include "helpers/GeographicConvertionWrapper.h"
 
-#include "model/VectorBlockModel.h"
-#include "model/OrientationBlockModel.h"
-#include "model/NumberBlockModel.h"
 #include "model/ActionDockBlockModel.h"
+#include "model/ImplementBlockModel.h"
+#include "model/ImplementSectionModel.h"
+#include "model/NumberBlockModel.h"
+#include "model/OrientationBlockModel.h"
+#include "model/PathPlannerModelBlockModel.h"
+#include "model/PlotBlockModel.h"
 #include "model/SliderDockBlockModel.h"
 #include "model/StringBlockModel.h"
-#include "model/ImplementBlockModel.h"
-#include "model/PathPlannerModelBlockModel.h"
-#include "model/ImplementSectionModel.h"
-#include "model/ValueBlockModel.h"
 #include "model/TransmissionBlockModel.h"
-#include "model/PlotBlockModel.h"
+#include "model/ValueBlockModel.h"
+#include "model/VectorBlockModel.h"
 
 #include <QGraphicsScene>
 #include <QSortFilterProxyModel>
@@ -144,17 +147,21 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
-                                MyMainWindow* mainWindow,
+SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
+                                Qt3DCore::QEntity*      middlegroundEntity,
+                                Qt3DCore::QEntity*      backgroundEntity,
+                                MyMainWindow*           mainWindow,
                                 Qt3DExtras::Qt3DWindow* qt3dWindow,
-                                QMenu* guidanceToolbarMenu,
-                                QWidget* parent ) :
-  QDialog( parent ),
-  mainWindow( mainWindow ),
-  qt3dWindow( qt3dWindow ),
-  ui( new Ui::SettingsDialog ) {
-  // initialise the wrapper for the geographic conversion, so all offsets are the same application-wide
-  geographicConvertionWrapperGuidance = new GeographicConvertionWrapper();
+                                QMenu*                  guidanceToolbarMenu,
+                                QThread*                calculationsThread,
+                                QWidget*                parent )
+    : QDialog( parent ), mainWindow( mainWindow ), qt3dWindow( qt3dWindow ), ui( new Ui::SettingsDialog ) {
+  QThread* guiThread  = QApplication::instance()->thread();
+  QThread* qt3dThread = QApplication::instance()->thread();
+
+  // initialise the wrapper for the geographic conversion, so all offsets are the same
+  // application-wide
+  geographicConvertionWrapperGuidance  = new GeographicConvertionWrapper();
   geographicConvertionWrapperSimulator = new GeographicConvertionWrapper();
 
   ui->setupUi( this );
@@ -163,17 +170,25 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   {
     blockSettingsSaving = true;
 
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
     // checkboxes
     {
-      ui->cbSaveConfigOnExit->setCheckState( settings.value( QStringLiteral( "SaveConfigOnExit" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbLoadConfigOnStart->setCheckState( settings.value( QStringLiteral( "LoadConfigOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbRunSimulatorOnStart->setCheckState( settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbRestoreDockPositions->setCheckState( settings.value( QStringLiteral( "RestoreDockPositionsOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
-      ui->cbSaveDockPositionsOnExit->setCheckState( settings.value( QStringLiteral( "SaveDockPositionsOnExit" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbSaveConfigOnExit->setCheckState(
+        settings.value( QStringLiteral( "SaveConfigOnExit" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbLoadConfigOnStart->setCheckState(
+        settings.value( QStringLiteral( "LoadConfigOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbOpenSettingsDialogOnStart->setCheckState( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ?
+                                                        Qt::CheckState::Checked :
+                                                        Qt::CheckState::Unchecked );
+      ui->cbRunSimulatorOnStart->setCheckState(
+        settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
+      ui->cbRestoreDockPositions->setCheckState( settings.value( QStringLiteral( "RestoreDockPositionsOnStart" ), false ).toBool() ?
+                                                   Qt::CheckState::Checked :
+                                                   Qt::CheckState::Unchecked );
+      ui->cbSaveDockPositionsOnExit->setCheckState( settings.value( QStringLiteral( "SaveDockPositionsOnExit" ), false ).toBool() ?
+                                                      Qt::CheckState::Checked :
+                                                      Qt::CheckState::Unchecked );
     }
 
     // grid
@@ -186,8 +201,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
       ui->dsbGridSize->setValue( settings.value( QStringLiteral( "Grid/Size" ), 10 ).toDouble() );
       ui->dsbGridCameraThreshold->setValue( settings.value( QStringLiteral( "Grid/CameraThreshold" ), 75 ).toDouble() );
       ui->dsbGridCameraThresholdCoarse->setValue( settings.value( QStringLiteral( "Grid/CameraThresholdCoarse" ), 250 ).toDouble() );
-      gridColor = settings.value( QStringLiteral( "Grid/Color" ), QColor( 0x6b, 0x96, 0xa8 ) ).value<QColor>();
-      gridColorCoarse = settings.value( QStringLiteral( "Grid/ColorCoarse" ), QColor( 0xa2, 0xe3, 0xff ) ).value<QColor>();
+      gridColor       = settings.value( QStringLiteral( "Grid/Color" ), QColor( 0x6b, 0x96, 0xa8 ) ).value< QColor >();
+      gridColorCoarse = settings.value( QStringLiteral( "Grid/ColorCoarse" ), QColor( 0xa2, 0xe3, 0xff ) ).value< QColor >();
     }
 
     // path planner
@@ -198,7 +213,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
 
     // material
     {
-      bool usePBR = settings.value( QStringLiteral( "Material/usePBR" ), true ).toBool();
+      bool usePBR   = settings.value( QStringLiteral( "Material/usePBR" ), true ).toBool();
       bool usePhong = settings.value( QStringLiteral( "Material/usePhong" ), true ).toBool();
 
       if( usePBR && usePhong ) {
@@ -211,8 +226,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
 
     // Qt3D
     {
-      double gamma = settings.value( QStringLiteral( "Qt3D/Gamma" ), 2.2 ).toDouble();
-      bool showDebugOverlay = settings.value( QStringLiteral( "Qt3D/ShowDebugOverlay" ), false ).toBool();
+      double gamma            = settings.value( QStringLiteral( "Qt3D/Gamma" ), 2.2 ).toDouble();
+      bool   showDebugOverlay = settings.value( QStringLiteral( "Qt3D/ShowDebugOverlay" ), false ).toBool();
 
       ui->dsbGamma->setValue( gamma );
       ui->cbShowDebugOverlay->setChecked( showDebugOverlay );
@@ -245,7 +260,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   QObject::connect( nodesEditor, &QNodesEditor::resetModels, this, &SettingsDialog::resetAllModels );
 
   // new/open/save toolbar
-  newOpenSaveToolbar = new NewOpenSaveToolbar( this );
+  newOpenSaveToolbar           = new NewOpenSaveToolbar( this );
   auto* newOpenSaveToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "NewOpenSaveToolbarDock" ) );
   newOpenSaveToolbarDock->setWidget( newOpenSaveToolbar );
   newOpenSaveToolbarDock->setTitle( QStringLiteral( "New, Save, Open" ) );
@@ -253,13 +268,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   guidanceToolbarMenu->addAction( newOpenSaveToolbarDock->toggleAction() );
 
   // Models for the tableview
-  filterModelValues = new QSortFilterProxyModel( scene );
-  vectorBlockModel = new VectorBlockModel( scene );
+  filterModelValues     = new QSortFilterProxyModel( scene );
+  vectorBlockModel      = new VectorBlockModel( scene );
   orientationBlockModel = new OrientationBlockModel( scene );
-  numberBlockModel = new NumberBlockModel( scene );
-  actionBlockModel = new ActionDockBlockModel( scene );
-  sliderBlockModel = new SliderDockBlockModel( scene );
-  stringBlockModel = new StringBlockModel( scene );
+  numberBlockModel      = new NumberBlockModel( scene );
+  actionBlockModel      = new ActionDockBlockModel( scene );
+  sliderBlockModel      = new SliderDockBlockModel( scene );
+  stringBlockModel      = new StringBlockModel( scene );
 
   vectorBlockModel->addToCombobox( ui->cbValues );
   orientationBlockModel->addToCombobox( ui->cbValues );
@@ -271,20 +286,19 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   filterModelValues->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModelValues );
 
-  implementBlockModel = new ImplementBlockModel( scene );
+  implementBlockModel   = new ImplementBlockModel( scene );
   filterModelImplements = new QSortFilterProxyModel( scene );
   filterModelImplements->setDynamicSortFilter( true );
   filterModelImplements->setSourceModel( implementBlockModel );
   filterModelImplements->sort( 0, Qt::AscendingOrder );
   ui->cbImplements->setModel( filterModelImplements );
   ui->cbImplements->setCurrentIndex( 0 );
-  QObject::connect( implementBlockModel, &QAbstractItemModel::modelReset,
-                    this, &SettingsDialog::implementModelReset );
+  QObject::connect( implementBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::implementModelReset );
 
   implementSectionModel = new ImplementSectionModel();
   ui->twSections->setModel( implementSectionModel );
 
-  meterModel = new ValueBlockModel( scene );
+  meterModel       = new ValueBlockModel( scene );
   filterModelMeter = new QSortFilterProxyModel( scene );
   filterModelMeter->setDynamicSortFilter( true );
   filterModelMeter->setSourceModel( meterModel );
@@ -293,44 +307,42 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 6, meterModelFontDelegate );
 
-  plotBlockModel = new PlotBlockModel( scene );
+  plotBlockModel  = new PlotBlockModel( scene );
   filterModelPlot = new QSortFilterProxyModel( scene );
   filterModelPlot->setDynamicSortFilter( true );
   filterModelPlot->setSourceModel( plotBlockModel );
   filterModelPlot->sort( 0, Qt::AscendingOrder );
   ui->tvPlots->setModel( filterModelPlot );
 
-  transmissionBlockModel = new TransmissionBlockModel( scene );
+  transmissionBlockModel        = new TransmissionBlockModel( scene );
   filterTtransmissionBlockModel = new QSortFilterProxyModel( scene );
   filterTtransmissionBlockModel->setDynamicSortFilter( true );
   filterTtransmissionBlockModel->setSourceModel( transmissionBlockModel );
   filterTtransmissionBlockModel->sort( 0, Qt::AscendingOrder );
   ui->tvTransmission->setModel( filterTtransmissionBlockModel );
 
-  pathPlannerModelBlockModel = new PathPlannerModelBlockModel( scene );
+  pathPlannerModelBlockModel  = new PathPlannerModelBlockModel( scene );
   filterModelPathPlannerModel = new QSortFilterProxyModel( scene );
   filterModelPathPlannerModel->setDynamicSortFilter( true );
   filterModelPathPlannerModel->setSourceModel( pathPlannerModelBlockModel );
   filterModelPathPlannerModel->sort( 0, Qt::AscendingOrder );
   ui->cbPathPlanner->setModel( filterModelPathPlannerModel );
   ui->cbPathPlanner->setCurrentIndex( 0 );
-  QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset,
-                    this, &SettingsDialog::pathPlannerModelReset );
+  QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory = new PoseSimulationFactory( mainWindow, rootEntity, geographicConvertionWrapperSimulator );
+  poseSimulationFactory =
+    new PoseSimulationFactory( calculationsThread, mainWindow, backgroundEntity, geographicConvertionWrapperSimulator );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
-  poseSimulation = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
+  poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
 
-  auto* poseSimulationTmp = qobject_cast<PoseSimulation*>( poseSimulationBlock->object );
+  auto* poseSimulationTmp = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
 
   {
-    QObject::connect( this, &SettingsDialog::simulatorValuesChanged,
-                      poseSimulationTmp, &PoseSimulation::setSimulatorValues );
-    QObject::connect( this, &SettingsDialog::noiseStandartDeviationsChanged,
-                      poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
-    QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged,
-                      this, &SettingsDialog::setSimulatorValues );
+    QObject::connect( this, &SettingsDialog::simulatorValuesChanged, poseSimulationTmp, &PoseSimulation::setSimulatorValues );
+    QObject::connect(
+      this, &SettingsDialog::noiseStandartDeviationsChanged, poseSimulationTmp, &PoseSimulation::setNoiseStandartDeviations );
+    QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged, this, &SettingsDialog::setSimulatorValues );
 
     auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Terrain Model" ) );
     QObject::connect( openFieldAction, &QAction::triggered, poseSimulationTmp, &PoseSimulation::openTIN );
@@ -342,19 +354,40 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
   spaceNavigatorPollingThread = new SpaceNavigatorPollingThread( this );
   spaceNavigatorPollingThread->start();
 
-  connect( spaceNavigatorPollingThread, &SpaceNavigatorPollingThread::steerAngleChanged,
-           poseSimulationTmp, &PoseSimulation::setSteerAngle, Qt::QueuedConnection );
-  connect( spaceNavigatorPollingThread, &SpaceNavigatorPollingThread::velocityChanged,
-           poseSimulationTmp, &PoseSimulation::setVelocity, Qt::QueuedConnection );
+  connect( spaceNavigatorPollingThread,
+           &SpaceNavigatorPollingThread::steerAngleChanged,
+           poseSimulationTmp,
+           &PoseSimulation::setSteerAngle,
+           Qt::QueuedConnection );
+  connect( spaceNavigatorPollingThread,
+           &SpaceNavigatorPollingThread::velocityChanged,
+           poseSimulationTmp,
+           &PoseSimulation::setVelocity,
+           Qt::QueuedConnection );
+#endif
+
+// SDL -> controller input
+#ifdef SDL2_ENABLED
+  qDebug() << "SDL2_ENABLED";
+  sdlInputPollingThread = new SdlInputPollingThread( this );
+  sdlInputPollingThread->start();
+
+  connect( sdlInputPollingThread,
+           &SdlInputPollingThread::steerAngleChanged,
+           poseSimulationTmp,
+           &PoseSimulation::setSteerAngle,
+           Qt::QueuedConnection );
+  connect(
+    sdlInputPollingThread, &SdlInputPollingThread::velocityChanged, poseSimulationTmp, &PoseSimulation::setVelocity, Qt::QueuedConnection );
 #endif
 
   // guidance
-  fieldManagerFactory = new FieldManagerFactory( mainWindow, rootEntity, geographicConvertionWrapperGuidance );
+  fieldManagerFactory = new FieldManagerFactory( calculationsThread, mainWindow, backgroundEntity, geographicConvertionWrapperGuidance );
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto* fieldManagerObject = qobject_cast<FieldManager*>( fieldManagerBlock->object );
-    auto* newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
+    auto* fieldManagerObject = qobject_cast< FieldManager* >( fieldManagerBlock->object );
+    auto* newFieldAction     = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
     QObject::connect( newFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::newField );
 
     auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Field" ) );
@@ -366,15 +399,16 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
     fieldManager = fieldManagerObject;
   }
 
-  globalPlannerFactory = new GlobalPlannerFactory( mainWindow,
-      KDDockWidgets::Location_OnRight,
-      guidanceToolbarMenu,
-      geographicConvertionWrapperGuidance,
-      rootEntity );
+  globalPlannerFactory     = new GlobalPlannerFactory( calculationsThread,
+                                                   mainWindow,
+                                                   KDDockWidgets::Location_OnRight,
+                                                   guidanceToolbarMenu,
+                                                   geographicConvertionWrapperGuidance,
+                                                   middlegroundEntity );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto* globalPlanner = qobject_cast<GlobalPlanner*>( globalPlannerBlock->object );
+    auto* globalPlanner = qobject_cast< GlobalPlanner* >( globalPlannerBlock->object );
 
     QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlanner, &GlobalPlanner::setPlannerSettings );
 
@@ -390,68 +424,68 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
     this->globalPlanner = globalPlanner;
   }
 
-  localPlannerFactory = new LocalPlannerFactory( mainWindow,
-      KDDockWidgets::Location_OnRight,
-      guidanceToolbarMenu );
-  stanleyGuidanceFactory = new StanleyGuidanceFactory();
-  xteGuidanceFactory = new XteGuidanceFactory();
-  sectionControlFactory = new SectionControlFactory( mainWindow,
-      KDDockWidgets::Location_OnBottom,
-      guidanceToolbarMenu,
-      rootEntity,
-      static_cast<Qt3DRender::QFrameGraphNode*>( qt3dWindow->activeFrameGraph()->children().front() ) );
+  localPlannerFactory    = new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu );
+  stanleyGuidanceFactory = new StanleyGuidanceFactory( calculationsThread );
+  xteGuidanceFactory             = new XteGuidanceFactory( calculationsThread );
+  sectionControlFactory =
+    new SectionControlFactory( qt3dThread,
+                               mainWindow,
+                               KDDockWidgets::Location_OnBottom,
+                               guidanceToolbarMenu,
+                               backgroundEntity,
+                               static_cast< Qt3DRender::QFrameGraphNode* >( qt3dWindow->activeFrameGraph()->children().front() ) );
 
-  pathPlannerModelFactory = new PathPlannerModelFactory( rootEntity );
+  pathPlannerModelFactory = new PathPlannerModelFactory( qt3dThread, middlegroundEntity );
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( geographicConvertionWrapperGuidance );
-  poseSynchroniserFactory = new PoseSynchroniserFactory();
-  extendedKalmanFilterFactory = new ExtendedKalmanFilterFactory();
-  trailerModelFactory = new TrailerModelFactory( rootEntity, usePBR );
-  tractorModelFactory = new TractorModelFactory( rootEntity, usePBR );
-  sprayerModelFactory = new SprayerModelFactory( rootEntity, usePBR );
-  cultivatedAreaModelFactory = new CultivatedAreaModelFactory( rootEntity, usePBR );
-  fixedKinematicFactory = new FixedKinematicFactory;
-  trailerKinematicFactory = new TrailerKinematicFactory();
-  fixedKinematicPrimitiveFactory = new FixedKinematicPrimitiveFactory;
-  trailerKinematicPrimitiveFactory = new TrailerKinematicPrimitiveFactory();
-  vectorFactory = new VectorFactory( vectorBlockModel );
-  orientationFactory = new OrientationBlockFactory( orientationBlockModel );
-  numberFactory = new NumberFactory( numberBlockModel );
-  stringFactory = new StringFactory( stringBlockModel );
-  debugSinkFactory = new DebugSinkFactory();
-  udpSocketFactory = new UdpSocketFactory();
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapperGuidance );
+  poseSynchroniserFactory            = new PoseSynchroniserFactory( calculationsThread );
+  extendedKalmanFilterFactory        = new ExtendedKalmanFilterFactory( calculationsThread );
+  trailerModelFactory                = new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR );
+  tractorModelFactory                = new TractorModelFactory( qt3dThread, foregroundEntity, usePBR );
+  sprayerModelFactory                = new SprayerModelFactory( qt3dThread, middlegroundEntity, usePBR );
+  cultivatedAreaModelFactory         = new CultivatedAreaModelFactory( qt3dThread, middlegroundEntity, usePBR, newOpenSaveToolbar );
+  fixedKinematicFactory              = new FixedKinematicFactory( calculationsThread );
+  trailerKinematicFactory            = new TrailerKinematicFactory( calculationsThread );
+  fixedKinematicPrimitiveFactory     = new FixedKinematicPrimitiveFactory( calculationsThread );
+  trailerKinematicPrimitiveFactory   = new TrailerKinematicPrimitiveFactory( calculationsThread );
+  vectorFactory                      = new VectorFactory( guiThread, vectorBlockModel );
+  orientationFactory                 = new OrientationBlockFactory( guiThread, orientationBlockModel );
+  numberFactory                      = new NumberFactory( guiThread, numberBlockModel );
+  stringFactory                      = new StringFactory( guiThread, stringBlockModel );
+  debugSinkFactory                   = new DebugSinkFactory( guiThread );
+  udpSocketFactory                   = new UdpSocketFactory( guiThread );
 
-  arithmeticAddition = new ArithmeticAdditionFactory();
-  arithmeticSubtraction = new ArithmeticSubtractionFactory();
-  arithmeticMultiplication = new ArithmeticMultiplicationFactory();
-  arithmeticDivision = new ArithmeticDivisionFactory();
+  arithmeticAddition       = new ArithmeticAdditionFactory( calculationsThread );
+  arithmeticSubtraction    = new ArithmeticSubtractionFactory( calculationsThread );
+  arithmeticMultiplication = new ArithmeticMultiplicationFactory( calculationsThread );
+  arithmeticDivision       = new ArithmeticDivisionFactory( calculationsThread );
 
-  comparisonEqualTo = new ComparisonEqualToFactory();
-  comparisonNotEqualTo = new ComparisonNotEqualToFactory();
-  comparisonGreaterThan = new ComparisonGreaterThanFactory();
-  comparisonLessThan = new ComparisonLessThanFactory();
-  comparisonGreaterOrEqualTo = new ComparisonGreaterOrEqualToFactory();
-  comparisonLessOrEqualTo = new ComparisonLessOrEqualToFactory();
+  comparisonEqualTo          = new ComparisonEqualToFactory( calculationsThread );
+  comparisonNotEqualTo       = new ComparisonNotEqualToFactory( calculationsThread );
+  comparisonGreaterThan      = new ComparisonGreaterThanFactory( calculationsThread );
+  comparisonLessThan         = new ComparisonLessThanFactory( calculationsThread );
+  comparisonGreaterOrEqualTo = new ComparisonGreaterOrEqualToFactory( calculationsThread );
+  comparisonLessOrEqualTo    = new ComparisonLessOrEqualToFactory( calculationsThread );
 
 #ifdef SERIALPORT_ENABLED
-  serialPortFactory = new SerialPortFactory();
+  serialPortFactory = new SerialPortFactory( guiThread );
 #endif
 
-  fileStreamFactory = new FileStreamFactory();
-  communicationPgn7ffeFactory = new CommunicationPgn7ffeFactory();
-  communicationJrkFactory = new CommunicationJrkFactory();
-  ubxParserFactory = new UbxParserFactory();
-  nmeaParserGGAFactory = new NmeaParserGGAFactory();
-  nmeaParserHDTFactory = new NmeaParserHDTFactory();
-  nmeaParserRMCFactory = new NmeaParserRMCFactory();
-  ackermannSteeringFactory = new AckermannSteeringFactory();
-  angularVelocityLimiterFactory = new AngularVelocityLimiterFactory();
+  fileStreamFactory             = new FileStreamFactory( guiThread );
+  communicationPgn7ffeFactory   = new CommunicationPgn7ffeFactory( guiThread );
+  communicationJrkFactory       = new CommunicationJrkFactory( guiThread );
+  ubxParserFactory              = new UbxParserFactory( calculationsThread );
+  nmeaParserGGAFactory          = new NmeaParserGGAFactory( calculationsThread );
+  nmeaParserHDTFactory          = new NmeaParserHDTFactory( calculationsThread );
+  nmeaParserRMCFactory          = new NmeaParserRMCFactory( calculationsThread );
+  ackermannSteeringFactory      = new AckermannSteeringFactory( calculationsThread );
+  angularVelocityLimiterFactory = new AngularVelocityLimiterFactory( calculationsThread );
 
-  valueTransmissionNumberFactory = new ValueTransmissionNumberFactory();
-  valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory();
-  valueTransmissionStateFactory = new ValueTransmissionStateFactory();
-  valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory();
+  valueTransmissionNumberFactory     = new ValueTransmissionNumberFactory( calculationsThread );
+  valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory( calculationsThread );
+  valueTransmissionStateFactory      = new ValueTransmissionStateFactory( calculationsThread );
+  valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory( calculationsThread );
 
   vectorFactory->addToTreeWidget( ui->twBlocks );
   orientationFactory->addToTreeWidget( ui->twBlocks );
@@ -524,8 +558,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
     constexpr float metalness = 0.1f;
     constexpr float roughness = 0.5f;
 
-
-    auto* xAxis = new Qt3DCore::QEntity( rootEntity );
+    auto* xAxis        = new Qt3DCore::QEntity( middlegroundEntity );
     auto* cylinderMesh = new Qt3DExtras::QCylinderMesh( xAxis );
     cylinderMesh->setRadius( 0.2f );
     cylinderMesh->setLength( 10.0f );
@@ -554,7 +587,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
     }
 
     {
-      auto* yAxis = new Qt3DCore::QEntity( rootEntity );
+      auto* yAxis = new Qt3DCore::QEntity( middlegroundEntity );
 
       if( usePBR ) {
         auto* material = new Qt3DExtras::QMetalRoughMaterial( yAxis );
@@ -576,7 +609,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
     }
 
     {
-      auto* zAxis = new Qt3DCore::QEntity( rootEntity );
+      auto* zAxis = new Qt3DCore::QEntity( middlegroundEntity );
 
       if( usePBR ) {
         auto* material = new Qt3DExtras::QMetalRoughMaterial( zAxis );
@@ -598,6 +631,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity* rootEntity,
       zAxis->addComponent( zTransform );
     }
   }
+
+  mainWindow->readSettings();
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -663,7 +698,7 @@ SettingsDialog::~SettingsDialog() {
 #ifdef SPNAV_ENABLED
   spaceNavigatorPollingThread->stop();
 
-  if( ! spaceNavigatorPollingThread->wait( 500 ) ) {
+  if( !spaceNavigatorPollingThread->wait( 500 ) ) {
     spaceNavigatorPollingThread->terminate();
   }
 
@@ -671,24 +706,20 @@ SettingsDialog::~SettingsDialog() {
 #endif
 
   plannerGuiFactory->deleteLater();
-  plannerGui->deleteLater();
   globalPlannerFactory->deleteLater();
-  globalPlanner->deleteLater();
   localPlannerFactory->deleteLater();
-  localPlanner->deleteLater();
   stanleyGuidanceFactory->deleteLater();
-  stanleyGuidance->deleteLater();
   xteGuidanceFactory->deleteLater();
-  xteGuidance->deleteLater();
   pathPlannerModelFactory->deleteLater();
-  globalPlannerModel->deleteLater();
 }
 
-QGraphicsScene* SettingsDialog::getSceneOfConfigGraphicsView() {
+QGraphicsScene*
+SettingsDialog::getSceneOfConfigGraphicsView() {
   return ui->gvNodeEditor->scene();
 }
 
-void SettingsDialog::toggleVisibility() {
+void
+SettingsDialog::toggleVisibility() {
   if( isVisible() ) {
     setVisible( false );
   } else {
@@ -700,15 +731,15 @@ void SettingsDialog::toggleVisibility() {
   }
 }
 
-void SettingsDialog::onStart() {
+void
+SettingsDialog::onStart() {
   // save the current config if enabled
   if( ui->cbLoadConfigOnStart->isChecked() ) {
     loadDefaultConfig();
   }
 
   if( ui->cbRestoreDockPositions->isChecked() ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
     KDDockWidgets::LayoutSaver saver;
 
     saver.restoreLayout( settings.value( QStringLiteral( "SavedDocks" ) ).toByteArray() );
@@ -718,15 +749,15 @@ void SettingsDialog::onStart() {
   ui->twBlocks->sortByColumn( 0, Qt::AscendingOrder );
 }
 
-void SettingsDialog::onExit() {
+void
+SettingsDialog::onExit() {
   // save the current config if enabled
   if( ui->cbSaveConfigOnExit->isChecked() ) {
     saveDefaultConfig();
   }
 
   if( ui->cbSaveDockPositionsOnExit->isChecked() ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
     KDDockWidgets::LayoutSaver saver;
 
     settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
@@ -734,23 +765,20 @@ void SettingsDialog::onExit() {
   }
 }
 
-void SettingsDialog::loadDefaultConfig() {
+void
+SettingsDialog::loadDefaultConfig() {
   QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
 
   if( saveFile.open( QIODevice::ReadOnly ) ) {
     loadConfigFromFile( saveFile );
   }
-
-  ui->gvNodeEditor->fitInView( ui->gvNodeEditor->scene()->itemsBoundingRect(), Qt::KeepAspectRatio );
-
-  ui->gvNodeEditor->scene()->clearSelection();
 }
 
-void SettingsDialog::saveDefaultConfig() {
+void
+SettingsDialog::saveDefaultConfig() {
   QFile saveFile( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/default.json" );
 
   if( saveFile.open( QIODevice::WriteOnly ) ) {
-
     // select all items, so everything gets saved
     {
       const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
@@ -773,8 +801,9 @@ void SettingsDialog::saveDefaultConfig() {
   }
 }
 
-void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
-  auto* model = qobject_cast<QAbstractTableModel*>( qvariant_cast<QAbstractTableModel*>( ui->cbValues->currentData() ) );
+void
+SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
+  auto* model = qobject_cast< QAbstractTableModel* >( qvariant_cast< QAbstractTableModel* >( ui->cbValues->currentData() ) );
 
   if( model != nullptr ) {
     filterModelValues->setSourceModel( model );
@@ -785,17 +814,14 @@ void SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
   ui->grpNumber->setHidden( !( ui->cbValues->currentText() == QLatin1String( "Number" ) ) );
 }
 
-void SettingsDialog::on_pbSaveSelected_clicked() {
+void
+SettingsDialog::on_pbSaveSelected_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
-  QString fileName = QFileDialog::getSaveFileName( this,
-                     tr( "Open Saved Config" ),
-                     dir,
-                     tr( "All Files (*);;JSON Files (*.json)" ),
-                     &selectedFilter );
+  QString fileName =
+    QFileDialog::getSaveFileName( this, tr( "Open Saved Config" ), dir, tr( "All Files (*);;JSON Files (*.json)" ), &selectedFilter );
 
   if( !fileName.isEmpty() ) {
-
     QFile saveFile( fileName );
 
     if( !saveFile.open( QIODevice::WriteOnly ) ) {
@@ -807,18 +833,19 @@ void SettingsDialog::on_pbSaveSelected_clicked() {
   }
 }
 
-void SettingsDialog::saveConfigToFile( QFile& file ) {
+void
+SettingsDialog::saveConfigToFile( QFile& file ) {
   QJsonObject jsonObject;
-  QJsonArray blocks;
-  QJsonArray connections;
-  jsonObject[QStringLiteral( "blocks" )] = blocks;
+  QJsonArray  blocks;
+  QJsonArray  connections;
+  jsonObject[QStringLiteral( "blocks" )]      = blocks;
   jsonObject[QStringLiteral( "connections" )] = connections;
 
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
 
   for( const auto& item : constRefOfList ) {
     {
-      auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
         block->toJSON( jsonObject );
@@ -826,7 +853,7 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
     }
 
     {
-      auto* connection = qgraphicsitem_cast<QNEConnection*>( item );
+      auto* connection = qgraphicsitem_cast< QNEConnection* >( item );
 
       if( connection != nullptr ) {
         connection->toJSON( jsonObject );
@@ -838,11 +865,12 @@ void SettingsDialog::saveConfigToFile( QFile& file ) {
   file.write( jsonDocument.toJson() );
 }
 
-QNEBlock* SettingsDialog::getBlockWithId( int id ) {
+QNEBlock*
+SettingsDialog::getBlockWithId( int id ) {
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
       if( block->id == id ) {
@@ -854,11 +882,12 @@ QNEBlock* SettingsDialog::getBlockWithId( int id ) {
   return nullptr;
 }
 
-QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
+QNEBlock*
+SettingsDialog::getBlockWithName( const QString& name ) {
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
       if( block->getName() == name ) {
@@ -870,34 +899,29 @@ QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
   return nullptr;
 }
 
-void SettingsDialog::on_pbLoad_clicked() {
+void
+SettingsDialog::on_pbLoad_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
 
-  auto* fileDialog = new QFileDialog( this,
-                                      tr( "Open Saved Config" ),
-                                      dir,
-                                      selectedFilter );
+  auto* fileDialog = new QFileDialog( this, tr( "Open Saved Config" ), dir, selectedFilter );
   fileDialog->setFileMode( QFileDialog::ExistingFile );
   fileDialog->setNameFilter( tr( "All Files (*);;JSON Files (*.json)" ) );
 
   // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
-  // the signals instead of using the static functions for the dialogs
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect
+  // to the signals instead of using the static functions for the dialogs
 #ifdef Q_OS_ANDROID
   QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
     qDebug() << "QFileDialog::urlSelected QUrl" << fileName << fileName.toDisplayString() << fileName.toLocalFile();
 
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
-      QFile loadFile(
-              QUrl::fromPercentEncoding(
-                      fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+      QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
       } else {
-
         loadConfigFromFile( loadFile );
       }
     }
@@ -908,7 +932,7 @@ void SettingsDialog::on_pbLoad_clicked() {
     fileDialog->deleteLater();
   } );
 #else
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( const QString & fileName ) {
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [this, fileDialog]( const QString& fileName ) {
     qDebug() << "QFileDialog::fileSelected QString" << fileName;
 
     if( !fileName.isEmpty() ) {
@@ -918,7 +942,6 @@ void SettingsDialog::on_pbLoad_clicked() {
       if( !loadFile.open( QIODevice::ReadOnly ) ) {
         qWarning() << "Couldn't open save file.";
       } else {
-
         loadConfigFromFile( loadFile );
       }
     }
@@ -936,26 +959,26 @@ void SettingsDialog::on_pbLoad_clicked() {
   fileDialog->open();
 }
 
-void SettingsDialog::loadConfigFromFile( QFile& file ) {
+void
+SettingsDialog::loadConfigFromFile( QFile& file ) {
   QByteArray saveData = file.readAll();
 
   QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
-  QJsonObject json = loadDoc.object();
+  QJsonObject   json = loadDoc.object();
 
   // as the new object get new id, here is a QMap to hold the conversions
   // first int: id in file, second int: id in the graphicsview
-  QMap<int, int> idMap;
+  QMap< int, int > idMap;
 
   if( json.contains( QStringLiteral( "blocks" ) ) && json[QStringLiteral( "blocks" )].isArray() ) {
     QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
     for( const auto& blockIndex : qAsConst( blocksArray ) ) {
       QJsonObject blockObject = blockIndex.toObject();
-      int id = blockObject[QStringLiteral( "id" )].toInt( 0 );
+      int         id          = blockObject[QStringLiteral( "id" )].toInt( 0 );
 
       // search the block and set the values
       if( id != 0 ) {
-
         // system id -> don't create new blocks
         if( id < int( QNEBlock::IdRange::UserIdStart ) ) {
           QNEBlock* block = getBlockWithName( blockObject[QStringLiteral( "type" )].toString() );
@@ -981,7 +1004,7 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
                 auto* childItem = item->child( j );
 
                 if( childItem->text( 1 ) == blockObject[QStringLiteral( "type" )].toString() ) {
-                  factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( childItem->data( 0, Qt::UserRole ) ) );
+                  factory = qobject_cast< BlockFactory* >( qvariant_cast< QObject* >( childItem->data( 0, Qt::UserRole ) ) );
                 }
               }
             }
@@ -1003,31 +1026,27 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
     }
   }
 
-
   if( json.contains( QStringLiteral( "connections" ) ) && json[QStringLiteral( "connections" )].isArray() ) {
     QJsonArray connectionsArray = json[QStringLiteral( "connections" )].toArray();
 
     for( const auto& connectionsIndex : qAsConst( connectionsArray ) ) {
       QJsonObject connectionsObject = connectionsIndex.toObject();
 
-      if( !connectionsObject[QStringLiteral( "idFrom" )].isUndefined() &&
-          !connectionsObject[QStringLiteral( "idTo" )].isUndefined() &&
-          !connectionsObject[QStringLiteral( "portFrom" )].isUndefined() &&
-          !connectionsObject[QStringLiteral( "portTo" )].isUndefined() ) {
-
+      if( !connectionsObject[QStringLiteral( "idFrom" )].isUndefined() && !connectionsObject[QStringLiteral( "idTo" )].isUndefined() &&
+          !connectionsObject[QStringLiteral( "portFrom" )].isUndefined() && !connectionsObject[QStringLiteral( "portTo" )].isUndefined() ) {
         int idFrom = idMap[connectionsObject[QStringLiteral( "idFrom" )].toInt()];
-        int idTo = idMap[connectionsObject[QStringLiteral( "idTo" )].toInt()];
+        int idTo   = idMap[connectionsObject[QStringLiteral( "idTo" )].toInt()];
 
         if( idFrom != 0 && idTo != 0 ) {
           QNEBlock* blockFrom = getBlockWithId( idFrom );
-          QNEBlock* blockTo = getBlockWithId( idTo );
+          QNEBlock* blockTo   = getBlockWithId( idTo );
 
           if( ( blockFrom != nullptr ) && ( blockTo != nullptr ) ) {
             QString portFromName = connectionsObject[QStringLiteral( "portFrom" )].toString();
-            QString portToName = connectionsObject[QStringLiteral( "portTo" )].toString();
+            QString portToName   = connectionsObject[QStringLiteral( "portTo" )].toString();
 
             QNEPort* portFrom = blockFrom->getPortWithName( portFromName, true );
-            QNEPort* portTo = blockTo->getPortWithName( portToName, false );
+            QNEPort* portTo   = blockTo->getPortWithName( portToName, false );
 
             if( ( portFrom != nullptr ) && ( portTo != nullptr ) ) {
               auto* conn = new QNEConnection();
@@ -1048,11 +1067,12 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
     }
   }
 
-  // as new values for the blocks are added above, emit all signals now, when the connections are made
+  // as new values for the blocks are added above, emit all signals now, when the
+  // connections are made
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
       Q_EMIT block->emitConfigSignals();
@@ -1062,11 +1082,12 @@ void SettingsDialog::loadConfigFromFile( QFile& file ) {
   resetAllModels();
 }
 
-void SettingsDialog::on_pbAddBlock_clicked() {
+void
+SettingsDialog::on_pbAddBlock_clicked() {
   auto results = ui->twBlocks->selectedItems();
 
   if( !results.empty() ) {
-    auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( results.first()->data( 0, Qt::UserRole ) ) );
+    auto* factory = qobject_cast< BlockFactory* >( qvariant_cast< QObject* >( results.first()->data( 0, Qt::UserRole ) ) );
 
     if( factory != nullptr ) {
       QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
@@ -1077,20 +1098,23 @@ void SettingsDialog::on_pbAddBlock_clicked() {
   }
 }
 
-void SettingsDialog::on_pbZoomOut_clicked() {
+void
+SettingsDialog::on_pbZoomOut_clicked() {
   ui->gvNodeEditor->zoomOut();
 }
 
-void SettingsDialog::on_pbZoomIn_clicked() {
+void
+SettingsDialog::on_pbZoomIn_clicked() {
   ui->gvNodeEditor->zoomIn();
 }
 
-void SettingsDialog::on_pbDeleteSelected_clicked() {
+void
+SettingsDialog::on_pbDeleteSelected_clicked() {
   {
     const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
     for( auto i : constRefOfList ) {
-      auto* connection = qgraphicsitem_cast<QNEConnection*>( i );
+      auto* connection = qgraphicsitem_cast< QNEConnection* >( i );
       delete connection;
     }
   }
@@ -1099,7 +1123,7 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
     const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
 
     for( auto i : constRefOfList ) {
-      const auto* block = qgraphicsitem_cast<const QNEBlock*>( i );
+      const auto* block = qgraphicsitem_cast< const QNEBlock* >( i );
 
       if( block != nullptr ) {
         if( !block->systemBlock ) {
@@ -1110,39 +1134,58 @@ void SettingsDialog::on_pbDeleteSelected_clicked() {
   }
 
   resetAllModels();
-
 }
 
-void SettingsDialog:: on_gbGrid_toggled( bool arg1 ) {
+void
+SettingsDialog::on_gbGrid_toggled( bool arg1 ) {
   saveGridValuesInSettings();
   Q_EMIT setGrid( bool( arg1 ) );
 }
 
-void SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
+void
+SettingsDialog::on_dsbGridXStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ),
+                        float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ),
+                        float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ),
+                        float( ui->dsbGridCameraThreshold->value() ),
+                        float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor,
+                        gridColorCoarse );
 }
 
-void SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
+void
+SettingsDialog::on_dsbGridYStep_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ),
+                        float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ),
+                        float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ),
+                        float( ui->dsbGridCameraThreshold->value() ),
+                        float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor,
+                        gridColorCoarse );
 }
 
-void SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
+void
+SettingsDialog::on_dsbGridSize_valueChanged( double /*arg1*/ ) {
   saveGridValuesInSettings();
-  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ),
+                        float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ),
+                        float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ),
+                        float( ui->dsbGridCameraThreshold->value() ),
+                        float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor,
+                        gridColorCoarse );
 }
 
-void SettingsDialog::on_pbColor_clicked() {
+void
+SettingsDialog::on_pbColor_clicked() {
   const QColor color = QColorDialog::getColor( gridColor, this, QStringLiteral( "Select Grid Color" ) );
 
   if( color.isValid() ) {
@@ -1152,17 +1195,22 @@ void SettingsDialog::on_pbColor_clicked() {
     ui->lbColor->setAutoFillBackground( true );
 
     saveGridValuesInSettings();
-    Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                          float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                          float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                          gridColor, gridColorCoarse );
+    Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ),
+                          float( ui->dsbGridYStep->value() ),
+                          float( ui->dsbGridXStepCoarse->value() ),
+                          float( ui->dsbGridYStepCoarse->value() ),
+                          float( ui->dsbGridSize->value() ),
+                          float( ui->dsbGridCameraThreshold->value() ),
+                          float( ui->dsbGridCameraThresholdCoarse->value() ),
+                          gridColor,
+                          gridColorCoarse );
   }
 }
 
-void SettingsDialog::saveGridValuesInSettings() {
+void
+SettingsDialog::saveGridValuesInSettings() {
   if( !blockSettingsSaving ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
     settings.setValue( QStringLiteral( "Grid/Enabled" ), bool( ui->gbGrid->isChecked() ) );
     settings.setValue( QStringLiteral( "Grid/XStep" ), ui->dsbGridXStep->value() );
@@ -1177,10 +1225,10 @@ void SettingsDialog::saveGridValuesInSettings() {
   }
 }
 
-void SettingsDialog::savePathPlannerValuesInSettings() {
+void
+SettingsDialog::savePathPlannerValuesInSettings() {
   if( !blockSettingsSaving ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
     settings.setValue( QStringLiteral( "PathPlanner/PathsInReserve" ), ui->sbPathsInReserve->value() );
     settings.setValue( QStringLiteral( "PathPlanner/MaxDeviation" ), ui->sbGlobalPlannerMaxDeviation->value() );
@@ -1188,28 +1236,29 @@ void SettingsDialog::savePathPlannerValuesInSettings() {
   }
 }
 
-void SettingsDialog::setPathPlannerSettings() {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::setPathPlannerSettings() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
       block->setName( ui->lePathPlannerName->text() );
       pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
       pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
 
-      pathPlannerModel->individualRayColor = ui->cbPathPlannerRayColor->isChecked();
+      pathPlannerModel->individualRayColor     = ui->cbPathPlannerRayColor->isChecked();
       pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
-      pathPlannerModel->bisectorsVisible = ui->cbPathPlannerBisectors->isChecked();
+      pathPlannerModel->bisectorsVisible       = ui->cbPathPlannerBisectors->isChecked();
 
       pathPlannerModel->refreshColors();
     }
   }
 }
 
-void SettingsDialog::emitAllConfigSignals() {
+void
+SettingsDialog::emitAllConfigSignals() {
   Q_EMIT setGrid( ui->gbGrid->isChecked() );
   emitGridSettings();
 
@@ -1218,66 +1267,68 @@ void SettingsDialog::emitAllConfigSignals() {
   Q_EMIT cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), ui->slCameraSmoothingPosition->value() );
 }
 
-QTreeWidget* SettingsDialog::getBlockTreeWidget() {
+QTreeWidget*
+SettingsDialog::getBlockTreeWidget() {
   return ui->twBlocks;
 }
 
-void SettingsDialog::on_cbSaveConfigOnExit_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbSaveConfigOnExit_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "SaveConfigOnExit" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
-void SettingsDialog::on_cbLoadConfigOnStart_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbLoadConfigOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "LoadConfigOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
-void SettingsDialog::on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbOpenSettingsDialogOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "OpenSettingsDialogOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
-void SettingsDialog::on_cbRunSimulatorOnStart_stateChanged( int arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbRunSimulatorOnStart_stateChanged( int arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "RunSimulatorOnStart" ), bool( arg1 == Qt::CheckState::Checked ) );
   settings.sync();
 }
 
-void SettingsDialog::on_pbDeleteSettings_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_pbDeleteSettings_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.clear();
   settings.sync();
 }
 
-void SettingsDialog::on_pbSaveAsDefault_clicked() {
+void
+SettingsDialog::on_pbSaveAsDefault_clicked() {
   saveDefaultConfig();
 }
 
-void SettingsDialog::on_pbLoadSavedConfig_clicked() {
+void
+SettingsDialog::on_pbLoadSavedConfig_clicked() {
   loadDefaultConfig();
 }
 
-void SettingsDialog::on_pbSetStringToFilename_clicked() {
+void
+SettingsDialog::on_pbSetStringToFilename_clicked() {
   QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
 
   if( index.isValid() ) {
-    QString dir = ui->twValues->model()->data( index, Qt::DisplayRole ).toString();
-    QString fileName = QFileDialog::getOpenFileName( this,
-                       tr( "Set Filename to String" ),
-                       dir );
+    QString dir      = ui->twValues->model()->data( index, Qt::DisplayRole ).toString();
+    QString fileName = QFileDialog::getOpenFileName( this, tr( "Set Filename to String" ), dir );
 
     if( !fileName.isEmpty() ) {
       ui->twValues->model()->setData( index, fileName );
@@ -1288,7 +1339,8 @@ void SettingsDialog::on_pbSetStringToFilename_clicked() {
   ui->twValues->resizeColumnsToContents();
 }
 
-void SettingsDialog::on_pbComPortRefresh_clicked() {
+void
+SettingsDialog::on_pbComPortRefresh_clicked() {
   ui->cbComPorts->clear();
 
 #ifdef SERIALPORT_ENABLED
@@ -1301,7 +1353,8 @@ void SettingsDialog::on_pbComPortRefresh_clicked() {
 #endif
 }
 
-void SettingsDialog::on_pbBaudrateRefresh_clicked() {
+void
+SettingsDialog::on_pbBaudrateRefresh_clicked() {
   ui->cbBaudrate->clear();
 
 #ifdef SERIALPORT_ENABLED
@@ -1314,7 +1367,8 @@ void SettingsDialog::on_pbBaudrateRefresh_clicked() {
 #endif
 }
 
-void SettingsDialog::on_pbComPortSet_clicked() {
+void
+SettingsDialog::on_pbComPortSet_clicked() {
   QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
 
   if( index.isValid() ) {
@@ -1322,7 +1376,8 @@ void SettingsDialog::on_pbComPortSet_clicked() {
   }
 }
 
-void SettingsDialog::on_pbBaudrateSet_clicked() {
+void
+SettingsDialog::on_pbBaudrateSet_clicked() {
   QModelIndex index = ui->twValues->currentIndex().siblingAtColumn( 1 );
 
   if( index.isValid() ) {
@@ -1330,8 +1385,10 @@ void SettingsDialog::on_pbBaudrateSet_clicked() {
   }
 }
 
-void SettingsDialog::on_pbClear_clicked() {
-  // select all items, so everything gets deleted with a call to on_pbDeleteSelected_clicked()
+void
+SettingsDialog::on_pbClear_clicked() {
+  // select all items, so everything gets deleted with a call to
+  // on_pbDeleteSelected_clicked()
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
 
   for( const auto& item : constRefOfList ) {
@@ -1341,16 +1398,18 @@ void SettingsDialog::on_pbClear_clicked() {
   on_pbDeleteSelected_clicked();
 }
 
-void SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
-  QModelIndex idx = ui->cbImplements->model()->index( index, 1 );
-  QVariant data = ui->cbImplements->model()->data( idx );
-  auto* block = qvariant_cast<QNEBlock*>( data );
+void
+SettingsDialog::on_cbImplements_currentIndexChanged( int index ) {
+  QModelIndex idx   = ui->cbImplements->model()->index( index, 1 );
+  QVariant    data  = ui->cbImplements->model()->data( idx );
+  auto*       block = qvariant_cast< QNEBlock* >( data );
 
   implementSectionModel->setDatasource( block );
   ui->twSections->resizeColumnsToContents();
 }
 
-void SettingsDialog::implementModelReset() {
+void
+SettingsDialog::implementModelReset() {
   if( ui->cbImplements->currentIndex() == -1 || ui->cbImplements->currentIndex() >= ui->cbImplements->model()->rowCount() ) {
     ui->cbImplements->setCurrentIndex( 0 );
   }
@@ -1358,7 +1417,8 @@ void SettingsDialog::implementModelReset() {
   on_cbImplements_currentIndexChanged( ui->cbImplements->currentIndex() );
 }
 
-void SettingsDialog::pathPlannerModelReset() {
+void
+SettingsDialog::pathPlannerModelReset() {
   if( ui->cbPathPlanner->currentIndex() == -1 || ui->cbPathPlanner->currentIndex() >= ui->cbPathPlanner->model()->rowCount() ) {
     ui->cbPathPlanner->setCurrentIndex( 0 );
   }
@@ -1366,7 +1426,8 @@ void SettingsDialog::pathPlannerModelReset() {
   on_cbPathPlanner_currentIndexChanged( ui->cbPathPlanner->currentIndex() );
 }
 
-void SettingsDialog::resetAllModels() {
+void
+SettingsDialog::resetAllModels() {
   vectorBlockModel->resetModel();
   numberBlockModel->resetModel();
   actionBlockModel->resetModel();
@@ -1385,11 +1446,20 @@ void SettingsDialog::resetAllModels() {
   ui->twSections->resizeColumnsToContents();
 }
 
-void SettingsDialog::setSimulatorValues( const double a, const double b, const double c,
-    const double Caf, const double Car, const double Cah,
-    const double m, const double Iz,
-    const double sigmaF, const double sigmaR, const double sigmaH,
-    const double Cx, const double slipX ) {
+void
+SettingsDialog::setSimulatorValues( const double a,
+                                    const double b,
+                                    const double c,
+                                    const double Caf,
+                                    const double Car,
+                                    const double Cah,
+                                    const double m,
+                                    const double Iz,
+                                    const double sigmaF,
+                                    const double sigmaR,
+                                    const double sigmaH,
+                                    const double Cx,
+                                    const double slipX ) {
   ui->dsbSimGeneralA->blockSignals( true );
   ui->dsbSimGeneralB->blockSignals( true );
   ui->dsbSimGeneralC->blockSignals( true );
@@ -1433,7 +1503,8 @@ void SettingsDialog::setSimulatorValues( const double a, const double b, const d
   ui->dsbSimGeneralSlipX->blockSignals( false );
 }
 
-void SettingsDialog::on_btnSectionAdd_clicked() {
+void
+SettingsDialog::on_btnSectionAdd_clicked() {
   if( !( ui->twSections->selectionModel()->selection().indexes().isEmpty() ) ) {
     ui->twSections->model()->insertRow( ui->twSections->selectionModel()->selection().indexes().constFirst().row() );
   } else {
@@ -1441,10 +1512,11 @@ void SettingsDialog::on_btnSectionAdd_clicked() {
   }
 }
 
-void SettingsDialog::on_btnSectionRemove_clicked() {
+void
+SettingsDialog::on_btnSectionRemove_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  std::vector<int> rows;
+  std::vector< int > rows;
 
   const auto& constRefOfList = selection.indexes();
 
@@ -1460,7 +1532,8 @@ void SettingsDialog::on_btnSectionRemove_clicked() {
   }
 }
 
-void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
+void
+SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
   const auto& constRefOfList = selection.indexes();
@@ -1470,10 +1543,11 @@ void SettingsDialog::on_pbSetSelectedCellsToNumber_clicked() {
   }
 }
 
-void SettingsDialog::on_btnSectionMoveUp_clicked() {
+void
+SettingsDialog::on_btnSectionMoveUp_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  std::vector<int> rows;
+  std::vector< int > rows;
 
   const auto& constRefOfList = selection.indexes();
 
@@ -1484,7 +1558,7 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
   // forward sort
   std::sort( rows.begin(), rows.end(), std::less<>() );
 
-  auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+  auto* implementModel = qobject_cast< ImplementSectionModel* >( ui->twSections->model() );
 
   if( implementModel != nullptr ) {
     if( rows[0] > 0 ) {
@@ -1495,10 +1569,11 @@ void SettingsDialog::on_btnSectionMoveUp_clicked() {
   }
 }
 
-void SettingsDialog::on_btnSectionMoveDown_clicked() {
+void
+SettingsDialog::on_btnSectionMoveDown_clicked() {
   QItemSelection selection( ui->twSections->selectionModel()->selection() );
 
-  std::vector<int> rows;
+  std::vector< int > rows;
 
   const auto& constRefOfList = selection.indexes();
 
@@ -1509,7 +1584,7 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
   // reverse sort
   std::sort( rows.begin(), rows.end(), std::greater<>() );
 
-  auto* implementModel = qobject_cast<ImplementSectionModel*>( ui->twSections->model() );
+  auto* implementModel = qobject_cast< ImplementSectionModel* >( ui->twSections->model() );
 
   if( implementModel != nullptr ) {
     if( ( rows[0] + 1 ) < implementModel->rowCount() ) {
@@ -1520,42 +1595,62 @@ void SettingsDialog::on_btnSectionMoveDown_clicked() {
   }
 }
 
-void SettingsDialog::on_dsbGridXStepCoarse_valueChanged( double ) {
+void
+SettingsDialog::on_dsbGridXStepCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
   emitGridSettings();
 }
 
-void SettingsDialog::on_dsbGridYStepCoarse_valueChanged( double ) {
+void
+SettingsDialog::on_dsbGridYStepCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
   emitGridSettings();
 }
 
-void SettingsDialog::on_dsbGridCameraThreshold_valueChanged( double ) {
+void
+SettingsDialog::on_dsbGridCameraThreshold_valueChanged( double ) {
   saveGridValuesInSettings();
   emitGridSettings();
 }
 
-void SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
+void
+SettingsDialog::on_dsbGridCameraThresholdCoarse_valueChanged( double ) {
   saveGridValuesInSettings();
   emitGridSettings();
 }
 
-void SettingsDialog::emitGridSettings() {
-  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ), float( ui->dsbGridYStep->value() ),
-                        float( ui->dsbGridXStepCoarse->value() ), float( ui->dsbGridYStepCoarse->value() ),
-                        float( ui->dsbGridSize->value() ), float( ui->dsbGridCameraThreshold->value() ), float( ui->dsbGridCameraThresholdCoarse->value() ),
-                        gridColor, gridColorCoarse );
+void
+SettingsDialog::emitGridSettings() {
+  Q_EMIT setGridValues( double( ui->dsbGridXStep->value() ),
+                        float( ui->dsbGridYStep->value() ),
+                        float( ui->dsbGridXStepCoarse->value() ),
+                        float( ui->dsbGridYStepCoarse->value() ),
+                        float( ui->dsbGridSize->value() ),
+                        float( ui->dsbGridCameraThreshold->value() ),
+                        float( ui->dsbGridCameraThresholdCoarse->value() ),
+                        gridColor,
+                        gridColorCoarse );
 }
 
-void SettingsDialog::emitSimulatorValues() {
-  Q_EMIT simulatorValuesChanged( ui->dsbSimGeneralA->value(), ui->dsbSimGeneralB->value(), ui->dsbSimGeneralC->value(),
-                                 ui->dsbSimGeneralCaf->value(), ui->dsbSimGeneralCar->value(), ui->dsbSimGeneralCah->value(),
-                                 ui->dsbSimGeneralM->value(), ui->dsbSimGeneralIz->value(),
-                                 ui->dsbSimGeneralSigmaF->value(), ui->dsbSimGeneralSigmaR->value(), ui->dsbSimGeneralSigmaH->value(),
-                                 ui->dsbSimGeneralCx->value(), ui->dsbSimGeneralSlipX->value() / 100 );
+void
+SettingsDialog::emitSimulatorValues() {
+  Q_EMIT simulatorValuesChanged( ui->dsbSimGeneralA->value(),
+                                 ui->dsbSimGeneralB->value(),
+                                 ui->dsbSimGeneralC->value(),
+                                 ui->dsbSimGeneralCaf->value(),
+                                 ui->dsbSimGeneralCar->value(),
+                                 ui->dsbSimGeneralCah->value(),
+                                 ui->dsbSimGeneralM->value(),
+                                 ui->dsbSimGeneralIz->value(),
+                                 ui->dsbSimGeneralSigmaF->value(),
+                                 ui->dsbSimGeneralSigmaR->value(),
+                                 ui->dsbSimGeneralSigmaH->value(),
+                                 ui->dsbSimGeneralCx->value(),
+                                 ui->dsbSimGeneralSlipX->value() / 100 );
 }
 
-void SettingsDialog::emitNoiseStandartDeviations() {
+void
+SettingsDialog::emitNoiseStandartDeviations() {
   Q_EMIT noiseStandartDeviationsChanged( ui->dsbSimNoisePositionXY->value(),
                                          ui->dsbSimNoisePositionZ->value(),
                                          ui->dsbSimNoiseOrientation->value(),
@@ -1563,7 +1658,8 @@ void SettingsDialog::emitNoiseStandartDeviations() {
                                          ui->dsbSimNoiseGyro->value() );
 }
 
-void SettingsDialog::on_pbColorCoarse_clicked() {
+void
+SettingsDialog::on_pbColorCoarse_clicked() {
   const QColor color = QColorDialog::getColor( gridColorCoarse, this, QStringLiteral( "Select Grid Color" ) );
 
   if( color.isValid() ) {
@@ -1577,28 +1673,30 @@ void SettingsDialog::on_pbColorCoarse_clicked() {
   }
 }
 
-void SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
+void
+SettingsDialog::on_sbPathsInReserve_valueChanged( int ) {
   savePathPlannerValuesInSettings();
   Q_EMIT plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }
 
-void SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbRestoreDockPositions_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "RestoreDockPositionsOnStart" ), checked );
   settings.sync();
 }
 
-void SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbSaveDockPositionsOnExit_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "SaveDockPositionsOnExit" ), checked );
   settings.sync();
 }
 
-void SettingsDialog::on_pbMeterDefaults_clicked() {
+void
+SettingsDialog::on_pbMeterDefaults_clicked() {
   QItemSelection selection( ui->tvMeter->selectionModel()->selection() );
 
   const auto& constRefOfList = selection.indexes();
@@ -1615,15 +1713,18 @@ void SettingsDialog::on_pbMeterDefaults_clicked() {
   }
 }
 
-void SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked ) {
+void
+SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked ) {
   geographicConvertionWrapperSimulator->useTM = checked;
 }
 
-void SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
+void
+SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
   geographicConvertionWrapperGuidance->useTM = checked;
 }
 
-void SettingsDialog::on_pbSaveAll_clicked() {
+void
+SettingsDialog::on_pbSaveAll_clicked() {
   // select all items, so everything gets saved
   {
     const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
@@ -1645,26 +1746,23 @@ void SettingsDialog::on_pbSaveAll_clicked() {
   }
 }
 
-void SettingsDialog::on_pbSaveDockPositionsAsDefault_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_pbSaveDockPositionsAsDefault_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
   KDDockWidgets::LayoutSaver saver;
 
   settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
   settings.sync();
 }
 
-void SettingsDialog::on_pbSaveDockPositions_clicked() {
+void
+SettingsDialog::on_pbSaveDockPositions_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
-  QString fileName = QFileDialog::getSaveFileName( this,
-                     tr( "Open Saved Config" ),
-                     dir,
-                     tr( "All Files (*);;JSON Files (*.json)" ),
-                     &selectedFilter );
+  QString fileName =
+    QFileDialog::getSaveFileName( this, tr( "Open Saved Config" ), dir, tr( "All Files (*);;JSON Files (*.json)" ), &selectedFilter );
 
   if( !fileName.isEmpty() ) {
-
     QFile saveFile( fileName );
 
     if( !saveFile.open( QIODevice::WriteOnly ) ) {
@@ -1685,21 +1783,19 @@ void SettingsDialog::on_pbSaveDockPositions_clicked() {
   }
 }
 
-void SettingsDialog::on_pbLoadDockPositions_clicked() {
+void
+SettingsDialog::on_pbLoadDockPositions_clicked() {
   QString selectedFilter = QStringLiteral( "JSON Files (*.json)" );
   QString dir;
 
-  auto* fileDialog = new QFileDialog( this,
-                                      tr( "Open Saved Config" ),
-                                      dir,
-                                      selectedFilter );
+  auto* fileDialog = new QFileDialog( this, tr( "Open Saved Config" ), dir, selectedFilter );
   fileDialog->setFileMode( QFileDialog::ExistingFile );
   fileDialog->setNameFilter( tr( "All Files (*);;JSON Files (*.json)" ) );
 
   // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-  // this is needed, as the file dialog on android is asynchonous, so you have to connect to
-  // the signals instead of using the static functions for the dialogs
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [fileDialog]( const QString & fileName ) {
+  // this is needed, as the file dialog on android is asynchonous, so you have to connect
+  // to the signals instead of using the static functions for the dialogs
+  QObject::connect( fileDialog, &QFileDialog::fileSelected, this, [fileDialog]( const QString& fileName ) {
     if( !fileName.isEmpty() ) {
       // some string wrangling on android to get the native file name
       QFile loadFile( fileName );
@@ -1710,7 +1806,7 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
         QByteArray saveData = loadFile.readAll();
 
         QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
-        QJsonObject json = loadDoc.object();
+        QJsonObject   json = loadDoc.object();
 
         if( json.contains( QStringLiteral( "docks" ) ) ) {
           QJsonObject docksObject = json[QStringLiteral( "docks" )].toObject();
@@ -1733,46 +1829,46 @@ void SettingsDialog::on_pbLoadDockPositions_clicked() {
   fileDialog->open();
 }
 
-void SettingsDialog::on_sbGlobalPlannerMaxDeviation_valueChanged( double ) {
+void
+SettingsDialog::on_sbGlobalPlannerMaxDeviation_valueChanged( double ) {
   savePathPlannerValuesInSettings();
   Q_EMIT plannerSettingsChanged( ui->sbPathsInReserve->value(), ui->sbGlobalPlannerMaxDeviation->value() );
 }
 
-void SettingsDialog::on_rbMaterialAuto_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_rbMaterialAuto_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "Material/usePBR" ), true );
   settings.setValue( QStringLiteral( "Material/usePhong" ), true );
   settings.sync();
 }
 
-void SettingsDialog::on_rbMaterialPRB_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_rbMaterialPRB_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "Material/usePBR" ), true );
   settings.setValue( QStringLiteral( "Material/usePhong" ), false );
   settings.sync();
 }
 
-void SettingsDialog::on_rbMaterialPhong_clicked() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_rbMaterialPhong_clicked() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "Material/usePBR" ), false );
   settings.setValue( QStringLiteral( "Material/usePhong" ), true );
   settings.sync();
 }
 
-void SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( index, 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( index, 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
-
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       ui->gbPathPlanner->blockSignals( true );
       ui->lePathPlannerName->blockSignals( true );
       ui->dsbPathlPlannerZOffset->blockSignals( true );
@@ -1817,40 +1913,75 @@ void SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
   }
 };
 
-void SettingsDialog::on_lePathPlannerName_textChanged( const QString& ) {
+void
+SettingsDialog::on_lePathPlannerName_textChanged( const QString& ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_dsbPathlPlannerZOffset_valueChanged( double ) {
+void
+SettingsDialog::on_dsbPathlPlannerZOffset_valueChanged( double ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_cbPathPlannerRayColor_stateChanged( int ) {
+void
+SettingsDialog::on_cbPathPlannerArcColor_stateChanged( int ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_cbPathPlannerSegmentColor_stateChanged( int ) {
+void
+SettingsDialog::on_cbPathPlannerRayColor_stateChanged( int ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_dsbPathlPlannerViewbox_valueChanged( double ) {
+void
+SettingsDialog::on_cbPathPlannerSegmentColor_stateChanged( int ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_gbPathPlanner_toggled( bool ) {
+void
+SettingsDialog::on_dsbPathlPlannerViewbox_valueChanged( double ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_cbPathPlannerBisectors_stateChanged( int ) {
+void
+SettingsDialog::on_gbPathPlanner_toggled( bool ) {
   setPathPlannerSettings();
 }
 
-void SettingsDialog::on_pbPathPlannerLineColor_clicked() {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::on_cbPathPlannerBisectors_stateChanged( int ) {
+  setPathPlannerSettings();
+}
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+void
+SettingsDialog::on_pbPathPlannerArcColor_clicked() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+      const QColor color = QColorDialog::getColor( pathPlannerModel->arcColor, this, QStringLiteral( "Select Arc Color" ) );
+
+      if( color.isValid() ) {
+        pathPlannerModel->arcColor = color;
+
+        ui->lbPathPlannerArcColor->setText( color.name() );
+        ui->lbPathPlannerArcColor->setPalette( color );
+        ui->lbPathPlannerArcColor->setAutoFillBackground( true );
+
+        pathPlannerModel->refreshColors();
+      }
+    }
+  }
+}
+
+void
+SettingsDialog::on_pbPathPlannerLineColor_clicked() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
+
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->linesColor, this, QStringLiteral( "Select Line Color" ) );
 
       if( color.isValid() ) {
@@ -1866,12 +1997,13 @@ void SettingsDialog::on_pbPathPlannerLineColor_clicked() {
   }
 }
 
-void SettingsDialog::on_pbPathPlannerRayColor_clicked() {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::on_pbPathPlannerRayColor_clicked() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->raysColor, this, QStringLiteral( "Select Ray Color" ) );
 
       if( color.isValid() ) {
@@ -1887,12 +2019,13 @@ void SettingsDialog::on_pbPathPlannerRayColor_clicked() {
   }
 }
 
-void SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->segmentsColor, this, QStringLiteral( "Select Segment Color" ) );
 
       if( color.isValid() ) {
@@ -1908,12 +2041,13 @@ void SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
   }
 }
 
-void SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
-  QModelIndex idx = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  QVariant data = ui->cbPathPlanner->model()->data( idx );
+void
+SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  if( auto* block = qvariant_cast<QNEBlock*>( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast<PathPlannerModel*>( block->object ) ) {
+  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->bisectorsColor, this, QStringLiteral( "Select Bisectors Color" ) );
 
       if( color.isValid() ) {
@@ -1929,9 +2063,9 @@ void SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
   }
 }
 
-void SettingsDialog::on_dsbGamma_valueChanged( double arg1 ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_dsbGamma_valueChanged( double arg1 ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "Qt3D/Gamma" ), arg1 );
   settings.sync();
@@ -1939,9 +2073,9 @@ void SettingsDialog::on_dsbGamma_valueChanged( double arg1 ) {
   qt3dWindow->defaultFrameGraph()->setGamma( float( arg1 ) );
 }
 
-void SettingsDialog::on_cbShowDebugOverlay_toggled( bool checked ) {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                      QSettings::IniFormat );
+void
+SettingsDialog::on_cbShowDebugOverlay_toggled( bool checked ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
   settings.setValue( QStringLiteral( "Qt3D/ShowDebugOverlay" ), checked );
   settings.sync();
@@ -1949,11 +2083,13 @@ void SettingsDialog::on_cbShowDebugOverlay_toggled( bool checked ) {
   qt3dWindow->defaultFrameGraph()->setShowDebugOverlay( checked );
 }
 
-void SettingsDialog::on_pbGammaDefault_clicked() {
+void
+SettingsDialog::on_pbGammaDefault_clicked() {
   ui->dsbGamma->setValue( 2.2 );
 }
 
-void SettingsDialog::on_pbPlotsDefaults_clicked() {
+void
+SettingsDialog::on_pbPlotsDefaults_clicked() {
   QItemSelection selection( ui->tvPlots->selectionModel()->selection() );
 
   const auto& constRefOfList = selection.indexes();
@@ -1967,36 +2103,44 @@ void SettingsDialog::on_pbPlotsDefaults_clicked() {
   }
 }
 
-void SettingsDialog::on_dsbSimNoisePositionXY_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimNoisePositionXY_valueChanged( double ) {
   emitNoiseStandartDeviations();
 }
 
-void SettingsDialog::on_dsbSimNoiseGyro_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimNoiseGyro_valueChanged( double ) {
   emitNoiseStandartDeviations();
 }
 
-void SettingsDialog::on_dsbSimNoisePositionZ_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimNoisePositionZ_valueChanged( double ) {
   emitNoiseStandartDeviations();
 }
 
-void SettingsDialog::on_dsbSimNoiseOrientation_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimNoiseOrientation_valueChanged( double ) {
   emitNoiseStandartDeviations();
 }
 
-void SettingsDialog::on_dsbSimNoiseAccelerometer_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimNoiseAccelerometer_valueChanged( double ) {
   emitNoiseStandartDeviations();
 }
 
-void SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
+void
+SettingsDialog::on_slCameraSmoothingOrientation_valueChanged( int value ) {
   Q_EMIT cameraSmoothingChanged( value, ui->slCameraSmoothingPosition->value() );
 }
 
-void SettingsDialog::on_slCameraSmoothingPosition_valueChanged( int value ) {
+void
+SettingsDialog::on_slCameraSmoothingPosition_valueChanged( int value ) {
   Q_EMIT cameraSmoothingChanged( ui->slCameraSmoothingOrientation->value(), value );
 }
 
-void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int ) {
-  auto* factory = qobject_cast<BlockFactory*>( qvariant_cast<QObject*>( item->data( 0, Qt::UserRole ) ) );
+void
+SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int ) {
+  auto* factory = qobject_cast< BlockFactory* >( qvariant_cast< QObject* >( item->data( 0, Qt::UserRole ) ) );
 
   if( factory != nullptr ) {
     QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
@@ -2006,53 +2150,65 @@ void SettingsDialog::on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int )
   resetAllModels();
 }
 
-void SettingsDialog::on_dsbSimGeneralSlipX_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralSlipX_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralA_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralA_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralB_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralB_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralC_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralC_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralSigmaF_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralSigmaF_valueChanged( double ) {
   emitSimulatorValues();
 }
-void SettingsDialog::on_dsbSimGeneralSigmaR_valueChanged( double ) {
-  emitSimulatorValues();
-}
-
-void SettingsDialog::on_dsbSimGeneralSigmaH_valueChanged( double ) {
-  emitSimulatorValues();
-}
-
-void SettingsDialog::on_dsbSimGeneralCaf_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralSigmaR_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralCar_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralSigmaH_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralCah_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralCaf_valueChanged( double ) {
   emitSimulatorValues();
 }
 
-void SettingsDialog::on_dsbSimGeneralM_valueChanged( double ) {
-  emitSimulatorValues();
-}
-void SettingsDialog::on_dsbSimGeneralIz_valueChanged( double ) {
-  emitSimulatorValues();
-}
-
-void SettingsDialog::on_dsbSimGeneralCx_valueChanged( double ) {
+void
+SettingsDialog::on_dsbSimGeneralCar_valueChanged( double ) {
   emitSimulatorValues();
 }
 
+void
+SettingsDialog::on_dsbSimGeneralCah_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void
+SettingsDialog::on_dsbSimGeneralM_valueChanged( double ) {
+  emitSimulatorValues();
+}
+void
+SettingsDialog::on_dsbSimGeneralIz_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void
+SettingsDialog::on_dsbSimGeneralCx_valueChanged( double ) {
+  emitSimulatorValues();
+}

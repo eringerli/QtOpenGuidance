@@ -24,53 +24,52 @@ class MyMainWindow;
 
 #include "block/BlockBase.h"
 
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
+#include <kddockwidgets/KDDockWidgets.h>
 
 class PlotDock;
 
 class PlotDockBlockBase : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit PlotDockBlockBase( const QString& uniqueName,
-                                MyMainWindow* mainWindow );
+public:
+  explicit PlotDockBlockBase( const QString& uniqueName, MyMainWindow* mainWindow );
 
-    virtual ~PlotDockBlockBase();
+  virtual ~PlotDockBlockBase();
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-  public:
-    bool getXAxisVisible();
-    bool getYAxisVisible();
-    const QString getYAxisDescription();
-    bool getAutoscrollEnabled();
-    double getWindow();
+public:
+  bool          getXAxisVisible();
+  bool          getYAxisVisible();
+  const QString getYAxisDescription();
+  bool          getAutoscrollEnabled();
+  double        getWindow();
 
-    void setXAxisVisible( const bool visible );
-    void setYAxisVisible( const bool visible );
-    void setYAxisDescription( const QString& description );
-    void setAutoscrollEnabled( const bool enabled );
-    void setWindow( const double window );
+  void setXAxisVisible( const bool visible );
+  void setYAxisVisible( const bool visible );
+  void setYAxisDescription( const QString& description );
+  void setAutoscrollEnabled( const bool enabled );
+  void setWindow( const double );
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-    void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* );
+  void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* );
 
-  private:
-    void setNameHelper();
+private:
+  void setNameHelper();
 
-  public:
-    KDDockWidgets::DockWidget* dock = nullptr;
-    PlotDock* widget = nullptr;
+public:
+  KDDockWidgets::DockWidget* dock   = nullptr;
+  PlotDock*                  widget = nullptr;
 
-    QString name;
+  QString name;
 
-    bool autoScrollEnabled = true;
-    double window = 20;
-    bool interactable = false;
+  bool   autoScrollEnabled = true;
+  double window            = 20;
+  bool   interactable      = false;
 
-    static KDDockWidgets::DockWidget* firstPlotDock;
+  static KDDockWidgets::DockWidget* firstPlotDock;
 };

@@ -23,62 +23,60 @@
 class MyMainWindow;
 class XteDock;
 
+#include "ValueDockBlockBase.h"
 #include "block/BlockBase.h"
 
-#include <kddockwidgets/KDDockWidgets.h>
-#include <kddockwidgets/DockWidget.h>
+class XteDockBlock : public ValueDockBlockBase {
+  Q_OBJECT
 
+public:
+  explicit XteDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
 
-class XteDockBlock : public BlockBase {
-    Q_OBJECT
+  ~XteDockBlock();
 
-  public:
-    explicit XteDockBlock( const QString& uniqueName,
-                           MyMainWindow* mainWindow );
+  virtual const QFont&   getFont() override;
+  virtual int            getPrecision() override;
+  virtual int            getFieldWidth() override;
+  virtual double         getScale() override;
+  virtual bool           unitVisible() override;
+  virtual const QString& getUnit() override;
 
-    ~XteDockBlock();
+  virtual void setFont( const QFont& font ) override;
+  virtual void setPrecision( const int precision ) override;
+  virtual void setFieldWidth( const int fieldWidth ) override;
+  virtual void setScale( const double scale ) override;
+  virtual void setUnitVisible( const bool enabled ) override;
+  virtual void setUnit( const QString& unit ) override;
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-    void setXte( const double xte );
+  void setXte( NUMBER_SIGNATURE_SLOT );
 
-  public:
-    KDDockWidgets::DockWidget* dock = nullptr;
-    XteDock* widget = nullptr;
+public:
+  XteDock* widget = nullptr;
 };
 
 class XteDockBlockFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    XteDockBlockFactory( MyMainWindow* mainWindow,
-                         KDDockWidgets::Location location,
-                         QMenu* menu )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ) {}
+public:
+  XteDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "XteDockBlock" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "XteDockBlock" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Display Docks" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Display Docks" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "XTE Dock" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "XTE Dock" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
+private:
+  MyMainWindow*           mainWindow = nullptr;
+  KDDockWidgets::Location location;
+  QMenu*                  menu = nullptr;
 
-  public:
-    static KDDockWidgets::DockWidget* firstDock;
+public:
+  static KDDockWidgets::DockWidget* firstDock;
 };

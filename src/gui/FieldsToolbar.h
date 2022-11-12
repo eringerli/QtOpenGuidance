@@ -26,19 +26,19 @@ namespace Ui {
 }
 
 class FieldsToolbar : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit FieldsToolbar( QWidget* parent = nullptr );
-    ~FieldsToolbar();
+public:
+  explicit FieldsToolbar( QWidget* parent = nullptr );
+  ~FieldsToolbar();
 
-  Q_SIGNALS:
-    void continousRecordToggled( const bool );
-    void recordPoint();
+Q_SIGNALS:
+  void continousRecordToggled( const bool );
+  void recordPoint();
 
-    void recordOnEdgeOfImplementChanged( const bool right );
+  void recordOnEdgeOfImplementChanged( const bool right );
 
-  private:
-    Ui::FieldsToolbar* ui = nullptr;
-    QBoxLayout* boxLayout = nullptr;
+private:
+  Ui::FieldsToolbar* ui        = nullptr;
+  QBoxLayout*        boxLayout = nullptr;
 };

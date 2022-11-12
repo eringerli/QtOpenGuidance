@@ -22,9 +22,8 @@
 
 #include "GeoJsonHelper.h"
 
-
-#include <QFile>
 #include <QByteArray>
+#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -33,17 +32,17 @@
 
 GeoJsonHelper::GeoJsonHelper() = default;
 
-GeoJsonHelper::GeoJsonHelper( QFile& file ) {
-  parse( file );
-}
+GeoJsonHelper::GeoJsonHelper( QFile& file ) { parse( file ); }
 
 GeoJsonHelper::~GeoJsonHelper() = default;
 
-void GeoJsonHelper::addFeature( const GeoJsonHelper::GeometryType& type, const GeoJsonHelper::FeatureType& feature ) {
+void
+GeoJsonHelper::addFeature( const GeoJsonHelper::GeometryType& type, const GeoJsonHelper::FeatureType& feature ) {
   members.emplace_back( std::make_pair( type, feature ) );
 }
 
-void GeoJsonHelper::parse( QFile& file ) {
+void
+GeoJsonHelper::parse( QFile& file ) {
   QByteArray saveData = file.readAll();
 
   QJsonDocument loadDoc( QJsonDocument::fromJson( saveData ) );
@@ -52,7 +51,8 @@ void GeoJsonHelper::parse( QFile& file ) {
   parse( json );
 }
 
-std::optional<GeoJsonHelper::PointType> GeoJsonHelper::parseCoodinate( const QJsonValue& jsonValue ) {
+std::optional< GeoJsonHelper::PointType >
+GeoJsonHelper::parseCoodinate( const QJsonValue& jsonValue ) {
   if( jsonValue.isArray() ) {
     QJsonArray coordinate = jsonValue.toArray();
 
@@ -70,7 +70,8 @@ std::optional<GeoJsonHelper::PointType> GeoJsonHelper::parseCoodinate( const QJs
   return std::nullopt;
 }
 
-QJsonArray GeoJsonHelper::assembleCoordinatesArray( const GeoJsonHelper::PointVector& points ) {
+QJsonArray
+GeoJsonHelper::assembleCoordinatesArray( const GeoJsonHelper::PointVector& points ) {
   QJsonArray coordinates;
 
   for( const auto& point : points ) {
@@ -80,7 +81,8 @@ QJsonArray GeoJsonHelper::assembleCoordinatesArray( const GeoJsonHelper::PointVe
   return coordinates;
 }
 
-QJsonArray GeoJsonHelper::assembleCoodinate( const GeoJsonHelper::PointType& point ) {
+QJsonArray
+GeoJsonHelper::assembleCoodinate( const GeoJsonHelper::PointType& point ) {
   QJsonArray coordinate;
 
   coordinate.push_back( point.x() );
@@ -90,7 +92,8 @@ QJsonArray GeoJsonHelper::assembleCoodinate( const GeoJsonHelper::PointType& poi
   return coordinate;
 }
 
-GeoJsonHelper::PointVector GeoJsonHelper::parseCoordinatesArray( const QJsonArray& coordinatesArray ) {
+GeoJsonHelper::PointVector
+GeoJsonHelper::parseCoordinatesArray( const QJsonArray& coordinatesArray ) {
   PointVector vector;
 
   for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
@@ -102,9 +105,9 @@ GeoJsonHelper::PointVector GeoJsonHelper::parseCoordinatesArray( const QJsonArra
   return vector;
 }
 
-GeoJsonHelper::GeometryType GeoJsonHelper::deduceType( const QJsonObject& object ) {
+GeoJsonHelper::GeometryType
+GeoJsonHelper::deduceType( const QJsonObject& object ) {
   if( auto type = getJsonQString( object, QStringLiteral( "type" ) ) ) {
-
     auto& typeString = type.value();
 
     if( typeString == QLatin1String( "Point" ) ) {
@@ -131,7 +134,8 @@ GeoJsonHelper::GeometryType GeoJsonHelper::deduceType( const QJsonObject& object
   return GeometryType::None;
 }
 
-std::optional<QJsonArray> GeoJsonHelper::getJsonArray( const QJsonObject& object, const QString& name ) {
+std::optional< QJsonArray >
+GeoJsonHelper::getJsonArray( const QJsonObject& object, const QString& name ) {
   if( object.contains( name ) && object[name].isArray() ) {
     return object[name].toArray();
   }
@@ -139,7 +143,8 @@ std::optional<QJsonArray> GeoJsonHelper::getJsonArray( const QJsonObject& object
   return std::nullopt;
 }
 
-std::optional<QJsonObject> GeoJsonHelper::getJsonObject( const QJsonObject& object, const QString& name ) {
+std::optional< QJsonObject >
+GeoJsonHelper::getJsonObject( const QJsonObject& object, const QString& name ) {
   if( object.contains( name ) && object[name].isObject() ) {
     return object[name].toObject();
   }
@@ -147,7 +152,8 @@ std::optional<QJsonObject> GeoJsonHelper::getJsonObject( const QJsonObject& obje
   return std::nullopt;
 }
 
-std::optional<QString> GeoJsonHelper::getJsonQString( const QJsonObject& object, const QString& name ) {
+std::optional< QString >
+GeoJsonHelper::getJsonQString( const QJsonObject& object, const QString& name ) {
   if( object.contains( name ) && object[name].isString() ) {
     return object[name].toString();
   }
@@ -155,7 +161,8 @@ std::optional<QString> GeoJsonHelper::getJsonQString( const QJsonObject& object,
   return std::nullopt;
 }
 
-bool GeoJsonHelper::testForFieldWithValue( const QJsonObject& object, const QString& name, const QString& value ) {
+bool
+GeoJsonHelper::testForFieldWithValue( const QJsonObject& object, const QString& name, const QString& value ) {
   if( auto field = getJsonQString( object, name ) ) {
     return field.value() == value;
   }
@@ -163,7 +170,8 @@ bool GeoJsonHelper::testForFieldWithValue( const QJsonObject& object, const QStr
   return false;
 }
 
-void GeoJsonHelper::parse( const QJsonObject& json ) {
+void
+GeoJsonHelper::parse( const QJsonObject& json ) {
   if( testForFieldWithValue( json, QStringLiteral( "type" ), QStringLiteral( "FeatureCollection" ) ) ) {
     if( auto featuresArray = getJsonArray( json, QStringLiteral( "features" ) ) ) {
       for( const auto& feature : qAsConst( featuresArray.value() ) ) {
@@ -180,8 +188,7 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
                     members.emplace_back( std::make_pair( type, coordinate.value() ) );
                   }
                 }
-              }
-              break;
+              } break;
 
               case GeometryType::MultiPoint:
               case GeometryType::LineString: {
@@ -189,8 +196,7 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
                   members.emplace_back( std::make_pair( type, parseCoordinatesArray( coordinatesJsonArray.value() ) ) );
                 }
 
-              }
-              break;
+              } break;
 
               case GeometryType::Polygon: {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
@@ -204,12 +210,10 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
 
                   members.emplace_back( std::make_pair( type, polygon ) );
                 }
-              }
-              break;
+              } break;
 
               case GeometryType::MultiPolygon: {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-
                   for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
                     PointVectorVector polygon;
 
@@ -224,8 +228,7 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
                     members.emplace_back( std::make_pair( GeometryType::Polygon, polygon ) );
                   }
                 }
-              }
-              break;
+              } break;
 
               default:
                 break;
@@ -237,12 +240,14 @@ void GeoJsonHelper::parse( const QJsonObject& json ) {
   }
 }
 
-void GeoJsonHelper::save( QFile& file ) {
+void
+GeoJsonHelper::save( QFile& file ) {
   QJsonDocument jsonDocument( save() );
   file.write( jsonDocument.toJson() );
 }
 
-QJsonObject GeoJsonHelper::save() {
+QJsonObject
+GeoJsonHelper::save() {
   QJsonObject jsonObject;
 
   jsonObject[QStringLiteral( "type" )] = QStringLiteral( "FeatureCollection" );
@@ -258,34 +263,30 @@ QJsonObject GeoJsonHelper::save() {
 
     switch( member.first ) {
       case GeometryType::Point: {
-        geometry[QStringLiteral( "type" )] = QStringLiteral( "Point" );
-        geometry[QStringLiteral( "coordinates" )] = assembleCoodinate( std::get<PointType>( member.second ) );
-      }
-      break;
+        geometry[QStringLiteral( "type" )]        = QStringLiteral( "Point" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoodinate( std::get< PointType >( member.second ) );
+      } break;
 
       case GeometryType::MultiPoint: {
-        geometry[QStringLiteral( "type" )] = QStringLiteral( "MultiPoint" );
-        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<MultiPointType>( member.second ) );
-      }
-      break;
+        geometry[QStringLiteral( "type" )]        = QStringLiteral( "MultiPoint" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get< MultiPointType >( member.second ) );
+      } break;
 
       case GeometryType::LineString: {
-        geometry[QStringLiteral( "type" )] = QStringLiteral( "LineString" );
-        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get<LineStringType>( member.second ) );
-      }
-      break;
+        geometry[QStringLiteral( "type" )]        = QStringLiteral( "LineString" );
+        geometry[QStringLiteral( "coordinates" )] = assembleCoordinatesArray( std::get< LineStringType >( member.second ) );
+      } break;
 
       case GeometryType::Polygon: {
         geometry[QStringLiteral( "type" )] = QStringLiteral( "Polygon" );
         QJsonArray coordinates;
 
-        for( const auto& polygon : std::get<PolygonType>( member.second ) ) {
+        for( const auto& polygon : std::get< PolygonType >( member.second ) ) {
           coordinates.push_back( assembleCoordinatesArray( polygon ) );
         }
 
         geometry[QStringLiteral( "coordinates" )] = coordinates;
-      }
-      break;
+      } break;
 
       default:
         break;
@@ -300,7 +301,8 @@ QJsonObject GeoJsonHelper::save() {
   return jsonObject;
 }
 
-void GeoJsonHelper::print() {
+void
+GeoJsonHelper::print() {
   using namespace std;
   Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
   cout << "GeoJsonHelper, n: " << members.size() << endl;
@@ -308,11 +310,11 @@ void GeoJsonHelper::print() {
   for( const auto& member : members ) {
     switch( member.first ) {
       case GeometryType::Point:
-        cout << "GeometryType::Point: " << std::get<PointType>( member.second ).format( CommaInitFmt ) << endl;
+        cout << "GeometryType::Point: " << std::get< PointType >( member.second ).format( CommaInitFmt ) << endl;
         break;
 
       case GeometryType::MultiPoint: {
-        auto points = std::get<PointVector>( member.second );
+        auto points = std::get< PointVector >( member.second );
         cout << "  GeometryType::MultiPoint(" << points.size() << "): ";
 
         for( const auto& point : points ) {
@@ -321,11 +323,10 @@ void GeoJsonHelper::print() {
 
         cout << endl;
 
-      }
-      break;
+      } break;
 
       case GeometryType::LineString: {
-        auto points = std::get<PointVector>( member.second );
+        auto points = std::get< PointVector >( member.second );
         cout << "  GeometryType::LineString(" << points.size() << "): ";
 
         for( const auto& point : points ) {
@@ -334,11 +335,10 @@ void GeoJsonHelper::print() {
 
         cout << endl;
 
-      }
-      break;
+      } break;
 
       case GeometryType::Polygon: {
-        auto polygons = std::get<PointVectorVector>( member.second );
+        auto polygons = std::get< PointVectorVector >( member.second );
         cout << "  GeometryType::Polygon(" << polygons.size() << ")";
 
         for( const auto& vector : polygons ) {
@@ -350,12 +350,10 @@ void GeoJsonHelper::print() {
 
           cout << endl;
         }
-      }
-      break;
+      } break;
 
       default:
         break;
-
     }
   }
 }

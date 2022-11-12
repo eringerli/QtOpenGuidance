@@ -19,8 +19,8 @@
 #include "TrailerModel.h"
 
 #include <QAction>
-#include <QMenu>
 #include <QBrush>
+#include <QMenu>
 
 #include "qneblock.h"
 #include "qneport.h"
@@ -28,7 +28,7 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QGeometry>
+#include <Qt3DCore/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 
 #include <Qt3DExtras/QCylinderMesh>
@@ -38,16 +38,15 @@
 #include <Qt3DExtras/QMetalRoughMaterial>
 
 TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
-
   // add an etry, so all coordinates are local
-  m_rootEntity = new Qt3DCore::QEntity( rootEntity );
+  m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
-  const QColor colorBody = QColor( QRgb( 0x665423 ) );
-  const QColor colorWheels = usePBR ? QColor( QRgb( 0x668823 ) ) : QColor( QRgb( 0x475f18 ) );
-  constexpr float metalness = 0.1f;
-  constexpr float roughness = 0.5f;
+  const QColor    colorBody   = QColor( QRgb( 0x665423 ) );
+  const QColor    colorWheels = usePBR ? QColor( QRgb( 0x668823 ) ) : QColor( QRgb( 0x475f18 ) );
+  constexpr float metalness   = 0.1f;
+  constexpr float roughness   = 0.5f;
 
   // wheel left
   {
@@ -147,7 +146,8 @@ TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
     m_axleEntity->addComponent( m_axleTransform );
   }
 
-  // most dimensions are dependent on the wheelbase -> the code for that is in the slot setWheelbase(float)
+  // most dimensions are dependent on the wheelbase -> the code for that is in the slot
+  // setWheelbase(float)
   setProportions();
 
   // everything in world-coordinates... (add to rootEntity, not m_rootEntity)
@@ -248,8 +248,8 @@ TrailerModel::~TrailerModel() {
   m_rootEntity->deleteLater();
 }
 
-void TrailerModel::setProportions() {
-
+void
+TrailerModel::setProportions() {
   // wheels
   {
     m_wheelMesh->setRadius( m_trackwidth / 4 );
@@ -258,7 +258,7 @@ void TrailerModel::setProportions() {
     float offsetForWheels = m_trackwidth / 2;
 
     m_wheelLeftTransform->setTranslation( QVector3D( 0, offsetForWheels + m_wheelMesh->length() / 2, m_wheelMesh->radius() ) );
-    m_wheelRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelMesh->length() / 2 ),  m_wheelMesh->radius() ) );
+    m_wheelRightTransform->setTranslation( QVector3D( 0, -( offsetForWheels + m_wheelMesh->length() / 2 ), m_wheelMesh->radius() ) );
   }
 
   // hitch
@@ -272,35 +272,43 @@ void TrailerModel::setProportions() {
     m_axleMesh->setLength( m_trackwidth );
     m_axleTransform->setTranslation( QVector3D( 0, 0, m_wheelMesh->radius() ) );
   }
-
 }
 
-void TrailerModel::setOffsetHookPointPosition( const Eigen::Vector3d& position ) {
+void
+TrailerModel::setOffsetHookPointPosition( const Eigen::Vector3d& position ) {
   m_offsetHookPoint = position;
   setProportions();
 }
 
-void TrailerModel::setTrackwidth( double trackwidth ) {
-  if( !qFuzzyIsNull( trackwidth ) ) {
-    m_trackwidth = trackwidth;
-    setProportions();
+void
+TrailerModel::setTrackwidth( double trackwidth, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    if( !qFuzzyIsNull( trackwidth ) ) {
+      m_trackwidth = trackwidth;
+      setProportions();
+    }
   }
 }
 
-void TrailerModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TrailerModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_towPointTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TrailerModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_towHookTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
-void TrailerModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+TrailerModel::setPosePivotPoint( const Eigen::Vector3d&           position,
+                                 const Eigen::Quaterniond&        orientation,
+                                 const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_pivotPointTransform->setTranslation( toQVector3D( position ) );
 
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
@@ -308,15 +316,22 @@ void TrailerModel::setPosePivotPoint( const Eigen::Vector3d& position, const Eig
   }
 }
 
-QNEBlock* TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TrailerModel( rootEntity, usePBR );
-  auto* b = createBaseBlock( scene, obj, id );
+QNEBlock*
+TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* object = new TrailerModel( rootEntity, usePBR );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
-  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPoseHookPoint ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPosePivotPoint ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPoseTowPoint ) );
 
   b->setBrush( modelColor );
 

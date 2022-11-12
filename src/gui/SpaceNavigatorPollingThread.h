@@ -22,6 +22,9 @@
 
 #include <QtGlobal>
 
+#include "helpers/signatures.h"
+#include "kinematic/CalculationOptions.h"
+
 // do not include the config of SPNAV, so X11 doesn't get pulled in...
 #define SPNAV_CONFIG_H_
 
@@ -33,25 +36,21 @@
 #include <QThread>
 
 class SpaceNavigatorPollingThread : public QThread {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit SpaceNavigatorPollingThread( QObject* parent )
-      : QThread( parent ) {}
+public:
+  explicit SpaceNavigatorPollingThread( QObject* parent ) : QThread( parent ) {}
 
-    void stop() {
-      m_stopped = true;
-    }
+  void stop() { m_stopped = true; }
 
-  Q_SIGNALS:
-    void steerAngleChanged( const double );
-    void velocityChanged( const double );
+Q_SIGNALS:
+  void steerAngleChanged( NUMBER_SIGNATURE_SIGNAL );
+  void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  protected:
+protected:
+  // reimplemented from QThread
+  virtual void run();
 
-    // reimplemented from QThread
-    virtual void run();
-
-  private:
-    bool m_stopped = false;
+private:
+  bool m_stopped = false;
 };

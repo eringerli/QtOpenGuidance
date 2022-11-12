@@ -25,42 +25,35 @@
 class StringBlockModel;
 
 class StringObject : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit StringObject()
-      : BlockBase() {}
+public:
+  explicit StringObject() : BlockBase() {}
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-  Q_SIGNALS:
-    void stringChanged( const QString& );
+Q_SIGNALS:
+  void stringChanged( const QString& );
 
-  public:
-    QString string;
+public:
+  QString string;
 };
 
 class StringFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    StringFactory( StringBlockModel* model )
-      : BlockFactory(),
-        model( model ) {}
+public:
+  StringFactory( QThread* thread, StringBlockModel* model ) : BlockFactory( thread ), model( model ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "String" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "String" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Literals" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    StringBlockModel* model = nullptr;
+private:
+  StringBlockModel* model = nullptr;
 };

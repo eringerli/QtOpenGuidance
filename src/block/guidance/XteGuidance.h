@@ -24,7 +24,6 @@
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 #include "kinematic/Plan.h"
 
@@ -32,42 +31,37 @@
 // https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/stanley_controller/stanley_controller.py
 
 class XteGuidance : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit XteGuidance()
-      : BlockBase() {}
+public:
+  explicit XteGuidance() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const PoseOption::Options& options );
+public Q_SLOTS:
+  void setPose( POSE_SIGNATURE_SLOT );
 
-    void setPlan( const Plan& plan );
+  void setPlan( const Plan& plan );
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-  Q_SIGNALS:
-    void xteChanged( const double );
-    void headingOfPathChanged( const double );
-    void passNumberChanged( const double );
+Q_SIGNALS:
+  void xteChanged( NUMBER_SIGNATURE_SIGNAL );
+  void headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL );
+  void curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL );
+  void passNumberChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  private:
-    Plan plan;
+private:
+  Plan plan;
 };
 
 class XteGuidanceFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    XteGuidanceFactory()
-      : BlockFactory() {}
+public:
+  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Cross Track Error" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Cross Track Error" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Guidance" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

@@ -21,24 +21,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "BufferMeshGeometryViewWithNormals.h"
+#include "BufferMeshGeometryWithNormals.h"
 
-#include "3d/qt3dForwards.h"
-
-#include <QObject>
+#include <QVector3D>
 #include <QVector>
-#include <Qt3DRender/QGeometryRenderer>
+#include <Qt3DCore/QAttribute>
+#include <Qt3DCore/QBuffer>
 
-class QString;
+BufferMeshGeometryViewWithNormals::BufferMeshGeometryViewWithNormals( Qt3DCore::QNode* parent )
+    : Qt3DCore::QGeometryView( parent ) {
+  auto* geometry = new BufferMeshGeometryWithNormals( this );
+  QGeometryView::setGeometry( geometry );
+}
 
-class BufferMeshWithNormal : public Qt3DRender::QGeometryRenderer {
-    Q_OBJECT
+BufferMeshGeometryViewWithNormals::~BufferMeshGeometryViewWithNormals() {}
 
-  public:
-    explicit BufferMeshWithNormal( Qt3DCore::QNode* parent = nullptr );
-    ~BufferMeshWithNormal();
-    void bufferUpdate( const QVector<QVector3D>& pos );
-
-  private:
-    BufferMeshGeometryWithNormal* m_bufferMeshGeo = nullptr;
-};
+void
+BufferMeshGeometryViewWithNormals::bufferUpdate( const QVector< QVector3D >& pos ) {
+  static_cast< BufferMeshGeometryWithNormals* >( geometry() )->updatePoints( pos );
+}

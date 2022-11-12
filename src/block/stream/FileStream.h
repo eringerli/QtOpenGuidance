@@ -29,51 +29,46 @@ class QByteArray;
 class QTextStream;
 
 class FileStream : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit FileStream();
+public:
+  explicit FileStream();
 
-    ~FileStream() override;
+  ~FileStream() override;
 
-  Q_SIGNALS:
-    void dataReceived( const QByteArray& );
+Q_SIGNALS:
+  void dataReceived( const QByteArray& );
 
-  public Q_SLOTS:
-    void setFilename( const QString& filename );
+public Q_SLOTS:
+  void setFilename( const QString& filename );
 
-    void setLinerate( double linerate );
+  void setLinerate( NUMBER_SIGNATURE_SLOT );
 
-    void sendData( const QByteArray& data );
+  void sendData( const QByteArray& data );
 
-  protected:
-    void timerEvent( QTimerEvent* event ) override;
+protected:
+  void timerEvent( QTimerEvent* event ) override;
 
-  public:
-    QString filename;
-    float linerate = 3;
+public:
+  QString filename;
+  float   linerate = 3;
 
-  private:
-    QBasicTimer timer;
+private:
+  QBasicTimer timer;
 
-    QTextStream* fileStream = nullptr;
-    QFile* file = nullptr;
+  QTextStream* fileStream = nullptr;
+  QFile*       file       = nullptr;
 };
 
 class FileStreamFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    FileStreamFactory()
-      : BlockFactory() {}
+public:
+  FileStreamFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "File Stream" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "File Stream" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Streams" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

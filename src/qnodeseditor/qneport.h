@@ -36,67 +36,62 @@ class QNEPort;
 class QNEPortHelper;
 
 class QNEPort : public QGraphicsPathItem {
-  public:
-    enum { Type = QGraphicsItem::UserType + 1 };
-    enum { NamePort = 1, TypePort = 2, SystemBlock = 4, NoBullet = 8 };
+public:
+  enum { Type = QGraphicsItem::UserType + 1 };
+  enum { NamePort = 1, TypePort = 2, SystemBlock = 4, NoBullet = 8 };
 
-    QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
-    ~QNEPort();
+  QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
+  ~QNEPort();
 
-    void setNEBlock( QNEBlock* );
-    void setName( const QString& n ) const;
-    QString getName() const;
-    void setIsOutput( bool o );
-    bool isOutput() const;
-    std::vector<QNEConnection*>& connections();
-    void setPortFlags( int );
+  void                           setNEBlock( QNEBlock* );
+  void                           setName( const QString& n ) const;
+  QString                        getName() const;
+  void                           setIsOutput( bool o );
+  bool                           isOutput() const;
+  std::vector< QNEConnection* >& connections();
+  void                           setPortFlags( int );
 
-    void contentsChanged();
+  void contentsChanged();
 
-    int portFlags() const {
-      return m_portFlags;
-    }
+  int portFlags() const { return m_portFlags; }
 
-    int type() const override {
-      return Type;
-    }
+  int type() const override { return Type; }
 
-    QNEBlock* block() const;
+  QNEBlock* block() const;
 
-    qreal getWidthOfLabelBoundingRect();
+  qreal getWidthOfLabelBoundingRect();
 
-    qreal getHeightOfLabelBoundingRect();
+  qreal getHeightOfLabelBoundingRect();
 
-  public:
-    QLatin1String slotSignalSignature;
+public:
+  QLatin1String slotSignalSignature;
 
-    static constexpr qreal radiusOfBullet = 5;
-    static constexpr qreal marginOfText = 2;
+  static constexpr qreal radiusOfBullet = 5;
+  static constexpr qreal marginOfText   = 2;
 
-    QGraphicsTextItem* label = nullptr;
+  QGraphicsTextItem* label = nullptr;
 
-  protected:
-    QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
+protected:
+  QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
 
-  private:
-    QNEBlock* m_block = nullptr;
-    bool isOutput_ = false;
-    std::vector<QNEConnection*> m_connections;
-    int m_portFlags = 0;
+private:
+  QNEBlock*                     m_block   = nullptr;
+  bool                          isOutput_ = false;
+  std::vector< QNEConnection* > m_connections;
+  int                           m_portFlags = 0;
 
-    QNEPortHelper* porthelper = nullptr;
+  QNEPortHelper* porthelper = nullptr;
 };
 
 class QNEPortHelper : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    QNEPortHelper( QNEPort* port );
+public:
+  QNEPortHelper( QNEPort* port );
 
-  public Q_SLOTS:
-    void contentsChanged();
+public Q_SLOTS:
+  void contentsChanged();
 
-  private:
-    QNEPort* port = nullptr;
+private:
+  QNEPort* port = nullptr;
 };
-

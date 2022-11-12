@@ -23,42 +23,35 @@
 #include "block/BlockBase.h"
 
 class CommunicationJrk : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit CommunicationJrk()
-      : BlockBase() {
-    }
+public:
+  explicit CommunicationJrk() : BlockBase() {}
 
-  Q_SIGNALS:
-    void dataReceived( const QByteArray& );
+Q_SIGNALS:
+  void dataReceived( const QByteArray& );
 
-  public Q_SLOTS:
-    void setSteeringAngle( double steeringAngle );
+public Q_SLOTS:
+  void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setSteerZero( double steerZero );
+  void setSteerZero( NUMBER_SIGNATURE_SLOT );
 
-    void setSteerCountPerDegree( double countsPerDegree );
+  void setSteerCountPerDegree( NUMBER_SIGNATURE_SLOT );
 
-  private:
-    float steerZero = 2047;
-    float countsPerDegree = 45;
+private:
+  float steerZero       = 2047;
+  float countsPerDegree = 45;
 };
 
 class CommunicationJrkFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    CommunicationJrkFactory()
-      : BlockFactory() {}
+public:
+  CommunicationJrkFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Communication JRK" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Communication JRK" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Legacy Converters" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Legacy Converters" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

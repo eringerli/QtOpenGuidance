@@ -24,79 +24,93 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QGeometry>
+#include <Qt3DCore/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 #include <Qt3DRender/QLayer>
 
-#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 #include "../sectionControl/Implement.h"
 
-class CgalThread;
 class CultivatedAreaMesh;
 class Implement;
 
+class NewOpenSaveToolbar;
+class QFile;
+
 class CultivatedAreaModel : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, CgalThread* threadForCgalWorker );
-    ~CultivatedAreaModel();
+public:
+  explicit CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar );
+  ~CultivatedAreaModel();
 
-    virtual void emitConfigSignals() override;
+  virtual void emitConfigSignals() override;
 
-  public Q_SLOTS:
-    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void setImplement( const QPointer<Implement>& );
-    void setSections();
+public Q_SLOTS:
+  void setPose( POSE_SIGNATURE_SLOT );
+  void setImplement( const QPointer< Implement >& );
+  void setSections();
 
-  Q_SIGNALS:
-    void layerChanged( Qt3DRender::QLayer* );
+  void newCultivatedArea();
 
-  private:
-    CultivatedAreaMesh* createNewMesh();
+  void openCultivatedArea();
+  void openCultivatedAreaFromFile( QFile& file );
 
-  private:
-    CgalThread* threadForCgalWorker = nullptr;
+  void saveCultivatedArea();
+  void saveCultivatedAreaToFile( QFile& file );
 
-    Qt3DCore::QEntity* m_baseEntity = nullptr;
-    Qt3DCore::QTransform* m_baseTransform = nullptr;
+Q_SIGNALS:
+  void layerChanged( Qt3DRender::QLayer* );
 
-    Qt3DExtras::QMetalRoughMaterial* m_pbrMaterial = nullptr;
-    Qt3DExtras::QDiffuseSpecularMaterial* m_phongMaterial = nullptr;
+private:
+  CultivatedAreaMesh* createNewMesh();
+  void                createEntities();
 
-    Qt3DRender::QLayer* m_layer;
+private:
+  NewOpenSaveToolbar* newOpenSaveToolbar;
 
-    QPointer<Implement> implement;
+  QAction* newCultivatedAreaAction;
+  QAction* openCultivatedAreaAction;
+  QAction* saveCultivatedAreaAction;
 
-    std::vector<double> sectionOffsets;
-    std::vector<CultivatedAreaMesh*> sectionMeshes;
+  Qt3DCore::QEntity* m_rootEntity = nullptr;
+
+  Qt3DCore::QEntity*    m_baseEntity    = nullptr;
+  Qt3DCore::QTransform* m_baseTransform = nullptr;
+
+  Qt3DExtras::QMetalRoughMaterial*      m_pbrMaterial   = nullptr;
+  Qt3DExtras::QDiffuseSpecularMaterial* m_phongMaterial = nullptr;
+
+  Qt3DRender::QLayer* m_layer;
+
+  QPointer< Implement > implement;
+
+  std::vector< double >              sectionOffsets;
+  std::vector< bool >                sectionStates;
+  std::vector< CultivatedAreaMesh* > sectionMeshes;
 };
 
 class CultivatedAreaModelFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    CultivatedAreaModelFactory( Qt3DCore::QEntity* rootEntity, bool usePBR );
+public:
+  CultivatedAreaModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, bool usePBR, NewOpenSaveToolbar* newOpenSaveToolbar )
+      : BlockFactory( thread ), rootEntity( rootEntity ), usePBR( usePBR ), newOpenSaveToolbar( newOpenSaveToolbar ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Cultivated Area Model" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Cultivated Area Model" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Graphical" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    Qt3DCore::QEntity* rootEntity = nullptr;
-    bool usePBR = true;
-    CgalThread* threadForCgalWorker = nullptr;
+private:
+  Qt3DCore::QEntity*  rootEntity = nullptr;
+  bool                usePBR     = true;
+  NewOpenSaveToolbar* newOpenSaveToolbar;
 };

@@ -19,8 +19,8 @@
 #include "PositionDockBlock.h"
 
 #include <QAction>
-#include <QMenu>
 #include <QBrush>
+#include <QMenu>
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/ThreeValuesDock.h"
@@ -28,8 +28,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-PositionDockBlock::PositionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow )
-  : ValueDockBlockBase( uniqueName ) {
+PositionDockBlock::PositionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
   widget = new ThreeValuesDock( mainWindow );
 
   widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
@@ -43,68 +42,85 @@ PositionDockBlock::~PositionDockBlock() {
   }
 }
 
-const QFont& PositionDockBlock::getFont() {
+const QFont&
+PositionDockBlock::getFont() {
   return widget->fontOfLabel();
 }
 
-int PositionDockBlock::getPrecision() {
+int
+PositionDockBlock::getPrecision() {
   return widget->precision;
 }
 
-int PositionDockBlock::getFieldWidth() {
+int
+PositionDockBlock::getFieldWidth() {
   return widget->fieldWidth;
 }
 
-double PositionDockBlock::getScale() {
+double
+PositionDockBlock::getScale() {
   return widget->scale;
 }
 
-bool PositionDockBlock::unitVisible() {
+bool
+PositionDockBlock::unitVisible() {
   return widget->unitEnabled;
 }
 
-const QString& PositionDockBlock::getUnit() {
+const QString&
+PositionDockBlock::getUnit() {
   return widget->unit;
 }
 
-void PositionDockBlock::setFont( const QFont& font ) {
+void
+PositionDockBlock::setFont( const QFont& font ) {
   widget->setFontOfLabel( font );
 }
 
-void PositionDockBlock::setPrecision( const int precision ) {
+void
+PositionDockBlock::setPrecision( const int precision ) {
   widget->precision = precision;
 }
 
-void PositionDockBlock::setFieldWidth( const int fieldWidth ) {
+void
+PositionDockBlock::setFieldWidth( const int fieldWidth ) {
   widget->fieldWidth = fieldWidth;
 }
 
-void PositionDockBlock::setScale( const double scale ) {
+void
+PositionDockBlock::setScale( const double scale ) {
   widget->scale = scale;
 }
 
-void PositionDockBlock::setUnitVisible( const bool enabled ) {
+void
+PositionDockBlock::setUnitVisible( const bool enabled ) {
   widget->unitEnabled = enabled;
 }
 
-void PositionDockBlock::setUnit( const QString& unit ) {
+void
+PositionDockBlock::setUnit( const QString& unit ) {
   widget->unit = unit;
 }
 
-void PositionDockBlock::setName( const QString& name ) {
+void
+PositionDockBlock::setName( const QString& name ) {
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
 }
 
-void PositionDockBlock::setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const PoseOption::Options& ) {
-  if( wgs84 ) {
-    widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
-  }
+void
+PositionDockBlock::setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    if( wgs84 ) {
+      widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
+    }
 
-  widget->setValues( point.x(), point.y(), point.z() );
+    widget->setValues( point.x(), point.y(), point.z() );
+  }
 }
 
-void PositionDockBlock::setWGS84Position( const Eigen::Vector3d& position ) {
+void
+PositionDockBlock::setWGS84Position( const Eigen::Vector3d& position ) {
   if( !wgs84 ) {
     widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
   }
@@ -112,14 +128,16 @@ void PositionDockBlock::setWGS84Position( const Eigen::Vector3d& position ) {
   widget->setValues( position.x(), position.y(), position.z() );
 }
 
-QNEBlock* PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new PositionDockBlock( getNameOfFactory() + QString::number( id ),
-                                        mainWindow );
-  auto* b = createBaseBlock( scene, object, id );
+  auto* object = new PositionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
   object->dock->setTitle( getNameOfFactory() );
   object->dock->setWidget( object->widget );
@@ -134,7 +152,10 @@ QNEBlock* PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id )
   }
 
   b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &PositionDockBlock::setWGS84Position ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &PositionDockBlock::setPose ) );
 
   b->setBrush( dockColor );
 

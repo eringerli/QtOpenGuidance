@@ -71,14 +71,21 @@ else()
   message(STATUS "Not using pre-compiled headers")
 endif()
 
-set(CGAL_DIR lib/CGAL-5.5.1/)
+#set(CGAL_DIR lib/CGAL-5.5.1/)
 set(Eigen3_DIR lib/eigen)
 
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Concurrent Widgets 3DCore 3DExtras 3DRender 3DInput PrintSupport)
-find_package(Qt5 COMPONENTS SerialPort)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Concurrent Widgets 3DCore 3DExtras 3DRender 3DInput PrintSupport)
+find_package(Qt6 COMPONENTS SerialPort)
+#find_package(Qt6Core COMPONENTS PRIVATE_HEADERS)
+
 #find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(KDDockWidgets REQUIRED)
-find_package(CGAL REQUIRED COMPONENTS Core)
+find_package(KDDockWidgets-qt6 REQUIRED)
+find_package(KF5ThreadWeaver REQUIRED)
+find_package(CGAL REQUIRED)
+
+find_package(SDL2)
+
+#find_package(CGAL COMPONENTS Core)
 
 ########################################
 # Find Space Navigator header and library
@@ -93,6 +100,12 @@ else()
   set(SPNAV_LIBRARY "")
 endif()
 
+if (SDL2_FOUND)
+  message(STATUS "SDL2 - found")
+else()
+  message(STATUS "SDL2 - not found")
+endif()
+
 set(GEOGRAPHICLIB_LIB_TYPE STATIC)
 
 add_subdirectory(lib/geographiclib/ EXCLUDE_FROM_ALL)
@@ -104,10 +117,10 @@ add_library(QCustomPlot
   lib/QCustomPlot/qcustomplot.h
 )
 target_link_libraries(QCustomPlot
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Widgets
-  Qt5::PrintSupport
+  Qt::Core
+  Qt::Gui
+  Qt::Widgets
+  Qt::PrintSupport
 )
 target_compile_options(QCustomPlot PRIVATE -Wno-deprecated-declarations)
 
@@ -128,9 +141,10 @@ set_source_files_properties(SOURCES_qnodeseditor PROPERTIES UNITY_GROUP "qnodese
 # qnodeseditor
 add_library(qnodeseditor "${SOURCES_qnodeseditor}")
 target_link_libraries(qnodeseditor
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Widgets
+  Qt::Core
+  Qt::CorePrivate
+  Qt::Gui
+  Qt::Widgets
 )
 target_include_directories(qnodeseditor PRIVATE src/)
 target_include_directories(qnodeseditor PRIVATE src/qnodeseditor/)
@@ -179,10 +193,10 @@ set(SOURCES_gui_toolbar
   src/gui/FontComboboxDelegate.cpp
   src/gui/GlobalPlannerToolbar.cpp
   src/gui/GlobalPlannerToolbar.h
+  src/gui/GuidanceTurningToolbar.cpp
+  src/gui/GuidanceTurningToolbar.h
   src/gui/GuidanceToolbar.cpp
   src/gui/GuidanceToolbar.h
-  src/gui/GuidanceTurning.cpp
-  src/gui/GuidanceTurning.h
   src/gui/NewOpenSaveToolbar.cpp
   src/gui/NewOpenSaveToolbar.h
   src/gui/PassToolbar.cpp
@@ -253,12 +267,11 @@ set(SOURCES_cgal
   src/kinematic/CgalWorker.cpp
   src/kinematic/CgalWorker.h
   src/helpers/cgalHelper.h
+  src/helpers/cgalHelper.cpp
   src/3d/CultivatedAreaMeshGeometry.cpp
   src/3d/CultivatedAreaMeshGeometry.h
   src/block/global/FieldManager.cpp
   src/block/global/FieldManager.h
-  src/block/global/GlobalPlanner.cpp
-  src/block/global/GlobalPlanner.h
   )
 addToUnifyGroupAndSources("${SOURCES_cgal}" "cgal")
 
@@ -268,13 +281,21 @@ set(SOURCES_3d
   src/3d/BufferMesh.cpp
   src/3d/BufferMeshGeometry.cpp
   src/3d/BufferMeshGeometry.h
-  src/3d/BufferMeshGeometryWithNormal.cpp
-  src/3d/BufferMeshGeometryWithNormal.h
+  src/3d/BufferMeshGeometryView.cpp
+  src/3d/BufferMeshGeometryView.h
+  src/3d/BufferMeshGeometryWithNormals.cpp
+  src/3d/BufferMeshGeometryWithNormals.h
+  src/3d/BufferMeshGeometryViewWithNormals.cpp
+  src/3d/BufferMeshGeometryViewWithNormals.h
   src/3d/BufferMesh.h
-  src/3d/BufferMeshWithNormal.cpp
-  src/3d/BufferMeshWithNormal.h
+  src/3d/BufferMeshWithNormals.cpp
+  src/3d/BufferMeshWithNormals.h
   src/3d/CultivatedAreaMesh.cpp
   src/3d/CultivatedAreaMesh.h
+  src/3d/CultivatedAreaMeshGeometry.cpp
+  src/3d/CultivatedAreaMeshGeometry.h
+  src/3d/CultivatedAreaMeshGeometryView.cpp
+  src/3d/CultivatedAreaMeshGeometryView.h
   src/3d/texturerendertarget.cpp
   src/3d/texturerendertarget.h
   src/3d/qt3dForwards.h
@@ -396,6 +417,8 @@ addToUnifyGroupAndSources("${SOURCES_graphical}" "graphical")
 set(SOURCES_guidance
   src/block/guidance/LocalPlanner.cpp
   src/block/guidance/LocalPlanner.h
+  src/block/guidance/GlobalPlanner.cpp
+  src/block/guidance/GlobalPlanner.h
   src/block/guidance/PoseSynchroniser.cpp
   src/block/guidance/PoseSynchroniser.h
   src/block/guidance/StanleyGuidance.cpp
@@ -459,19 +482,20 @@ set(SOURCES_stream
   )
 addToUnifyGroupAndSources("${SOURCES_stream}" "stream")
 
-if(Qt5SerialPort_DIR)
+if(Qt6SerialPort_DIR)
   set(SOURCES_serialport
     src/block/stream/SerialPort.cpp
     src/block/stream/SerialPort.h
     )
   addToUnifyGroupAndSources("${SOURCES_serialport}" "stream")
 
-  set(QTSERIAL_LIBRARY "Qt5::SerialPort")
+  set(QTSERIAL_LIBRARY "Qt::SerialPort")
 endif()
 
 set(SOURCES_helpers
   src/helpers/anglesHelper.h
   src/helpers/eigenHelper.h
+  src/helpers/eigenHelper.cpp
   src/helpers/GeographicConvertionWrapper.cpp
   src/helpers/GeographicConvertionWrapper.h
   src/helpers/GeoJsonHelper.cpp
@@ -480,8 +504,11 @@ set(SOURCES_helpers
 addToUnifyGroupAndSources("${SOURCES_helpers}" "helpers")
 
 set(SOURCES_kinematic
+  src/kinematic/CalculationOptions.h
   src/kinematic/PathPrimitive.cpp
   src/kinematic/PathPrimitive.h
+  src/kinematic/PathPrimitiveArc.cpp
+  src/kinematic/PathPrimitiveArc.h
   src/kinematic/PathPrimitiveLine.cpp
   src/kinematic/PathPrimitiveLine.h
   src/kinematic/PathPrimitiveRay.cpp
@@ -494,9 +521,22 @@ set(SOURCES_kinematic
   src/kinematic/PlanGlobal.cpp
   src/kinematic/PlanGlobal.h
   src/kinematic/Plan.h
-  src/kinematic/PoseOptions.h
   )
 addToUnifyGroupAndSources("${SOURCES_kinematic}" "kinematic")
+
+set(SOURCES_job
+  src/job/ConnectPointsJob.cpp
+  src/job/ConnectPointsJob.h
+  src/job/CultivatedAreaOptimitionController.cpp
+  src/job/CultivatedAreaOptimitionController.h
+  src/job/FieldOptimitionController.cpp
+  src/job/FieldOptimitionController.h
+  src/job/PlanOptimitionController.cpp
+  src/job/PlanOptimitionController.h
+  src/job/TestCollinearityJob.cpp
+  src/job/TestCollinearityJob.h
+)
+addToUnifyGroupAndSources("${SOURCES_job}" "job")
 
 set(SOURCES_qnodeseditor
   src/qnodeseditor/qneblock.cpp
@@ -524,8 +564,14 @@ if(HAVE_SPNAV)
   addToUnifyGroupAndSources("${SOURCES_spnav}" "gui_windows")
 endif()
 
-add_executable(QtOpenGuidance ${SOURCES})
+if (SDL2_FOUND)
+  set(SOURCES_sdl2
+    src/gui/SdlInputPollingThread.cpp
+    src/gui/SdlInputPollingThread.h)
+  addToUnifyGroupAndSources("${SOURCES_sdl2}" "gui_windows")
+endif()
 
+add_executable(QtOpenGuidance ${SOURCES})
 
 set_target_properties(QtOpenGuidance PROPERTIES
                       UNITY_BUILD_MODE GROUP
@@ -535,7 +581,11 @@ if(HAVE_SPNAV)
   target_compile_definitions(QtOpenGuidance PRIVATE SPNAV_ENABLED)
 endif()
 
-if(Qt5SerialPort_DIR)
+if(SDL2_FOUND)
+  target_compile_definitions(QtOpenGuidance PRIVATE SDL2_ENABLED)
+endif()
+
+if(Qt6SerialPort_DIR)
   target_compile_definitions(QtOpenGuidance PRIVATE SERIALPORT_ENABLED)
 endif()
 
@@ -549,22 +599,26 @@ target_include_directories(QtOpenGuidance PRIVATE lib/UBX_Parser/src/)
 target_include_directories(QtOpenGuidance PRIVATE lib/eigen)
 
 target_link_libraries(QtOpenGuidance
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Widgets
-  Qt5::3DCore
-  Qt5::3DExtras
-  Qt5::3DRender
-  Qt5::3DInput
+  Qt::Core
+  Qt::CorePrivate
+  Qt::Gui
+  Qt::Widgets
+  Qt::3DCore
+  Qt::3DExtras
+  Qt::3DRender
+  Qt::3DInput
   ${QTSERIAL_LIBRARY}
+  KF5::ThreadWeaver
 #  Eigen3::Eigen
   KDAB::kddockwidgets
   GeographicLib::GeographicLib_STATIC
   dubins
-  CGAL::CGAL CGAL::CGAL_Core
+  CGAL::CGAL # CGAL::CGAL_Core
   QCustomPlot
   qnodeseditor
-  ${SPNAV_LIBRARY})
+  ${SPNAV_LIBRARY}
+  ${SDL2_LIBRARIES}
+)
 
 if(USE_PCH)
   target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)

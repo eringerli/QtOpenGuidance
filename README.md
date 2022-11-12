@@ -29,22 +29,41 @@ Install and run [Manjaro Linux](https://manjaro.org/), either natively or in a v
 Then enter in a console:
 ```
 # update the system and install various needed packages
-sudo pacman -Suy --needed base-devel bash-completion wget
+# choose "all" if asked to install packages
+sudo pacman -Suy --needed base-devel bash-completion wget extra-cmake-modules cgal qt6
 # delete the downloaded packages again, helps on small SSDs/HDs
 sudo pacman -Scc --noconfirm
 
 # make some folders for the building of the packages
-mkdir -p ~/qtopenguidance-build/{QtOpenGuidance,KDDockWidgets}
+mkdir -p ~/qtopenguidance-build/{QtOpenGuidance,KDDockWidgets,Threadweaver}
+
+# download, build and install Threadweaver
+cd ~/qtopenguidance-build/Threadweaver
+git clone https://invent.kde.org/frameworks/threadweaver.git
+cd threadweaver
+mkdir build && cd build
+cmake .. -DBUILD_WITH_QT6=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local 
+make
+sudo make install
 
 # download, build and install KDDockWidgets
 cd ~/qtopenguidance-build/KDDockWidgets
-wget https://raw.githubusercontent.com/eringerli/KDDockWidgets/pkgbuild/PKGBUILD -O PKGBUILD
-makepkg -is
+wget https://github.com/KDAB/KDDockWidgets/releases/download/v1.6.0/kddockwidgets-1.6.0.tar.gz
+tar xf kddockwidgets-1.6.0.tar.gz
+cd kddockwidgets-1.6.0
+mkdir build && cd build
+cmake .. -DKDDockWidgets_QT6=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local -DQT_INSTALL_PREFIX=/usr/lib64/qt6/
+make
+sudo make install
 
 # download, build and install QtOpenGuidance
 cd ~/qtopenguidance-build/QtOpenGuidance
-wget https://raw.githubusercontent.com/eringerli/QtOpenGuidance/master/PKGBUILD -O PKGBUILD
-makepkg -is
+git clone https://github.com/eringerli/QtOpenGuidance.git
+cd QtOpenGuidance
+mkdir build && cd build
+cmake .. -DKF5ThreadWeaver_DIR=/usr/local/lib/cmake/KF5ThreadWeaver -DCMAKE_INSTALL_PREFIX=/usr/local
+make
+sudo make install
 ```
 Your set: QtOpenGuidance was added to the systems start menu, so you can open it from there.
 

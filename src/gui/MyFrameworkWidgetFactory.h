@@ -20,16 +20,16 @@
 
 #pragma once
 
+#include <QPainter>
 #include <kddockwidgets/FrameworkWidgetFactory.h>
 #include <kddockwidgets/private/TitleBar_p.h>
-#include <QPainter>
 
 class CustomWidgetFactory : public KDDockWidgets::DefaultWidgetFactory {
-  public:
-    CustomWidgetFactory() = default;
-    KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::Frame* frame ) const override;
-    KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::FloatingWindow* fw ) const override;
+public:
+  CustomWidgetFactory() = default;
+  KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::Frame* frame ) const override;
+  KDDockWidgets::TitleBar* createTitleBar( KDDockWidgets::FloatingWindow* fw ) const override;
 
-    KDDockWidgets::Frame* createCentralFrame( QWidgetOrQuick* parent ) const override;
-    Q_DISABLE_COPY( CustomWidgetFactory )
+  KDDockWidgets::Frame* createCentralFrame( KDDockWidgets::QWidgetOrQuick* parent = nullptr ) const;
+  Q_DISABLE_COPY( CustomWidgetFactory )
 };

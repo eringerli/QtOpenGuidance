@@ -21,7 +21,8 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-void TransverseMercatorConverter::setWGS84Position( const Eigen::Vector3d& position ) {
+void
+TransverseMercatorConverter::setWGS84Position( const Eigen::Vector3d& position ) {
   double x = 0;
   double y = 0;
   double z = 0;
@@ -30,13 +31,16 @@ void TransverseMercatorConverter::setWGS84Position( const Eigen::Vector3d& posit
   Q_EMIT positionChanged( Eigen::Vector3d( x, y, z ) );
 }
 
-void TransverseMercatorConverter::emitConfigSignals() {
+void
+TransverseMercatorConverter::emitConfigSignals() {
   Q_EMIT positionChanged( Eigen::Vector3d( 0, 0, 0 ) );
 }
 
-QNEBlock* TransverseMercatorConverterFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+TransverseMercatorConverterFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new TransverseMercatorConverter( tmw );
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
 

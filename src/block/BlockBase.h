@@ -18,10 +18,16 @@
 
 #pragma once
 
+#include <QLatin1String>
 #include <QObject>
 #include <QString>
-#include <QLatin1String>
 #include <QStringLiteral>
+
+#include "kinematic/CalculationOptions.h"
+
+#include "helpers/signatures.h"
+
+#include "CompressorApplication.h"
 
 class QJsonObject;
 class QComboBox;
@@ -32,55 +38,59 @@ class QNEBlock;
 class QNEPort;
 
 class BlockBase : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    BlockBase() {}
+public:
+  BlockBase() {}
 
-    virtual void emitConfigSignals() {}
+  virtual void emitConfigSignals() {}
 
-    virtual void toJSON( QJsonObject& ) {}
-    virtual void fromJSON( QJsonObject& ) {}
+  virtual void toJSON( QJsonObject& ) {}
+  virtual void fromJSON( QJsonObject& ) {}
 
-    virtual void setName( const QString& ) {}
+  virtual void setName( const QString& ) {}
 };
 
 class BlockFactory;
 
 class BlockFactory : public QObject {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    BlockFactory() {}
-    ~BlockFactory() {}
+public:
+  BlockFactory() = delete;
+  BlockFactory( QThread* thread ) : thread( thread ) {}
+  ~BlockFactory() {}
 
-    virtual QString getNameOfFactory() = 0;
+  virtual QString getNameOfFactory() = 0;
 
-    virtual QString getPrettyNameOfFactory() {
-      return getNameOfFactory();
-    };
+  virtual QString getPrettyNameOfFactory() { return getNameOfFactory(); }
 
-    virtual QString getCategoryOfFactory() = 0;
+  virtual QString getCategoryOfFactory() = 0;
 
-//    virtual QString getDescriptionOfFactory() = 0;
+  //    virtual QString getDescriptionOfFactory() = 0;
 
-    void addToCombobox( QComboBox* combobox );
+  void addToCombobox( QComboBox* combobox );
 
-    void addToTreeWidget( QTreeWidget* treeWidget );
+  void addToTreeWidget( QTreeWidget* treeWidget );
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-    QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock = false );
+  QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock = false );
 
-    static bool isIdUnique( QGraphicsScene* scene, int id );
+  static bool isIdUnique( QGraphicsScene* scene, int id );
 
-  protected:
-    static const QColor modelColor;
-    static const QColor dockColor;
-    static const QColor inputDockColor;
-    static const QColor parserColor;
-    static const QColor valueColor;
-    static const QColor inputOutputColor;
-    static const QColor converterColor;
-    static const QColor arithmeticColor;
+public:
+  QThread* thread = nullptr;
+  //  QThread* thread,
+  //  , thread( thread )
+
+protected:
+  static const QColor modelColor;
+  static const QColor dockColor;
+  static const QColor inputDockColor;
+  static const QColor parserColor;
+  static const QColor valueColor;
+  static const QColor inputOutputColor;
+  static const QColor converterColor;
+  static const QColor arithmeticColor;
 };

@@ -16,16 +16,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
+#include <QMenu>
 #include <QSettings>
 #include <QStandardPaths>
-#include <QMenu>
 
 #include "GuidanceToolbar.h"
 #include "ui_GuidanceToolbar.h"
 
-GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::GuidanceToolbar ) {
+GuidanceToolbar::GuidanceToolbar( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::GuidanceToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
@@ -36,11 +34,10 @@ GuidanceToolbar::GuidanceToolbar( QWidget* parent ) :
   ui->pbDocks->setPopupMode( QToolButton::InstantPopup );
 }
 
-GuidanceToolbar::~GuidanceToolbar() {
-  delete ui;
-}
+GuidanceToolbar::~GuidanceToolbar() { delete ui; }
 
-void GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
+void
+GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
   bool enabled = false;
 
   if( arg1 == Qt::Checked ) {
@@ -50,10 +47,12 @@ void GuidanceToolbar::on_cbSimulator_stateChanged( int arg1 ) {
   Q_EMIT simulatorChanged( enabled );
 }
 
-void GuidanceToolbar::on_pbSettings_clicked() {
+void
+GuidanceToolbar::on_pbSettings_clicked() {
   Q_EMIT toggleSettings();
 }
 
-void GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
+void
+GuidanceToolbar::cbSimulatorSetChecked( bool enabled ) {
   ui->cbSimulator->setChecked( enabled );
 }

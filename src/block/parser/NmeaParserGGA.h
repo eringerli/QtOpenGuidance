@@ -25,48 +25,39 @@
 #include "helpers/eigenHelper.h"
 
 class NmeaParserGGA : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit NmeaParserGGA()
-      : BlockBase() {
-    }
+public:
+  explicit NmeaParserGGA() : BlockBase() {}
 
-  Q_SIGNALS:
-    void globalPositionChanged( const Eigen::Vector3d& );
-    void fixQualityChanged( const double );
-    void hdopChanged( const double );
-    void numSatelitesChanged( const double );
-    void ageOfDifferentialDataChanged( const double );
+Q_SIGNALS:
+  void globalPositionChanged( const Eigen::Vector3d& );
+  void fixQualityChanged( NUMBER_SIGNATURE_SIGNAL );
+  void hdopChanged( NUMBER_SIGNATURE_SIGNAL );
+  void numSatelitesChanged( NUMBER_SIGNATURE_SIGNAL );
+  void ageOfDifferentialDataChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  public Q_SLOTS:
-    void setData( const QByteArray& data );
+public Q_SLOTS:
+  void setData( const QByteArray& data );
 
-  public:
-    void parseData();
+public:
+  void parseData();
 
-  private:
-    QByteArray dataToParse;
+private:
+  QByteArray dataToParse;
 };
 
 class NmeaParserGGAFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    NmeaParserGGAFactory()
-      : BlockFactory() {}
+public:
+  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser GGA/GNS" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser GGA/GNS" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Parsers" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser for GGA/GNS sentences" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for GGA/GNS sentences" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

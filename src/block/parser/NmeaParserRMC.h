@@ -25,45 +25,36 @@
 #include "helpers/eigenHelper.h"
 
 class NmeaParserRMC : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit NmeaParserRMC()
-      : BlockBase() {
-    }
+public:
+  explicit NmeaParserRMC() : BlockBase() {}
 
-  Q_SIGNALS:
-    void globalPositionChanged( const Eigen::Vector3d& );
-    void velocityChanged( const double );
+Q_SIGNALS:
+  void globalPositionChanged( const Eigen::Vector3d& );
+  void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  public Q_SLOTS:
-    void setData( const QByteArray& data );
+public Q_SLOTS:
+  void setData( const QByteArray& data );
 
-  public:
-    void parseData();
+public:
+  void parseData();
 
-  private:
-    QByteArray dataToParse;
+private:
+  QByteArray dataToParse;
 };
 
 class NmeaParserRMCFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    NmeaParserRMCFactory()
-      : BlockFactory() {}
+public:
+  NmeaParserRMCFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser RMC" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser RMC" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Parsers" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "NMEA Parser for RMC sentences" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for RMC sentences" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

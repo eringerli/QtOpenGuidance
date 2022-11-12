@@ -20,50 +20,42 @@
 
 #include <QObject>
 
-#include "block/BlockBase.h"
 #include "FixedKinematicPrimitive.h"
+#include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class FixedKinematic : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit FixedKinematic()
-      : BlockBase() {}
+public:
+  explicit FixedKinematic() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setOffsetHookToPivot( const Eigen::Vector3d& offset );
-    void setOffsetPivotToTow( const Eigen::Vector3d& offset );
+public Q_SLOTS:
+  void setOffsetHookToPivot( const Eigen::Vector3d& offset );
+  void setOffsetPivotToTow( const Eigen::Vector3d& offset );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-  Q_SIGNALS:
-    void poseHookPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void posePivotPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void poseTowPointChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+Q_SIGNALS:
+  void poseHookPointChanged( POSE_SIGNATURE_SIGNAL );
+  void posePivotPointChanged( POSE_SIGNATURE_SIGNAL );
+  void poseTowPointChanged( POSE_SIGNATURE_SIGNAL );
 
-  private:
-
-    FixedKinematicPrimitive hookToPivot;
-    FixedKinematicPrimitive pivotToTow;
+private:
+  FixedKinematicPrimitive hookToPivot;
+  FixedKinematicPrimitive pivotToTow;
 };
 
 class FixedKinematicFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    FixedKinematicFactory()
-      : BlockFactory() {}
+public:
+  FixedKinematicFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Fixed Kinematic" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Fixed Kinematic" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

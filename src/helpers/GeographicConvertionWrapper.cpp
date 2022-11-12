@@ -18,14 +18,16 @@
 
 #include "GeographicConvertionWrapper.h"
 
-#include <GeographicLib/TransverseMercator.hpp>
-#include <GeographicLib/LocalCartesian.hpp>
-#include <GeographicLib/UTMUPS.hpp>
 #include <GeographicLib/Ellipsoid.hpp>
+#include <GeographicLib/LocalCartesian.hpp>
+#include <GeographicLib/TransverseMercator.hpp>
+#include <GeographicLib/UTMUPS.hpp>
 
 #include <QtMath>
 
-void GeographicConvertionWrapper::Forward( const double latitude, const double longitude, const double height, double& x, double& y, double& z ) {
+void
+GeographicConvertionWrapper::Forward(
+  const double latitude, const double longitude, const double height, double& x, double& y, double& z ) {
   if( !isLatLonOffsetSet ) {
     Reset( latitude, longitude, height );
 
@@ -46,13 +48,13 @@ void GeographicConvertionWrapper::Forward( const double latitude, const double l
     y = -y;
     z = height - height0TM;
   } else {
-    _lc.Forward( latitude, longitude,  height, y, x, z );
+    _lc.Forward( latitude, longitude, height, y, x, z );
     y = -y;
   }
-
 }
 
-void GeographicConvertionWrapper::Forward( const double latitude, const double longitude, double& x, double& y, double& z ) {
+void
+GeographicConvertionWrapper::Forward( const double latitude, const double longitude, double& x, double& y, double& z ) {
   if( !isLatLonOffsetSet ) {
     Reset( latitude, longitude, height0TM );
 
@@ -74,7 +76,8 @@ void GeographicConvertionWrapper::Forward( const double latitude, const double l
   }
 }
 
-Eigen::Vector3d GeographicConvertionWrapper::Forward( const Eigen::Vector3d& point ) {
+Eigen::Vector3d
+GeographicConvertionWrapper::Forward( const Eigen::Vector3d& point ) {
   auto x = double();
   auto y = double();
   auto z = double();
@@ -84,7 +87,9 @@ Eigen::Vector3d GeographicConvertionWrapper::Forward( const Eigen::Vector3d& poi
   return Eigen::Vector3d( x, y, z );
 }
 
-void GeographicConvertionWrapper::Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height ) {
+void
+GeographicConvertionWrapper::Reverse(
+  const double x, const double y, const double z, double& latitude, double& longitude, double& height ) {
   if( isLatLonOffsetSet ) {
     if( useTM ) {
       TransverseMercator::UTM().Reverse( lon0TM, -y, x + falseNorthingTM, latitude, longitude );
@@ -93,14 +98,15 @@ void GeographicConvertionWrapper::Reverse( const double x, const double y, const
       _lc.Reverse( -y, x, z, latitude, longitude, height );
     }
   } else {
-    latitude = 0;
+    latitude  = 0;
     longitude = 0;
-    height = 0;
+    height    = 0;
     //        qDebug() << "TransverseMercatorWrapper::Reverse: No RESET!!!!";
   }
 }
 
-void GeographicConvertionWrapper::Reverse( const double x, const double y, double& latitude, double& longitude, double& height ) {
+void
+GeographicConvertionWrapper::Reverse( const double x, const double y, double& latitude, double& longitude, double& height ) {
   if( isLatLonOffsetSet ) {
     if( useTM ) {
       TransverseMercator::UTM().Reverse( lon0TM, -y, x + falseNorthingTM, latitude, longitude );
@@ -109,18 +115,20 @@ void GeographicConvertionWrapper::Reverse( const double x, const double y, doubl
       _lc.Reverse( -y, x, _lc.HeightOrigin(), latitude, longitude, height );
     }
   } else {
-    latitude = 0;
+    latitude  = 0;
     longitude = 0;
-    height = 0;
+    height    = 0;
     //        qDebug() << "TransverseMercatorWrapper::Reverse: No RESET!!!!";
   }
 }
 
-void GeographicConvertionWrapper::Reset( const double latitude, const double longitude, const double height ) {
+void
+GeographicConvertionWrapper::Reset( const double latitude, const double longitude, const double height ) {
   double y;
   lon0TM = longitude;
   TransverseMercator::UTM().Forward( lon0TM, latitude, longitude, y, falseNorthingTM );
-  //      qDebug() << "TransverseMercatorWrapper::Reset" << this << latitude << longitude << height << useTM << falseNorthingTM << height0TM;
+  //      qDebug() << "TransverseMercatorWrapper::Reset" << this << latitude << longitude
+  //      << height << useTM << falseNorthingTM << height0TM;
 
   height0TM = height;
 
@@ -129,7 +137,8 @@ void GeographicConvertionWrapper::Reset( const double latitude, const double lon
   isLatLonOffsetSet = true;
 }
 
-Eigen::Vector3d GeographicConvertionWrapper::Reverse( const Eigen::Vector3d& point ) {
+Eigen::Vector3d
+GeographicConvertionWrapper::Reverse( const Eigen::Vector3d& point ) {
   auto x = double();
   auto y = double();
   auto z = double();

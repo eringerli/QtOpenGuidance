@@ -17,39 +17,38 @@
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
 #include "Plan.h"
+#include <limits>
 
 #include <QElapsedTimer>
 
-Plan::Plan() {
-  plan = std::make_shared<std::deque<std::shared_ptr<PathPrimitive>>>();
-}
+Plan::Plan() { plan = std::make_shared< std::deque< std::shared_ptr< PathPrimitive > > >(); }
 
-Plan::Plan( const Plan::Type type )
-  : type( type ) {
-  plan = std::make_shared<std::deque<std::shared_ptr<PathPrimitive>>>();
-}
+Plan::Plan( const Plan::Type type ) : type( type ) { plan = std::make_shared< std::deque< std::shared_ptr< PathPrimitive > > >(); }
 
-void Plan::transform( const Aff_transformation_2& transformation ) {
+void
+Plan::transform( const Aff_transformation_2& transformation ) {
   for( const auto& it : *plan ) {
     it->transform( transformation );
   }
 }
 
-Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( Point_2 position2D, double& distanceSquared ) {
-//        QElapsedTimer timer;
-//        timer.start();
+Plan::ConstPrimitiveIterator
+Plan::getNearestPrimitive( Point_2 position2D, double& distanceSquared ) {
+  //        QElapsedTimer timer;
+  //        timer.start();
   auto nearestPrimitive = plan->cend();
-  distanceSquared = qInf();
+  distanceSquared       = std::numeric_limits< double >::infinity();
 
   for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {
-//    QElapsedTimer timer;
-//    timer.start();
+    //    QElapsedTimer timer;
+    //    timer.start();
     double currentDistanceSquared = ( *it )->distanceToPointSquared( position2D );
-//    qDebug() << "Cycle Time ( *it )->distanceToPointSquared:" << timer.nsecsElapsed() << "ns";
+    //    qDebug() << "Cycle Time ( *it )->distanceToPointSquared:" <<
+    //    timer.nsecsElapsed() << "ns";
 
     if( currentDistanceSquared < distanceSquared ) {
       nearestPrimitive = it;
-      distanceSquared = currentDistanceSquared;
+      distanceSquared  = currentDistanceSquared;
     } else {
       if( type == Plan::Type::OnlyLines ) {
         // the plan is ordered, so we can take the fast way out...
@@ -58,7 +57,8 @@ Plan::ConstPrimitiveIterator Plan::getNearestPrimitive( Point_2 position2D, doub
     }
   }
 
-//        qDebug() << "Cycle Time Plan::getNearestPrimitive:" << timer.nsecsElapsed() << "ns";
+  //        qDebug() << "Cycle Time Plan::getNearestPrimitive:" << timer.nsecsElapsed() <<
+  //        "ns";
 
   return nearestPrimitive;
 }

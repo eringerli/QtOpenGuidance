@@ -21,6 +21,10 @@
 #include <QObject>
 
 #include <QGroupBox>
+
+#include "helpers/signatures.h"
+#include "kinematic/CalculationOptions.h"
+
 class QMenu;
 
 namespace Ui {
@@ -28,26 +32,26 @@ namespace Ui {
 }
 
 class GuidanceToolbar : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit GuidanceToolbar( QWidget* parent = nullptr );
-    ~GuidanceToolbar();
+public:
+  explicit GuidanceToolbar( QWidget* parent = nullptr );
+  ~GuidanceToolbar();
 
-    void cbSimulatorSetChecked( const bool enabled );
+  void cbSimulatorSetChecked( const bool enabled );
 
-  private Q_SLOTS:
-    void on_cbSimulator_stateChanged( int arg1 );
+private Q_SLOTS:
+  void on_cbSimulator_stateChanged( int arg1 );
 
-    void on_pbSettings_clicked();
+  void on_pbSettings_clicked();
 
-  Q_SIGNALS:
-    void toggleSettings();
-    void simulatorChanged( const bool );
+Q_SIGNALS:
+  void toggleSettings();
+  void simulatorChanged( ACTION_SIGNATURE_SIGNAL );
 
-  public:
-    QMenu* menu = nullptr;
+public:
+  QMenu* menu = nullptr;
 
-  private:
-    Ui::GuidanceToolbar* ui = nullptr;
+private:
+  Ui::GuidanceToolbar* ui = nullptr;
 };

@@ -22,14 +22,13 @@
 #include "gui/dock/ValueDock.h"
 
 #include <QAction>
-#include <QMenu>
 #include <QBrush>
+#include <QMenu>
 
 #include "qneblock.h"
 #include "qneport.h"
 
-ValueDockBlock::ValueDockBlock( const QString& uniqueName, MyMainWindow* mainWindow )
-  : ValueDockBlockBase( uniqueName ) {
+ValueDockBlock::ValueDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
   widget = new ValueDock( mainWindow );
 }
 
@@ -41,71 +40,89 @@ ValueDockBlock::~ValueDockBlock() {
   }
 }
 
-const QFont& ValueDockBlock::getFont() {
+const QFont&
+ValueDockBlock::getFont() {
   return widget->fontOfLabel();
 }
 
-int ValueDockBlock::getPrecision() {
+int
+ValueDockBlock::getPrecision() {
   return widget->precision;
 }
 
-int ValueDockBlock::getFieldWidth() {
+int
+ValueDockBlock::getFieldWidth() {
   return widget->fieldWidth;
 }
 
-double ValueDockBlock::getScale() {
+double
+ValueDockBlock::getScale() {
   return widget->scale;
 }
 
-bool ValueDockBlock::unitVisible() {
+bool
+ValueDockBlock::unitVisible() {
   return widget->unitEnabled;
 }
 
-const QString& ValueDockBlock::getUnit() {
+const QString&
+ValueDockBlock::getUnit() {
   return widget->unit;
 }
 
-void ValueDockBlock::setFont( const QFont& font ) {
+void
+ValueDockBlock::setFont( const QFont& font ) {
   widget->setFontOfLabel( font );
 }
 
-void ValueDockBlock::setPrecision( const int precision ) {
+void
+ValueDockBlock::setPrecision( const int precision ) {
   widget->precision = precision;
 }
 
-void ValueDockBlock::setFieldWidth( const int fieldWidth ) {
+void
+ValueDockBlock::setFieldWidth( const int fieldWidth ) {
   widget->fieldWidth = fieldWidth;
 }
 
-void ValueDockBlock::setScale( const double scale ) {
+void
+ValueDockBlock::setScale( const double scale ) {
   widget->scale = scale;
 }
 
-void ValueDockBlock::setUnitVisible( const bool enabled ) {
+void
+ValueDockBlock::setUnitVisible( const bool enabled ) {
   widget->unitEnabled = enabled;
 }
 
-void ValueDockBlock::setUnit( const QString& unit ) {
+void
+ValueDockBlock::setUnit( const QString& unit ) {
   widget->unit = unit;
 }
 
-void ValueDockBlock::setName( const QString& name ) {
+void
+ValueDockBlock::setName( const QString& name ) {
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
 }
 
-void ValueDockBlock::setValue( const double value ) {
-  widget->setMeter( value );
+void
+ValueDockBlock::setValue( const double value, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    widget->setMeter( value );
+  }
 }
 
-QNEBlock* ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new ValueDockBlock( getNameOfFactory() + QString::number( id ),
-                                     mainWindow );
-  auto* b = createBaseBlock( scene, object, id );
+  auto* object = new ValueDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
   object->dock->setTitle( getNameOfFactory() );
   object->dock->setWidget( object->widget );
@@ -119,7 +136,9 @@ QNEBlock* ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
   }
 
-  b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( const double ) ) ) );
+  b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &ValueDockBlock::setValue ) );
 
   b->setBrush( dockColor );
 

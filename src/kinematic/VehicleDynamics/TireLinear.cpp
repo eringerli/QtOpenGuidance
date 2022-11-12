@@ -22,8 +22,9 @@
 
 #include <iostream>
 
-double VehicleDynamics::TireLinear::characteristic( double alpha, double, double ) {
-  double ret = - Cy * alpha;
+double
+VehicleDynamics::TireLinear::characteristic( double alpha, double, double ) {
+  double ret = -Cy * alpha;
 
   //        if( ret > 5000 ) {
   //          ret = 5000;

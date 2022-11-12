@@ -23,67 +23,53 @@
 #include "block/BlockBase.h"
 
 class MyMainWindow;
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
-
-#include "kinematic/PoseOptions.h"
+#include <kddockwidgets/KDDockWidgets.h>
 
 class ActionDock;
 
 class ActionDockBlock : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ActionDockBlock( const QString& uniqueName,
-                              MyMainWindow* mainWindow );
-    ~ActionDockBlock();
+public:
+  explicit ActionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  ~ActionDockBlock();
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-    void setCheckable( const bool checkable );
+  void setCheckable( const bool checkable );
 
-    void setTheme( const QString& theme );
+  void setTheme( const QString& theme );
 
-  Q_SIGNALS:
-    void action( const bool );
+Q_SIGNALS:
+  void action( ACTION_SIGNATURE_SIGNAL );
 
-  public:
-    ActionDock* widget = nullptr;
-    KDDockWidgets::DockWidget* dock = nullptr;
+public:
+  ActionDock*                widget = nullptr;
+  KDDockWidgets::DockWidget* dock   = nullptr;
 };
 
 class ActionDockBlockFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ActionDockBlockFactory( MyMainWindow* mainWindow,
-                            KDDockWidgets::Location location,
-                            QMenu* menu )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ) {}
+public:
+  ActionDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Action Dock Block" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Action Dock Block" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Input Docks" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Input Docks" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "Action Dock" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "Action Dock" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
+private:
+  MyMainWindow*           mainWindow = nullptr;
+  KDDockWidgets::Location location;
+  QMenu*                  menu = nullptr;
 
-  public:
-    static KDDockWidgets::DockWidget* firstActionDock;
+public:
+  static KDDockWidgets::DockWidget* firstActionDock;
 };

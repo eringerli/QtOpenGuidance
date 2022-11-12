@@ -25,51 +25,46 @@
 #include "FixedKinematicPrimitive.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 #include "helpers/anglesHelper.h"
 
 class TrailerKinematicPrimitive : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit TrailerKinematicPrimitive()
-      : BlockBase() {}
+public:
+  explicit TrailerKinematicPrimitive() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setOffset( const Eigen::Vector3d& offset );
-    void setMaxJackknifeAngle( const double maxJackknifeAngle );
-    void setMaxAngle( const double maxAngle );
+public Q_SLOTS:
+  void setOffset( const Eigen::Vector3d& offset );
+  void setMaxJackknifeAngle( NUMBER_SIGNATURE_SLOT );
+  void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-  Q_SIGNALS:
-    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+Q_SIGNALS:
+  void poseChanged( POSE_SIGNATURE_SIGNAL );
 
-  public:
-    Eigen::Vector3d positionCalculated = Eigen::Vector3d( -1, 0, 0 );
-    Eigen::Quaterniond orientation =  Eigen::Quaterniond();
+public:
+  Eigen::Vector3d    positionCalculated = Eigen::Vector3d( -1, 0, 0 );
+  Eigen::Quaterniond orientation        = Eigen::Quaterniond( 0, 0, 0, 0 );
 
-    double maxJackknifeAngleRad = degreesToRadians( double( 120 ) );
-    double maxAngleRad = degreesToRadians( double( 150 ) );
+  Eigen::Vector3d lastPosition = Eigen::Vector3d( 0, 0, 0 );
 
-    FixedKinematicPrimitive fixedKinematic;
+  double maxJackknifeAngleRad = degreesToRadians( double( 120 ) );
+  double maxAngleRad          = degreesToRadians( double( 150 ) );
+
+  FixedKinematicPrimitive fixedKinematic;
 };
 
 class TrailerKinematicPrimitiveFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    TrailerKinematicPrimitiveFactory()
-      : BlockFactory() {}
+public:
+  TrailerKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Trailer Kinematic Primitive" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Trailer Kinematic Primitive" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

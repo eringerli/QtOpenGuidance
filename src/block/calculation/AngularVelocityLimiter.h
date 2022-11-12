@@ -24,44 +24,36 @@
 // all the formulas are from https://www.xarg.org/book/kinematics/ackerman-steering/
 
 class AngularVelocityLimiter : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit AngularVelocityLimiter() = default;
+public:
+  explicit AngularVelocityLimiter() = default;
 
-  public Q_SLOTS:
-    void setMaxAngularVelocity( double maxAngularVelocity );
+public Q_SLOTS:
+  void setMaxAngularVelocity( NUMBER_SIGNATURE_SLOT );
+  void setMaxSteeringAngle( NUMBER_SIGNATURE_SLOT );
+  void setWheelbase( NUMBER_SIGNATURE_SLOT );
+  void setVelocity( NUMBER_SIGNATURE_SLOT );
 
-    void setMaxSteeringAngle( double maxSteeringAngle );
+Q_SIGNALS:
+  void maxSteeringAngleChanged( NUMBER_SIGNATURE_SIGNAL );
+  void minRadiusChanged( NUMBER_SIGNATURE_SIGNAL );
 
-    void setWheelbase( double wheelbase );
-
-    void setVelocity( double velocity );
-
-  Q_SIGNALS:
-    void maxSteeringAngleChanged( double );
-    void minRadiusChanged( double );
-
-  private:
-    double maxAngularVelocity = degreesToRadians( 5. );
-    double maxSteeringAngleRad = degreesToRadians( 40. );
-    double wheelbase = 2.4f;
+private:
+  double maxAngularVelocity  = degreesToRadians( 5. );
+  double maxSteeringAngleRad = degreesToRadians( 40. );
+  double wheelbase           = 2.4f;
 };
 
 class AngularVelocityLimiterFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    AngularVelocityLimiterFactory()
-      : BlockFactory() {}
+public:
+  AngularVelocityLimiterFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Angular Velocity Limiter" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Angular Velocity Limiter" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

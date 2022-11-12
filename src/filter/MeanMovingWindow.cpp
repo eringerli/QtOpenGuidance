@@ -20,7 +20,8 @@
 
 #include <vector>
 
-void MeanMovingWindow::addValue( const double value ) {
+void
+MeanMovingWindow::addValue( const double value ) {
   values.push_back( value );
 
   if( values.size() > window ) {
@@ -28,14 +29,16 @@ void MeanMovingWindow::addValue( const double value ) {
   }
 }
 
-void MeanMovingWindow::setWindow( const std::size_t window ) {
+void
+MeanMovingWindow::setWindow( const std::size_t window ) {
   this->window = window;
   this->middle = window / 2;
 }
 
-double MeanMovingWindow::getMean() {
+double
+MeanMovingWindow::getMean() {
   if( values.size() > middle ) {
-    std::vector<double> copy( values );
+    std::vector< double > copy( values );
 
     auto middleIterator = values.begin() + middle;
 

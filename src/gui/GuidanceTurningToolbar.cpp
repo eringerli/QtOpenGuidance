@@ -16,14 +16,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "GuidanceTurning.h"
-#include "ui_GuidanceTurning.h"
+#include "GuidanceTurningToolbar.h"
+#include "ui_GuidanceTurningToolbar.h"
 
 #include <QAbstractButton>
 
-GuidanceTurning::GuidanceTurning( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::GuidanceTurning ) {
+GuidanceTurningToolbar::GuidanceTurningToolbar( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::GuidanceTurningToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
@@ -38,31 +36,34 @@ GuidanceTurning::GuidanceTurning( QWidget* parent ) :
   Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
-GuidanceTurning::~GuidanceTurning() {
-  delete ui;
-}
+GuidanceTurningToolbar::~GuidanceTurningToolbar() { delete ui; }
 
-void GuidanceTurning::on_pbLeft_toggled( bool checked ) {
+void
+GuidanceTurningToolbar::on_pbLeft_toggled( bool checked ) {
   Q_EMIT turnLeftToggled( checked );
 }
 
-void GuidanceTurning::on_pbRight_toggled( bool checked ) {
+void
+GuidanceTurningToolbar::on_pbRight_toggled( bool checked ) {
   Q_EMIT turnRightToggled( checked );
 }
 
-void GuidanceTurning::on_pbPlusRight_clicked() {
+void
+GuidanceTurningToolbar::on_pbPlusRight_clicked() {
   ++skipRight;
   ui->pbRight->setText( QString::number( skipRight ) );
   Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
-void GuidanceTurning::on_pbPlusLeft_clicked() {
+void
+GuidanceTurningToolbar::on_pbPlusLeft_clicked() {
   ++skipLeft;
   ui->pbLeft->setText( QString::number( skipLeft ) );
   Q_EMIT numSkipChanged( skipLeft, skipRight );
 }
 
-void GuidanceTurning::on_pbMinusRight_clicked() {
+void
+GuidanceTurningToolbar::on_pbMinusRight_clicked() {
   if( skipRight >= 2 ) {
     --skipRight;
     ui->pbRight->setText( QString::number( skipRight ) );
@@ -70,7 +71,8 @@ void GuidanceTurning::on_pbMinusRight_clicked() {
   }
 }
 
-void GuidanceTurning::on_pbMinusLeft_clicked() {
+void
+GuidanceTurningToolbar::on_pbMinusLeft_clicked() {
   if( skipLeft >= 2 ) {
     --skipLeft;
     ui->pbLeft->setText( QString::number( skipLeft ) );
@@ -78,7 +80,8 @@ void GuidanceTurning::on_pbMinusLeft_clicked() {
   }
 }
 
-void GuidanceTurning::on_pbLeft_pressed() {
+void
+GuidanceTurningToolbar::on_pbLeft_pressed() {
   if( ui->pbLeft->isChecked() ) {
     buttonGroupTurn.setExclusive( false );
   } else {
@@ -86,7 +89,8 @@ void GuidanceTurning::on_pbLeft_pressed() {
   }
 }
 
-void GuidanceTurning::on_pbRight_pressed() {
+void
+GuidanceTurningToolbar::on_pbRight_pressed() {
   if( ui->pbRight->isChecked() ) {
     buttonGroupTurn.setExclusive( false );
   } else {
@@ -94,7 +98,8 @@ void GuidanceTurning::on_pbRight_pressed() {
   }
 }
 
-void GuidanceTurning::resetTurningState() {
+void
+GuidanceTurningToolbar::resetTurningState() {
   buttonGroupTurn.setExclusive( false );
   ui->pbLeft->setChecked( false );
   ui->pbRight->setChecked( false );

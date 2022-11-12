@@ -25,10 +25,10 @@
 
 namespace VehicleDynamics {
   class Tire {
-    public:
-      Tire() {}
-      virtual ~Tire() {}
+  public:
+    Tire() {}
+    virtual ~Tire() {}
 
-      virtual double characteristic( double alpha, double Fz, double muy ) = 0;
+    virtual double characteristic( double alpha, double Fz, double muy ) = 0;
   };
 }

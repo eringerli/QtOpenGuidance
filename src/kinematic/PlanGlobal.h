@@ -21,19 +21,19 @@
 #include "Plan.h"
 
 class PlanGlobal : public Plan {
-  public:
-    PlanGlobal() = default;
-    PlanGlobal( const Type type );
+public:
+  PlanGlobal() = default;
+  PlanGlobal( const Type type );
 
-  public:
-    void resetPlanWith( const PrimitiveSharedPointer& referencePrimitive );
-    void createNewPrimitiveOnTheLeft();
-    void createNewPrimitiveOnTheRight();
+public:
+  void resetPlanWith( const PrimitiveSharedPointer& referencePrimitive );
+  void createNewPrimitiveOnTheLeft();
+  void createNewPrimitiveOnTheRight();
 
-    void expand( Point_2 position2D );
+  void expand( Point_2 position2D );
 
-  public:
-    std::size_t pathsInReserve = 3;
+public:
+  std::size_t pathsInReserve = 3;
 };
 
 Q_DECLARE_METATYPE( PlanGlobal )

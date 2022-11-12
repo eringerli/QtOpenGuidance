@@ -27,7 +27,8 @@
 
 #include "qneblock.h"
 
-QVariant ImplementSectionModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant
+ImplementSectionModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -49,7 +50,8 @@ QVariant ImplementSectionModel::headerData( int section, Qt::Orientation orienta
   return QVariant();
 }
 
-bool ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool
+ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     Q_EMIT headerDataChanged( orientation, section, section );
     return true;
@@ -58,10 +60,10 @@ bool ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientat
   return false;
 }
 
-
-int ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int
+ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( implement != nullptr ) {
       return implement->sections.size() - 1;
@@ -71,17 +73,19 @@ int ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return 0;
 }
 
-int ImplementSectionModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int
+ImplementSectionModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 3;
 }
 
-QVariant ImplementSectionModel::data( const QModelIndex& index, int role ) const {
+QVariant
+ImplementSectionModel::data( const QModelIndex& index, int role ) const {
   if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole ) ) {
     return QVariant();
   }
 
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( implement != nullptr ) {
       if( size_t( index.row() ) < ( implement->sections.size() - 1 ) ) {
@@ -105,29 +109,30 @@ QVariant ImplementSectionModel::data( const QModelIndex& index, int role ) const
   return QVariant();
 }
 
-bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool
+ImplementSectionModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( implement != nullptr ) {
       if( size_t( index.row() ) < ( implement->sections.size() - 1 ) ) {
         switch( index.column() ) {
           case 0:
-            implement->sections[index.row() + 1]->overlapLeft = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->overlapLeft = qvariant_cast< double >( value );
             Q_EMIT block->emitConfigSignals();
-            Q_EMIT dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector< int >() << role );
             return true;
 
           case 1:
-            implement->sections[index.row() + 1]->widthOfSection = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->widthOfSection = qvariant_cast< double >( value );
             Q_EMIT block->emitConfigSignals();
-            Q_EMIT dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector< int >() << role );
             return true;
 
           case 2:
-            implement->sections[index.row() + 1]->overlapRight = qvariant_cast<double>( value );
+            implement->sections[index.row() + 1]->overlapRight = qvariant_cast< double >( value );
             Q_EMIT block->emitConfigSignals();
-            Q_EMIT dataChanged( index, index, QVector<int>() << role );
+            Q_EMIT dataChanged( index, index, QVector< int >() << role );
             return true;
         }
       }
@@ -137,9 +142,10 @@ bool ImplementSectionModel::setData( const QModelIndex& index, const QVariant& v
   return false;
 }
 
-bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& parent ) {
+bool
+ImplementSectionModel::insertRows( int row, int count, const QModelIndex& parent ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( implement != nullptr ) {
       beginInsertRows( parent, row, row + ( count - 1 ) );
@@ -161,9 +167,10 @@ bool ImplementSectionModel::insertRows( int row, int count, const QModelIndex& p
   return false;
 }
 
-bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& parent ) {
+bool
+ImplementSectionModel::removeRows( int row, int count, const QModelIndex& parent ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( ( implement != nullptr ) && size_t( row + 1 ) < implement->sections.size() ) {
       beginRemoveRows( parent, row, row + ( count - 1 ) );
@@ -181,13 +188,12 @@ bool ImplementSectionModel::removeRows( int row, int count, const QModelIndex& p
   }
 
   return false;
-
 }
 
-bool ImplementSectionModel::swapElements( int first, int second ) {
-
+bool
+ImplementSectionModel::swapElements( int first, int second ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast<Implement*>( block->object );
+    auto* implement = qobject_cast< Implement* >( block->object );
 
     if( implement != nullptr ) {
       if( first < second ) {
@@ -208,8 +214,8 @@ bool ImplementSectionModel::swapElements( int first, int second ) {
   return false;
 }
 
-
-Qt::ItemFlags ImplementSectionModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags
+ImplementSectionModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -217,7 +223,8 @@ Qt::ItemFlags ImplementSectionModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-void ImplementSectionModel::setDatasource( QNEBlock* block ) {
+void
+ImplementSectionModel::setDatasource( QNEBlock* block ) {
   beginResetModel();
   this->block = block;
   endResetModel();

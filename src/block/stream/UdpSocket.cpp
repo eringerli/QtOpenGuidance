@@ -26,8 +26,7 @@
 
 UdpSocket::UdpSocket() {
   udpSocket = new QUdpSocket( this );
-  connect( udpSocket, &QIODevice::readyRead,
-           this, &UdpSocket::processPendingDatagrams );
+  connect( udpSocket, &QIODevice::readyRead, this, &UdpSocket::processPendingDatagrams );
 }
 
 UdpSocket::~UdpSocket() {
@@ -36,16 +35,19 @@ UdpSocket::~UdpSocket() {
   }
 }
 
-void UdpSocket::setPort( double port ) {
+void
+UdpSocket::setPort( double port, const CalculationOption::Options ) {
   this->port = port;
-  udpSocket->bind( quint16( port ),  QUdpSocket::DontShareAddress );
+  udpSocket->bind( quint16( port ), QUdpSocket::DontShareAddress );
 }
 
-void UdpSocket::sendData( const QByteArray& data ) {
+void
+UdpSocket::sendData( const QByteArray& data ) {
   udpSocket->writeDatagram( data, QHostAddress::Broadcast, port );
 }
 
-void UdpSocket::processPendingDatagrams() {
+void
+UdpSocket::processPendingDatagrams() {
   QByteArray datagram;
 
   while( udpSocket->hasPendingDatagrams() ) {
@@ -55,11 +57,13 @@ void UdpSocket::processPendingDatagrams() {
   }
 }
 
-QNEBlock* UdpSocketFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+UdpSocketFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new UdpSocket();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( double ) ) ) );
+  b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );

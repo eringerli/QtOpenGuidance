@@ -22,13 +22,16 @@
 #include "qneport.h"
 
 #include <QBrush>
+#include <QIODevice>
 
-void NmeaParserRMC::setData( const QByteArray& data ) {
+void
+NmeaParserRMC::setData( const QByteArray& data ) {
   dataToParse.append( data );
   parseData();
 }
 
-void NmeaParserRMC::parseData() {
+void
+NmeaParserRMC::parseData() {
   // relies heavy on the implementations of QTextStream, QByteArray and QString
   // read the docs about them!
 
@@ -36,13 +39,12 @@ void NmeaParserRMC::parseData() {
   QTextStream textstream( dataToParse, QIODevice::ReadOnly );
 
   QString currentLine;
-  bool hasChecksum = false;
-  quint8 checksumFromNmeaSentence = 0;
+  bool    hasChecksum              = false;
+  quint8  checksumFromNmeaSentence = 0;
 
   // returns true if a line could be read; the newline has to be there or it returns false
   // currentLine has no trailing end-of-line characters
   if( textstream.readLineInto( &currentLine ) ) {
-
     // calculate the checksum
     quint8 checksum = 0;
 
@@ -64,11 +66,12 @@ void NmeaParserRMC::parseData() {
         }
 
         // remove all chars behind the * from the string; works with an empty checksum too
-        currentLine.remove( i, currentLine.count() - i );
+        currentLine.remove( i, currentLine.size() - i );
 
         break;
       } else {
-        // the checksum is a simple XOR of all chars in the sentence, but without the $ and the checksum itself
+        // the checksum is a simple XOR of all chars in the sentence, but without the $
+        // and the checksum itself
         checksum ^= c;
       }
     }
@@ -90,7 +93,6 @@ void NmeaParserRMC::parseData() {
       // is used for the format of the NMEA sentences
       // https://www.u-blox.com/de/product/zed-f9p-module -> interface manual
       if( nmeaFields.front() == QStringLiteral( "RMC" ) ) {
-
         if( nmeaFields.count() >= 12 ) {
           qDebug() << nmeaFields;
 
@@ -105,9 +107,9 @@ void NmeaParserRMC::parseData() {
           ++nmeaFileIterator;
 
           // the format is like this: DDMM.MMMMM
-          double latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
-          latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
-          latitude += nmeaFileIterator->midRef( 4 ).toDouble() / 60;
+          double latitude = nmeaFileIterator->left( 2 ).toDouble();
+          latitude += nmeaFileIterator->mid( 2, 2 ).toDouble() / 60;
+          latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
           ++nmeaFileIterator;
 
           if( ( *nmeaFileIterator ) == 'S' ) {
@@ -117,9 +119,9 @@ void NmeaParserRMC::parseData() {
           ++nmeaFileIterator;
 
           // the format is like this: DDDMM.MMMMM
-          double longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
-          longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
-          longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
+          double longitude = nmeaFileIterator->left( 3 ).toDouble();
+          longitude += nmeaFileIterator->mid( 3, 2 ).toDouble() / 60;
+          longitude += nmeaFileIterator->mid( 5 ).toDouble() / 60;
           ++nmeaFileIterator;
 
           if( ( *nmeaFileIterator ) == 'W' ) {
@@ -129,12 +131,12 @@ void NmeaParserRMC::parseData() {
           ++nmeaFileIterator;
 
           // speed in kn: 1kn = 463m/900s
-          double velocity = nmeaFileIterator->leftRef( 2 ).toDouble();
-          velocity += nmeaFileIterator->midRef( 2 ).toDouble() / 10;
+          double velocity = nmeaFileIterator->left( 2 ).toDouble();
+          velocity += nmeaFileIterator->mid( 2 ).toDouble() / 10;
           velocity *= 463;
           velocity /= 900;
 
-          Q_EMIT velocityChanged( float( velocity ) );
+          Q_EMIT velocityChanged( float( velocity ), CalculationOption::Option::None );
           Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, 0 ) );
         }
       }
@@ -145,13 +147,15 @@ void NmeaParserRMC::parseData() {
   }
 }
 
-QNEBlock* NmeaParserRMCFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+NmeaParserRMCFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new NmeaParserRMC();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
   b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
 
   b->setBrush( parserColor );
 

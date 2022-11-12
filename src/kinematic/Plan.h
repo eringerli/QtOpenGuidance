@@ -18,33 +18,28 @@
 
 #pragma once
 
-#include "helpers/cgalHelper.h"
 #include "PathPrimitive.h"
+#include "helpers/cgalHelper.h"
 
 class Plan {
-  public:
-    enum class Type : uint8_t {
-      OnlyLines,
-      OnlySegments,
-      OnlyRays,
-      Mixed = 100
-    };
+public:
+  enum class Type : uint8_t { OnlyLines, OnlySegments, OnlyRays, Mixed = 100 };
 
-    Plan();
-    Plan( const Type type );
+  Plan();
+  Plan( const Type type );
 
-  public:
-    Type type = Type::Mixed;
-    std::shared_ptr<std::deque<std::shared_ptr<PathPrimitive>>> plan;
+public:
+  Type                                                              type = Type::Mixed;
+  std::shared_ptr< std::deque< std::shared_ptr< PathPrimitive > > > plan;
 
-    typedef std::shared_ptr<PathPrimitive> PrimitiveSharedPointer;
-    typedef decltype( plan->begin() ) PrimitiveIterator;
-    typedef decltype( plan->cbegin() ) ConstPrimitiveIterator;
+  typedef std::shared_ptr< PathPrimitive > PrimitiveSharedPointer;
+  typedef decltype( plan->begin() )        PrimitiveIterator;
+  typedef decltype( plan->cbegin() )       ConstPrimitiveIterator;
 
-  public:
-    void transform( const Aff_transformation_2& transformation );
+public:
+  void transform( const Aff_transformation_2& transformation );
 
-    ConstPrimitiveIterator getNearestPrimitive( Point_2 position2D, double& distanceSquared );
+  ConstPrimitiveIterator getNearestPrimitive( Point_2 position2D, double& distanceSquared );
 };
 
-Q_DECLARE_METATYPE( Plan )
+Q_DECLARE_METATYPE( Plan );

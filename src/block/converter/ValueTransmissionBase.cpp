@@ -18,27 +18,27 @@
 
 #include "ValueTransmissionBase.h"
 
-
-#include <QJsonObject>
 #include <QBasicTimer>
-#include <QTimerEvent>
 #include <QBrush>
+#include <QJsonObject>
+#include <QTimerEvent>
 
-ValueTransmissionBase::ValueTransmissionBase( const int id )
-  : BlockBase(), id( id ) {
-  timeoutTimer = std::make_unique<QBasicTimer>();
-  repeatTimer = std::make_unique<QBasicTimer>();
+ValueTransmissionBase::ValueTransmissionBase( const int id ) : BlockBase(), id( id ) {
+  timeoutTimer = std::make_unique< QBasicTimer >();
+  repeatTimer  = std::make_unique< QBasicTimer >();
 }
 
-void ValueTransmissionBase::toJSON( QJsonObject& json ) {
+void
+ValueTransmissionBase::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
-  valuesObject[QStringLiteral( "id" )] = id;
+  valuesObject[QStringLiteral( "id" )]            = id;
   valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
-  valuesObject[QStringLiteral( "repeatTimeMs" )] = repeatTimeMs;
-  json[QStringLiteral( "values" )] = valuesObject;
+  valuesObject[QStringLiteral( "repeatTimeMs" )]  = repeatTimeMs;
+  json[QStringLiteral( "values" )]                = valuesObject;
 }
 
-void ValueTransmissionBase::fromJSON( QJsonObject& json ) {
+void
+ValueTransmissionBase::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -56,19 +56,23 @@ void ValueTransmissionBase::fromJSON( QJsonObject& json ) {
   }
 }
 
-void ValueTransmissionBase::setTimeoutTimeMs( int value ) {
+void
+ValueTransmissionBase::setTimeoutTimeMs( int value ) {
   timeoutTimeMs = value;
 }
 
-void ValueTransmissionBase::setRepeatTimeMs( int value ) {
+void
+ValueTransmissionBase::setRepeatTimeMs( int value ) {
   repeatTimeMs = value;
 }
 
-void ValueTransmissionBase::setTransmissionId( int id ) {
+void
+ValueTransmissionBase::setTransmissionId( int id ) {
   this->id = id;
 }
 
-void ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
+void
+ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == timeoutTimer->timerId() ) {
     Q_EMIT timedOut( id );
   }
@@ -78,8 +82,10 @@ void ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
   }
 }
 
-void ValueTransmissionBase::resetTimeout() {
+void
+ValueTransmissionBase::resetTimeout() {
   timeoutTimer->start( timeoutTimeMs, this );
 }
 
-void ValueTransmissionBase::retransmit() {}
+void
+ValueTransmissionBase::retransmit() {}

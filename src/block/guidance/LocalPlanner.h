@@ -19,106 +19,101 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
 
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class MyMainWindow;
 class BufferMesh;
-class GuidanceTurning;
+class GuidanceTurningToolbar;
 
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
+#include <kddockwidgets/KDDockWidgets.h>
 
 #include "kinematic/Plan.h"
 
 #include "3d/qt3dForwards.h"
 
+#include "job/PlanOptimitionController.h"
+
 class LocalPlanner : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow );
+public:
+  explicit LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow );
 
-    ~LocalPlanner();
+  ~LocalPlanner();
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-    void setPlan( const Plan& plan );
+  void setPlan( const Plan& plan );
 
-    void setSteeringAngle( const double steeringAngle );
+  void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setPathHysteresis( const double pathHysteresis );
+  void setPathHysteresis( NUMBER_SIGNATURE_SLOT );
 
-    void setMinRadius( const double minRadius );
+  void setMinRadius( NUMBER_SIGNATURE_SLOT );
 
-    void setForceCurrentPath( const bool enabled );
+  void setForceCurrentPath( ACTION_SIGNATURE_SLOT );
 
-    void turnLeftToggled( const bool state );
-    void turnRightToggled( const bool state );
-    void numSkipChanged( const int left, const int right );
+  void turnLeftToggled( const bool state );
+  void turnRightToggled( const bool state );
+  void numSkipChanged( const int left, const int right );
 
-  Q_SIGNALS:
-    void planChanged( const Plan& );
-    void triggerPlanPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
-    void resetTurningStateOfDock();
+Q_SIGNALS:
+  void planChanged( const Plan& );
+  void triggerPlanPose( POSE_SIGNATURE_SIGNAL );
+  void resetTurningStateOfDock();
 
-  public:
-    Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
-    Eigen::Quaterniond orientation = Eigen::Quaterniond();
-    double steeringAngleDegrees = 0;
-    double pathHysteresis = 0.5;
-    double minRadius = 10;
-    bool forceCurrentPath = false;
+public:
+  Eigen::Vector3d    position             = Eigen::Vector3d( 0, 0, 0 );
+  Eigen::Quaterniond orientation          = Eigen::Quaterniond( 0, 0, 0, 0 );
+  double             steeringAngleDegrees = 0;
+  double             pathHysteresis       = 0.5;
+  double             minRadius            = 10;
+  bool               forceCurrentPath     = false;
 
-    GuidanceTurning* widget = nullptr;
-    KDDockWidgets::DockWidget* dock = nullptr;
+  GuidanceTurningToolbar*    widget = nullptr;
+  KDDockWidgets::DockWidget* dock   = nullptr;
 
-  private:
-    void calculateTurning( bool changeExistingTurn );
+private:
+  void calculateTurning( bool changeExistingTurn );
 
-    Plan globalPlan;
-    Plan plan;
+  Plan globalPlan;
+  Plan plan;
 
-    Plan::PrimitiveSharedPointer lastPrimitive = nullptr;
+  Plan::PrimitiveSharedPointer lastPrimitive = nullptr;
 
-    bool turningLeft = false;
-    bool turningRight = false;
-    int leftSkip = 1;
-    int rightSkip = 1;
-    Point_2 positionTurnStart = Point_2( 0, 0 );
-    double headingTurnStart = 0;
+  bool    turningLeft       = false;
+  bool    turningRight      = false;
+  int     leftSkip          = 1;
+  int     rightSkip         = 1;
+  Point_2 positionTurnStart = Point_2( 0, 0 );
+  double  headingTurnStart  = 0;
+
+  QPointer< PlanOptimitionController > planOptimitionController;
 };
 
 class LocalPlannerFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    LocalPlannerFactory( MyMainWindow* mainWindow,
-                         KDDockWidgets::Location location,
-                         QMenu* menu )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ) {}
+public:
+  LocalPlannerFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Local Planner" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Local Planner" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Guidance" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
+private:
+  MyMainWindow*           mainWindow = nullptr;
+  KDDockWidgets::Location location;
+  QMenu*                  menu = nullptr;
 };

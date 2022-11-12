@@ -19,17 +19,35 @@
 #include "MyMainWindow.h"
 
 #include <QObject>
+#include <QSettings>
+#include <QStandardPaths>
 
-#include <QEvent>
 #include <QCloseEvent>
+#include <QEvent>
 
-MyMainWindow::MyMainWindow( const QString& uniqueName, KDDockWidgets::MainWindowOptions options, const QString& affinityName, QWidget* parent )
-  : MainWindow( uniqueName, options, parent ) {
-  setAffinityName( affinityName );
+MyMainWindow::MyMainWindow( const QString&                   uniqueName,
+                            KDDockWidgets::MainWindowOptions options,
+                            const QString&                   affinityName,
+                            QWidget*                         parent )
+    : MainWindow( uniqueName, options, parent ) {
+  setAffinities( { affinityName } );
 }
 
-void MyMainWindow::closeEvent( QCloseEvent* event ) {
-  Q_EMIT closed();
+void
+MyMainWindow::readSettings() {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
-  event->accept();
+  restoreGeometry( settings.value( "geometry" ).toByteArray() );
+  restoreState( settings.value( "windowState" ).toByteArray() );
+}
+
+void
+MyMainWindow::closeEvent( QCloseEvent* event ) {
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
+
+  settings.setValue( "geometry", saveGeometry() );
+  settings.setValue( "windowState", saveState() );
+  settings.sync();
+
+  QMainWindow::closeEvent( event );
 }

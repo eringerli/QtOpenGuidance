@@ -41,11 +41,10 @@
 #include "qnegestures.h"
 #include "qneport.h"
 
-QNodesEditor::QNodesEditor( QObject* parent ) :
-  QObject( parent ) {
-}
+QNodesEditor::QNodesEditor( QObject* parent ) : QObject( parent ) {}
 
-void QNodesEditor::install( QGraphicsScene* s ) {
+void
+QNodesEditor::install( QGraphicsScene* s ) {
   s->installEventFilter( this );
   scene = s;
 
@@ -57,10 +56,11 @@ void QNodesEditor::install( QGraphicsScene* s ) {
   }
 }
 
-QGraphicsItem* QNodesEditor::itemAt( QPointF pos ) {
-  QList<QGraphicsItem*> items = scene->items( QRectF( pos - QPointF( 1, 1 ), QSize( 3, 3 ) ) );
+QGraphicsItem*
+QNodesEditor::itemAt( QPointF pos ) {
+  QList< QGraphicsItem* > items = scene->items( QRectF( pos - QPointF( 1, 1 ), QSize( 3, 3 ) ) );
 
-  for( auto* item :  qAsConst( items ) ) {
+  for( auto* item : qAsConst( items ) ) {
     if( item->type() > QGraphicsItem::UserType ) {
       return item;
     }
@@ -69,16 +69,16 @@ QGraphicsItem* QNodesEditor::itemAt( QPointF pos ) {
   return nullptr;
 }
 
-bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
-  auto* const mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>( e );
-  auto* const keyEvent = dynamic_cast<QKeyEvent*>( e );
+bool
+QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
+  auto* const mouseEvent = dynamic_cast< QGraphicsSceneMouseEvent* >( e );
+  auto* const keyEvent   = dynamic_cast< QKeyEvent* >( e );
 
   switch( int( e->type() ) ) {
     case QEvent::GraphicsSceneMousePress: {
-
       switch( int( mouseEvent->button() ) ) {
         case Qt::LeftButton: {
-          auto* const item = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+          auto* const item = qgraphicsitem_cast< QNEPort* >( itemAt( mouseEvent->scenePos() ) );
 
           if( item != nullptr ) {
             const auto& constRefOfList = scene->views();
@@ -96,8 +96,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
             return true;
           }
-        }
-        break;
+        } break;
 
         case Qt::MiddleButton: {
           isInPaningState = false;
@@ -105,33 +104,28 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
         case Qt::RightButton: {
           isInPaningState = false;
-        }
-        break;
+        } break;
       }
 
       break;
 
       case QEvent::KeyRelease: {
-
         if( keyEvent->matches( QKeySequence::Delete ) ) {
           {
             const auto& constRefOfList = scene->selectedItems();
 
             for( const auto& item : constRefOfList ) {
-              delete qgraphicsitem_cast<QNEConnection*>( item );
+              delete qgraphicsitem_cast< QNEConnection* >( item );
             }
           }
 
           Q_EMIT resetModels();
         }
-      }
-      break;
-    }
-    break;
-
+      } break;
+    } break;
 
     case QEvent::GraphicsSceneMouseMove: {
-      auto* const m = dynamic_cast<QGraphicsSceneMouseEvent*>( e );
+      auto* const m = dynamic_cast< QGraphicsSceneMouseEvent* >( e );
 
       if( currentConnection != nullptr ) {
         currentConnection->setPos2( mouseEvent->scenePos() );
@@ -139,7 +133,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         return true;
       }
 
-      if( ( m->buttons() & Qt::RightButton ) != 0u ) {
+      if( ( m->buttons() & ( Qt::RightButton | Qt::MiddleButton ) ) != 0u ) {
         QPointF delta = m->lastScreenPos() - m->screenPos();
 
         {
@@ -170,7 +164,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
     case QEvent::GraphicsSceneMouseRelease: {
       if( ( currentConnection != nullptr ) && mouseEvent->button() == Qt::LeftButton ) {
-        auto* port = qgraphicsitem_cast<QNEPort*>( itemAt( mouseEvent->scenePos() ) );
+        auto* port = qgraphicsitem_cast< QNEPort* >( itemAt( mouseEvent->scenePos() ) );
 
         if( ( port != nullptr ) && port != currentConnection->port1() ) {
           if( currentConnection->setPort2( port ) ) {
@@ -209,11 +203,11 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
       }
 
       if( mouseEvent->button() == Qt::RightButton ) {
-        if( !isInPaningState )  {
+        if( !isInPaningState ) {
           QGraphicsItem* item = itemAt( mouseEvent->scenePos() );
 
           if( item != nullptr ) {
-            auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+            auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
             if( block != nullptr ) {
               if( !block->systemBlock ) {
@@ -222,7 +216,7 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
                 Q_EMIT resetModels();
               }
             } else {
-              delete qgraphicsitem_cast<QNEConnection*>( item );
+              delete qgraphicsitem_cast< QNEConnection* >( item );
             }
           }
         }

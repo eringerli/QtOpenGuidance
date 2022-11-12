@@ -23,43 +23,39 @@
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class FixedKinematicPrimitive : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit FixedKinematicPrimitive()
-      : BlockBase() {}
+public:
+  explicit FixedKinematicPrimitive() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setOffset( const Eigen::Vector3d& offset );
+public Q_SLOTS:
+  void setOffset( const Eigen::Vector3d& offset );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-  Q_SIGNALS:
-    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+Q_SIGNALS:
+  void poseChanged( POSE_SIGNATURE_SIGNAL );
 
-  public:
-    Eigen::Vector3d positionCalculated = Eigen::Vector3d( 0, 0, 0 );
-    Eigen::Quaterniond orientation = Eigen::Quaterniond();
-    Eigen::Vector3d offset = Eigen::Vector3d( -1, 0, 0 );
+public:
+  static Eigen::Vector3d calculate( const Eigen::Vector3d& position, const Eigen::Vector3d& offset, const Eigen::Quaterniond& rotation );
+
+public:
+  Eigen::Vector3d    positionCalculated = Eigen::Vector3d( 0, 0, 0 );
+  Eigen::Quaterniond orientation        = Eigen::Quaterniond( 0, 0, 0, 0 );
+  Eigen::Vector3d    offset             = Eigen::Vector3d( -1, 0, 0 );
 };
 
 class FixedKinematicPrimitiveFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    FixedKinematicPrimitiveFactory()
-      : BlockFactory() {}
+public:
+  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Fixed Kinematic Primitive" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Fixed Kinematic Primitive" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

@@ -23,48 +23,40 @@
 #include "block/BlockBase.h"
 
 class ComparisonLessThan : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ComparisonLessThan()
-      : BlockBase() {}
+public:
+  explicit ComparisonLessThan() : BlockBase() {}
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void setValueA( double number );
+public Q_SLOTS:
+  void setValueA( NUMBER_SIGNATURE_SLOT );
+  void setValueB( NUMBER_SIGNATURE_SLOT );
 
-    void setValueB( double number );
+Q_SIGNALS:
+  void stateChanged( ACTION_SIGNATURE_SIGNAL );
 
-  private:
-    void operation();
+private:
+  void operation();
 
-  Q_SIGNALS:
-    void stateChanged( bool );
-
-  public:
-    double numberA = 0;
-    double numberB = 0;
-    bool result = false;
+public:
+  double numberA = 0;
+  double numberB = 0;
+  bool   result  = false;
 };
 
 class ComparisonLessThanFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ComparisonLessThanFactory()
-      : BlockFactory() {}
+public:
+  ComparisonLessThanFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "ComparisonLessThan" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "ComparisonLessThan" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "Comparison A < B" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "Comparison A < B" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Comparison" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Comparison" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

@@ -23,46 +23,46 @@
 //#ifndef __clang_analyzer__
 
 // standard includes
-#include <iostream>
-#include <fstream>
 #include <cassert>
-#include <stdint.h>
+#include <cstdint>
+#include <fstream>
+#include <iostream>
 
-#include <QtMath>
 #include <QVector3D>
+#include <QtMath>
 
 // choose the kernel
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-typedef CGAL::Exact_predicates_inexact_constructions_kernel     Epick;
+using Epick = CGAL::Exact_predicates_inexact_constructions_kernel;
 
-typedef Epick::Point_2                                          Point_2;
-typedef Epick::Point_3                                          Point_3;
-typedef Epick::Ray_2                                            Ray_2;
-typedef Epick::Segment_2                                        Segment_2;
-typedef Epick::Segment_3                                        Segment_3;
-typedef Epick::Vector_2                                         Vector_2;
-typedef Epick::Vector_3                                         Vector_3;
-typedef Epick::Line_2                                           Line_2;
-typedef Epick::Line_3                                           Line_3;
-typedef Epick::Circle_2                                         Circle_2;
-typedef Epick::Iso_rectangle_2                                  Iso_rectangle_2;
-typedef Epick::Direction_2                                      Direction_2;
-typedef Epick::Plane_3                                          Plane_3;
+using Point_2         = Epick::Point_2;
+using Point_3         = Epick::Point_3;
+using Ray_2           = Epick::Ray_2;
+using Segment_2       = Epick::Segment_2;
+using Segment_3       = Epick::Segment_3;
+using Vector_2        = Epick::Vector_2;
+using Vector_3        = Epick::Vector_3;
+using Line_2          = Epick::Line_2;
+using Line_3          = Epick::Line_3;
+using Circle_2        = Epick::Circle_2;
+using Iso_rectangle_2 = Epick::Iso_rectangle_2;
+using Direction_2     = Epick::Direction_2;
+using Plane_3         = Epick::Plane_3;
 
 #include <CGAL/Bbox_2.h>
-typedef CGAL::Bbox_2                                            Bbox_2;
+using Bbox_2 = CGAL::Bbox_2;
 
 #include <CGAL/intersections.h>
-typedef Epick::Intersect_2 Intersect_2;
+using Intersect_2 = Epick::Intersect_2;
 
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
-typedef CGAL::Polygon_2<Epick>                                  Polygon_2;
-typedef CGAL::Polygon_with_holes_2<Epick>                       Polygon_with_holes_2;
+using Polygon_2            = CGAL::Polygon_2< Epick >;
+using Polygon_with_holes_2 = CGAL::Polygon_with_holes_2< Epick >;
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-typedef CGAL::Exact_predicates_exact_constructions_kernel       Epeck;
+using Epeck = CGAL::Exact_predicates_exact_constructions_kernel;
 
-typedef CGAL::Cartesian_converter<Epick, Epeck>                 EpickEpeckConverter;
+using EpickEpeckConverter = CGAL::Cartesian_converter< Epick, Epeck >;
 
 //#endif // not __clang_analyzer__

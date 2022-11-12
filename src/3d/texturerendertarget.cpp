@@ -6,11 +6,10 @@
 #include <Qt3DRender/QRenderTargetOutput>
 #include <Qt3DRender/QTexture>
 
-TextureRenderTarget::TextureRenderTarget( Qt3DCore::QNode* parent,
-    QSize size,
-    Qt3DRender::QRenderTargetOutput::AttachmentPoint attatchmentPoint ) :
-  Qt3DRender::QRenderTarget( parent ),
-  size( size ) {
+TextureRenderTarget::TextureRenderTarget( Qt3DCore::QNode*                                 parent,
+                                          QSize                                            size,
+                                          Qt3DRender::QRenderTargetOutput::AttachmentPoint attatchmentPoint )
+    : Qt3DRender::QRenderTarget( parent ), size( size ) {
   // The lifetime of the objects created here is managed
   // automatically, as they become children of this object.
 
@@ -21,7 +20,7 @@ TextureRenderTarget::TextureRenderTarget( Qt3DCore::QNode* parent,
   // Create a texture to render into.
   texture = new Qt3DRender::QTexture2D( output );
   texture->setSize( size.width(), size.height() );
-  texture->setFormat( Qt3DRender::QAbstractTexture::RGB8_UNorm );
+  texture->setFormat( Qt3DRender::QAbstractTexture::RGBA8_UNorm );
   texture->setMinificationFilter( Qt3DRender::QAbstractTexture::Linear );
   texture->setMagnificationFilter( Qt3DRender::QAbstractTexture::Linear );
 
@@ -43,15 +42,18 @@ TextureRenderTarget::TextureRenderTarget( Qt3DCore::QNode* parent,
   addOutput( depthTextureOutput );
 }
 
-Qt3DRender::QTexture2D* TextureRenderTarget::getTexture() {
+Qt3DRender::QTexture2D*
+TextureRenderTarget::getTexture() {
   return texture;
 }
 
-void TextureRenderTarget::setSize( QSize size ) {
+void
+TextureRenderTarget::setSize( QSize size ) {
   this->size = size;
   texture->setSize( size.width(), size.height() );
 }
 
-QSize TextureRenderTarget::getSize() {
+QSize
+TextureRenderTarget::getSize() {
   return size;
 }

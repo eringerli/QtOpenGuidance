@@ -27,27 +27,27 @@ namespace Ui {
 }
 
 class ActionDock : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ActionDock( QWidget* parent = nullptr );
-    ~ActionDock();
+public:
+  explicit ActionDock( QWidget* parent = nullptr );
+  ~ActionDock();
 
-    bool state();
-    bool isCheckable();
-    const QString getTheme();
+  bool          state();
+  bool          isCheckable();
+  const QString getTheme();
 
-    void setState( const bool state );
-    void setCheckable( const bool checkable );
-    void setTheme( const QString& theme );
+  void setState( const bool );
+  void setCheckable( const bool checkable );
+  void setTheme( const QString& theme );
 
-  private Q_SLOTS:
-    void on_pbAction_clicked( const bool checked );
+private Q_SLOTS:
+  void on_pbAction_clicked( const bool checked );
 
-  Q_SIGNALS:
-    void action( const bool );
+Q_SIGNALS:
+  void action( const bool );
 
-  private:
-    QString theme;
-    Ui::ActionDock* ui;
+private:
+  QString         theme;
+  Ui::ActionDock* ui;
 };

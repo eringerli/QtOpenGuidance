@@ -23,45 +23,38 @@
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class PoseSynchroniser : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit PoseSynchroniser()
-      : BlockBase() {}
+public:
+  explicit PoseSynchroniser() : BlockBase() {}
 
-  public Q_SLOTS:
-    void setPosition( const Eigen::Vector3d& position );
+public Q_SLOTS:
+  void setPosition( const Eigen::Vector3d& position );
 
-    void setOrientation( const Eigen::Quaterniond& value );
+  void setOrientation( const Eigen::Quaterniond& value );
 
-  Q_SIGNALS:
-    void poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
+Q_SIGNALS:
+  void poseChanged( POSE_SIGNATURE_SIGNAL );
 
-  public:
-    virtual void emitConfigSignals() override;
+public:
+  virtual void emitConfigSignals() override;
 
-  public:
-    Eigen::Vector3d position = Eigen::Vector3d( 0, 0, 0 );
-    Eigen::Quaterniond orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
+public:
+  Eigen::Vector3d    position    = Eigen::Vector3d( 0, 0, 0 );
+  Eigen::Quaterniond orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
 };
 
 class PoseSynchroniserFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    PoseSynchroniserFactory()
-      : BlockFactory() {}
+public:
+  PoseSynchroniserFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Pose Synchroniser" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Pose Synchroniser" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Guidance" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

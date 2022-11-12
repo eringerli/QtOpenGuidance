@@ -25,20 +25,16 @@
 
 #include "3d/qt3dForwards.h"
 
-#include <Qt3DRender/QGeometry>
+#include <QObject>
+#include <QVector>
+#include <Qt3DCore/QGeometryView>
 
-class BufferMeshGeometryWithNormal : public Qt3DRender::QGeometry {
-    Q_OBJECT
+class BufferMeshGeometryViewWithNormals : public Qt3DCore::QGeometryView {
+  Q_OBJECT
 
-  public:
-    BufferMeshGeometryWithNormal( Qt3DCore::QNode* parent = nullptr );
-    ~BufferMeshGeometryWithNormal();
-    int vertexCount();
+public:
+  explicit BufferMeshGeometryViewWithNormals( Qt3DCore::QNode* parent = nullptr );
+  ~BufferMeshGeometryViewWithNormals();
 
-    void updatePoints( const QVector<QVector3D>& vertices );
-
-  private:
-    Qt3DRender::QAttribute* m_positionAttribute = nullptr;
-    Qt3DRender::QAttribute* m_normalAttribute = nullptr;
-    Qt3DRender::QBuffer* m_vertexBuffer = nullptr;
+  void bufferUpdate( const QVector< QVector3D >& pos );
 };

@@ -25,42 +25,35 @@
 class NumberBlockModel;
 
 class NumberObject : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit NumberObject()
-      : BlockBase() {}
+public:
+  explicit NumberObject() : BlockBase() {}
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-  Q_SIGNALS:
-    void numberChanged( const double );
+Q_SIGNALS:
+  void numberChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  public:
-    double number = 0;
+public:
+  double number = 0;
 };
 
 class NumberFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    NumberFactory( NumberBlockModel* model )
-      : BlockFactory(),
-        model( model ) {}
+public:
+  NumberFactory( QThread* thread, NumberBlockModel* model ) : BlockFactory( thread ), model( model ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Number" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Number" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Literals" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    NumberBlockModel* model = nullptr;
+private:
+  NumberBlockModel* model = nullptr;
 };

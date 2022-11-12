@@ -30,64 +30,54 @@ namespace KDDockWidgets {
 class SliderDock;
 
 class SliderDockBlock : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit SliderDockBlock( const QString& uniqueName,
-                              MyMainWindow* mainWindow );
+public:
+  explicit SliderDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
 
-    ~SliderDockBlock();
+  ~SliderDockBlock();
 
-    virtual void emitConfigSignals() override;
+  virtual void emitConfigSignals() override;
 
-    virtual void toJSON( QJsonObject& json ) override;
-    virtual void fromJSON( QJsonObject& json ) override;
+  virtual void toJSON( QJsonObject& json ) override;
+  virtual void fromJSON( QJsonObject& json ) override;
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-    void setValue( const double value );
+  void setValue( const double );
 
-  Q_SIGNALS:
-    void valueChanged( const double );
+  void valueChangedProxy( double );
 
-  public:
-    SliderDock* widget = nullptr;
+Q_SIGNALS:
+  void valueChanged( NUMBER_SIGNATURE_SIGNAL );
 
-    KDDockWidgets::DockWidget* dock = nullptr;
+public:
+  SliderDock* widget = nullptr;
+
+  KDDockWidgets::DockWidget* dock = nullptr;
 };
 
 class SliderDockBlockFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    SliderDockBlockFactory( MyMainWindow* mainWindow,
-                            KDDockWidgets::Location location,
-                            QMenu* menu )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ) {}
+public:
+  SliderDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "SliderDockBlock" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "SliderDockBlock" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Input Docks" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Input Docks" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "Slider Dock" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "Slider Dock" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
+private:
+  MyMainWindow*           mainWindow = nullptr;
+  KDDockWidgets::Location location;
+  QMenu*                  menu = nullptr;
 
-  public:
-    static KDDockWidgets::DockWidget* firstSliderValueDock;
+public:
+  static KDDockWidgets::DockWidget* firstSliderValueDock;
 };

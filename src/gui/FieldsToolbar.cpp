@@ -21,9 +21,7 @@
 #include "FieldsToolbar.h"
 #include "ui_FieldsToolbar.h"
 
-FieldsToolbar::FieldsToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::FieldsToolbar ) {
+FieldsToolbar::FieldsToolbar( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::FieldsToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
@@ -34,6 +32,4 @@ FieldsToolbar::FieldsToolbar( QWidget* parent ) :
   QObject::connect( ui->pbEdgeOfImplement, &QAbstractButton::toggled, this, &FieldsToolbar::recordOnEdgeOfImplementChanged );
 }
 
-FieldsToolbar::~FieldsToolbar() {
-  delete ui;
-}
+FieldsToolbar::~FieldsToolbar() { delete ui; }

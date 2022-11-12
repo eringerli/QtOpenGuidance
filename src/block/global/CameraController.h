@@ -27,98 +27,91 @@
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 #pragma once
 
 class CameraController : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity );
+public:
+  explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity );
 
-    ~CameraController();
+  ~CameraController();
 
-  protected:
-    // CameraController also acts an EventFilter to receive the wheel-events of the mouse
-    bool eventFilter( QObject*, QEvent* event ) override;
+protected:
+  // CameraController also acts an EventFilter to receive the wheel-events of the mouse
+  bool eventFilter( QObject*, QEvent* event ) override;
 
-  private:
-    static constexpr float ZoomFactor = 1.1f;
-    static constexpr float MinZoomDistance = 10;
-    static constexpr float MaxZoomDistance = 5000;
-    static constexpr float TiltAngleStep = 10;
-    static constexpr float PanAngleStep = 10;
+private:
+  static constexpr float ZoomFactor      = 1.1f;
+  static constexpr float MinZoomDistance = 10;
+  static constexpr float MaxZoomDistance = 5000;
+  static constexpr float TiltAngleStep   = 10;
+  static constexpr float PanAngleStep    = 10;
 
-  public Q_SLOTS:
-    void setMode( const int camMode );
+public Q_SLOTS:
+  void setMode( const int camMode );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-    void tiltUp();
-    void tiltDown();
+  void tiltUp();
+  void tiltDown();
 
-    void zoomIn();
-    void zoomOut();
+  void zoomIn();
+  void zoomOut();
 
-    void panLeft();
-    void panRight();
+  void panLeft();
+  void panRight();
 
-    void resetCamera();
+  void resetCamera();
 
-    void setCameraSmoothing( const int orientationSmoothing, const int positionSmoothing );
+  void setCameraSmoothing( const int orientationSmoothing, const int positionSmoothing );
 
-  private:
-    void calculateOffset();
+  void saveValuesToConfig();
+  void loadValuesFromConfig();
 
-    void saveValuesToConfig();
-    void loadValuesFromConfig();
+private:
+  void calculateOffset();
 
-  private:
-    Qt3DCore::QEntity* m_rootEntity = nullptr;
-    Qt3DRender::QCamera* m_cameraEntity = nullptr;
+private:
+  Qt3DCore::QEntity*   m_rootEntity   = nullptr;
+  Qt3DRender::QCamera* m_cameraEntity = nullptr;
 
-    Qt3DExtras::QOrbitCameraController* m_orbitController = nullptr;
+  Qt3DExtras::QOrbitCameraController* m_orbitController = nullptr;
 
-    Qt3DCore::QEntity* m_lightEntity = nullptr;
-    Qt3DRender::QPointLight* m_light = nullptr;
-    Qt3DCore::QTransform* m_lightTransform = nullptr;
+  Qt3DCore::QEntity*       m_lightEntity    = nullptr;
+  Qt3DRender::QPointLight* m_light          = nullptr;
+  Qt3DCore::QTransform*    m_lightTransform = nullptr;
 
-    QVector3D m_offset = QVector3D();
-    QQuaternion m_orientationBuffer = QQuaternion();
-    Eigen::Vector3d positionBuffer = Eigen::Vector3d( 0, 0, 0 );
+  QVector3D       m_offset            = QVector3D();
+  QQuaternion     m_orientationBuffer = QQuaternion();
+  Eigen::Vector3d positionBuffer      = Eigen::Vector3d( 0, 0, 0 );
 
-    int m_mode = 0;
+  int m_mode = 0;
 
-    double orientationSmoothing = 0.1;
-    double positionSmoothing = 0.9;
-    double positionSmoothingInv = 1 - 0.9;
+  double orientationSmoothing = 0.1;
+  double positionSmoothing    = 0.9;
+  double positionSmoothingInv = 1 - 0.9;
 
-
-    float lenghtToViewCenter = 20;
-    float panAngle = 0;
-    float tiltAngle = 39;
+  float lenghtToViewCenter = 20;
+  float panAngle           = 0;
+  float tiltAngle          = 39;
 };
 
 class CameraControllerFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    CameraControllerFactory( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : BlockFactory(),
-        m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
+public:
+  CameraControllerFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
+      : BlockFactory( thread ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Camera Controller" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Camera Controller" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Graphical" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    Qt3DCore::QEntity* m_rootEntity = nullptr;
-    Qt3DRender::QCamera* m_cameraEntity = nullptr;
+private:
+  Qt3DCore::QEntity*   m_rootEntity   = nullptr;
+  Qt3DRender::QCamera* m_cameraEntity = nullptr;
 };

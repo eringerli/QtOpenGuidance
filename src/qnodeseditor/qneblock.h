@@ -31,83 +31,74 @@
 
 class QNEPort;
 
-class QNEBlock : public QObject, public QGraphicsPathItem {
-    Q_OBJECT
+class QNEBlock
+    : public QObject
+    , public QGraphicsPathItem {
+  Q_OBJECT
 
-  public:
-    enum { Type = QGraphicsItem::UserType + 3 };
+public:
+  enum { Type = QGraphicsItem::UserType + 3 };
 
-    enum class IdRange {
-      SystemIdStart = 1,
-      UserIdStart = 1000
-    };
+  enum class IdRange { SystemIdStart = 1, UserIdStart = 1000 };
 
-    // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
-    QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
+  // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
+  QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
 
-    ~QNEBlock();
+  ~QNEBlock();
 
-    QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0, bool embedded = false );
-    void addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
-    void addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
+  QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0, bool embedded = false );
+  void     addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
+  void     addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
 
-    void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
+  void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-    void toJSON( QJsonObject& json );
-    void fromJSON( QJsonObject& json ) const;
+  void toJSON( QJsonObject& json );
+  void fromJSON( QJsonObject& json ) const;
 
-    int type() const override {
-      return Type;
-    }
+  int type() const override { return Type; }
 
-    void setName( const QString& name, bool setFromLabel = false );
-    void setType( const QString str );
+  void setName( const QString& name, bool setFromLabel = false );
+  void setType( const QString str );
 
-    QNEPort* getPortWithName( const QString& name, bool output );
+  QNEPort* getPortWithName( const QString& name, bool output );
 
-    bool systemBlock = false;
+  bool systemBlock = false;
 
-  Q_SIGNALS:
-    void emitConfigSignals();
+Q_SIGNALS:
+  void emitConfigSignals();
 
-  public:
-    static int getNextSystemId() {
-      return m_nextSystemId++;
-    }
-    static int getNextUserId() {
-      return m_nextUserId++;
-    }
+public:
+  static int getNextSystemId() { return m_nextSystemId++; }
+  static int getNextUserId() { return m_nextUserId++; }
 
-  public Q_SLOTS:
-    void resizeBlockWidth();
+public Q_SLOTS:
+  void resizeBlockWidth();
 
-  public:
-    int id = 0;
+public:
+  int id = 0;
 
-    static constexpr qreal horizontalMargin = 20;
-    static constexpr qreal verticalMargin = 5;
-    static constexpr qreal cornerRadius = 5;
-    static constexpr qreal gradientHeight = 10;
+  static constexpr qreal horizontalMargin = 20;
+  static constexpr qreal verticalMargin   = 5;
+  static constexpr qreal cornerRadius     = 5;
+  static constexpr qreal gradientHeight   = 10;
 
-  private:
-    static int m_nextSystemId;
-    static int m_nextUserId;
+private:
+  static int m_nextSystemId;
+  static int m_nextUserId;
 
-  protected:
-    QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
-    void mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
+protected:
+  QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
+  void     mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
 
-  private:
-    qreal width = 0;
-    qreal height = 0;
-    QString name;
+private:
+  qreal   width  = 0;
+  qreal   height = 0;
+  QString name;
 
-  public:
-    const QString getName() {
-      return name;
-    }
+public:
+  const QString getName() { return name; }
 
-  public:
-    QObject* object = nullptr;
-    QString typeString;
+public:
+  QObject* object = nullptr;
+  QString  typeString;
 };

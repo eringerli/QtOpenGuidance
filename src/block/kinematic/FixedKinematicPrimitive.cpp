@@ -21,34 +21,44 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-void FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
+void
+FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
   this->offset = -offset;
 }
 
-void FixedKinematicPrimitive::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& rotation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateWithoutOrientation ) ) {
+Eigen::Vector3d
+FixedKinematicPrimitive::calculate( const Eigen::Vector3d& position, const Eigen::Vector3d& offset, const Eigen::Quaterniond& rotation ) {
+  Eigen::Vector3d positionCorrection = rotation * offset;
+
+  return Eigen::Vector3d(
+    position.x() + positionCorrection.x(), position.y() + positionCorrection.y(), position.z() + positionCorrection.z() );
+}
+
+void
+FixedKinematicPrimitive::setPose( const Eigen::Vector3d&           position,
+                                  const Eigen::Quaterniond&        rotation,
+                                  const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::NoOrientation ) ) {
     orientation = rotation;
   } else {
-    orientation = Eigen::Quaterniond();
+    orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
   }
 
-  Eigen::Vector3d positionCorrection = orientation * offset;
-
-  positionCalculated = Eigen::Vector3d( position.x() + positionCorrection.x(),
-                                        position.y() + positionCorrection.y(),
-                                        position.z() + positionCorrection.z() );
+  positionCalculated = calculate( position, offset, orientation );
 
   Q_EMIT poseChanged( positionCalculated, orientation, options );
 }
 
-QNEBlock* FixedKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+FixedKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new FixedKinematicPrimitive;
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Offset" ), QLatin1String( SLOT( setOffset( Eigen::Vector3d ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
   return b;
 }

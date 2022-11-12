@@ -26,17 +26,17 @@ namespace Ui {
 }
 
 class NewOpenSaveToolbar : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit NewOpenSaveToolbar( QWidget* parent = nullptr );
-    ~NewOpenSaveToolbar();
+public:
+  explicit NewOpenSaveToolbar( QWidget* parent = nullptr );
+  ~NewOpenSaveToolbar();
 
-  public:
-    QMenu* openMenu = nullptr;
-    QMenu* newMenu = nullptr;
-    QMenu* saveMenu = nullptr;
+public:
+  QMenu* openMenu = nullptr;
+  QMenu* newMenu  = nullptr;
+  QMenu* saveMenu = nullptr;
 
-  private:
-    Ui::NewOpenSaveToolbar* ui;
+private:
+  Ui::NewOpenSaveToolbar* ui;
 };

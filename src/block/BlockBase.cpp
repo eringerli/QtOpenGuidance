@@ -22,15 +22,16 @@
 #include "qneport.h"
 
 #include <QComboBox>
-#include <QTreeWidget>
 #include <QGraphicsScene>
+#include <QTreeWidget>
 
-void BlockFactory::addToCombobox( QComboBox* combobox ) {
+void
+BlockFactory::addToCombobox( QComboBox* combobox ) {
   combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
 }
 
-void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
-
+void
+BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
   auto results = treeWidget->findItems( getCategoryOfFactory(), Qt::MatchExactly );
 
   QTreeWidgetItem* parentItem = nullptr;
@@ -53,7 +54,8 @@ void BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
   newItem->setData( 0, Qt::UserRole, QVariant::fromValue( this ) );
 }
 
-QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock ) {
+QNEBlock*
+BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = 0;
   }
@@ -63,18 +65,19 @@ QNEBlock* BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, 
   scene->addItem( b );
 
   b->addPort( getPrettyNameOfFactory(), QLatin1String(), false, QNEPort::NamePort );
-  b->addPort( getNameOfFactory(),  QLatin1String(), false, QNEPort::TypePort );
+  b->addPort( getNameOfFactory(), QLatin1String(), false, QNEPort::TypePort );
 
   QObject::connect( b, &QNEBlock::emitConfigSignals, obj, &BlockBase::emitConfigSignals );
 
   return b;
 }
 
-bool BlockFactory::isIdUnique( QGraphicsScene* scene, int id ) {
+bool
+BlockFactory::isIdUnique( QGraphicsScene* scene, int id ) {
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
       if( block->id == id ) {
@@ -86,11 +89,11 @@ bool BlockFactory::isIdUnique( QGraphicsScene* scene, int id ) {
   return true;
 }
 
-const QColor BlockFactory::modelColor = QColor( QStringLiteral( "moccasin" ) );
-const QColor BlockFactory::dockColor = QColor( QStringLiteral( "DarkSalmon" ) );
-const QColor BlockFactory::inputDockColor = QColor( QStringLiteral( "lightsalmon" ) );
-const QColor BlockFactory::parserColor = QColor( QStringLiteral( "mediumaquamarine" ) );
-const QColor BlockFactory::valueColor = QColor( QStringLiteral( "gold" ) );
+const QColor BlockFactory::modelColor       = QColor( QStringLiteral( "moccasin" ) );
+const QColor BlockFactory::dockColor        = QColor( QStringLiteral( "DarkSalmon" ) );
+const QColor BlockFactory::inputDockColor   = QColor( QStringLiteral( "lightsalmon" ) );
+const QColor BlockFactory::parserColor      = QColor( QStringLiteral( "mediumaquamarine" ) );
+const QColor BlockFactory::valueColor       = QColor( QStringLiteral( "gold" ) );
 const QColor BlockFactory::inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
-const QColor BlockFactory::converterColor = QColor( QStringLiteral( "lightblue" ) );
-const QColor BlockFactory::arithmeticColor = QColor( QStringLiteral( "DarkKhaki" ) );
+const QColor BlockFactory::converterColor   = QColor( QStringLiteral( "lightblue" ) );
+const QColor BlockFactory::arithmeticColor  = QColor( QStringLiteral( "DarkKhaki" ) );

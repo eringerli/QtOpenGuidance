@@ -19,7 +19,6 @@
 #pragma once
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 #include <QObject>
 
@@ -30,76 +29,64 @@ class ImplementSection;
 class ImplementBlockModel;
 class SectionControlToolbar;
 
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
+#include <kddockwidgets/KDDockWidgets.h>
 
 class Implement : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit Implement( const QString& uniqueName,
-                        MyMainWindow* mainWindow,
-                        KDDockWidgets::DockWidget** firstDock );
+public:
+  explicit Implement( const QString& uniqueName, MyMainWindow* mainWindow, KDDockWidgets::DockWidget** firstDock );
 
-    ~Implement() override;
+  ~Implement() override;
 
-    void emitConfigSignals() override;
+  void emitConfigSignals() override;
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-    void emitImplementChanged();
+  void emitImplementChanged();
+  void emitSectionsChanged();
 
-    void emitSectionsChanged();
+  bool isSectionOn( const size_t section );
 
-  Q_SIGNALS:
-    void triggerLocalPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& );
-    void leftEdgeChanged( const Eigen::Vector3d& );
-    void rightEdgeChanged( const Eigen::Vector3d& );
-    void implementChanged( const QPointer<Implement> );
-    void sectionsChanged();
+Q_SIGNALS:
+  void triggerLocalPose( POSE_SIGNATURE_SIGNAL );
+  void leftEdgeChanged( const Eigen::Vector3d& );
+  void rightEdgeChanged( const Eigen::Vector3d& );
+  void implementChanged( const QPointer< Implement > );
+  void sectionsChanged();
 
-  public Q_SLOTS:
-    void setName( const QString& name ) override;
+public Q_SLOTS:
+  void setName( const QString& name ) override;
 
-  public:
-    KDDockWidgets::DockWidget* dock = nullptr;
-    SectionControlToolbar* widget = nullptr;
+public:
+  KDDockWidgets::DockWidget* dock   = nullptr;
+  SectionControlToolbar*     widget = nullptr;
 
-    std::vector<ImplementSection*> sections;
+  std::vector< ImplementSection* > sections;
 
-  private:
-    KDDockWidgets::DockWidget** firstDock = nullptr;
+private:
+  KDDockWidgets::DockWidget** firstDock = nullptr;
 };
 
 class ImplementFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    ImplementFactory( MyMainWindow* mainWindow,
-                      KDDockWidgets::Location location,
-                      QMenu* menu,
-                      ImplementBlockModel* model )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ),
-        model( model ) {}
+public:
+  ImplementFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, ImplementBlockModel* model )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Implement" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Implement" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Section Control" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Section Control" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
-    ImplementBlockModel* model = nullptr;
-    KDDockWidgets::DockWidget* firstDock = nullptr;
+private:
+  MyMainWindow*              mainWindow = nullptr;
+  KDDockWidgets::Location    location;
+  QMenu*                     menu      = nullptr;
+  ImplementBlockModel*       model     = nullptr;
+  KDDockWidgets::DockWidget* firstDock = nullptr;
 };

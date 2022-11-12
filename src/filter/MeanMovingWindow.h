@@ -19,18 +19,18 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
+#include <vector>
 
 class MeanMovingWindow {
-  public:
-    void addValue( const double value );
+public:
+  void addValue( const double value );
 
-    void setWindow( const std::size_t window );
+  void setWindow( const std::size_t window );
 
-    double getMean();
+  double getMean();
 
-  public:
-    std::vector<double> values;
-    std::size_t window = 5;
-    std::size_t middle = 3;
+public:
+  std::vector< double > values;
+  std::size_t           window = 5;
+  std::size_t           middle = 3;
 };

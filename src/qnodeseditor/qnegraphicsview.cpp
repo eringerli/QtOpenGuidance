@@ -18,28 +18,28 @@
 
 #include "qnegraphicsview.h"
 
-#include <QWheelEvent>
-#include <QKeyEvent>
 #include <QAbstractScrollArea>
+#include <QKeyEvent>
+#include <QWheelEvent>
 
-QNEGraphicsView::QNEGraphicsView( QWidget* parent )
-  : QGraphicsView( parent ) {
-  setDragMode( QGraphicsView::ScrollHandDrag );
-}
+QNEGraphicsView::QNEGraphicsView( QWidget* parent ) : QGraphicsView( parent ) { setDragMode( QGraphicsView::ScrollHandDrag ); }
 
-void QNEGraphicsView::zoomIn() {
+void
+QNEGraphicsView::zoomIn() {
   scale( 1 + zoomFactor, 1 + zoomFactor );
 }
 
-void QNEGraphicsView::zoomOut() {
+void
+QNEGraphicsView::zoomOut() {
   scale( 1 - zoomFactor, 1 - zoomFactor );
 }
 
-void QNEGraphicsView::wheelEvent( QWheelEvent* event ) {
+void
+QNEGraphicsView::wheelEvent( QWheelEvent* event ) {
   // zoom
   const ViewportAnchor anchor = transformationAnchor();
   setTransformationAnchor( QGraphicsView::AnchorUnderMouse );
-  int angle = event->angleDelta().y();
+  int   angle = event->angleDelta().y();
   qreal factor;
 
   if( angle > 0 ) {
@@ -50,4 +50,12 @@ void QNEGraphicsView::wheelEvent( QWheelEvent* event ) {
 
   scale( factor, factor );
   setTransformationAnchor( anchor );
+}
+
+void
+QNEGraphicsView::showEvent( QShowEvent* event ) {
+  if( !event->spontaneous() ) {
+    fitInView( scene()->itemsBoundingRect(), Qt::KeepAspectRatio );
+    scene()->clearSelection();
+  }
 }

@@ -27,15 +27,15 @@
 
 #include "qneblock.h"
 
-ActionDockBlockModel::ActionDockBlockModel( QGraphicsScene* scene )
-  : scene( scene ) {
-}
+ActionDockBlockModel::ActionDockBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
 
-int ActionDockBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int
+ActionDockBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 4;
 }
 
-QVariant ActionDockBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant
+ActionDockBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -63,7 +63,8 @@ QVariant ActionDockBlockModel::headerData( int section, Qt::Orientation orientat
   return QVariant();
 }
 
-bool ActionDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool
+ActionDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     Q_EMIT headerDataChanged( orientation, section, section );
     return true;
@@ -72,12 +73,14 @@ bool ActionDockBlockModel::setHeaderData( int section, Qt::Orientation orientati
   return false;
 }
 
-int ActionDockBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int
+ActionDockBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return countBuffer;
 }
 
-QVariant ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
-  if( !index.isValid() || ( role != Qt::DisplayRole &&  role != Qt::EditRole &&  role != Qt::CheckStateRole ) ) {
+QVariant
+ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
+  if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::CheckStateRole ) ) {
     return QVariant();
   }
 
@@ -87,10 +90,10 @@ QVariant ActionDockBlockModel::data( const QModelIndex& index, int role ) const 
     const auto& constRefOfList = scene->items();
 
     for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
-        if( auto* object = qobject_cast<ActionDockBlock*>( block->object ) ) {
+        if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
           if( countRow++ == index.row() ) {
             switch( index.column() ) {
               case 1:
@@ -106,16 +109,15 @@ QVariant ActionDockBlockModel::data( const QModelIndex& index, int role ) const 
   }
 
   if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-
     int countRow = 0;
 
     const auto& constRefOfList = scene->items();
 
     for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
-        if( auto* object = qobject_cast<ActionDockBlock*>( block->object ) ) {
+        if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
           if( countRow++ == index.row() ) {
             switch( index.column() ) {
               case 0:
@@ -123,7 +125,6 @@ QVariant ActionDockBlockModel::data( const QModelIndex& index, int role ) const 
 
               case 3:
                 return object->widget->getTheme();
-
             }
           }
         }
@@ -134,36 +135,37 @@ QVariant ActionDockBlockModel::data( const QModelIndex& index, int role ) const 
   return QVariant();
 }
 
-bool ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool
+ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<ActionDockBlock*>( block->object ) ) {
+      if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
-              block->setName( qvariant_cast<QString>( value ) );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              block->setName( qvariant_cast< QString >( value ) );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 1:
               object->widget->setState( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 2:
               object->widget->setCheckable( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 3:
               object->widget->setTheme( value.toString() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
           }
         }
@@ -174,7 +176,8 @@ bool ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& va
   return false;
 }
 
-Qt::ItemFlags ActionDockBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags
+ActionDockBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -186,21 +189,23 @@ Qt::ItemFlags ActionDockBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-void ActionDockBlockModel::addToCombobox( QComboBox* combobox ) {
+void
+ActionDockBlockModel::addToCombobox( QComboBox* combobox ) {
   combobox->addItem( QStringLiteral( "Action/State Dock" ), QVariant::fromValue( this ) );
 }
 
-void ActionDockBlockModel::resetModel() {
+void
+ActionDockBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<ActionDockBlock*>( block->object ) != nullptr ) {
+      if( qobject_cast< ActionDockBlock* >( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

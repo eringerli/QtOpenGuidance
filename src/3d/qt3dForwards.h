@@ -22,6 +22,8 @@ namespace Qt3DCore {
   class QNode;
   class QEntity;
   class QTransform;
+  class QAttribute;
+  class QBuffer;
 }
 
 namespace Qt3DExtras {
@@ -37,8 +39,6 @@ namespace Qt3DExtras {
 }
 
 namespace Qt3DRender {
-  class QAttribute;
-  class QBuffer;
   class QMaterial;
   class QLineWidth;
   class QRenderTarget;

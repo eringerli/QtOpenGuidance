@@ -23,20 +23,18 @@
 
 #pragma once
 
-#include <QVector>
 #include <QObject>
-#include <QGeometryRenderer>
+#include <QVector>
+#include <Qt3DRender/QGeometryRenderer>
 
 #include "3d/qt3dForwards.h"
 
 class BufferMesh : public Qt3DRender::QGeometryRenderer {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit BufferMesh( Qt3DCore::QNode* parent = nullptr );
-    ~BufferMesh();
-    void bufferUpdate( const QVector<QVector3D>& pos );
+public:
+  explicit BufferMesh( Qt3DCore::QNode* parent = nullptr );
+  ~BufferMesh();
 
-  private:
-    BufferMeshGeometry* m_bufferMeshGeo = nullptr;
+  void bufferUpdate( const QVector< QVector3D >& pos );
 };

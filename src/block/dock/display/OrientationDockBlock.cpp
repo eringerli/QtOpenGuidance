@@ -19,8 +19,8 @@
 #include "OrientationDockBlock.h"
 
 #include <QAction>
-#include <QMenu>
 #include <QBrush>
+#include <QMenu>
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/ThreeValuesDock.h"
@@ -28,8 +28,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-OrientationDockBlock::OrientationDockBlock( const QString& uniqueName, MyMainWindow* mainWindow )
-  : ValueDockBlockBase( uniqueName ) {
+OrientationDockBlock::OrientationDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
   widget = new ThreeValuesDock( mainWindow );
 
   widget->setDescriptions( QStringLiteral( "Y" ), QStringLiteral( "P" ), QStringLiteral( "R" ) );
@@ -43,76 +42,95 @@ OrientationDockBlock::~OrientationDockBlock() {
   }
 }
 
-const QFont& OrientationDockBlock::getFont() {
+const QFont&
+OrientationDockBlock::getFont() {
   return widget->fontOfLabel();
 }
 
-int OrientationDockBlock::getPrecision() {
+int
+OrientationDockBlock::getPrecision() {
   return widget->precision;
 }
 
-int OrientationDockBlock::getFieldWidth() {
+int
+OrientationDockBlock::getFieldWidth() {
   return widget->fieldWidth;
 }
 
-double OrientationDockBlock::getScale() {
+double
+OrientationDockBlock::getScale() {
   return widget->scale;
 }
 
-bool OrientationDockBlock::unitVisible() {
+bool
+OrientationDockBlock::unitVisible() {
   return widget->unitEnabled;
 }
 
-const QString& OrientationDockBlock::getUnit() {
+const QString&
+OrientationDockBlock::getUnit() {
   return widget->unit;
 }
 
-void OrientationDockBlock::setFont( const QFont& font ) {
+void
+OrientationDockBlock::setFont( const QFont& font ) {
   widget->setFontOfLabel( font );
 }
 
-void OrientationDockBlock::setPrecision( const int precision ) {
+void
+OrientationDockBlock::setPrecision( const int precision ) {
   widget->precision = precision;
 }
 
-void OrientationDockBlock::setFieldWidth( const int fieldWidth ) {
+void
+OrientationDockBlock::setFieldWidth( const int fieldWidth ) {
   widget->fieldWidth = fieldWidth;
 }
 
-void OrientationDockBlock::setScale( const double scale ) {
+void
+OrientationDockBlock::setScale( const double scale ) {
   widget->scale = scale;
 }
 
-void OrientationDockBlock::setUnitVisible( const bool enabled ) {
+void
+OrientationDockBlock::setUnitVisible( const bool enabled ) {
   widget->unitEnabled = enabled;
 }
 
-void OrientationDockBlock::setUnit( const QString& unit ) {
+void
+OrientationDockBlock::setUnit( const QString& unit ) {
   widget->unit = unit;
 }
 
-void OrientationDockBlock::setName( const QString& name ) {
+void
+OrientationDockBlock::setName( const QString& name ) {
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
 }
 
-void OrientationDockBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
+void
+OrientationDockBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
   const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
   widget->setValues( getYaw( taitBryanDegrees ), getPitch( taitBryanDegrees ), getRoll( taitBryanDegrees ) );
 }
 
-void OrientationDockBlock::setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& ) {
-  setOrientation( orientation );
+void
+OrientationDockBlock::setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+    setOrientation( orientation );
+  }
 }
 
-QNEBlock* OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new OrientationDockBlock( getNameOfFactory() + QString::number( id ),
-      mainWindow );
-  auto* b = createBaseBlock( scene, object, id );
+  auto* object = new OrientationDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
   object->dock->setTitle( getNameOfFactory() );
   object->dock->setWidget( object->widget );
@@ -127,7 +145,10 @@ QNEBlock* OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int i
   }
 
   b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &OrientationDockBlock::setOrientation ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &OrientationDockBlock::setPose ) );
 
   b->setBrush( dockColor );
 

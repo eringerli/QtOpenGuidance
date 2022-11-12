@@ -22,13 +22,16 @@
 #include "qneport.h"
 
 #include <QBrush>
+#include <QIODevice>
 
-void NmeaParserGGA::setData( const QByteArray& data ) {
+void
+NmeaParserGGA::setData( const QByteArray& data ) {
   dataToParse.append( data );
   parseData();
 }
 
-void NmeaParserGGA::parseData() {
+void
+NmeaParserGGA::parseData() {
   // relies heavy on the implementations of QTextStream, QByteArray and QString
   // read the docs about them!
 
@@ -36,13 +39,12 @@ void NmeaParserGGA::parseData() {
   QTextStream textstream( dataToParse, QIODevice::ReadOnly );
 
   QString currentLine;
-  bool hasChecksum = false;
-  quint8 checksumFromNmeaSentence = 0;
+  bool    hasChecksum              = false;
+  quint8  checksumFromNmeaSentence = 0;
 
   // returns true if a line could be read; the newline has to be there or it returns false
   // currentLine has no trailing end-of-line characters
   if( textstream.readLineInto( &currentLine ) ) {
-
     // calculate the checksum
     quint8 checksum = 0;
 
@@ -64,11 +66,12 @@ void NmeaParserGGA::parseData() {
         }
 
         // remove all chars behind the * from the string; works with an empty checksum too
-        currentLine.remove( i, currentLine.count() - i );
+        currentLine.remove( i, currentLine.size() - i );
 
         break;
       } else {
-        // the checksum is a simple XOR of all chars in the sentence, but without the $ and the checksum itself
+        // the checksum is a simple XOR of all chars in the sentence, but without the $
+        // and the checksum itself
         checksum ^= c;
       }
     }
@@ -90,7 +93,8 @@ void NmeaParserGGA::parseData() {
       // is used for the format of the NMEA sentences
       // https://www.u-blox.com/de/product/zed-f9p-module -> interface manual
 
-      // GGA and GNS are exactly the same, but GNS displays more than 12 satelites (max 99)
+      // GGA and GNS are exactly the same, but GNS displays more than 12 satelites (max
+      // 99)
       if( nmeaFields.front() == QStringLiteral( "GGA" ) || nmeaFields.front() == QStringLiteral( "GNS" ) ) {
         if( nmeaFields.count() >= 14 ) {
           qDebug() << nmeaFields;
@@ -103,9 +107,9 @@ void NmeaParserGGA::parseData() {
           ++nmeaFileIterator;
 
           // the format is like this: DDMM.MMMMM
-          double latitude = nmeaFileIterator->leftRef( 2 ).toDouble();
-          latitude += nmeaFileIterator->midRef( 2, 2 ).toDouble() / 60;
-          latitude += nmeaFileIterator->midRef( 4 ).toDouble() / 60;
+          double latitude = nmeaFileIterator->left( 2 ).toDouble();
+          latitude += nmeaFileIterator->mid( 2, 2 ).toDouble() / 60;
+          latitude += nmeaFileIterator->mid( 4 ).toDouble() / 60;
           ++nmeaFileIterator;
 
           if( ( *nmeaFileIterator ) == 'S' ) {
@@ -115,9 +119,9 @@ void NmeaParserGGA::parseData() {
           ++nmeaFileIterator;
 
           // the format is like this: DDDMM.MMMMM
-          double longitude = nmeaFileIterator->leftRef( 3 ).toDouble();
-          longitude += nmeaFileIterator->midRef( 3, 2 ).toDouble() / 60;
-          longitude += nmeaFileIterator->midRef( 5 ).toDouble() / 60;
+          double longitude = nmeaFileIterator->left( 3 ).toDouble();
+          longitude += nmeaFileIterator->mid( 3, 2 ).toDouble() / 60;
+          longitude += nmeaFileIterator->mid( 5 ).toDouble() / 60;
           ++nmeaFileIterator;
 
           if( ( *nmeaFileIterator ) == 'W' ) {
@@ -126,13 +130,13 @@ void NmeaParserGGA::parseData() {
 
           ++nmeaFileIterator;
 
-          Q_EMIT fixQualityChanged( nmeaFileIterator->toFloat() );
+          Q_EMIT fixQualityChanged( nmeaFileIterator->toFloat(), CalculationOption::Option::None );
           ++nmeaFileIterator;
 
-          Q_EMIT numSatelitesChanged( nmeaFileIterator->toFloat() );
+          Q_EMIT numSatelitesChanged( nmeaFileIterator->toFloat(), CalculationOption::Option::None );
           ++nmeaFileIterator;
 
-          Q_EMIT hdopChanged( nmeaFileIterator->toFloat() );
+          Q_EMIT hdopChanged( nmeaFileIterator->toFloat(), CalculationOption::Option::None );
           ++nmeaFileIterator;
 
           double height = nmeaFileIterator->toDouble();
@@ -147,7 +151,7 @@ void NmeaParserGGA::parseData() {
           // skip unit of geoid seperation
           ++nmeaFileIterator;
 
-          Q_EMIT ageOfDifferentialDataChanged( nmeaFileIterator->toFloat() );
+          Q_EMIT ageOfDifferentialDataChanged( nmeaFileIterator->toFloat(), CalculationOption::Option::None );
 
           Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, height ) );
         }
@@ -159,18 +163,21 @@ void NmeaParserGGA::parseData() {
   }
 }
 
-QNEBlock* NmeaParserGGAFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+NmeaParserGGAFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new NmeaParserGGA();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
   b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
-  b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( const double ) ) ) );
-  b->addOutputPort( QStringLiteral( "Age of Differential Data" ), QLatin1String( SIGNAL( ageOfDifferentialDataChanged( const double ) ) ) );
+  b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Age of Differential Data" ),
+                    QLatin1String( SIGNAL( ageOfDifferentialDataChanged( NUMBER_SIGNATURE ) ) ) );
 
   b->setBrush( parserColor );
 

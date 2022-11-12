@@ -21,14 +21,12 @@
 
 #include <QMenu>
 
-NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) :
-  QGroupBox( parent ),
-  ui( new Ui::NewOpenSaveToolbar ) {
+NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::NewOpenSaveToolbar ) {
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
 
-  newMenu = new QMenu( this );
+  newMenu  = new QMenu( this );
   openMenu = new QMenu( this );
   saveMenu = new QMenu( this );
 
@@ -40,6 +38,4 @@ NewOpenSaveToolbar::NewOpenSaveToolbar( QWidget* parent ) :
   ui->pbSave->setPopupMode( QToolButton::InstantPopup );
 }
 
-NewOpenSaveToolbar::~NewOpenSaveToolbar() {
-  delete ui;
-}
+NewOpenSaveToolbar::~NewOpenSaveToolbar() { delete ui; }

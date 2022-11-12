@@ -21,23 +21,23 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include <QMenu>
 #include <QAction>
 #include <QLabel>
-#include <QVBoxLayout>
-#include <QWidget>
+#include <QMenu>
 #include <QQuaternion>
+#include <QVBoxLayout>
 #include <QVector3D>
+#include <QWidget>
 
 #include "gui/MyMainWindow.h"
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QLayer>
-#include <Qt3DRender/QFrameGraphNode>
-#include <Qt3DRender/QLayerFilter>
 #include <Qt3DRender/QCamera>
+#include <Qt3DRender/QFrameGraphNode>
+#include <Qt3DRender/QLayer>
+#include <Qt3DRender/QLayerFilter>
 
 #include "3d/texturerendertarget.h"
 #include <Qt3DRender/QCameraSelector>
@@ -46,8 +46,8 @@
 #include <Qt3DRender/QRenderCapture>
 #include <Qt3DRender/QRenderCaptureReply>
 #include <Qt3DRender/QRenderSurfaceSelector>
-#include <Qt3DRender/QRenderTargetSelector>
 #include <Qt3DRender/QRenderTarget>
+#include <Qt3DRender/QRenderTargetSelector>
 #include <Qt3DRender/QViewport>
 
 #include "block/sectionControl/Implement.h"
@@ -58,9 +58,11 @@
 #include "helpers/eigenHelper.h"
 
 // order is important! Crashes if a parent entity is removed first!
-SectionControl::SectionControl( const QString& uniqueName, MyMainWindow* mainWindow, Qt3DCore::QEntity* rootEntity, Qt3DRender::QFrameGraphNode* frameGraphParent )
-  : frameGraphParent( frameGraphParent ) {
-
+SectionControl::SectionControl( const QString&               uniqueName,
+                                MyMainWindow*                mainWindow,
+                                Qt3DCore::QEntity*           rootEntity,
+                                Qt3DRender::QFrameGraphNode* frameGraphParent )
+    : frameGraphParent( frameGraphParent ) {
   auto* layout = new QVBoxLayout;
 
   labelTurnOnTexture = new QLabel();
@@ -77,8 +79,7 @@ SectionControl::SectionControl( const QString& uniqueName, MyMainWindow* mainWin
   dock = new KDDockWidgets::DockWidget( uniqueName );
   dock->setWidget( widget );
 
-
-  // Create a viewport node. The viewport here just covers the entire render area.
+  // Create a viewport node. The viewport here covers the entire render area.
   auto* viewport = new Qt3DRender::QViewport( frameGraphParent );
   viewport->setNormalizedRect( QRectF( 0.0, 0.0, 1.0, 1.0 ) );
 
@@ -116,7 +117,7 @@ SectionControl::SectionControl( const QString& uniqueName, MyMainWindow* mainWin
   {
     // Create a texture to render into. This acts as the buffer that
     // holds the rendered image.
-    auto* renderTargetSelector = new Qt3DRender::QRenderTargetSelector( layerFilter );
+    auto* renderTargetSelector  = new Qt3DRender::QRenderTargetSelector( layerFilter );
     textureTargetTurnOffTexture = new TextureRenderTarget( renderTargetSelector, QSize( 400, 1 ) );
     renderTargetSelector->setTarget( textureTargetTurnOffTexture );
 
@@ -141,13 +142,15 @@ SectionControl::SectionControl( const QString& uniqueName, MyMainWindow* mainWin
 
 SectionControl::~SectionControl() {
   frameGraph->deleteLater();
-  replyTurnOnTexture->deleteLater();
-  labelTurnOnTexture->deleteLater();
+  //  replyTurnOnTexture->deleteLater();
   dock->deleteLater();
 }
 
-void SectionControl::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+SectionControl::setPose( const Eigen::Vector3d&           position,
+                         const Eigen::Quaterniond&        orientation,
+                         const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::NoControl ) ) {
     if( implement != nullptr ) {
       auto* transformOn = cameraEntityTurnOnTexture->transform();
 
@@ -166,9 +169,10 @@ void SectionControl::setPose( const Eigen::Vector3d& position, const Eigen::Quat
   }
 }
 
-void SectionControl::setImplement( const QPointer<Implement>& implement ) {
+void
+SectionControl::setImplement( const QPointer< Implement >& implement ) {
   if( implement != nullptr ) {
-    this->implement = implement;
+    this->implement    = implement;
     size_t numSections = implement->sections.size();
 
     // get the left most point of the implement
@@ -200,184 +204,213 @@ void SectionControl::setImplement( const QPointer<Implement>& implement ) {
     double totalWidth = sectionOffsets.front() - sectionOffsets.back();
     //    double totalSpace = 0;
 
-
-    qDebug() << "SectionControl::setImplement" << sectionOffsets.front() << sectionOffsets.back() << totalWidthOfSections << totalWidth << totalWidthOfSections / totalWidth << totalWidth / totalWidthOfSections;
+    //    qDebug() << "SectionControl::setImplement" << sectionOffsets.front() <<
+    //    sectionOffsets.back() << totalWidthOfSections << totalWidth <<
+    //    totalWidthOfSections / totalWidth << totalWidth / totalWidthOfSections;
 
     int widthOfTexture = std::ceil( totalWidth / totalWidthOfSections * double( ( numSections - 1 ) * 10 ) );
     textureTargetTurnOnTexture->setSize( QSize( widthOfTexture, 1 ) );
     textureTargetTurnOffTexture->setSize( QSize( widthOfTexture, 1 ) );
-    qDebug() << "SectionControl::setImplement" << textureTargetTurnOnTexture->getSize();
+    //    qDebug() << "SectionControl::setImplement" <<
+    //    textureTargetTurnOnTexture->getSize();
 
-    cameraEntityTurnOnTexture->lens()->setOrthographicProjection( float( sectionOffsets.front() ), float( sectionOffsets.back() ), 0, -0.1f, 0.1f, 100 );
-    cameraEntityTurnOffTexture->lens()->setOrthographicProjection( float( sectionOffsets.front() ), float( sectionOffsets.back() ), 0, -0.1f, 0.1f, 100 );
-
+    cameraEntityTurnOnTexture->lens()->setOrthographicProjection(
+      float( sectionOffsets.front() ), float( sectionOffsets.back() ), 0, -0.1f, 0.1f, 100 );
+    cameraEntityTurnOffTexture->lens()->setOrthographicProjection(
+      float( sectionOffsets.front() ), float( sectionOffsets.back() ), 0, -0.1f, 0.1f, 100 );
 
     sectionPixelOffsets.clear();
     sectionPixelOffsets.reserve( numSections - 1 );
     double pixelPerMeter = widthOfTexture / totalWidth;
 
     for( size_t i = 0, end = sectionOffsets.size(); i < end; i += 2 ) {
-      sectionPixelOffsets.push_back( -( sectionOffsets.at( i ) - firstSectionOffset )*pixelPerMeter );
-      qDebug() << "sectionPixelOffsets" << pixelPerMeter << i << ( sectionOffsets.at( i ) - firstSectionOffset ) << sectionPixelOffsets.back();
+      sectionPixelOffsets.push_back( -( sectionOffsets.at( i ) - firstSectionOffset ) * pixelPerMeter );
+      //      qDebug() << "sectionPixelOffsets" << pixelPerMeter << i << (
+      //      sectionOffsets.at( i ) - firstSectionOffset ) << sectionPixelOffsets.back();
     }
-
   }
 }
 
-void SectionControl::setSections() {
+void
+SectionControl::setSections() {
   if( implement != nullptr ) {
     //    size_t numSections = implement->sections.size();
 
     //    const auto& section0 = implement->sections.at( 0 );
     //    const auto& state0 = section0->state();
-    //    const bool globalForceOff = state0.testFlag( ImplementSection::State::ForceOff );
-    //    const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn );
+    //    const bool globalForceOff = state0.testFlag( ImplementSection::State::ForceOff
+    //    ); const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn
+    //    );
 
     //    for( size_t i = 1; i < numSections; ++i ) {
-//      size_t sectionIndex = i - 1;
-//      const auto& section = implement->sections.at( i );
-//      const auto& state = section->state();
+    //      size_t sectionIndex = i - 1;
+    //      const auto& section = implement->sections.at( i );
+    //      const auto& state = section->state();
 
-//      if( !globalForceOff &&
-//          ( !state.testFlag( ImplementSection::State::ForceOff ) ) &&
-//          ( globalForceOn || section->isSectionOn() ) ) {
-//        if( sectionMeshes.at( sectionIndex ) == nullptr ) {
-//          sectionMeshes.at( sectionIndex ) = createNewMesh();
-//        }
-//      } else {
-//        if( sectionMeshes.at( sectionIndex ) != nullptr ) {
-//          sectionMeshes.at( sectionIndex )->optimise( threadForCgalWorker );
-//          sectionMeshes.at( sectionIndex ) = nullptr;
-//        }
-//      }
-//    }
+    //      if( !globalForceOff &&
+    //          ( !state.testFlag( ImplementSection::State::ForceOff ) ) &&
+    //          ( globalForceOn || section->isSectionOn() ) ) {
+    //        if( sectionMeshes.at( sectionIndex ) == nullptr ) {
+    //          sectionMeshes.at( sectionIndex ) = createNewMesh();
+    //        }
+    //      } else {
+    //        if( sectionMeshes.at( sectionIndex ) != nullptr ) {
+    //          sectionMeshes.at( sectionIndex )->optimise( threadForCgalWorker );
+    //          sectionMeshes.at( sectionIndex ) = nullptr;
+    //        }
+    //      }
+    //    }
   }
 }
 
-void SectionControl::setLayer( Qt3DRender::QLayer* layer ) {
+void
+SectionControl::setLayer( Qt3DRender::QLayer* layer ) {
+  for( auto* layerPtr : layerFilter->layers() ) {
+    layerFilter->removeLayer( layerPtr );
+  }
+
   layerFilter->addLayer( layer );
 }
 
-void SectionControl::onImageRenderedTurnOnTexture() {
-  // Get the image from the reply and display it in the label.
-  labelTurnOnTexture->setPixmap( QPixmap::fromImage( replyTurnOnTexture->image() ) );
+void
+SectionControl::onImageRenderedTurnOnTexture() {
+  if( sender() ) {
+    // Get the image from the reply and display it in the label.
+    labelTurnOnTexture->setPixmap( QPixmap::fromImage( ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image() ) );
 
-  auto* rgbData = ( QRgb* )replyTurnOnTexture->image().constBits();
+    auto* rgbData = ( QRgb* )( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().constBits();
 
-  constexpr uint8_t numPixelOnToTurnOn = 5;
+    constexpr uint8_t numPixelOnToTurnOn = 5;
 
-  bool emitSectionsChanged = false;
+    bool emitSectionsChanged = false;
 
-  for( size_t i = 0, end = sectionPixelOffsets.size(); i < end; ++i ) {
-    if( implement->sections.at( i + 1 )->state().testFlag( ImplementSection::Automatic ) ) {
-      const auto sectionPixelOffset = sectionPixelOffsets.at( i );
-      uint16_t sectionPixelMax = sectionPixelOffset + 10;
+    for( size_t i = 0, end = sectionPixelOffsets.size(); i < end; ++i ) {
+      if( implement->sections.at( i + 1 )->state().testFlag( ImplementSection::Automatic ) ) {
+        const auto sectionPixelOffset = sectionPixelOffsets.at( i );
+        uint16_t   sectionPixelMax    = sectionPixelOffset + 10;
 
-      if( sectionPixelMax > replyTurnOnTexture->image().width() ) {
-        qDebug() << "sectionPixelOffset<(reply->image().width())" << sectionPixelMax << ( replyTurnOnTexture->image().width() - 1 );
-        sectionPixelMax = replyTurnOnTexture->image().width();
-      }
+        if( sectionPixelMax > ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width() ) {
+          //        qDebug() << "sectionPixelOffset<(reply->image().width())" <<
+          //        sectionPixelMax << ( replyTurnOnTexture->image().width() - 1 );
+          sectionPixelMax = ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width();
+        }
 
-      uint8_t numPixelOn = 0;
+        uint8_t numPixelOn = 0;
 
-      for( uint16_t i = sectionPixelOffset; i < sectionPixelMax; ++i ) {
-        if( ( rgbData[i] & 0x00ffffff ) != 0 ) {
-          ++numPixelOn;
+        for( uint16_t i = sectionPixelOffset; i < sectionPixelMax; ++i ) {
+          if( ( rgbData[i] & 0x00ffffff ) != 0 ) {
+            ++numPixelOn;
+          }
+        }
+
+        if( numPixelOn >= numPixelOnToTurnOn ) {
+          implement->sections.at( i + 1 )->removeState( ImplementSection::AutomaticOn );
+          //        qDebug() << "Automatic On 1:  " << i << implement->sections.at( i + 1
+          //        )->state();
+          emitSectionsChanged = true;
+        } else {
+          implement->sections.at( i + 1 )->addState( ImplementSection::AutomaticOn );
+          //        qDebug() << "Automatic On 2: " << i << implement->sections.at( i + 1
+          //        )->state();
+          emitSectionsChanged = true;
         }
       }
-
-      if( numPixelOn >= numPixelOnToTurnOn ) {
-        implement->sections.at( i + 1 )->removeState( ImplementSection::AutomaticOn );
-        qDebug() << "Automatic On 1:  " << i << implement->sections.at( i + 1 )->state();
-        emitSectionsChanged = true;
-      } else {
-        implement->sections.at( i + 1 )->addState( ImplementSection::AutomaticOn );
-        qDebug() << "Automatic On 2: " << i << implement->sections.at( i + 1 )->state();
-        emitSectionsChanged = true;
-      }
     }
-  }
 
-  if( emitSectionsChanged ) {
-    implement->emitSectionsChanged();
-  }
-
-  //  requestRenderCapture();
-}
-
-void SectionControl::onImageRenderedTurnOffTexture() {
-  // Get the image from the reply and display it in the label.
-  labelTurnOffTexture->setPixmap( QPixmap::fromImage( replyTurnOffTexture->image() ) );
-
-  auto* rgbData = ( QRgb* )replyTurnOffTexture->image().constBits();
-
-  constexpr uint8_t numPixelOnToTurnOff = 5;
-
-  bool emitSectionsChanged = false;
-
-  for( size_t i = 0, end = sectionPixelOffsets.size(); i < end; ++i ) {
-    if( implement->sections.at( i + 1 )->state().testFlag( ImplementSection::Automatic ) ) {
-      const auto sectionPixelOffset = sectionPixelOffsets.at( i );
-      uint16_t sectionPixelMax = sectionPixelOffset + 10;
-
-      if( sectionPixelMax > replyTurnOffTexture->image().width() ) {
-        qDebug() << "sectionPixelOffset<(reply->image().width())" << sectionPixelMax << ( replyTurnOffTexture->image().width() - 1 );
-        sectionPixelMax = replyTurnOffTexture->image().width();
-      }
-
-      uint8_t numPixelOn = 0;
-
-      for( uint16_t i = sectionPixelOffset; i < sectionPixelMax; ++i ) {
-        if( ( rgbData[i] & 0x00ffffff ) != 0 ) {
-          ++numPixelOn;
-        }
-      }
-
-      if( numPixelOn >= numPixelOnToTurnOff ) {
-        implement->sections.at( i + 1 )->addState( ImplementSection::AutomaticOff );
-        qDebug() << "Automatic Off 1: " << i << implement->sections.at( i + 1 )->state();
-        emitSectionsChanged = true;
-      } else {
-        implement->sections.at( i + 1 )->removeState( ImplementSection::AutomaticOff );
-        qDebug() << "Automatic Off 2: " << i << implement->sections.at( i + 1 )->state();
-        emitSectionsChanged = true;
-      }
+    if( emitSectionsChanged ) {
+      implement->emitSectionsChanged();
     }
-  }
 
-  if( emitSectionsChanged ) {
-    implement->emitSectionsChanged();
+    sender()->deleteLater();
+
+    //  requestRenderCapture();
   }
 }
 
-void SectionControl::requestRenderCaptureTurnOnTexture() {
-  if( replyTurnOnTexture != nullptr ) {
-    replyTurnOnTexture->deleteLater();
-  }
+void
+SectionControl::onImageRenderedTurnOffTexture() {
+  if( sender() ) {
+    // Get the image from the reply and display it in the label.
+    labelTurnOffTexture->setPixmap( QPixmap::fromImage( ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image() ) );
 
-  replyTurnOnTexture = renderCaptureTurnOnTexture->requestCapture();
+    auto* rgbData = ( QRgb* )( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().constBits();
+
+    constexpr uint8_t numPixelOnToTurnOff = 5;
+
+    bool emitSectionsChanged = false;
+
+    for( size_t i = 0, end = sectionPixelOffsets.size(); i < end; ++i ) {
+      if( implement->sections.at( i + 1 )->state().testFlag( ImplementSection::Automatic ) ) {
+        const auto sectionPixelOffset = sectionPixelOffsets.at( i );
+        uint16_t   sectionPixelMax    = sectionPixelOffset + 10;
+
+        if( sectionPixelMax > ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width() ) {
+          //        qDebug() << "sectionPixelOffset<(reply->image().width())" <<
+          //        sectionPixelMax << ( replyTurnOffTexture->image().width() - 1 );
+          sectionPixelMax = ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width();
+        }
+
+        uint8_t numPixelOn = 0;
+
+        for( uint16_t i = sectionPixelOffset; i < sectionPixelMax; ++i ) {
+          if( ( rgbData[i] & 0x00ffffff ) != 0 ) {
+            ++numPixelOn;
+          }
+        }
+
+        if( numPixelOn >= numPixelOnToTurnOff ) {
+          implement->sections.at( i + 1 )->addState( ImplementSection::AutomaticOff );
+          //        qDebug() << "Automatic Off 1: " << i << implement->sections.at( i + 1
+          //        )->state();
+          emitSectionsChanged = true;
+        } else {
+          implement->sections.at( i + 1 )->removeState( ImplementSection::AutomaticOff );
+          //        qDebug() << "Automatic Off 2: " << i << implement->sections.at( i + 1
+          //        )->state();
+          emitSectionsChanged = true;
+        }
+      }
+    }
+
+    if( emitSectionsChanged ) {
+      implement->emitSectionsChanged();
+    }
+
+    sender()->deleteLater();
+  }
+}
+
+void
+SectionControl::requestRenderCaptureTurnOnTexture() {
+  //  if( replyTurnOnTexture != nullptr ) {
+  //    replyTurnOnTexture->deleteLater();
+  //  }
+
+  auto replyTurnOnTexture = renderCaptureTurnOnTexture->requestCapture();
   QObject::connect( replyTurnOnTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOnTexture );
 }
 
-void SectionControl::requestRenderCaptureTurnOffTexture() {
-  if( replyTurnOffTexture != nullptr ) {
-    replyTurnOffTexture->deleteLater();
-  }
+void
+SectionControl::requestRenderCaptureTurnOffTexture() {
+  //  if( replyTurnOffTexture != nullptr ) {
+  //    replyTurnOffTexture->deleteLater();
+  //  }
 
-  replyTurnOffTexture = renderCaptureTurnOffTexture->requestCapture();
-  QObject::connect( replyTurnOffTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOffTexture );
+  auto replyTurnOffTexture = renderCaptureTurnOffTexture->requestCapture();
+  QObject::connect(
+    replyTurnOffTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOffTexture );
 }
 
-QNEBlock* SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new SectionControl( getNameOfFactory() + QString::number( id ),
-                                     mainWindow,
-                                     rootEntity,
-                                     frameGraphParent );
-  auto* b = createBaseBlock( scene, object, id );
+  auto* object = new SectionControl( getNameOfFactory() + QString::number( id ), mainWindow, rootEntity, frameGraphParent );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
   object->dock->setTitle( getNameOfFactory() );
   object->dock->setWidget( object->labelTurnOnTexture );
@@ -386,10 +419,12 @@ QNEBlock* SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   mainWindow->addDockWidget( object->dock, location );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
   b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
   b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &SectionControl::setPose ) );
 
   return b;
 }

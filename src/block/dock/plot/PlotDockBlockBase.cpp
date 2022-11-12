@@ -19,15 +19,15 @@
 
 #include <QBrush>
 
-#include "gui/dock/PlotDock.h"
 #include "gui/MyMainWindow.h"
+#include "gui/dock/PlotDock.h"
 
 #include "qcustomplot.h"
 
 KDDockWidgets::DockWidget* PlotDockBlockBase::firstPlotDock = nullptr;
 
 PlotDockBlockBase::PlotDockBlockBase( const QString& uniqueName, MyMainWindow* mainWindow ) {
-  dock = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::DockWidget( uniqueName );
   widget = new PlotDock( mainWindow );
 }
 
@@ -41,19 +41,21 @@ PlotDockBlockBase::~PlotDockBlockBase() {
   dock->deleteLater();
 }
 
-void PlotDockBlockBase::toJSON( QJsonObject& json ) {
+void
+PlotDockBlockBase::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
 
-  valuesObject[QStringLiteral( "XAxisVisible" )] = getXAxisVisible();
-  valuesObject[QStringLiteral( "YAxisVisible" )] = getYAxisVisible();
-  valuesObject[QStringLiteral( "YAxisDescription" )] = getYAxisDescription();
+  valuesObject[QStringLiteral( "XAxisVisible" )]      = getXAxisVisible();
+  valuesObject[QStringLiteral( "YAxisVisible" )]      = getYAxisVisible();
+  valuesObject[QStringLiteral( "YAxisDescription" )]  = getYAxisDescription();
   valuesObject[QStringLiteral( "AutoscrollEnabled" )] = getAutoscrollEnabled();
-  valuesObject[QStringLiteral( "Window" )] = getWindow();
+  valuesObject[QStringLiteral( "Window" )]            = getWindow();
 
   json[QStringLiteral( "values" )] = valuesObject;
 }
 
-void PlotDockBlockBase::fromJSON( QJsonObject& json ) {
+void
+PlotDockBlockBase::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -65,39 +67,48 @@ void PlotDockBlockBase::fromJSON( QJsonObject& json ) {
   }
 }
 
-bool PlotDockBlockBase::getXAxisVisible() {
+bool
+PlotDockBlockBase::getXAxisVisible() {
   return widget->getQCustomPlotWidget()->xAxis->visible();
 }
 
-bool PlotDockBlockBase::getYAxisVisible() {
+bool
+PlotDockBlockBase::getYAxisVisible() {
   return widget->getQCustomPlotWidget()->yAxis->visible();
 }
 
-const QString PlotDockBlockBase::getYAxisDescription() {
+const QString
+PlotDockBlockBase::getYAxisDescription() {
   return widget->getQCustomPlotWidget()->yAxis->label();
 }
 
-bool PlotDockBlockBase::getAutoscrollEnabled() {
+bool
+PlotDockBlockBase::getAutoscrollEnabled() {
   return autoScrollEnabled;
 }
 
-double PlotDockBlockBase::getWindow() {
+double
+PlotDockBlockBase::getWindow() {
   return window;
 }
 
-void PlotDockBlockBase::setXAxisVisible( const bool visible ) {
+void
+PlotDockBlockBase::setXAxisVisible( const bool visible ) {
   widget->getQCustomPlotWidget()->xAxis->setVisible( visible );
 }
 
-void PlotDockBlockBase::setYAxisVisible( const bool visible ) {
+void
+PlotDockBlockBase::setYAxisVisible( const bool visible ) {
   widget->getQCustomPlotWidget()->yAxis->setVisible( visible );
 }
 
-void PlotDockBlockBase::setYAxisDescription( const QString& description ) {
+void
+PlotDockBlockBase::setYAxisDescription( const QString& description ) {
   widget->getQCustomPlotWidget()->yAxis->setLabel( description );
 }
 
-void PlotDockBlockBase::setAutoscrollEnabled( const bool enabled ) {
+void
+PlotDockBlockBase::setAutoscrollEnabled( const bool enabled ) {
   autoScrollEnabled = enabled;
 
   if( !enabled ) {
@@ -109,20 +120,24 @@ void PlotDockBlockBase::setAutoscrollEnabled( const bool enabled ) {
   setNameHelper();
 }
 
-void PlotDockBlockBase::setWindow( const double window ) {
+void
+PlotDockBlockBase::setWindow( const double window ) {
   this->window = window;
 }
 
-void PlotDockBlockBase::setName( const QString& name ) {
+void
+PlotDockBlockBase::setName( const QString& name ) {
   this->name = name;
   setNameHelper();
 }
 
-void PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick( QMouseEvent* ) {
+void
+PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick( QMouseEvent* ) {
   setAutoscrollEnabled( !autoScrollEnabled );
 }
 
-void PlotDockBlockBase::setNameHelper() {
+void
+PlotDockBlockBase::setNameHelper() {
   dock->setTitle( name + ( autoScrollEnabled ? QString() : QStringLiteral( " (m)" ) ) );
   dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name );
 }

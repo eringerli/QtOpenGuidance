@@ -22,45 +22,40 @@
 
 #include "block/BlockBase.h"
 
-#include <kddockwidgets/KDDockWidgets.h>
 #include <kddockwidgets/DockWidget.h>
+#include <kddockwidgets/KDDockWidgets.h>
 
 class ValueDockBlockBase : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit ValueDockBlockBase( const QString& uniqueName )
-      : BlockBase() {
-      dock = new KDDockWidgets::DockWidget( uniqueName );
-    }
+public:
+  explicit ValueDockBlockBase( const QString& uniqueName ) : BlockBase() { dock = new KDDockWidgets::DockWidget( uniqueName ); }
 
-    virtual ~ValueDockBlockBase() {
-      dock->deleteLater();
-    }
+  virtual ~ValueDockBlockBase() { dock->deleteLater(); }
 
-    void toJSON( QJsonObject& json ) override;
-    void fromJSON( QJsonObject& json ) override;
+  void toJSON( QJsonObject& json ) override;
+  void fromJSON( QJsonObject& json ) override;
 
-  public:
-    virtual const QFont& getFont() = 0;
-    virtual int getPrecision() = 0;
-    virtual int getFieldWidth() = 0;
-    virtual double getScale() = 0;
-    virtual bool unitVisible() = 0;
-    virtual const QString& getUnit() = 0;
+public:
+  virtual const QFont&   getFont()       = 0;
+  virtual int            getPrecision()  = 0;
+  virtual int            getFieldWidth() = 0;
+  virtual double         getScale()      = 0;
+  virtual bool           unitVisible()   = 0;
+  virtual const QString& getUnit()       = 0;
 
-    virtual void setFont( const QFont& ) = 0;
-    virtual void setPrecision( int ) = 0;
-    virtual void setFieldWidth( int ) = 0;
-    virtual void setScale( double ) = 0;
-    virtual void setUnitVisible( bool ) = 0;
-    virtual void setUnit( const QString& ) = 0;
+  virtual void setFont( const QFont& )   = 0;
+  virtual void setPrecision( int )       = 0;
+  virtual void setFieldWidth( int )      = 0;
+  virtual void setScale( double )        = 0;
+  virtual void setUnitVisible( bool )    = 0;
+  virtual void setUnit( const QString& ) = 0;
 
-  public Q_SLOTS:
+public Q_SLOTS:
 
-  public:
-    KDDockWidgets::DockWidget* dock = nullptr;
+public:
+  KDDockWidgets::DockWidget* dock = nullptr;
 
-    static KDDockWidgets::DockWidget* firstValueDock;
-    static KDDockWidgets::DockWidget* firstThreeValuesDock;
+  static KDDockWidgets::DockWidget* firstValueDock;
+  static KDDockWidgets::DockWidget* firstThreeValuesDock;
 };

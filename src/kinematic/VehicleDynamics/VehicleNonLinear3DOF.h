@@ -28,20 +28,22 @@
 
 namespace VehicleDynamics {
   class VehicleNonLinear3DOF : public Vehicle {
-    public:
-      VehicleNonLinear3DOF( Tire* frontTire, Tire* rearTire );
-      virtual ~VehicleNonLinear3DOF() {}
+  public:
+    VehicleNonLinear3DOF( Tire* frontTire, Tire* rearTire );
+    virtual ~VehicleNonLinear3DOF() {}
 
-      virtual void step( double deltaT, double deltaF,
-                         double fxFront, double fxFrontRight, double fxRearLeft, double fxRearRight );
+    virtual void step( double deltaT, double deltaF, double fxFront, double fxFrontRight, double fxRearLeft, double fxRearRight );
 
+    enum class StateNames : Eigen::Matrix< double, 6, 1 >::Index{
+      X, Y, Psi, V, AlphaT, dPsi,
+    };
 
-    public:
-      QStringList stateNames;
-      Eigen::Matrix<double, 6, 1> state;
-      Eigen::Matrix<double, 6, 1> oldDState;
+  public:
+    QStringList                   stateNames;
+    Eigen::Matrix< double, 6, 1 > state;
+    Eigen::Matrix< double, 6, 1 > oldDState;
 
-      std::unique_ptr<Tire> frontTire;
-      std::unique_ptr<Tire> rearTire;
+    Tire* frontTire;
+    Tire* rearTire;
   };
 }

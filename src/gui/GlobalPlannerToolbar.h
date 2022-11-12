@@ -27,27 +27,27 @@ namespace Ui {
 }
 
 class GlobalPlannerToolbar : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit GlobalPlannerToolbar( QWidget* parent = nullptr );
-    ~GlobalPlannerToolbar();
-    void resetToolbar();
-    void setToolbarToAdditionalPoint();
+public:
+  explicit GlobalPlannerToolbar( QWidget* parent = nullptr );
+  ~GlobalPlannerToolbar();
+  void resetToolbar();
+  void setToolbarToAdditionalPoint();
 
-  private Q_SLOTS:
-    void on_pbAB_clicked( bool checked );
-    void on_pbSnap_clicked();
+private Q_SLOTS:
+  void on_pbAB_clicked( bool checked );
+  void on_pbSnap_clicked();
 
-    void on_pbAbContinuous_clicked( bool checked );
+  void on_pbAbContinuous_clicked( bool checked );
 
-  Q_SIGNALS:
-    void setAPoint();
-    void setBPoint();
-    void setAdditionalPoint();
-    void setAdditionalPointsContinous( const bool );
-    void snap();
+Q_SIGNALS:
+  void setAPoint();
+  void setBPoint();
+  void setAdditionalPoint();
+  void setAdditionalPointsContinous( const bool );
+  void snap();
 
-  private:
-    Ui::GlobalPlannerToolbar* ui;
+private:
+  Ui::GlobalPlannerToolbar* ui;
 };

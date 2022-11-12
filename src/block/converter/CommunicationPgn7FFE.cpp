@@ -21,10 +21,11 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include <QByteArray>
 #include <QBrush>
+#include <QByteArray>
 
-void CommunicationPgn7ffe::setSteeringAngle( double steeringAngle ) {
+void
+CommunicationPgn7ffe::setSteeringAngle( double steeringAngle, const CalculationOption::Options ) {
   QByteArray data;
   data.resize( 8 );
   data[0] = char( 0x7f );
@@ -38,32 +39,36 @@ void CommunicationPgn7ffe::setSteeringAngle( double steeringAngle ) {
 
   // XTE in mm
   auto xte = int16_t( distance * 1000 );
-  data[4] = char( xte >> 8 );
-  data[5] = char( xte & 0xff );
+  data[4]  = char( xte >> 8 );
+  data[5]  = char( xte & 0xff );
 
   // steerangle in °/100
   auto steerangle = int16_t( steeringAngle * 100 );
-  data[6] = char( steerangle >> 8 );
-  data[7] = char( steerangle & 0xff );
+  data[6]         = char( steerangle >> 8 );
+  data[7]         = char( steerangle & 0xff );
 
   Q_EMIT dataReceived( data );
 }
 
-void CommunicationPgn7ffe::setXte( double distance ) {
+void
+CommunicationPgn7ffe::setXte( double distance, const CalculationOption::Options ) {
   this->distance = distance;
 }
 
-void CommunicationPgn7ffe::setVelocity( double velocity ) {
+void
+CommunicationPgn7ffe::setVelocity( double velocity, const CalculationOption::Options ) {
   this->velocity = velocity;
 }
 
-QNEBlock* CommunicationPgn7ffeFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+CommunicationPgn7ffeFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new CommunicationPgn7ffe();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( double ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( double ) ) ) );
-  b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( double ) ) ) );
+  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
   b->setBrush( parserColor );

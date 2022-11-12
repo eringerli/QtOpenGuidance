@@ -23,25 +23,27 @@
 
 #include <QByteArray>
 
+#include <QBasicTimer>
+#include <QBrush>
 #include <QCborMap>
 #include <QCborStreamReader>
 #include <QCborValue>
-#include <QBrush>
-#include <QBasicTimer>
 
 ValueTransmissionBase64Data::ValueTransmissionBase64Data( int id ) : ValueTransmissionBase( id ) {
-  reader = std::make_unique<QCborStreamReader>();
+  reader = std::make_unique< QCborStreamReader >();
 }
 
-void ValueTransmissionBase64Data::setData( const QByteArray& data ) {
+void
+ValueTransmissionBase64Data::setData( const QByteArray& data ) {
   QCborMap map;
   map[QStringLiteral( "channelId" )] = id;
-  map[QStringLiteral( "data" )] = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
+  map[QStringLiteral( "data" )]      = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
 
   Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
 }
 
-void ValueTransmissionBase64Data::dataReceive( const QByteArray& data ) {
+void
+ValueTransmissionBase64Data::dataReceive( const QByteArray& data ) {
   reader->addData( data );
 
   auto cbor = QCborValue::fromCbor( *reader );
@@ -51,9 +53,11 @@ void ValueTransmissionBase64Data::dataReceive( const QByteArray& data ) {
   }
 }
 
-QNEBlock* ValueTransmissionBase64DataFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+ValueTransmissionBase64DataFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ValueTransmissionBase64Data( id );
-  auto* b = createBaseBlock( scene, obj, id, false );
+  auto* b   = createBaseBlock( scene, obj, id, false );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
   b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );

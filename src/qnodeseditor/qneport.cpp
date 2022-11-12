@@ -28,8 +28,8 @@
 #include "qneport.h"
 #include "qneblock.h"
 
-#include <QTextDocument>
 #include <QFontMetrics>
+#include <QTextDocument>
 
 #include <QGraphicsScene>
 
@@ -42,11 +42,9 @@
 
 #include "qneconnection.h"
 
-QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded )
-  : QGraphicsPathItem( parent ) {
-
+QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded ) : QGraphicsPathItem( parent ) {
   this->slotSignalSignature = slotSignalSignature;
-  label = new QGraphicsTextItem( this );
+  label                     = new QGraphicsTextItem( this );
 
   QPainterPath p;
   p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
@@ -64,7 +62,8 @@ QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool
 }
 
 QNEPort::~QNEPort() {
-  // as m_connections is also changed by the destructor of the connection, test in each iteration
+  // as m_connections is also changed by the destructor of the connection, test in each
+  // iteration
   while( !m_connections.empty() ) {
     delete m_connections.back();
   }
@@ -76,19 +75,23 @@ QNEPort::~QNEPort() {
   }
 }
 
-void QNEPort::setNEBlock( QNEBlock* b ) {
+void
+QNEPort::setNEBlock( QNEBlock* b ) {
   m_block = b;
 }
 
-void QNEPort::setName( const QString& n ) const {
+void
+QNEPort::setName( const QString& n ) const {
   label->setPlainText( n );
 }
 
-QString QNEPort::getName() const {
+QString
+QNEPort::getName() const {
   return label->toPlainText();
 }
 
-void QNEPort::setIsOutput( bool output ) {
+void
+QNEPort::setIsOutput( bool output ) {
   isOutput_ = output;
 
   if( isOutput_ ) {
@@ -99,15 +102,18 @@ void QNEPort::setIsOutput( bool output ) {
   }
 }
 
-bool QNEPort::isOutput() const {
+bool
+QNEPort::isOutput() const {
   return isOutput_;
 }
 
-std::vector<QNEConnection*>& QNEPort::connections() {
+std::vector< QNEConnection* >&
+QNEPort::connections() {
   return m_connections;
 }
 
-void QNEPort::setPortFlags( int f ) {
+void
+QNEPort::setPortFlags( int f ) {
   m_portFlags = f;
 
   if( ( m_portFlags & TypePort ) != 0 ) {
@@ -132,20 +138,24 @@ void QNEPort::setPortFlags( int f ) {
   }
 }
 
-QNEBlock* QNEPort::block() const {
+QNEBlock*
+QNEPort::block() const {
   return m_block;
 }
 
-qreal QNEPort::getWidthOfLabelBoundingRect() {
+qreal
+QNEPort::getWidthOfLabelBoundingRect() {
   return marginOfText + label->boundingRect().width();
 }
 
-qreal QNEPort::getHeightOfLabelBoundingRect() {
+qreal
+QNEPort::getHeightOfLabelBoundingRect() {
   QFontMetrics fm( label->font() );
-  return fm.height()/* + marginOfText*/;
+  return fm.height() /* + marginOfText*/;
 }
 
-QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
+QVariant
+QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
     for( auto* conn : qAsConst( m_connections ) ) {
       conn->updatePosFromPorts();
@@ -156,8 +166,9 @@ QVariant QNEPort::itemChange( GraphicsItemChange change, const QVariant& value )
   return value;
 }
 
-void QNEPort::contentsChanged() {
-  auto* block = qgraphicsitem_cast<QNEBlock*>( parentItem() );
+void
+QNEPort::contentsChanged() {
+  auto* block = qgraphicsitem_cast< QNEBlock* >( parentItem() );
 
   if( block != nullptr ) {
     block->setName( label->toPlainText(), true );
@@ -165,12 +176,12 @@ void QNEPort::contentsChanged() {
   }
 }
 
-QNEPortHelper::QNEPortHelper( QNEPort* port )
-  : QObject(), port( port ) {
+QNEPortHelper::QNEPortHelper( QNEPort* port ) : QObject(), port( port ) {
   QObject::connect( port->label->document(), &QTextDocument::contentsChanged, this, &QNEPortHelper::contentsChanged );
 }
 
-void QNEPortHelper::contentsChanged() {
+void
+QNEPortHelper::contentsChanged() {
   bool oldState = port->label->document()->blockSignals( true );
   port->contentsChanged();
   port->label->document()->blockSignals( oldState );

@@ -22,56 +22,43 @@
 
 class MyMainWindow;
 
-#include "block/BlockBase.h"
 #include "PlotDockBlockBase.h"
+#include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
-#include "kinematic/PoseOptions.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit OrientationPlotDockBlock( const QString& uniqueName,
-                                       MyMainWindow* mainWindow );
+public:
+  explicit OrientationPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
 
-  public Q_SLOTS:
-    void setOrientation( const Eigen::Quaterniond& orientation );
+public Q_SLOTS:
+  void setOrientation( const Eigen::Quaterniond& orientation );
 
-    void setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const PoseOption::Options& );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-  private:
-    void rescale();
+private:
+  void rescale();
 };
 
 class OrientationPlotDockBlockFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    OrientationPlotDockBlockFactory( MyMainWindow* mainWindow,
-                                     KDDockWidgets::Location location,
-                                     QMenu* menu )
-      : BlockFactory(),
-        mainWindow( mainWindow ),
-        location( location ),
-        menu( menu ) {}
+public:
+  OrientationPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "OrientationPlotDockBlock" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "OrientationPlotDockBlock" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Plots" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Plots" ); }
 
-    QString getPrettyNameOfFactory() override {
-      return QStringLiteral( "Orientation Plot Dock" );
-    }
+  QString getPrettyNameOfFactory() override { return QStringLiteral( "Orientation Plot Dock" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    MyMainWindow* mainWindow = nullptr;
-    KDDockWidgets::Location location;
-    QMenu* menu = nullptr;
+private:
+  MyMainWindow*           mainWindow = nullptr;
+  KDDockWidgets::Location location;
+  QMenu*                  menu = nullptr;
 };

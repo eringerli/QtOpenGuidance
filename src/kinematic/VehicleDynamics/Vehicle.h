@@ -31,39 +31,32 @@
 
 namespace VehicleDynamics {
   class Vehicle {
-    public:
-      Vehicle() {}
-      virtual ~Vehicle() {}
+  public:
+    Vehicle() {}
+    virtual ~Vehicle() {}
 
-      virtual void step( double deltaT, double deltaF,
-                         double fxFrontLeft, double fxFrontRight, double fxRearLeft, double fxRearRight ) = 0;
+    virtual void step( double deltaT, double deltaF, double fxFrontLeft, double fxFrontRight, double fxRearLeft, double fxRearRight ) = 0;
 
-      /// Mass of the car (tractor) [kg]
-      double mass() {
-        return massFrontAxle + massRearAxle;
-      }
+    /// Mass of the car (tractor) [kg]
+    double mass() { return massFrontAxle + massRearAxle; }
 
-      /// Distance from front axle of the car (tractor) to the center of mass of the car (tractor) [m]
-      double lengthA() {
-        return massRearAxle / mass() * wheelBase;
-      }
+    /// Distance from front axle of the car (tractor) to the center of mass of the car (tractor) [m]
+    double lengthA() { return massRearAxle / mass() * wheelBase; }
 
-      /// Distance from center of mass of the car (tractor) to the front axle of the car (tractor) [m]
-      double lengthB() {
-        return wheelBase - lengthA();
-      }
+    /// Distance from center of mass of the car (tractor) to the front axle of the car (tractor) [m]
+    double lengthB() { return wheelBase - lengthA(); }
 
-      QStringList stateNames;
+    QStringList stateNames;
 
-      double momentOfInertia = 10000; /// Moment of inertia the car (tractor) [kg * m2]
-      double massFrontAxle = 600; /// Mass over the front axle [kg]
-      double massRearAxle = 700; /// Mass over the rear axle [kg]
-      double wheelBase = 3.5; /// Wheelbase [m]
-      int nFrontTiresPerSide = 1; /// Number of front tires per side
-      int nRearTiresPerSide = 1; /// Number of rear tires per side
-      double trackWidth = 2; /// Track of the car (tractor)  [m]
-      double muy = 0.8; /// Operational friction coefficient
+    double momentOfInertia    = 10000; /// Moment of inertia the car (tractor) [kg * m2]
+    double massFrontAxle      = 600;   /// Mass over the front axle [kg]
+    double massRearAxle       = 700;   /// Mass over the rear axle [kg]
+    double wheelBase          = 3.5;   /// Wheelbase [m]
+    int    nFrontTiresPerSide = 1;     /// Number of front tires per side
+    int    nRearTiresPerSide  = 1;     /// Number of rear tires per side
+    double trackWidth         = 2;     /// Track of the car (tractor)  [m]
+    double muy                = 0.8;   /// Operational friction coefficient
 
-      static constexpr double G = 9.80665;
+    static constexpr double G = 9.80665;
   };
 }

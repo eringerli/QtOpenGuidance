@@ -21,13 +21,13 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include <QPointer>
 #include <QColor>
+#include <QPointer>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QGeometry>
+#include <Qt3DCore/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 
 #include <Qt3DExtras/QCylinderMesh>
@@ -45,9 +45,8 @@
 #include "helpers/eigenHelper.h"
 
 SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
-
   // add an entry, so all coordinates are local
-  m_rootEntity = new Qt3DCore::QEntity( rootEntity );
+  m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
 
@@ -59,26 +58,28 @@ SprayerModel::~SprayerModel() {
   m_rootEntity->deleteLater();
 }
 
-void SprayerModel::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+SprayerModel::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
     m_rootEntityTransform->setRotation( toQQuaternion( orientation ) );
   }
 }
 
-void SprayerModel::setSections() {
+void
+SprayerModel::setSections() {
   if( implement != nullptr ) {
     int numSections = implement->sections.size();
     --numSections;
 
-    const auto& section0 = implement->sections.at( 0 );
-    const auto& state0 = section0->state();
-    const bool globalForceOff = state0.testFlag( ImplementSection::State::ForceOff );
-    const bool globalForceOn = state0.testFlag( ImplementSection::State::ForceOn );
+    const auto& section0       = implement->sections.at( 0 );
+    const auto& state0         = section0->state();
+    const bool  globalForceOff = state0.testFlag( ImplementSection::State::ForceOff );
+    const bool  globalForceOn  = state0.testFlag( ImplementSection::State::ForceOn );
 
     for( int sectionIndex = 0; sectionIndex < numSections; ++sectionIndex ) {
       const auto& section = implement->sections.at( sectionIndex + 1 );
-      const auto& state = section->state();
+      const auto& state   = section->state();
 
       if( state.testFlag( ImplementSection::State::ForceOff ) || globalForceOff ) {
         forcedOffBoomEntities.at( sectionIndex )->setEnabled( true );
@@ -113,7 +114,8 @@ void SprayerModel::setSections() {
   }
 }
 
-void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
+void
+SprayerModel::setImplement( const QPointer< Implement >& implement ) {
   if( implement != nullptr ) {
     this->implement = implement;
 
@@ -163,10 +165,10 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
         boomMesh->setSlices( 20.0f );
         boomMeshes.push_back( boomMesh );
 
-        const QColor colorForceOn = QColor( Qt::green );
+        const QColor colorForceOn  = QColor( Qt::green );
         const QColor colorForceOff = QColor( Qt::red );
-        const QColor colorOn = QColor( Qt::darkGreen );
-        const QColor colorOff = QColor( Qt::darkRed );
+        const QColor colorOn       = QColor( Qt::darkGreen );
+        const QColor colorOff      = QColor( Qt::darkRed );
 
         constexpr float boomMetalness = 0.1f;
         constexpr float boomRoughness = 0.5f;
@@ -275,7 +277,6 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
           auto* sprayTransform = new Qt3DCore::QTransform( sprayEntity );
           sprayTransform->setRotationX( 90 );
 
-
           if( usePBR ) {
             auto* sprayMaterial = new Qt3DExtras::QMetalRoughMaterial( sprayEntity );
             sprayMaterial->setBaseColor( sprayColor );
@@ -303,14 +304,15 @@ void SprayerModel::setImplement( const QPointer<Implement>& implement ) {
   }
 }
 
-void SprayerModel::setHeight( double height ) {
+void
+SprayerModel::setHeight( double height, const CalculationOption::Options ) {
   this->m_height = height;
   updateProprotions();
 }
 
-void SprayerModel::updateProprotions() {
+void
+SprayerModel::updateProprotions() {
   if( implement != nullptr ) {
-
     int numSections = implement->sections.size();
     --numSections;
 
@@ -328,8 +330,7 @@ void SprayerModel::updateProprotions() {
       sectionOffset += section->overlapLeft - section->widthOfSection;
 
       boomMeshes.at( i )->setLength( float( section->widthOfSection ) );
-      boomTransforms.at( i )->setTranslation(
-              QVector3D( 0, float( sectionOffset ) + ( section->widthOfSection / 2 ), m_height ) );
+      boomTransforms.at( i )->setTranslation( QVector3D( 0, float( sectionOffset ) + ( section->widthOfSection / 2 ), m_height ) );
 
       sprayTransforms.at( i )->setScale3D( QVector3D( m_height / 3, m_height, section->widthOfSection ) );
       sprayTransforms.at( i )->setTranslation( QVector3D( 0, 0, -m_height / 2 ) );
@@ -339,14 +340,20 @@ void SprayerModel::updateProprotions() {
   }
 }
 
-QNEBlock* SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SprayerModel( rootEntity, usePBR );
-  auto* b = createBaseBlock( scene, obj, id );
+QNEBlock*
+SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* object = new SprayerModel( rootEntity, usePBR );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
-  b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( const double ) ) ) );
-  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer<Implement> ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
   b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &SprayerModel::setPose ) );
+  addCompressedSignal( QMetaMethod::fromSignal( &SprayerModel::setHeight ) );
 
   b->setBrush( modelColor );
 

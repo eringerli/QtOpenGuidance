@@ -27,42 +27,41 @@ namespace Ui {
 }
 
 class SliderDock : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit SliderDock( QWidget* parent = nullptr );
-    ~SliderDock();
+public:
+  explicit SliderDock( QWidget* parent = nullptr );
+  ~SliderDock();
 
-    void setValue( const double value );
-    void setDecimals( const int decimals );
-    void setMaximum( const double maximum );
-    void setMinimum( const double minimum );
-    void setDefaultValue( const double defaultValue );
-    void setUnit( const QString& unit );
-    void setSliderInverted( const bool inverted );
+  void setValue( const double );
+  void setDecimals( const int decimals );
+  void setMaximum( const double );
+  void setMinimum( const double );
+  void setDefaultValue( const double );
+  void setUnit( const QString& unit );
+  void setSliderInverted( const bool inverted );
 
+  double        getValue();
+  int           getDecimals();
+  double        getMaximum();
+  double        getMinimum();
+  double        getDefaultValue() const;
+  const QString getUnit();
+  bool          getSliderInverted();
 
-    double getValue();
-    int getDecimals();
-    double getMaximum();
-    double getMinimum();
-    double getDefaultValue() const;
-    const QString getUnit();
-    bool getSliderInverted();
+private Q_SLOTS:
+  void on_slValue_valueChanged( int value );
+  void on_dsbValue_valueChanged( double value );
+  void on_pbValueReset_clicked();
 
-  private Q_SLOTS:
-    void on_slValue_valueChanged( int value );
-    void on_dsbValue_valueChanged( double value );
-    void on_pbValueReset_clicked();
+Q_SIGNALS:
+  void valueChanged( const double );
 
-  Q_SIGNALS:
-    void valueChanged( const double );
+private:
+  Ui::SliderDock* ui = nullptr;
 
-  private:
-    Ui::SliderDock* ui = nullptr;
+  double defaultValue = 0;
 
-    double defaultValue = 0;
-
-  public:
-    bool resetOnStart = false;
+public:
+  bool resetOnStart = false;
 };

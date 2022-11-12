@@ -26,14 +26,13 @@
 
 #include "qneblock.h"
 
-#include "helpers/eigenHelper.h"
 #include "helpers/anglesHelper.h"
+#include "helpers/eigenHelper.h"
 
-OrientationBlockModel::OrientationBlockModel( QGraphicsScene* scene )
-  : scene( scene ) {
-}
+OrientationBlockModel::OrientationBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
 
-QVariant OrientationBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant
+OrientationBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -68,7 +67,8 @@ QVariant OrientationBlockModel::headerData( int section, Qt::Orientation orienta
   return QVariant();
 }
 
-bool OrientationBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool
+OrientationBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     // FIXME: Implement me!
     Q_EMIT headerDataChanged( orientation, section, section );
@@ -78,17 +78,19 @@ bool OrientationBlockModel::setHeaderData( int section, Qt::Orientation orientat
   return false;
 }
 
-
-int OrientationBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int
+OrientationBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return countBuffer;
 }
 
-int OrientationBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int
+OrientationBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 8;
 }
 
-QVariant OrientationBlockModel::data( const QModelIndex& index, int role ) const {
-  if( !index.isValid() || ( role != Qt::DisplayRole &&  role != Qt::EditRole ) ) {
+QVariant
+OrientationBlockModel::data( const QModelIndex& index, int role ) const {
+  if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole ) ) {
     return QVariant();
   }
 
@@ -97,10 +99,10 @@ QVariant OrientationBlockModel::data( const QModelIndex& index, int role ) const
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<OrientationBlock*>( block->object ) ) {
+      if( auto* object = qobject_cast< OrientationBlock* >( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -135,69 +137,73 @@ QVariant OrientationBlockModel::data( const QModelIndex& index, int role ) const
   return QVariant();
 }
 
-bool OrientationBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool
+OrientationBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<OrientationBlock*>( block->object ) ) {
+      if( auto* object = qobject_cast< OrientationBlock* >( block->object ) ) {
         if( countRow++ == index.row() ) {
           auto taitBryan = quaternionToTaitBryan( object->orientation );
 
           switch( index.column() ) {
             case 0:
-              block->setName( qvariant_cast<QString>( value ) );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              block->setName( qvariant_cast< QString >( value ) );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 1:
-              object->orientation = taitBryanToQuaternion( degreesToRadians( value.toString().toDouble() ), getPitch( taitBryan ), getRoll( taitBryan ) );
+              object->orientation =
+                taitBryanToQuaternion( degreesToRadians( value.toString().toDouble() ), getPitch( taitBryan ), getRoll( taitBryan ) );
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 2:
-              object->orientation = taitBryanToQuaternion( getYaw( taitBryan ), degreesToRadians( value.toString().toDouble() ), getRoll( taitBryan ) );
+              object->orientation =
+                taitBryanToQuaternion( getYaw( taitBryan ), degreesToRadians( value.toString().toDouble() ), getRoll( taitBryan ) );
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 3:
-              object->orientation = taitBryanToQuaternion( getYaw( taitBryan ), getPitch( taitBryan ), degreesToRadians( value.toString().toDouble() ) );
+              object->orientation =
+                taitBryanToQuaternion( getYaw( taitBryan ), getPitch( taitBryan ), degreesToRadians( value.toString().toDouble() ) );
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 4:
               object->orientation.x() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 5:
               object->orientation.y() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 6:
               object->orientation.z() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
 
             case 7:
               object->orientation.w() = value.toString().toDouble();
               object->orientation.normalize();
               object->emitConfigSignals();
-              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector<int>() << role );
+              Q_EMIT dataChanged( index.siblingAtColumn( 1 ), index.siblingAtColumn( 7 ), QVector< int >() << role );
               return true;
           }
         }
@@ -208,7 +214,8 @@ bool OrientationBlockModel::setData( const QModelIndex& index, const QVariant& v
   return false;
 }
 
-Qt::ItemFlags OrientationBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags
+OrientationBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -216,21 +223,23 @@ Qt::ItemFlags OrientationBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-void OrientationBlockModel::addToCombobox( QComboBox* combobox ) {
+void
+OrientationBlockModel::addToCombobox( QComboBox* combobox ) {
   combobox->addItem( QStringLiteral( "Orientation" ), QVariant::fromValue( this ) );
 }
 
-void OrientationBlockModel::resetModel() {
+void
+OrientationBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<OrientationBlock*>( block->object ) != nullptr ) {
+      if( qobject_cast< OrientationBlock* >( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }

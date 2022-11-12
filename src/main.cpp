@@ -24,14 +24,15 @@
 // axis/rotation conventions
 // https://ch.mathworks.com/help/driving/ug/coordinate-systems.html
 
+#include <QAction>
 #include <QEvent>
 #include <QGuiApplication>
+#include <QMenu>
 #include <QSettings>
 #include <QStandardPaths>
-#include <QDesktopWidget>
-#include <QMenu>
-#include <QAction>
+#include <QThread>
 
+#include <ThreadWeaver/ThreadWeaver>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DRender/QCamera>
@@ -47,15 +48,21 @@
 
 #include <Qt3DInput/QInputAspect>
 
+#include <Qt3DRender/QCameraSelector>
+#include <Qt3DRender/QDebugOverlay>
 #include <Qt3DRender/QEffect>
+#include <Qt3DRender/QFrustumCulling>
 #include <Qt3DRender/QMaterial>
 #include <Qt3DRender/QMesh>
+#include <Qt3DRender/QNoDraw>
 #include <Qt3DRender/QPointLight>
 #include <Qt3DRender/QRenderPass>
 #include <Qt3DRender/QSceneLoader>
 #include <Qt3DRender/QTechnique>
 #include <Qt3DRender/QTexture>
 
+#include <Qt3DRender/QLayer>
+#include <Qt3DRender/QLayerFilter>
 #include <Qt3DRender/QSortPolicy>
 
 #include <Qt3DCore/QAspectEngine>
@@ -70,11 +77,13 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/Qt3DWindow>
 
+#include "CompressorApplication.h"
+
 #include "gui/CameraToolbar.h"
 #include "gui/FieldsOptimitionToolbar.h"
 #include "gui/FieldsToolbar.h"
 #include "gui/GuidanceToolbar.h"
-#include "gui/GuidanceTurning.h"
+#include "gui/GuidanceTurningToolbar.h"
 #include "gui/MyMainWindow.h"
 #include "gui/NewOpenSaveToolbar.h"
 #include "gui/PassToolbar.h"
@@ -105,9 +114,9 @@
 #include "block/guidance/PoseSynchroniser.h"
 
 #include "block/kinematic/FixedKinematic.h"
+#include "block/kinematic/TrailerKinematic.h"
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
-#include "block/kinematic/TrailerKinematic.h"
 
 #include "qneblock.h"
 #include "qneconnection.h"
@@ -119,43 +128,62 @@
 
 #include "gui/MyFrameworkWidgetFactory.h"
 
-#if defined (Q_OS_ANDROID)
-#include <QtAndroid>
-const std::vector<QString> permissions( {"android.permission.INTERNET",
-                                        "android.permission.WRITE_EXTERNAL_STORAGE",
-                                        "android.permission.READ_EXTERNAL_STORAGE"
-                                        } );
+#if defined( Q_OS_ANDROID )
+  #include <QtAndroid>
+const std::vector< QString >
+  permissions( { "android.permission.INTERNET", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE" } );
 #endif
 
-int main( int argc, char** argv ) {
-//  // hack to make the app apear without cropped qt3d-widget
-//  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+void
+registerEigenTypes() {
+  qRegisterMetaType< float >();
+  qRegisterMetaType< double >();
+  qRegisterMetaType< CalculationOption::Options >();
 
-  QCoreApplication::setAttribute( Qt::AA_EnableHighDpiScaling );
-  QCoreApplication::setAttribute( Qt::AA_UseHighDpiPixmaps );
+  qRegisterMetaType< Eigen::Vector2d >();
+  qRegisterMetaType< Eigen::Vector3d >();
+  qRegisterMetaType< Eigen::Vector4d >();
+
+  qRegisterMetaType< Eigen::Quaterniond >();
+}
+
+int
+main( int argc, char** argv ) {
+  //  // hack to make the app apear without cropped qt3d-widget
+  //  QCoreApplication::setAttribute( Qt::AA_DisableHighDpiScaling );
+
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy( Qt::HighDpiScaleFactorRoundingPolicy::PassThrough );
-//  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
+  //  QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
 
   // make qDebug() more expressive
-//  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
+  //  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
 
-  QApplication app( argc, argv );
+  //  QApplication app( argc, argv );
+  CompressorApplication< QApplication > app( argc, argv );
   QApplication::setOrganizationDomain( QStringLiteral( "QtOpenGuidance.org" ) );
   QApplication::setApplicationName( QStringLiteral( "QtOpenGuidance" ) );
 
-#if !defined(Q_OS_LINUX) || defined(Q_OS_ANDROID)
+  QThread* calculationsThread = new QThread();
+  calculationsThread->start();
+  QThread* guiThread  = QApplication::instance()->thread();
+  QThread* qt3dThread = QApplication::instance()->thread();
+
+  // access the threadweaver from the main thread to create the global thread pool
+  ThreadWeaver::Queue::instance();
+
+#if !defined( Q_OS_LINUX ) || defined( Q_OS_ANDROID )
   QIcon::setThemeSearchPaths( QIcon::themeSearchPaths() << QStringLiteral( ":themes/" ) );
   QIcon::setThemeName( QStringLiteral( "oxygen" ) );
 #endif
 
-  //Request required permissions at runtime on android
+  // Request required permissions at runtime on android
 #ifdef Q_OS_ANDROID
 
   for( const auto& permission : permissions ) {
     auto result = QtAndroid::checkPermission( permission );
 
     if( result == QtAndroid::PermissionResult::Denied ) {
-      auto resultHash = QtAndroid::requestPermissionsSync( QStringList( {permission} ) );
+      auto resultHash = QtAndroid::requestPermissionsSync( QStringList( { permission } ) );
 
       if( resultHash[permission] == QtAndroid::PermissionResult::Denied )
         return 0;
@@ -168,28 +196,30 @@ int main( int argc, char** argv ) {
 
   qDebug() << "OpenGL: " << view->format().majorVersion() << view->format().minorVersion();
 
-  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() << qApp->desktop()->logicalDpiY() << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM() << qApp->desktop()->heightMM();
+  //  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() <<
+  //  qApp->desktop()->logicalDpiY()
+  //           << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM()
+  //           << qApp->desktop()->heightMM();
 
-  qRegisterMetaType<Plan>();
-  qRegisterMetaType<PlanGlobal>();
+  registerEigenTypes();
+  registerCgalTypes();
 
   QWidget* container = QWidget::createWindowContainer( view );
-//  QSize screenSize = view->screen()->size();
-//  container->setMinimumSize( QSize( 500, 400 ) );
-//  container->setMaximumSize( screenSize );
+  //  QSize screenSize = view->screen()->size();
+  //  container->setMinimumSize( QSize( 500, 400 ) );
+  //  container->setMaximumSize( screenSize );
   container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
   // create MainWindow and set the parameters for the docks
   KDDockWidgets::MainWindowOptions options = KDDockWidgets::MainWindowOption_HasCentralFrame;
-  auto flags = KDDockWidgets::Config::self().flags();
+  auto                             flags   = KDDockWidgets::Config::self().flags();
   flags |= KDDockWidgets::Config::Flag_AllowReorderTabs;
   flags |= KDDockWidgets::Config::Flag_HideTitleBarWhenTabsVisible;
   qDebug() << flags;
   KDDockWidgets::Config::self().setFlags( flags );
 
   KDDockWidgets::Config::self().setFrameworkWidgetFactory( new CustomWidgetFactory() ); // Sets our custom factory
-  KDDockWidgets::Config::self().setMinimumSizeOfWidgets( 10, 10 );
-
+  //  KDDockWidgets::Config::self().setMinimumSizeOfWidgets( 10, 10 );
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
   mainWindow->setWindowTitle( QStringLiteral( "QtOpenGuidance" ) );
@@ -203,17 +233,35 @@ int main( int argc, char** argv ) {
   auto* widget = new QWidget( mainWindow );
 
   // Root entity for Qt3D
-  auto* rootEntity = new Qt3DCore::QEntity();
+  auto* rootRootEntity = new Qt3DCore::QEntity();
+
+  auto* backgroundEntity   = new Qt3DCore::QEntity( rootRootEntity );
+  auto* middlegroundEntity = new Qt3DCore::QEntity( rootRootEntity );
+  auto* foregroundEntity   = new Qt3DCore::QEntity( rootRootEntity );
+
+  auto* backgroundRenderingLayer   = new Qt3DRender::QLayer( backgroundEntity );
+  auto* middlegroundRenderingLayer = new Qt3DRender::QLayer( middlegroundEntity );
+  auto* foregroundRenderingLayer   = new Qt3DRender::QLayer( foregroundEntity );
+
+  backgroundRenderingLayer->setRecursive( true );
+  middlegroundRenderingLayer->setRecursive( true );
+  foregroundRenderingLayer->setRecursive( true );
+
+  backgroundEntity->addComponent( backgroundRenderingLayer );
+  middlegroundEntity->addComponent( middlegroundRenderingLayer );
+  foregroundEntity->addComponent( foregroundRenderingLayer );
 
   // guidance toolbar
   auto* guidanceToolbar = new GuidanceToolbar( widget );
-  auto* guidaceToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidaceToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* guidaceToolbarDock =
+    new KDDockWidgets::DockWidget( QStringLiteral( "GuidaceToolbarDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   guidaceToolbarDock->setWidget( guidanceToolbar );
   guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
   mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
 
   // Create setting Window
-  auto* settingDialog = new SettingsDialog( rootEntity, mainWindow, view, guidanceToolbar->menu, widget );
+  auto* settingDialog = new SettingsDialog(
+    foregroundEntity, middlegroundEntity, backgroundEntity, mainWindow, view, guidanceToolbar->menu, calculationsThread, widget );
 
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();
@@ -228,25 +276,84 @@ int main( int argc, char** argv ) {
   cameraEntity->tiltAboutViewCenter( -45 );
 
   // Set root object of the scene
-  view->setRootEntity( rootEntity );
+  view->setRootEntity( rootRootEntity );
 
   view->defaultFrameGraph()->setClearColor( QColor( 0x4d, 0x4d, 0x4f ) );
   view->defaultFrameGraph()->setFrustumCullingEnabled( false );
-//  view->defaultFrameGraph()->setGamma( 2.2f );
-//  view->defaultFrameGraph()->setShowDebugOverlay( true );
+  //  view->defaultFrameGraph()->setGamma( 2.2f );
+  //  view->defaultFrameGraph()->setShowDebugOverlay( true );
   view->defaultFrameGraph()->setFrustumCullingEnabled( true );
 
-//  // sort the QT3D objects, so transparency works
-//  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
-//  auto* sortPolicy = new Qt3DRender::QSortPolicy();
-//  framegraph->setParent( sortPolicy );
-//  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
-//  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
-//  sortPolicy->setSortTypes( sortTypes );
-//  view->setActiveFrameGraph( sortPolicy );
+  //  // sort the QT3D objects, so transparency works
+  //  Qt3DRender::QFrameGraphNode* framegraph = view->activeFrameGraph();
+  //  auto* sortPolicy = new Qt3DRender::QSortPolicy();
+  //  framegraph->setParent( sortPolicy );
+  //  QVector<Qt3DRender::QSortPolicy::SortType> sortTypes;
+  //  sortTypes << Qt3DRender::QSortPolicy::BackToFront;
+  //  sortPolicy->setSortTypes( sortTypes );
+  //  view->setActiveFrameGraph( sortPolicy );
+
+  // get the varioud children of the default framegraph
+  auto*                        lastChildOfFrameGraph = view->activeFrameGraph();
+  Qt3DRender::QFrameGraphNode *cameraSelector, *clearBuffers, *frustumCulling, *debugOverlay;
+
+  while( true ) {
+    if( !lastChildOfFrameGraph->children().empty() ) {
+      lastChildOfFrameGraph = static_cast< Qt3DRender::QFrameGraphNode* >( lastChildOfFrameGraph->children().front() );
+
+      if( qobject_cast< Qt3DRender::QCameraSelector* >( lastChildOfFrameGraph ) != nullptr ) {
+        cameraSelector = lastChildOfFrameGraph;
+      }
+      if( qobject_cast< Qt3DRender::QClearBuffers* >( lastChildOfFrameGraph ) != nullptr ) {
+        clearBuffers = lastChildOfFrameGraph;
+      }
+      if( qobject_cast< Qt3DRender::QFrustumCulling* >( lastChildOfFrameGraph ) != nullptr ) {
+        frustumCulling = lastChildOfFrameGraph;
+      }
+      if( qobject_cast< Qt3DRender::QDebugOverlay* >( lastChildOfFrameGraph ) != nullptr ) {
+        debugOverlay = lastChildOfFrameGraph;
+      }
+
+    } else {
+      break;
+    }
+  }
+
+  // reordering the framegraph
+  {
+    frustumCulling->setParent( cameraSelector );
+
+    auto* noDraw = new Qt3DRender::QNoDraw( clearBuffers );
+
+    // add the layer to enable rendering in the fore/middle/background
+    auto* backgroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( frustumCulling );
+    backgroundRenderingLayerFilter->addLayer( foregroundRenderingLayer );
+    backgroundRenderingLayerFilter->addLayer( middlegroundRenderingLayer );
+    backgroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+
+    auto* clearBuffersForMiddleground = new Qt3DRender::QClearBuffers( frustumCulling );
+    clearBuffersForMiddleground->setBuffers( Qt3DRender::QClearBuffers::DepthStencilBuffer );
+    auto* middlegroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( clearBuffersForMiddleground );
+    middlegroundRenderingLayerFilter->addLayer( foregroundRenderingLayer );
+    middlegroundRenderingLayerFilter->addLayer( backgroundRenderingLayer );
+    middlegroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+
+    auto* clearBuffersForForeground = new Qt3DRender::QClearBuffers( frustumCulling );
+    clearBuffersForForeground->setBuffers( Qt3DRender::QClearBuffers::DepthStencilBuffer );
+    auto* foregroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( clearBuffersForForeground );
+    foregroundRenderingLayerFilter->addLayer( middlegroundRenderingLayer );
+    foregroundRenderingLayerFilter->addLayer( backgroundRenderingLayer );
+    foregroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+
+    debugOverlay->setParent( foregroundRenderingLayerFilter );
+  }
+
+  //  foregroundRenderingLayerFilter->setFilterMode(Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers);
+
+  //  auto* sortPolicy = new Qt3DRender::QSortPolicy(framegraph);
 
   // camera Toolbar
-  auto* cameraToolbar = new CameraToolbar( widget );
+  auto* cameraToolbar     = new CameraToolbar( widget );
   auto* cameraToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "CameraToolbarDock" ) );
   cameraToolbarDock->setWidget( cameraToolbar );
   cameraToolbarDock->setTitle( cameraToolbar->windowTitle() );
@@ -254,16 +361,16 @@ int main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( cameraToolbarDock->toggleAction() );
 
   // passes toolbar
-  auto* passesToolbar = new PassToolbar( widget );
+  auto* passesToolbar     = new PassToolbar( widget );
   auto* passesToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "PassesToolbarDock" ) );
   passesToolbarDock->setWidget( passesToolbar );
   passesToolbarDock->setTitle( passesToolbar->windowTitle() );
   mainWindow->addDockWidget( passesToolbarDock, KDDockWidgets::Location_OnLeft );
-//  mainWindow->tabifyDockWidget( passesToolbarDock, KDDockWidgets::Location_OnLeft );
+  //  mainWindow->tabifyDockWidget( passesToolbarDock, KDDockWidgets::Location_OnLeft );
   guidanceToolbar->menu->addAction( passesToolbarDock->toggleAction() );
 
   // fields toolbar
-  auto* fieldsToolbar = new FieldsToolbar( widget );
+  auto* fieldsToolbar     = new FieldsToolbar( widget );
   auto* fieldsToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "FieldsToolbarDock" ) );
   fieldsToolbarDock->setWidget( fieldsToolbar );
   fieldsToolbarDock->setTitle( fieldsToolbar->windowTitle() );
@@ -271,7 +378,7 @@ int main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( fieldsToolbarDock->toggleAction() );
 
   // fields optimition toolbar
-  auto* fieldsOptimitionToolbar = new FieldsOptimitionToolbar( widget );
+  auto* fieldsOptimitionToolbar     = new FieldsOptimitionToolbar( widget );
   auto* fieldsOptimitionToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "FieldsOptimitionToolbarDock" ) );
   fieldsOptimitionToolbarDock->setWidget( fieldsOptimitionToolbar );
   fieldsOptimitionToolbarDock->setTitle( fieldsOptimitionToolbar->windowTitle() );
@@ -280,7 +387,8 @@ int main( int argc, char** argv ) {
 
   // simulator docks
   auto* simulatorVelocity = new SliderDock( widget );
-  auto* simulatorVelocityDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorVelocityDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorVelocityDock =
+    new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorVelocityDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorVelocityDock->setWidget( simulatorVelocity );
   simulatorVelocityDock->setTitle( QStringLiteral( "Simulator Velocity" ) );
   simulatorVelocity->setDecimals( 1 );
@@ -292,7 +400,8 @@ int main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( simulatorVelocityDock->toggleAction() );
 
   auto* simulatorSteeringAngle = new SliderDock( widget );
-  auto* simulatorSteeringAngleDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteeringAngleDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorSteeringAngleDock =
+    new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteeringAngleDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorSteeringAngleDock->setWidget( simulatorSteeringAngle );
   simulatorSteeringAngleDock->setTitle( QStringLiteral( "Simulator Steering Angle" ) );
   simulatorSteeringAngle->setDecimals( 1 );
@@ -305,228 +414,134 @@ int main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( simulatorSteeringAngleDock->toggleAction() );
 
   auto* simulatorFrequency = new SliderDock( widget );
-  auto* simulatorFrequencyDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorFrequencyDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
+  auto* simulatorFrequencyDock =
+    new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorFrequencyDock" ), KDDockWidgets::DockWidget::Option_NotClosable );
   simulatorFrequencyDock->setWidget( simulatorFrequency );
   simulatorFrequencyDock->setTitle( QStringLiteral( "Simulator Frequency" ) );
   simulatorFrequency->setDecimals( 0 );
-  simulatorFrequency->setMaximum( 100 );
+  simulatorFrequency->setMaximum( 250 );
   simulatorFrequency->setMinimum( 1 );
   simulatorFrequency->setDefaultValue( 20 );
   simulatorFrequency->setUnit( QStringLiteral( " Hz" ) );
   mainWindow->addDockWidget( simulatorFrequencyDock, KDDockWidgets::Location_OnRight, simulatorSteeringAngleDock );
   guidanceToolbar->menu->addAction( simulatorFrequencyDock->toggleAction() );
 
-  auto* simulatorRollOffset = new SliderDock( widget );
-  auto* simulatorRollOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorRollOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  simulatorRollOffsetDock->setWidget( simulatorRollOffset );
-  simulatorRollOffsetDock->setTitle( QStringLiteral( "Simulator Roll Offset" ) );
-  simulatorRollOffset->setDecimals( 1 );
-  simulatorRollOffset->setMaximum( 45 );
-  simulatorRollOffset->setMinimum( -45 );
-  simulatorRollOffset->setDefaultValue( 0 );
-  simulatorRollOffset->setUnit( QStringLiteral( " °" ) );
-  mainWindow->addDockWidget( simulatorRollOffsetDock, KDDockWidgets::Location_OnBottom, simulatorVelocityDock );
-  guidanceToolbar->menu->addAction( simulatorRollOffsetDock->toggleAction() );
-
-  auto* simulatorPitchOffset = new SliderDock( widget );
-  auto* simulatorPitchOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorPitchOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  simulatorPitchOffsetDock->setWidget( simulatorPitchOffset );
-  simulatorPitchOffsetDock->setTitle( QStringLiteral( "Simulator Pitch Offset" ) );
-  simulatorPitchOffset->setDecimals( 1 );
-  simulatorPitchOffset->setMaximum( 45 );
-  simulatorPitchOffset->setMinimum( -45 );
-  simulatorPitchOffset->setDefaultValue( 0 );
-  simulatorPitchOffset->setUnit( QStringLiteral( " °" ) );
-  mainWindow->addDockWidget( simulatorPitchOffsetDock, KDDockWidgets::Location_OnBottom, simulatorSteeringAngleDock );
-  guidanceToolbar->menu->addAction( simulatorPitchOffsetDock->toggleAction() );
-
-  auto* simulatorYawOffset = new SliderDock( widget );
-  auto* simulatorYawOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorYawOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  simulatorYawOffsetDock->setWidget( simulatorYawOffset );
-  simulatorYawOffsetDock->setTitle( QStringLiteral( "Simulator Yaw Offset" ) );
-  simulatorYawOffset->setDecimals( 1 );
-  simulatorYawOffset->setMaximum( 45 );
-  simulatorYawOffset->setMinimum( -45 );
-  simulatorYawOffset->setDefaultValue( 0 );
-  simulatorYawOffset->setUnit( QStringLiteral( " °" ) );
-  mainWindow->addDockWidget( simulatorYawOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
-  guidanceToolbar->menu->addAction( simulatorYawOffsetDock->toggleAction() );
-
-  auto* simulatorSteerAngleOffset = new SliderDock( widget );
-  auto* simulatorSteerAngleOffsetDock = new KDDockWidgets::DockWidget( QStringLiteral( "SimulatorSteerAngleOffset" ), KDDockWidgets::DockWidget::Option_NotClosable );
-  simulatorSteerAngleOffsetDock->setWidget( simulatorSteerAngleOffset );
-  simulatorSteerAngleOffsetDock->setTitle( QStringLiteral( "Simulator SteerAngle Offset" ) );
-  simulatorSteerAngleOffset->setDecimals( 1 );
-  simulatorSteerAngleOffset->setMaximum( 45 );
-  simulatorSteerAngleOffset->setMinimum( -45 );
-  simulatorSteerAngleOffset->setDefaultValue( 0 );
-  simulatorSteerAngleOffset->setUnit( QStringLiteral( " °" ) );
-  mainWindow->addDockWidget( simulatorSteerAngleOffsetDock, KDDockWidgets::Location_OnBottom, simulatorFrequencyDock );
-  guidanceToolbar->menu->addAction( simulatorSteerAngleOffsetDock->toggleAction() );
-
   // XTE dock
-  BlockFactory* xteDockBlockFactory = new XteDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnTop,
-          guidanceToolbar->menu );
+  BlockFactory* xteDockBlockFactory =
+    new XteDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnTop, guidanceToolbar->menu );
   xteDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value dock
-  BlockFactory* valueDockBlockFactory = new ValueDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* valueDockBlockFactory =
+    new ValueDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   valueDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation dock
-  BlockFactory* orientationDockBlockFactory = new OrientationDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* orientationDockBlockFactory =
+    new OrientationDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   orientationDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // position dock
-  BlockFactory* positionDockBlockFactory = new PositionDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* positionDockBlockFactory =
+    new PositionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   positionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // value plot dock
-  BlockFactory* valuePlotDockBlockFactory = new ValuePlotDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* valuePlotDockBlockFactory =
+    new ValuePlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   valuePlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // orientation plot dock
-  BlockFactory* orientationPlotDockBlockFactory = new OrientationPlotDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* orientationPlotDockBlockFactory =
+    new OrientationPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   orientationPlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // action dock
-  BlockFactory* actionDockBlockFactory = new ActionDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* actionDockBlockFactory =
+    new ActionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   actionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // slider dock
-  BlockFactory* sliderDockBlockFactory = new SliderDockBlockFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnRight,
-          guidanceToolbar->menu );
+  BlockFactory* sliderDockBlockFactory =
+    new SliderDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
   sliderDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
-
 
   // implements
   auto* implementFactory = new ImplementFactory(
-          mainWindow,
-          KDDockWidgets::Location_OnBottom,
-          guidanceToolbar->menu,
-          settingDialog->implementBlockModel );
+    qt3dThread, mainWindow, KDDockWidgets::Location_OnBottom, guidanceToolbar->menu, settingDialog->implementBlockModel );
   implementFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
 
   // camera block
-  BlockFactory* cameraControllerFactory = new CameraControllerFactory( rootEntity, cameraEntity );
-  auto* cameraControllerBlock = cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
-  auto* cameraController = qobject_cast<CameraController*>( cameraControllerBlock->object );
+  BlockFactory* cameraControllerFactory = new CameraControllerFactory( qt3dThread, rootRootEntity, cameraEntity );
+  auto*         cameraControllerBlock   = cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
+  auto*         cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->object );
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
   view->installEventFilter( cameraControllerBlock->object );
 
   // grid block
-  BlockFactory* gridModelFactory = new GridModelFactory( rootEntity, cameraEntity );
-  auto* gridModelBlock = gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
-  auto* gridModel = qobject_cast<GridModel*>( gridModelBlock->object );
+  BlockFactory* gridModelFactory = new GridModelFactory( qt3dThread, middlegroundEntity, cameraEntity );
+  auto*         gridModelBlock   = gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
+  auto*         gridModel        = qobject_cast< GridModel* >( gridModelBlock->object );
 
   // FPS measuremend block
-  BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( rootEntity );
+  BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( qt3dThread, middlegroundEntity );
   fpsMeasurementFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
 
-
   // Setting Dialog
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings,
-                    settingDialog, &SettingsDialog::toggleVisibility );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings, settingDialog, &SettingsDialog::toggleVisibility );
 
   // camera dock -> camera controller
-  QObject::connect( cameraToolbar, SIGNAL( zoomIn() ),
-                    cameraController, SLOT( zoomIn() ) );
-  QObject::connect( cameraToolbar, SIGNAL( zoomOut() ),
-                    cameraController, SLOT( zoomOut() ) );
-  QObject::connect( cameraToolbar, SIGNAL( tiltUp() ),
-                    cameraController, SLOT( tiltUp() ) );
-  QObject::connect( cameraToolbar, SIGNAL( tiltDown() ),
-                    cameraController, SLOT( tiltDown() ) );
-  QObject::connect( cameraToolbar, SIGNAL( panLeft() ),
-                    cameraController, SLOT( panLeft() ) );
-  QObject::connect( cameraToolbar, SIGNAL( panRight() ),
-                    cameraController, SLOT( panRight() ) );
-  QObject::connect( cameraToolbar, SIGNAL( resetCamera() ),
-                    cameraController, SLOT( resetCamera() ) );
-  QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ),
-                    cameraController, SLOT( setMode( int ) ) );
-  QObject::connect( settingDialog, &SettingsDialog::cameraSmoothingChanged,
-                    cameraController, &CameraController::setCameraSmoothing );
+  QObject::connect( cameraToolbar, SIGNAL( zoomIn() ), cameraController, SLOT( zoomIn() ) );
+  QObject::connect( cameraToolbar, SIGNAL( zoomOut() ), cameraController, SLOT( zoomOut() ) );
+  QObject::connect( cameraToolbar, SIGNAL( tiltUp() ), cameraController, SLOT( tiltUp() ) );
+  QObject::connect( cameraToolbar, SIGNAL( tiltDown() ), cameraController, SLOT( tiltDown() ) );
+  QObject::connect( cameraToolbar, SIGNAL( panLeft() ), cameraController, SLOT( panLeft() ) );
+  QObject::connect( cameraToolbar, SIGNAL( panRight() ), cameraController, SLOT( panRight() ) );
+  QObject::connect( cameraToolbar, SIGNAL( resetCamera() ), cameraController, SLOT( resetCamera() ) );
+  QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ), cameraController, SLOT( setMode( int ) ) );
+  QObject::connect( settingDialog, &SettingsDialog::cameraSmoothingChanged, cameraController, &CameraController::setCameraSmoothing );
 
   // settings dialog -> grid model
-  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ),
-                    gridModel, SLOT( setGrid( bool ) ) );
-  QObject::connect( settingDialog, SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
-                    gridModel, SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
+  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ), gridModel, SLOT( setGrid( bool ) ) );
+  QObject::connect( settingDialog,
+                    SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
+                    gridModel,
+                    SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
 
   // Simulator Docks
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorVelocity, &QWidget::setEnabled );
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorSteeringAngle, &QWidget::setEnabled );
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorFrequency, &QWidget::setEnabled );
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorRollOffset, &QWidget::setEnabled );
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorPitchOffset, &QWidget::setEnabled );
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged,
-                    simulatorYawOffset, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged, simulatorVelocity, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged, simulatorSteeringAngle, &QWidget::setEnabled );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged, simulatorFrequency, &QWidget::setEnabled );
 
   // connect the signals of the simulator
-  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ),
-                    settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
-  QObject::connect( simulatorVelocity, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setVelocity( double ) ) );
-  QObject::connect( simulatorSteeringAngle, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
-  QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setFrequency( double ) ) );
-  QObject::connect( simulatorRollOffset, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setRollOffset( double ) ) );
-  QObject::connect( simulatorPitchOffset, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setPitchOffset( double ) ) );
-  QObject::connect( simulatorYawOffset, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setYawOffset( double ) ) );
-  QObject::connect( simulatorSteerAngleOffset, SIGNAL( valueChanged( double ) ),
-                    settingDialog->poseSimulation, SLOT( setSteerAngleOffset( double ) ) );
+  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ), settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
+  QObject::connect( simulatorVelocity, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setVelocity( double ) ) );
+  QObject::connect(
+    simulatorSteeringAngle, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
+  QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setFrequency( double ) ) );
 
   // passes dock -> global planner block
-  QObject::connect( passesToolbar, SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
-                    settingDialog->globalPlanner, SLOT( setPassSettings( int, int, bool, bool ) ) );
-  QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ),
-                    settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
+  QObject::connect( passesToolbar,
+                    SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
+                    settingDialog->globalPlanner,
+                    SLOT( setPassSettings( int, int, bool, bool ) ) );
+  QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ), settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
   // field docks -> global planner block
-  QObject::connect( fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ),
-                    settingDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
-  QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ),
-                    settingDialog->fieldManager, SLOT( recordPoint() ) );
-  QObject::connect( fieldsToolbar, SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
-                    settingDialog->fieldManager, SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
-  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType, double, double, double ) ),
-                    settingDialog->fieldManager, SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
-  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ),
-                    settingDialog->fieldManager, SLOT( recalculateField() ) );
-  QObject::connect( settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ),
-                    fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
+  QObject::connect(
+    fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ), settingDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
+  QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ), settingDialog->fieldManager, SLOT( recordPoint() ) );
+  QObject::connect( fieldsToolbar,
+                    SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
+                    settingDialog->fieldManager,
+                    SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
+  QObject::connect( fieldsOptimitionToolbar,
+                    SIGNAL( recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType, double, double, double ) ),
+                    settingDialog->fieldManager,
+                    SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
+  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ), settingDialog->fieldManager, SLOT( recalculateField() ) );
+  QObject::connect(
+    settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
 
   // set the defaults for the simulator
   simulatorVelocity->setValue( 0 );
@@ -538,8 +553,7 @@ int main( int argc, char** argv ) {
 
   // load states of checkboxes from global config
   {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini",
-                        QSettings::IniFormat );
+    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
 
     bool simulatorEnabled = settings.value( QStringLiteral( "RunSimulatorOnStart" ), false ).toBool();
     guidanceToolbar->cbSimulatorSetChecked( simulatorEnabled );
@@ -554,24 +568,25 @@ int main( int argc, char** argv ) {
 
   // start all the tasks of settingDialog on start/exit
   settingDialog->onStart();
-  QObject::connect( mainWindow, &MyMainWindow::closed,
-                    settingDialog, &SettingsDialog::onExit );
+  QObject::connect( mainWindow, &MyMainWindow::closed, settingDialog, &SettingsDialog::onExit );
 
   // camera controller
-  QObject::connect( mainWindow, SIGNAL( closed() ),
-                    cameraController, SLOT( saveValuesToConfig() ) );
+  QObject::connect( mainWindow, &MyMainWindow::closed, cameraController, &CameraController::saveValuesToConfig );
 
   mainWindow->layout()->update();
   mainWindow->layout()->activate();
   mainWindow->layout()->update();
+
+  mainWindow->readSettings();
 
   // Show window
 #ifdef Q_OS_ANDROID
   mainWindow->showMaximized();
   mainWindow->resize( mainWindow->screen()->availableSize() / mainWindow->screen()->devicePixelRatio() );
 #else
+  //  mainWindow->resize( 1200, 800 );
   mainWindow->show();
-  mainWindow->resize( 1200, 800 );
+//  mainWindow->readSettings();
 #endif
 
   return QApplication::exec();

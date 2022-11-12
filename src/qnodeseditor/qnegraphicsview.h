@@ -33,17 +33,19 @@ class QWidget;
 class QWheelEvent;
 
 class QNEGraphicsView : public QGraphicsView {
-    Q_OBJECT
-  public:
-    explicit QNEGraphicsView( QWidget* parent = nullptr );
+  Q_OBJECT
+public:
+  explicit QNEGraphicsView( QWidget* parent = nullptr );
 
-  public Q_SLOTS:
-    void zoomIn();
-    void zoomOut();
+public Q_SLOTS:
+  void zoomIn();
+  void zoomOut();
 
-  protected:
-    void wheelEvent( QWheelEvent* event ) override;
+protected:
+  void wheelEvent( QWheelEvent* event ) override;
 
-  private:
-    static constexpr qreal zoomFactor = 0.2;
+  void showEvent( QShowEvent* event ) override;
+
+private:
+  static constexpr qreal zoomFactor = 0.2;
 };

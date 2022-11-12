@@ -26,17 +26,20 @@
 #include <QBrush>
 #include <QJsonObject>
 
-void StringObject::emitConfigSignals() {
+void
+StringObject::emitConfigSignals() {
   Q_EMIT stringChanged( string );
 }
 
-void StringObject::toJSON( QJsonObject& json ) {
+void
+StringObject::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "String" )] = string;
-  json[QStringLiteral( "values" )] = valuesObject;
+  json[QStringLiteral( "values" )]         = valuesObject;
 }
 
-void StringObject::fromJSON( QJsonObject& json ) {
+void
+StringObject::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -46,9 +49,11 @@ void StringObject::fromJSON( QJsonObject& json ) {
   }
 }
 
-QNEBlock* StringFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+StringFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new StringObject();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addOutputPort( QStringLiteral( "String" ), QLatin1String( SIGNAL( stringChanged( const QString& ) ) ) );
 

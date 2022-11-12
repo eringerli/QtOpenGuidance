@@ -23,23 +23,26 @@
 
 #include "gui/model/OrientationBlockModel.h"
 
-#include <QJsonObject>
 #include <QBrush>
+#include <QJsonObject>
 
-void OrientationBlock::emitConfigSignals() {
+void
+OrientationBlock::emitConfigSignals() {
   Q_EMIT orientationChanged( orientation );
 }
 
-void OrientationBlock::toJSON( QJsonObject& json ) {
+void
+OrientationBlock::toJSON( QJsonObject& json ) {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = orientation.x();
   valuesObject[QStringLiteral( "Y" )] = orientation.y();
   valuesObject[QStringLiteral( "Z" )] = orientation.z();
   valuesObject[QStringLiteral( "W" )] = orientation.w();
-  json[QStringLiteral( "values" )] = valuesObject;
+  json[QStringLiteral( "values" )]    = valuesObject;
 }
 
-void OrientationBlock::fromJSON( QJsonObject& json ) {
+void
+OrientationBlock::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
 
@@ -61,29 +64,29 @@ void OrientationBlock::fromJSON( QJsonObject& json ) {
   }
 }
 
-void OrientationBlock::setAveragerEnabled( const bool enabled ) {
+void
+OrientationBlock::setAveragerEnabled( const bool enabled ) {
   averagerEnabledOld = averagerEnabled;
-  averagerEnabled = enabled;
+  averagerEnabled    = enabled;
 
   if( averagerEnabledOld != averagerEnabled ) {
     if( averagerEnabled == true ) {
       A.setZero();
       numMeasurements = 0;
-      positionStart = position;
+      positionStart   = position;
     } else {
       A = ( 1.0 / numMeasurements ) * A;
 
-      Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig( A );
+      Eigen::SelfAdjointEigenSolver< Eigen::MatrixXd > eig( A );
 
       Eigen::Vector4d qavg = eig.eigenvectors().col( 3 );
 
       orientation = Eigen::Quaterniond( qavg );
 
       if( position != positionStart ) {
-        auto taitBryan = quaternionToTaitBryan( orientation );
-        double heading = std::atan2( position.y() - positionStart.y(),
-                                     position.x() - positionStart.x() );
-        orientation = taitBryanToQuaternion( heading, getPitch( taitBryan ), getRoll( taitBryan ) );
+        auto   taitBryan = quaternionToTaitBryan( orientation );
+        double heading   = std::atan2( position.y() - positionStart.y(), position.x() - positionStart.x() );
+        orientation      = taitBryanToQuaternion( heading, getPitch( taitBryan ), getRoll( taitBryan ) );
       }
 
       Q_EMIT orientationChanged( orientation );
@@ -91,7 +94,8 @@ void OrientationBlock::setAveragerEnabled( const bool enabled ) {
   }
 }
 
-void OrientationBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
+void
+OrientationBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
   if( averagerEnabled ) {
     ++numMeasurements;
     Eigen::Vector4d q( orientation.x(), orientation.y(), orientation.z(), orientation.w() );
@@ -104,8 +108,11 @@ void OrientationBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
   }
 }
 
-void OrientationBlock::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options ) {
-  if( !options.testFlag( PoseOption::CalculateLocalOffsets ) ) {
+void
+OrientationBlock::setPose( const Eigen::Vector3d&           position,
+                           const Eigen::Quaterniond&        orientation,
+                           const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::CalculateLocalOffsets ) ) {
     this->position = position;
 
     if( averagerEnabled ) {
@@ -121,12 +128,14 @@ void OrientationBlock::setPose( const Eigen::Vector3d& position, const Eigen::Qu
   }
 }
 
-QNEBlock* OrientationBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+OrientationBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new OrientationBlock();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( bool ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&, const PoseOption::Options& ) ) ) );
+  b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( ACTION_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( Eigen::Quaterniond ) ) ) );

@@ -22,47 +22,38 @@
 
 #include "helpers/eigenHelper.h"
 
-#include "kinematic/PoseOptions.h"
-
 class DebugSink : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit DebugSink()
-      : BlockBase(),
-        block( nullptr ) {}
+public:
+  explicit DebugSink() : BlockBase(), block( nullptr ) {}
 
-  public Q_SLOTS:
-    void setPosition( QVector3D value );
+public Q_SLOTS:
+  void setPosition( QVector3D value );
 
-    void setWGS84Position( double latitude, double longitude, double height );
+  void setWGS84Position( double latitude, double longitude, double height );
 
-    void setOrientation( const Eigen::Quaterniond& value );
+  void setOrientation( const Eigen::Quaterniond& value );
 
-    void setSteeringAngle( double value );
+  void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
 
-    void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const PoseOption::Options& options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
-    void setData( const QByteArray& data );
+  void setData( const QByteArray& data );
 
-  public:
-    QNEBlock* block;
+public:
+  QNEBlock* block;
 };
 
 class DebugSinkFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    DebugSinkFactory()
-      : BlockFactory() {}
+public:
+  DebugSinkFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Console Output" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Console Output" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Base Blocks" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

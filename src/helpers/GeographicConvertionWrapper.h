@@ -33,30 +33,30 @@ using namespace GeographicLib;
 
 // an instance of this class gets shared across all the blocks, so the conversions are the same everywhere
 class GeographicConvertionWrapper {
-  public:
-    void Forward( const double latitude, const double longitude, const double height, double& x, double& y, double& z );
+public:
+  void Forward( const double latitude, const double longitude, const double height, double& x, double& y, double& z );
 
-    void Forward( const double latitude, const double longitude, double& x, double& y, double& z );
+  void Forward( const double latitude, const double longitude, double& x, double& y, double& z );
 
-    Eigen::Vector3d Forward( const Eigen::Vector3d& point );
+  Eigen::Vector3d Forward( const Eigen::Vector3d& point );
 
-    void Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height );
+  void Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height );
 
-    void Reverse( const double x, const double y, double& latitude, double& longitude, double& height );
+  void Reverse( const double x, const double y, double& latitude, double& longitude, double& height );
 
-    void Reset( const double latitude, const double longitude, const double height );
+  void Reset( const double latitude, const double longitude, const double height );
 
-    Eigen::Vector3d Reverse( const Eigen::Vector3d& point );
+  Eigen::Vector3d Reverse( const Eigen::Vector3d& point );
 
-  public:
-    bool useTM = true;
+public:
+  bool useTM = true;
 
-  private:
-    LocalCartesian _lc;
+private:
+  LocalCartesian _lc;
 
-    bool isLatLonOffsetSet = false;
+  bool isLatLonOffsetSet = false;
 
-    double falseNorthingTM = 0;
-    double lon0TM = 0;
-    double height0TM = 0;
+  double falseNorthingTM = 0;
+  double lon0TM          = 0;
+  double height0TM       = 0;
 };

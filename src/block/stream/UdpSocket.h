@@ -25,45 +25,40 @@
 class QUdpSocket;
 
 class UdpSocket : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit UdpSocket();
+public:
+  explicit UdpSocket();
 
-    ~UdpSocket();
+  ~UdpSocket();
 
-  Q_SIGNALS:
-    void dataReceived( const QByteArray& );
+Q_SIGNALS:
+  void dataReceived( const QByteArray& );
 
-  public Q_SLOTS:
-    void setPort( double port );
+public Q_SLOTS:
+  void setPort( NUMBER_SIGNATURE_SLOT );
 
-    void sendData( const QByteArray& data );
+  void sendData( const QByteArray& data );
 
-  protected Q_SLOTS:
-    void processPendingDatagrams();
+protected Q_SLOTS:
+  void processPendingDatagrams();
 
-  public:
-    float port = 0;
+public:
+  float port = 0;
 
-  private:
-    QUdpSocket* udpSocket = nullptr;
+private:
+  QUdpSocket* udpSocket = nullptr;
 };
 
 class UdpSocketFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    UdpSocketFactory()
-      : BlockFactory() {}
+public:
+  UdpSocketFactory( QThread* thread ) : BlockFactory( thread ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "UDP Socket" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "UDP Socket" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Streams" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 };

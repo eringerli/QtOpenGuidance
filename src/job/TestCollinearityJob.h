@@ -1,4 +1,4 @@
-// Copyright( C ) 2020 Christian Riggenbach
+// Copyright( C ) 2021 Christian Riggenbach
 //
 // This program is free software:
 // you can redistribute it and / or modify
@@ -16,25 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include <QObject>
-#include <QFlags>
-
 #pragma once
 
-class PoseOption {
-    Q_GADGET
+#include <ThreadWeaver/ThreadWeaver>
 
-  public:
-    enum Option {
-      NoOptions = 0,
-      CalculateLocalOffsets = ( 1 << 1 ),
-      CalculateWithoutOrientation = ( 1 << 2 ),
+#include "kinematic/cgalKernel.h"
 
-      /// cheap update: only do cheap calculations
-      OnlyCheapCalculations = ( 1 << 3 )
-    };
-    Q_DECLARE_FLAGS( Options, Option )
-    Q_FLAG( Options )
+class TestCollinearityJob : public ThreadWeaver::Job {
+public:
+  TestCollinearityJob() = delete;
+  TestCollinearityJob( std::shared_ptr< std::vector< Point_2 > > pointsPointer );
+  ~TestCollinearityJob() { std::cout << "TestCollinearityJob::~~~TestCollinearityJob " << this << std::endl; }
+
+protected:
+  virtual void run( ThreadWeaver::JobPointer, ThreadWeaver::Thread* ) override;
+
+private:
+  std::shared_ptr< std::vector< Point_2 > > pointsPointer = nullptr;
+  bool                                      collinear     = true;
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( PoseOption::Options )

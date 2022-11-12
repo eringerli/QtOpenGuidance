@@ -25,50 +25,42 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-#include "helpers/eigenHelper.h"
 #include "helpers/GeographicConvertionWrapper.h"
+#include "helpers/eigenHelper.h"
 
 #include <QDebug>
 
 class TransverseMercatorConverter : public BlockBase {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw )
-      : BlockBase(),
-        tmw( tmw ) {}
+public:
+  explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw ) : BlockBase(), tmw( tmw ) {}
 
-  public Q_SLOTS:
-    void setWGS84Position( const Eigen::Vector3d& position );
+public Q_SLOTS:
+  void setWGS84Position( const Eigen::Vector3d& position );
 
-  Q_SIGNALS:
-    void positionChanged( const Eigen::Vector3d& );
+Q_SIGNALS:
+  void positionChanged( const Eigen::Vector3d& );
 
-  public:
-    virtual void emitConfigSignals() override;
+public:
+  virtual void emitConfigSignals() override;
 
-  public:
-    GeographicConvertionWrapper* tmw = nullptr;
+public:
+  GeographicConvertionWrapper* tmw = nullptr;
 };
 
 class TransverseMercatorConverterFactory : public BlockFactory {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    TransverseMercatorConverterFactory( GeographicConvertionWrapper* tmw )
-      : BlockFactory(),
-        tmw( tmw ) {}
+public:
+  TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread ), tmw( tmw ) {}
 
-    QString getNameOfFactory() override {
-      return QStringLiteral( "Transverse Mercator" );
-    }
+  QString getNameOfFactory() override { return QStringLiteral( "Transverse Mercator" ); }
 
-    QString getCategoryOfFactory() override {
-      return QStringLiteral( "Calculations" );
-    }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-    virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
 
-  private:
-    GeographicConvertionWrapper* tmw = nullptr;
+private:
+  GeographicConvertionWrapper* tmw = nullptr;
 };

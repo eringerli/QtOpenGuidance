@@ -28,36 +28,36 @@ class QLabel;
 class QToolButton;
 
 class SectionControlToolbar : public QGroupBox {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit SectionControlToolbar( Implement* implement, QWidget* parent = nullptr );
+public:
+  explicit SectionControlToolbar( Implement* implement, QWidget* parent = nullptr );
 
-  Q_SIGNALS:
+Q_SIGNALS:
 
-  public Q_SLOTS:
-    void sectionsChanged();
-    void implementChanged( const QPointer<Implement>& );
-    void setDockLocation( const Qt::DockWidgetArea area );
+public Q_SLOTS:
+  void sectionsChanged();
+  void implementChanged( const QPointer< Implement >& );
+  void setDockLocation( const Qt::DockWidgetArea area );
 
-  private Q_SLOTS:
-    void forceOnOffToggled( const bool );
-    void autoToggled( const bool );
+private Q_SLOTS:
+  void forceOnOffToggled( const bool );
+  void autoToggled( const bool );
 
-  private:
-    QToolButton* addButtonToVector( const QString& name );
-    void addSection( const QString& name );
+private:
+  QToolButton* addButtonToVector( const QString& name );
+  void         addSection( const QString& name );
 
-  private:
-    Implement* implement = nullptr;
-    QPalette buttonYellow, buttonRed, buttonGreen, buttonDefault;
+private:
+  Implement* implement = nullptr;
+  QPalette   buttonYellow, buttonRed, buttonGreen, buttonDefault;
 
-    QGridLayout* gridLayout = nullptr;
+  QGridLayout* gridLayout = nullptr;
 
-    QLabel* lbOn = nullptr;
-    QLabel* lbOff = nullptr;
-    QToolButton* pbAuto = nullptr;
-    std::vector<QToolButton*> buttons;
+  QLabel*                     lbOn   = nullptr;
+  QLabel*                     lbOff  = nullptr;
+  QToolButton*                pbAuto = nullptr;
+  std::vector< QToolButton* > buttons;
 
-    bool horizontal = true;
+  bool horizontal = true;
 };

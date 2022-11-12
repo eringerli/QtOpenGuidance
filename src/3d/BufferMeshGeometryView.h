@@ -21,31 +21,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "BufferMeshGeometryWithNormal.h"
-#include "BufferMeshWithNormal.h"
+#pragma once
 
-#include <QGeometryRenderer>
+#include <QObject>
 #include <QVector>
-#include <QVector3D>
-#include <Qt3DRender/QAttribute>
-#include <Qt3DRender/QBuffer>
+#include <Qt3DCore/QGeometryView>
 
-BufferMeshWithNormal::BufferMeshWithNormal( Qt3DCore::QNode* parent ) :
-  Qt3DRender::QGeometryRenderer( parent ),
-  m_bufferMeshGeo( new BufferMeshGeometryWithNormal( this ) ) {
-  setInstanceCount( 1 );
-  setIndexOffset( 0 );
-  setFirstInstance( 0 );
-  setPrimitiveType( Qt3DRender::QGeometryRenderer::Lines );
-}
+#include "3d/qt3dForwards.h"
 
-BufferMeshWithNormal::~BufferMeshWithNormal() {
-  m_bufferMeshGeo->deleteLater();
-}
+class BufferMeshGeometryView : public Qt3DCore::QGeometryView {
+  Q_OBJECT
 
-void BufferMeshWithNormal::bufferUpdate( const QVector<QVector3D>& pos ) {
-  m_bufferMeshGeo->updatePoints( pos );
+public:
+  explicit BufferMeshGeometryView( Qt3DCore::QNode* parent = nullptr );
+  ~BufferMeshGeometryView();
 
-  setVertexCount( m_bufferMeshGeo->vertexCount() );
-  setGeometry( m_bufferMeshGeo );
-}
+  void bufferUpdate( const QVector< QVector3D >& pos );
+};

@@ -23,42 +23,46 @@
 
 #include <QByteArray>
 
+#include <QBasicTimer>
+#include <QBrush>
 #include <QCborMap>
 #include <QCborStreamReader>
 #include <QCborValue>
-#include <QBrush>
-#include <QBasicTimer>
 
 ValueTransmissionNumber::ValueTransmissionNumber( int id ) : ValueTransmissionBase( id ) {
-  reader = std::make_unique<QCborStreamReader>();
+  reader = std::make_unique< QCborStreamReader >();
 }
 
-void ValueTransmissionNumber::setNumber( const double number ) {
+void
+ValueTransmissionNumber::setNumber( const double number, CalculationOption::Options ) {
   QCborMap map;
   map[QStringLiteral( "channelId" )] = id;
-  map[QStringLiteral( "number" )] = number;
+  map[QStringLiteral( "number" )]    = number;
 
   Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
 }
 
-void ValueTransmissionNumber::dataReceive( const QByteArray& data ) {
+void
+ValueTransmissionNumber::dataReceive( const QByteArray& data ) {
   reader->addData( data );
 
   auto cbor = QCborValue::fromCbor( *reader );
 
   if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-    Q_EMIT numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ) );
+    Q_EMIT numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ), CalculationOption::Option::None );
   }
 }
 
-QNEBlock* ValueTransmissionNumberFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+ValueTransmissionNumberFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ValueTransmissionNumber( id );
-  auto* b = createBaseBlock( scene, obj, id, false );
+  auto* b   = createBaseBlock( scene, obj, id, false );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( numberChanged( const double ) ) ), false );
+  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ), false );
 
-  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( const double ) ) ), false );
+  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setNumber( NUMBER_SIGNATURE ) ) ), false );
   b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 
   b->setBrush( converterColor );

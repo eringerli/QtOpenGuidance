@@ -20,9 +20,9 @@
 
 #include <QObject>
 
-#include <QMenu>
 #include <QAction>
 #include <QBrush>
+#include <QMenu>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -40,7 +40,7 @@ KDDockWidgets::DockWidget* ActionDockBlockFactory::firstActionDock = nullptr;
 
 ActionDockBlock::ActionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) {
   widget = new ActionDock( mainWindow );
-  dock = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::DockWidget( uniqueName );
 
   QObject::connect( widget, &ActionDock::action, this, &ActionDockBlock::action );
 }
@@ -54,23 +54,28 @@ ActionDockBlock::~ActionDockBlock() {
   }
 }
 
-void ActionDockBlock::setName( const QString& name ) {
+void
+ActionDockBlock::setName( const QString& name ) {
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Action: " ) + name );
 }
 
-void ActionDockBlock::setCheckable( const bool checkable ) {
+void
+ActionDockBlock::setCheckable( const bool checkable ) {
   widget->setCheckable( checkable );
 }
 
-void ActionDockBlock::setTheme( const QString& theme ) {
+void
+ActionDockBlock::setTheme( const QString& theme ) {
   widget->setTheme( theme );
 }
 
-QNEBlock* ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ),
-                                      mainWindow );
-  auto* b = createBaseBlock( scene, object, id );
+QNEBlock*
+ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b      = createBaseBlock( scene, object, id );
+  object->moveToThread( thread );
+  addCompressedObject( object );
 
   object->dock->setTitle( getNameOfFactory() );
   object->dock->setWidget( object->widget );
@@ -84,7 +89,9 @@ QNEBlock* ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
   }
 
-  b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( const bool ) ) ) );
+  b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( ACTION_SIGNATURE ) ) ) );
+
+  addCompressedSignal( QMetaMethod::fromSignal( &ActionDockBlock::action ) );
 
   b->setBrush( inputDockColor );
 

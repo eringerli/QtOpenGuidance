@@ -23,36 +23,42 @@
 #include "qneblock.h"
 #include "qneport.h"
 
-QNEBlock* ArithmeticAdditionFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticAddition();
-  auto* b = createBaseBlock( scene, obj, id );
-
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( double ) ) ) );
-  b->addPort( QStringLiteral( "+" ), QLatin1String(), false, QNEPort::NoBullet );
-  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( double ) ) ) );
-
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( double ) ) ) );
-
-  b->setBrush( arithmeticColor );
-
-  return b;
+void
+ArithmeticAddition::emitConfigSignals() {
+  Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-void ArithmeticAddition::emitConfigSignals() {
-  Q_EMIT numberChanged( result );
-}
-
-void ArithmeticAddition::setValueA( double number ) {
+void
+ArithmeticAddition::setValueA( double number, const CalculationOption::Options ) {
   numberA = number;
   operation();
 }
 
-void ArithmeticAddition::setValueB( double number ) {
+void
+ArithmeticAddition::setValueB( double number, const CalculationOption::Options ) {
   numberB = number;
   operation();
 }
 
-void ArithmeticAddition::operation() {
+void
+ArithmeticAddition::operation() {
   result = numberA + numberB;
-  Q_EMIT numberChanged( result );
+  Q_EMIT numberChanged( result, CalculationOption::Option::None );
+}
+
+QNEBlock*
+ArithmeticAdditionFactory::createBlock( QGraphicsScene* scene, int id ) {
+  auto* obj = new ArithmeticAddition();
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+
+  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  b->addPort( QStringLiteral( "+" ), QLatin1String(), false, QNEPort::NoBullet );
+  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+
+  b->setBrush( arithmeticColor );
+
+  return b;
 }

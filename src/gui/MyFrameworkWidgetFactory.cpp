@@ -1,8 +1,8 @@
 /*
   This file is part of KDDockWidgets.
 
-  Copyright (C) 2018-2020 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
-  Author: Sérgio Martins <sergio.martins@kdab.com>
+  Copyright (C) 2018-2020 Klarälvdalens Datakonsult AB, a KDAB Group company,
+  info@kdab.com Author: Sérgio Martins <sergio.martins@kdab.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,45 +24,43 @@
 //#include <kddockwidgets/widgets/SeparatorWidget_p.h>
 #include <QApplication>
 
-
 class MyTitleBar : public KDDockWidgets::TitleBar {
-    Q_OBJECT
+  Q_OBJECT
 
-  public:
-    explicit MyTitleBar( KDDockWidgets::Frame* frame )
-      : KDDockWidgets::TitleBar( frame ) {
-      init();
-    }
+public:
+  explicit MyTitleBar( KDDockWidgets::Frame* frame ) : KDDockWidgets::TitleBar( frame ) { init(); }
 
-    explicit MyTitleBar( KDDockWidgets::FloatingWindow* fw )
-      : KDDockWidgets::TitleBar( fw ) {
-      init();
+  explicit MyTitleBar( KDDockWidgets::FloatingWindow* fw ) : KDDockWidgets::TitleBar( fw ) {
+    init();
 
-      setContentsMargins( 0, 0, 0, 0 );
-    }
+    setContentsMargins( 0, 0, 0, 0 );
+  }
 
-    void init() {
-      QFontMetrics fm( qApp->font() );
-      setFixedHeight( fm.height() + 0 );
-    }
+  void init() {
+    QFontMetrics fm( qApp->font() );
+    setFixedHeight( fm.height() + 0 );
+  }
 
-    void paintEvent( QPaintEvent* ) override {
-      QPainter p( this );
-      QFontMetrics fm( qApp->font() );
-      p.setFont( qApp->font() );
-      p.drawText( QPoint( 6, fm.ascent() ), title() );
-    }
+  void paintEvent( QPaintEvent* ) override {
+    QPainter     p( this );
+    QFontMetrics fm( qApp->font() );
+    p.setFont( qApp->font() );
+    p.drawText( QPoint( 6, fm.ascent() ), title() );
+  }
 };
 
-KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::Frame* frame ) const {
+KDDockWidgets::TitleBar*
+CustomWidgetFactory::createTitleBar( KDDockWidgets::Frame* frame ) const {
   return new MyTitleBar( frame );
 }
 
-KDDockWidgets::TitleBar* CustomWidgetFactory::createTitleBar( KDDockWidgets::FloatingWindow* fw ) const {
+KDDockWidgets::TitleBar*
+CustomWidgetFactory::createTitleBar( KDDockWidgets::FloatingWindow* fw ) const {
   return new MyTitleBar( fw );
 }
 
-KDDockWidgets::Frame* CustomWidgetFactory::createCentralFrame( QWidgetOrQuick* parent ) const {
+KDDockWidgets::Frame*
+CustomWidgetFactory::createCentralFrame( KDDockWidgets::QWidgetOrQuick* parent ) const {
   return createFrame( parent, KDDockWidgets::FrameOptions() | KDDockWidgets::FrameOption_IsCentralFrame );
 }
 

@@ -22,15 +22,18 @@
 #include "qneport.h"
 
 #include <QBrush>
+#include <QIODevice>
 
 #include "helpers/anglesHelper.h"
 
-void NmeaParserHDT::setData( const QByteArray& data ) {
+void
+NmeaParserHDT::setData( const QByteArray& data ) {
   dataToParse.append( data );
   parseData();
 }
 
-void NmeaParserHDT::parseData() {
+void
+NmeaParserHDT::parseData() {
   // relies heavy on the implementations of QTextStream, QByteArray and QString
   // read the docs about them!
 
@@ -38,13 +41,12 @@ void NmeaParserHDT::parseData() {
   QTextStream textstream( dataToParse, QIODevice::ReadOnly );
 
   QString currentLine;
-  bool hasChecksum = false;
-  quint8 checksumFromNmeaSentence = 0;
+  bool    hasChecksum              = false;
+  quint8  checksumFromNmeaSentence = 0;
 
   // returns true if a line could be read; the newline has to be there or it returns false
   // currentLine has no trailing end-of-line characters
   if( textstream.readLineInto( &currentLine ) ) {
-
     // calculate the checksum
     quint8 checksum = 0;
 
@@ -66,11 +68,12 @@ void NmeaParserHDT::parseData() {
         }
 
         // remove all chars behind the * from the string; works with an empty checksum too
-        currentLine.remove( i, currentLine.count() - i );
+        currentLine.remove( i, currentLine.size() - i );
 
         break;
       } else {
-        // the checksum is a simple XOR of all chars in the sentence, but without the $ and the checksum itself
+        // the checksum is a simple XOR of all chars in the sentence, but without the $
+        // and the checksum itself
         checksum ^= c;
       }
     }
@@ -97,9 +100,8 @@ void NmeaParserHDT::parseData() {
           // skip first field
           ++nmeaFileIterator;
 
-          Q_EMIT orientationChanged( Eigen::Quaterniond(
-                                             Eigen::AngleAxisd( degreesToRadians( nmeaFileIterator->toDouble() ),
-                                                 Eigen::Vector3d::UnitZ() ) ) );
+          Q_EMIT orientationChanged(
+            Eigen::Quaterniond( Eigen::AngleAxisd( degreesToRadians( nmeaFileIterator->toDouble() ), Eigen::Vector3d::UnitZ() ) ) );
         }
       }
     }
@@ -109,9 +111,11 @@ void NmeaParserHDT::parseData() {
   }
 }
 
-QNEBlock* NmeaParserHDTFactory::createBlock( QGraphicsScene* scene, int id ) {
+QNEBlock*
+NmeaParserHDTFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new NmeaParserHDT();
-  auto* b = createBaseBlock( scene, obj, id );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
   b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );

@@ -26,11 +26,10 @@
 
 #include "qneblock.h"
 
-ValueBlockModel::ValueBlockModel( QGraphicsScene* scene )
-  : scene( scene ) {
-}
+ValueBlockModel::ValueBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
 
-QVariant ValueBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+QVariant
+ValueBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -68,7 +67,8 @@ QVariant ValueBlockModel::headerData( int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
-Qt::ItemFlags ValueBlockModel::flags( const QModelIndex& index ) const {
+Qt::ItemFlags
+ValueBlockModel::flags( const QModelIndex& index ) const {
   if( !index.isValid() ) {
     return Qt::NoItemFlags;
   }
@@ -78,10 +78,10 @@ Qt::ItemFlags ValueBlockModel::flags( const QModelIndex& index ) const {
   }
 
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
-
 }
 
-bool ValueBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
+bool
+ValueBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
   if( value != headerData( section, orientation, role ) ) {
     Q_EMIT headerDataChanged( orientation, section, section );
     return true;
@@ -90,17 +90,18 @@ bool ValueBlockModel::setHeaderData( int section, Qt::Orientation orientation, c
   return false;
 }
 
-
-int ValueBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+int
+ValueBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
   return countBuffer;
 }
 
-int ValueBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+int
+ValueBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
   return 9;
 }
 
-QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
-
+QVariant
+ValueBlockModel::data( const QModelIndex& index, int role ) const {
   if( index.isValid() ) {
     if( role == Qt::CheckStateRole ) {
       int countRow = 0;
@@ -108,10 +109,10 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
       const auto& constRefOfList = scene->items();
 
       for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<ValueDockBlockBase*>( block->object ) ) {
+          if( auto* object = qobject_cast< ValueDockBlockBase* >( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 1:
@@ -132,10 +133,10 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
       const auto& constRefOfList = scene->items();
 
       for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast<ValueDockBlockBase*>( block->object ) ) {
+          if( auto* object = qobject_cast< ValueDockBlockBase* >( block->object ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 0:
@@ -169,55 +170,56 @@ QVariant ValueBlockModel::data( const QModelIndex& index, int role ) const {
   return QVariant();
 }
 
-bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
+bool
+ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   int countRow = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast<ValueDockBlockBase*>( block->object ) ) {
+      if( auto* object = qobject_cast< ValueDockBlockBase* >( block->object ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
-              block->setName( qvariant_cast<QString>( value ) );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              block->setName( qvariant_cast< QString >( value ) );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 1:
               object->setUnitVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 2:
-              object->setUnit( qvariant_cast<QString>( value ) );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              object->setUnit( qvariant_cast< QString >( value ) );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 3:
               object->setPrecision( value.toString().toInt() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 4:
               object->setScale( value.toString().toFloat() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 5:
               object->setFieldWidth( value.toString().toInt() );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 
             case 6: {
-              auto font = value.value<QFont>();
+              auto  font    = value.value< QFont >();
               QFont oldFont = object->getFont();
               font.setBold( oldFont.bold() );
               font.setPointSize( oldFont.pointSize() );
               object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
             }
 
@@ -225,7 +227,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
               QFont font = object->getFont();
               font.setPointSize( value.toInt() );
               object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
             }
 
@@ -233,7 +235,7 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
               QFont font = object->getFont();
               font.setBold( value.toBool() );
               object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector<int>() << role );
+              Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
             }
           }
@@ -245,17 +247,18 @@ bool ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, 
   return false;
 }
 
-void ValueBlockModel::resetModel() {
+void
+ValueBlockModel::resetModel() {
   beginResetModel();
   countBuffer = 0;
 
   const auto& constRefOfList = scene->items();
 
   for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast<QNEBlock*>( item );
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast<ValueDockBlockBase*>( block->object ) != nullptr ) {
+      if( qobject_cast< ValueDockBlockBase* >( block->object ) != nullptr ) {
         ++countBuffer;
       }
     }
