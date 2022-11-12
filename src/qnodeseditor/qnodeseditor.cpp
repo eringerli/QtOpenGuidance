@@ -99,6 +99,10 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         }
         break;
 
+        case Qt::MiddleButton: {
+          isInPaningState = false;
+        } break;
+
         case Qt::RightButton: {
           isInPaningState = false;
         }
@@ -194,6 +198,14 @@ bool QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         delete currentConnection;
         currentConnection = nullptr;
         return true;
+      }
+
+      if( mouseEvent->button() == Qt::MiddleButton ) {
+        const auto& constRefOfList = scene->views();
+
+        for( const auto& it : constRefOfList ) {
+          it->setDragMode( QGraphicsView::RubberBandDrag );
+        }
       }
 
       if( mouseEvent->button() == Qt::RightButton ) {
