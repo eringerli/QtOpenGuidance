@@ -40,9 +40,6 @@
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QSphereMesh>
 
-#include "3d/BufferMesh.h"
-#include "3d/BufferMeshWithNormal.h"
-
 #include <QDebug>
 
 #include "helpers/GeoJsonHelper.h"
@@ -61,17 +58,8 @@
 //#include <CGAL/boost/graph/graph_traits_Triangulation_data_structure_2.h>
 //#include <CGAL/boost/graph/graph_traits_Constrained_triangulation_plus_2.h>
 //#include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
-#include <CGAL/boost/graph/copy_face_graph.h>
-#include <CGAL/boost/graph/graph_traits_Surface_mesh.h>
 
-//#include <CGAL/Polygon_mesh_processing/locate.h>
-#include <CGAL/Polygon_mesh_processing/compute_normal.h>
-namespace PMP           = CGAL::Polygon_mesh_processing;
-using vertex_descriptor = boost::graph_traits< SurfaceMesh_3 >::vertex_descriptor;
-using face_descriptor   = boost::graph_traits< SurfaceMesh_3 >::face_descriptor;
-
-PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-    : mainWindow( mainWindow ), tmw( tmw ) {
+PoseSimulation::PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : mainWindow( mainWindow ), tmw( tmw ) {
   state.setZero();
 
   setSimulation( false );
@@ -83,64 +71,9 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEnti
   rearLeftTire   = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
   rearRightTire  = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
 
-  vehicleDynamics =
-    std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >( frontLeftTire.get(),
-                                                               /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
-
-  // test for recording
-  {
-    m_baseEntity    = new Qt3DCore::QEntity( rootEntity );
-    m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
-    m_baseEntity->addComponent( m_baseTransform );
-
-    m_pointsEntity    = new Qt3DCore::QEntity( m_baseEntity );
-    m_terrainEntity   = new Qt3DCore::QEntity( m_baseEntity );
-    m_linesEntity     = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
-    m_terrainEntity->setEnabled( false );
-    m_linesEntity->setEnabled( false );
-    m_segmentsEntity3->setEnabled( false );
-
-    m_pointsMesh = new BufferMesh( m_pointsEntity );
-    m_pointsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
-    m_pointsEntity->addComponent( m_pointsMesh );
-
-    m_terrainMesh = new BufferMeshWithNormal( m_terrainEntity );
-    m_terrainMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Triangles );
-    m_terrainEntity->addComponent( m_terrainMesh );
-
-    m_linesMesh = new BufferMesh( m_linesEntity );
-    m_linesMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Lines );
-    m_linesEntity->addComponent( m_linesMesh );
-
-    m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-    m_segmentsMesh3->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
-    m_segmentsEntity3->addComponent( m_segmentsMesh3 );
-
-    m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
-    m_segmentsMesh4->view()->setPrimitiveType( Qt3DCore::QGeometryView::Lines );
-    m_segmentsEntity4->addComponent( m_segmentsMesh4 );
-
-    m_pointsMaterial    = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
-    m_segmentsMaterial  = new Qt3DExtras::QPhongMaterial( m_terrainEntity );
-    m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_linesEntity );
-    m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
-    m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
-
-    m_pointsMaterial->setAmbient( Qt::yellow );
-    m_segmentsMaterial->setAmbient( Qt::darkGreen );
-    m_segmentsMaterial->setShininess( 0.1f );
-    m_segmentsMaterial2->setAmbient( Qt::green );
-    m_segmentsMaterial3->setAmbient( Qt::blue );
-    m_segmentsMaterial4->setAmbient( Qt::red );
-
-    m_pointsEntity->addComponent( m_pointsMaterial );
-    m_terrainEntity->addComponent( m_segmentsMaterial );
-    m_linesEntity->addComponent( m_segmentsMaterial2 );
-    m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
-    m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
-  }
+  vehicleDynamics = std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >(
+    frontLeftTire.get(),
+    /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
 }
 
 void
@@ -203,8 +136,8 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
     }
 
     {
-      if( tin && surfaceMesh ) {
-        auto point     = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
+      if( tin ) {
+        auto point = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Z ) ) );
         auto foundFace = tin->locate( point, lastFoundFace );
@@ -230,11 +163,9 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
             lastFoundFaceOrientation = Eigen::Quaterniond::FromTwoVectors( Eigen::Vector3d::UnitZ(), normalVector );
 
             //            {
-            //              std::cout << "lastFoundFaceOrientation:
-            //              "<<printQuaternionAsTaitBryanDegrees( lastFoundFaceOrientation
-            //              )
-            //               << ", normalVector:
-            //               "<<printVector(normalVector.normalized())<< std::endl;
+            //              std::cout << "lastFoundFaceOrientation:" << printQuaternionAsTaitBryanDegrees(
+            //              lastFoundFaceOrientation )
+            //                        << ", normalVector:" << printVector( normalVector.normalized() ) << std::endl;
             //            }
 
           } else {
@@ -658,14 +589,12 @@ PoseSimulation::openTINFromFile( QFile& file ) {
   geoJsonHelper.print();
 
   std::vector< Point_3 > points;
-  QVector< QVector3D >   pointsForMesh;
 
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::MultiPoint: {
         for( const auto& point : std::get< GeoJsonHelper::MultiPointType >( member.second ) ) {
           auto tmwPoint = tmw->Forward( point );
-          pointsForMesh << toQVector3D( tmwPoint );
           points.emplace_back( toPoint3( tmwPoint ) );
         }
       } break;
@@ -675,66 +604,12 @@ PoseSimulation::openTINFromFile( QFile& file ) {
     }
   }
 
-  m_pointsMesh->bufferUpdate( pointsForMesh );
-  m_pointsEntity->setEnabled( true );
+  tin = make_unique< DelaunayTriangulationProjectedXY >( points.cbegin(), points.cend() );
 
-  tin         = make_unique< DelaunayTriangulationProjectedXY >( points.cbegin(), points.cend() );
-  surfaceMesh = make_unique< SurfaceMesh_3 >();
+  auto surfaceMesh = make_shared< SurfaceMesh_3 >();
   CGAL::copy_face_graph( *tin, *surfaceMesh );
 
-  auto vnormals = surfaceMesh->add_property_map< vertex_descriptor, Vector_3 >( "v:normals", CGAL::NULL_VECTOR ).first;
-  auto fnormals = surfaceMesh->add_property_map< face_descriptor, Vector_3 >( "f:normals", CGAL::NULL_VECTOR ).first;
-
-  PMP::compute_normals( *surfaceMesh, vnormals, fnormals );
-  //  std::cout << "Vertex normals :" << std::endl;
-  //
-  //  for( vertex_descriptor vd : vertices( *surfaceMesh ) ) {
-  //    std::cout << vnormals[vd] << std::endl;
-  //  }
-
-  Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
-
-  auto ppm = get( CGAL::vertex_point, *surfaceMesh );
-
-  QVector< QVector3D > trianglesWithNormals;
-
-  //  std::cout << "Face normals :" << std::endl;
-
-  for( face_descriptor fd : faces( *surfaceMesh ) ) {
-    auto       normal       = fnormals[fd];
-    const auto normalVector = toQVector3D( normal );
-
-    //    std::vector<QVector3D> points;
-    for( vertex_descriptor vd : CGAL::vertices_around_face( surfaceMesh->halfedge( fd ), *surfaceMesh ) ) {
-      //       points.emplace_back(convertPoint3ToQVector3D( get( ppm, vd ) ));
-      trianglesWithNormals << toQVector3D( get( ppm, vd ) );
-      //      trianglesWithNormals << convertVector3ToQVector3D(vnormals[vd]);
-      trianglesWithNormals << normalVector;
-    }
-
-    auto quaternion = Eigen::Quaterniond::FromTwoVectors( Eigen::Vector3d( 0, 0, 1 ), toEigenVector( normal ) );
-
-    //    std::cout << "vector: " << normal << " Euler: " << ( quaternionToTaitBryan(
-    //    quaternion ) * 180 / M_PI ).format( CommaInitFmt ) << std::endl;
-  }
-
-  m_terrainMesh->bufferUpdate( trianglesWithNormals );
-  m_terrainEntity->setEnabled( true );
-
-  QVector< QVector3D > lines;
-
-  for( const auto& edge : surfaceMesh->edges() ) {
-    auto point1 = surfaceMesh->point( surfaceMesh->vertex( edge, 0 ) );
-    auto point2 = surfaceMesh->point( surfaceMesh->vertex( edge, 1 ) );
-
-    //    std::cout << "line: " << point1 << ", " << point2 << std::endl;
-
-    lines << toQVector3D( point1 );
-    lines << toQVector3D( point2 );
-  }
-
-  m_linesMesh->bufferUpdate( lines );
-  m_linesEntity->setEnabled( true );
+  Q_EMIT surfaceChanged( surfaceMesh );
 }
 
 void
@@ -753,7 +628,7 @@ PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset ) {
 
 QNEBlock*
 PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new PoseSimulation( mainWindow, rootEntity, geographicConvertionWrapper );
+  auto* obj = new PoseSimulation( mainWindow, geographicConvertionWrapper );
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
 

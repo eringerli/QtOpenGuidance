@@ -45,6 +45,8 @@ class QFile;
 class QMainWindow;
 class MyMainWindow;
 
+class TerrainModel;
+
 class QNEBlock;
 
 #include "block/BlockBase.h"
@@ -298,7 +300,8 @@ public:
 public:
   NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;
 
-  BlockBase* poseSimulation = nullptr;
+  BlockBase*    poseSimulation = nullptr;
+  TerrainModel* terrainModel   = nullptr;
 
   BlockBase* fieldManager       = nullptr;
   BlockBase* globalPlanner      = nullptr;

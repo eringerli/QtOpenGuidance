@@ -60,5 +60,5 @@ namespace Qt3DLogic {
 
 class BufferMesh;
 class BufferMeshGeometry;
-class BufferMeshGeometryWithNormal;
+class BufferMeshGeometryWithNormals;
 class TextureRenderTarget;

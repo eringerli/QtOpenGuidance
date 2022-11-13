@@ -64,6 +64,7 @@
 
 #include "block/graphical/CultivatedAreaModel.h"
 #include "block/graphical/SprayerModel.h"
+#include "block/graphical/TerrainModel.h"
 #include "block/graphical/TractorModel.h"
 #include "block/graphical/TrailerModel.h"
 
@@ -331,10 +332,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory =
-    new PoseSimulationFactory( calculationsThread, mainWindow, backgroundEntity, geographicConvertionWrapperSimulator );
+  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapperSimulator );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
+
+  terrainModel = new TerrainModel( backgroundEntity );
 
   auto* poseSimulationTmp = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
 
@@ -346,6 +348,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
     auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Terrain Model" ) );
     QObject::connect( openFieldAction, &QAction::triggered, poseSimulationTmp, &PoseSimulation::openTIN );
+
+    QObject::connect( poseSimulationTmp, &PoseSimulation::surfaceChanged, terrainModel, &TerrainModel::setSurface );
   }
 
   // SPNAV
@@ -694,6 +698,8 @@ SettingsDialog::~SettingsDialog() {
 
   poseSimulationFactory->deleteLater();
   poseSimulation->deleteLater();
+
+  terrainModel->deleteLater();
 
 #ifdef SPNAV_ENABLED
   spaceNavigatorPollingThread->stop();

@@ -142,3 +142,5 @@ Q_DECLARE_METATYPE( std::shared_ptr< std::vector< Point_2 > > )
 Q_DECLARE_METATYPE( std::shared_ptr< std::vector< Point_3 > > )
 Q_DECLARE_METATYPE( std::shared_ptr< std::vector< QVector3D > > )
 Q_DECLARE_METATYPE( std::shared_ptr< Polygon_with_holes_2 > )
+
+// Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )

@@ -57,13 +57,12 @@ using DelaunayTriangulationProjectedXY = CGAL::Delaunay_triangulation_2< Project
 using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 class QFile;
-class BufferMeshWithNormal;
 
 class PoseSimulation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PoseSimulation( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
+  explicit PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper* tmw );
 
 public Q_SLOTS:
   void setInterval( const int interval );
@@ -101,9 +100,6 @@ public Q_SLOTS:
   void openTIN();
   void openTINFromFile( QFile& file );
 
-protected:
-  void timerEvent( QTimerEvent* event ) override;
-
 Q_SIGNALS:
   void simulatorValuesChanged( const double a,
                                const double b,
@@ -138,12 +134,17 @@ Q_SIGNALS:
   void maxProcessingTimeChanged( NUMBER_SIGNATURE_SIGNAL );
   void processingTimeChanged( NUMBER_SIGNATURE_SIGNAL );
 
+  void surfaceChanged( std::shared_ptr< SurfaceMesh_3 > );
+
 public:
   virtual void emitConfigSignals() override;
 
   virtual void toJSON( QJsonObject& json ) override;
 
   virtual void fromJSON( QJsonObject& json ) override;
+
+protected:
+  void timerEvent( QTimerEvent* event ) override;
 
 private:
   QWidget* mainWindow = nullptr;
@@ -209,27 +210,8 @@ private:
   std::normal_distribution< double > noiseGyro                   = std::normal_distribution< double >( 0, 0.01 );
 
   std::unique_ptr< DelaunayTriangulationProjectedXY > tin;
-  std::unique_ptr< SurfaceMesh_3 >                    surfaceMesh;
   DelaunayTriangulationProjectedXY::Face_handle       lastFoundFace;
   Eigen::Quaterniond                                  lastFoundFaceOrientation = taitBryanToQuaternion( 0, 0, 0 );
-
-  Qt3DCore::QEntity*          m_baseEntity        = nullptr;
-  Qt3DCore::QTransform*       m_baseTransform     = nullptr;
-  Qt3DCore::QEntity*          m_pointsEntity      = nullptr;
-  Qt3DCore::QEntity*          m_terrainEntity     = nullptr;
-  Qt3DCore::QEntity*          m_linesEntity       = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity3   = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity4   = nullptr;
-  BufferMesh*                 m_pointsMesh        = nullptr;
-  BufferMeshWithNormal*       m_terrainMesh       = nullptr;
-  BufferMesh*                 m_linesMesh         = nullptr;
-  BufferMesh*                 m_segmentsMesh3     = nullptr;
-  BufferMesh*                 m_segmentsMesh4     = nullptr;
-  Qt3DExtras::QPhongMaterial* m_pointsMaterial    = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial  = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class PoseSimulationFactory : public BlockFactory {
@@ -238,11 +220,9 @@ class PoseSimulationFactory : public BlockFactory {
 public:
   PoseSimulationFactory( QThread*                     thread,
                          QWidget*                     mainWindow,
-                         Qt3DCore::QEntity*           rootEntity,
                          GeographicConvertionWrapper* geographicConvertionWrapper )
       : BlockFactory( thread )
       , mainWindow( mainWindow )
-      , rootEntity( rootEntity )
       , geographicConvertionWrapper( geographicConvertionWrapper ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Pose Simulation" ); }
@@ -253,6 +233,5 @@ public:
 
 private:
   QWidget*                     mainWindow                  = nullptr;
-  Qt3DCore::QEntity*           rootEntity                  = nullptr;
   GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 };

@@ -252,6 +252,8 @@ set(SOURCES_model
   src/gui/model/SliderDockBlockModel.h
   src/gui/model/StringBlockModel.cpp
   src/gui/model/StringBlockModel.h
+  src/block/graphical/TerrainModel.cpp
+  src/block/graphical/TerrainModel.h
   src/gui/model/TransmissionBlockModel.cpp
   src/gui/model/TransmissionBlockModel.h
   src/gui/model/ValueBlockModel.cpp
