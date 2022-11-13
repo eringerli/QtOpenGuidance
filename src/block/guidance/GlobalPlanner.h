@@ -21,13 +21,6 @@
 #include <QObject>
 #include <QPointer>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QSphereMesh>
-
 #include "block/BlockBase.h"
 
 #include "kinematic/Plan.h"
@@ -55,10 +48,7 @@ class GlobalPlanner : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GlobalPlanner( const QString&               uniqueName,
-                          MyMainWindow*                mainWindow,
-                          GeographicConvertionWrapper* tmw,
-                          Qt3DCore::QEntity*           rootEntity );
+  explicit GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw );
 
   ~GlobalPlanner();
 
@@ -97,6 +87,10 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void planChanged( const Plan& );
+  void planPolylineChanged( std::shared_ptr< std::vector< Point_2 > > );
+
+  void setToolbarToAdditionalPoint();
+  void resetToolbar();
 
 private:
   void createPlanAB();
@@ -134,43 +128,17 @@ public:
   GeographicConvertionWrapper* tmw = nullptr;
 
 private:
-  QWidget*           mainWindow = nullptr;
-  Qt3DCore::QEntity* rootEntity = nullptr;
+  QWidget* mainWindow = nullptr;
 
   QPointer< PlanOptimitionController > planOptimitionController;
-
-  // markers
-  Qt3DCore::QEntity*       aPointEntity    = nullptr;
-  Qt3DExtras::QSphereMesh* aPointMesh      = nullptr;
-  Qt3DCore::QTransform*    aPointTransform = nullptr;
-  Qt3DCore::QEntity*       aTextEntity     = nullptr;
-  Qt3DCore::QTransform*    aTextTransform  = nullptr;
-
-  Qt3DCore::QEntity*       bPointEntity    = nullptr;
-  Qt3DExtras::QSphereMesh* bPointMesh      = nullptr;
-  Qt3DCore::QTransform*    bPointTransform = nullptr;
-  Qt3DCore::QEntity*       bTextEntity     = nullptr;
-  Qt3DCore::QTransform*    bTextTransform  = nullptr;
-
-  Qt3DCore::QEntity*          pointsEntity   = nullptr;
-  Qt3DExtras::QSphereMesh*    pointsMesh     = nullptr;
-  Qt3DExtras::QPhongMaterial* pointsMaterial = nullptr;
-
-private:
-  Qt3DCore::QEntity*    m_baseEntity    = nullptr;
-  Qt3DCore::QTransform* m_baseTransform = nullptr;
 };
 
 class GlobalPlannerFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  GlobalPlannerFactory( QThread*                     thread,
-                        MyMainWindow*                mainWindow,
-                        KDDockWidgets::Location      location,
-                        QMenu*                       menu,
-                        GeographicConvertionWrapper* tmw,
-                        Qt3DCore::QEntity*           rootEntity );
+  GlobalPlannerFactory(
+    QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, GeographicConvertionWrapper* tmw );
 
   QString getNameOfFactory() override { return QStringLiteral( "Global Planner Lines" ); }
 
@@ -182,6 +150,5 @@ private:
   MyMainWindow*                mainWindow = nullptr;
   KDDockWidgets::Location      location;
   QMenu*                       menu       = nullptr;
-  Qt3DCore::QEntity*           rootEntity = nullptr;
   GeographicConvertionWrapper* tmw        = nullptr;
 };

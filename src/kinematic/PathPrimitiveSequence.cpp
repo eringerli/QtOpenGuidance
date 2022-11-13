@@ -332,4 +332,9 @@ PathPrimitiveSequence::transform( const Aff_transformation_2& transformation ) {
   for( const auto& it : sequence ) {
     it->transform( transformation );
   }
+
+  bisectors.clear();
+  createBisectors( std::back_inserter( bisectors ), sequence );
+
+  orderBisectors( bisectors, sequence );
 }

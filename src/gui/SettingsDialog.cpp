@@ -63,6 +63,7 @@
 #include "block/global/GridModel.h"
 
 #include "block/graphical/CultivatedAreaModel.h"
+#include "block/graphical/GlobalPlannerModel.h"
 #include "block/graphical/SprayerModel.h"
 #include "block/graphical/TerrainModel.h"
 #include "block/graphical/TractorModel.h"
@@ -403,13 +404,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     fieldManager = fieldManagerObject;
   }
 
-  globalPlannerFactory     = new GlobalPlannerFactory( calculationsThread,
-                                                   mainWindow,
-                                                   KDDockWidgets::Location_OnRight,
-                                                   guidanceToolbarMenu,
-                                                   geographicConvertionWrapperGuidance,
-                                                   middlegroundEntity );
+  globalPlannerFactory = new GlobalPlannerFactory(
+    calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, geographicConvertionWrapper );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
+
+  globalPlannerModelFactory     = new GlobalPlannerModelFactory( qt3dThread, middlegroundEntity );
+  auto* globalPlannerModelBlock = globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
     auto* globalPlanner = qobject_cast< GlobalPlanner* >( globalPlannerBlock->object );
@@ -716,6 +716,7 @@ SettingsDialog::~SettingsDialog() {
   localPlannerFactory->deleteLater();
   stanleyGuidanceFactory->deleteLater();
   xteGuidanceFactory->deleteLater();
+  globalPlannerModelFactory->deleteLater();
   pathPlannerModelFactory->deleteLater();
 }
 

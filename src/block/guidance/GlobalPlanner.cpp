@@ -33,8 +33,6 @@
 #include "gui/GlobalPlannerToolbar.h"
 #include "gui/MyMainWindow.h"
 
-#include "3d/BufferMesh.h"
-
 #include <QFileDialog>
 
 #include "kinematic/CgalWorker.h"
@@ -55,11 +53,8 @@
 #include <CGAL/Aff_transformation_3.h>
 using Aff_transformation_3 = CGAL::Aff_transformation_3< Epick >;
 
-GlobalPlanner::GlobalPlanner( const QString&               uniqueName,
-                              MyMainWindow*                mainWindow,
-                              GeographicConvertionWrapper* tmw,
-                              Qt3DCore::QEntity*           rootEntity )
-    : tmw( tmw ), mainWindow( mainWindow ), rootEntity( rootEntity ) {
+GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw )
+    : tmw( tmw ), mainWindow( mainWindow ) {
   widget = new GlobalPlannerToolbar( mainWindow );
   dock   = new KDDockWidgets::DockWidget( uniqueName );
 
@@ -70,85 +65,9 @@ GlobalPlanner::GlobalPlanner( const QString&               uniqueName,
   QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPoint, this, &GlobalPlanner::setAdditionalPoint );
   QObject::connect( widget, &GlobalPlannerToolbar::setAdditionalPointsContinous, this, &GlobalPlanner::setAdditionalPointsContinous );
   QObject::connect( widget, &GlobalPlannerToolbar::snap, this, &GlobalPlanner::snap );
-
-  // a point marker -> orange
-  {
-    aPointEntity = new Qt3DCore::QEntity( rootEntity );
-
-    aPointMesh = new Qt3DExtras::QSphereMesh( aPointEntity );
-    aPointMesh->setRadius( .2f );
-    aPointMesh->setSlices( 20 );
-    aPointMesh->setRings( 20 );
-
-    aPointTransform = new Qt3DCore::QTransform( aPointEntity );
-
-    auto* material = new Qt3DExtras::QPhongMaterial( aPointEntity );
-    material->setDiffuse( QColor( "orange" ) );
-
-    aPointEntity->addComponent( aPointMesh );
-    aPointEntity->addComponent( material );
-    aPointEntity->addComponent( aPointTransform );
-    aPointEntity->setEnabled( false );
-
-    aTextEntity     = new Qt3DCore::QEntity( aPointEntity );
-    auto* aTextMesh = new Qt3DExtras::QExtrudedTextMesh( aTextEntity );
-    aTextMesh->setText( QStringLiteral( "A" ) );
-    aTextMesh->setDepth( 0.05f );
-
-    aTextEntity->setEnabled( true );
-    aTextTransform = new Qt3DCore::QTransform( aTextEntity );
-    aTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-    aTextTransform->setScale( 2.0f );
-    aTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
-    aTextEntity->addComponent( aTextTransform );
-    aTextEntity->addComponent( aTextMesh );
-    aTextEntity->addComponent( material );
-  }
-
-  // b point marker -> purple
-  {
-    bPointEntity = new Qt3DCore::QEntity( rootEntity );
-    bPointMesh   = new Qt3DExtras::QSphereMesh( bPointEntity );
-    bPointMesh->setRadius( .2f );
-    bPointMesh->setSlices( 20 );
-    bPointMesh->setRings( 20 );
-
-    bPointTransform = new Qt3DCore::QTransform( bPointEntity );
-
-    auto* material = new Qt3DExtras::QPhongMaterial( bPointEntity );
-    material->setDiffuse( QColor( "purple" ) );
-
-    bPointEntity->addComponent( bPointMesh );
-    bPointEntity->addComponent( material );
-    bPointEntity->addComponent( bPointTransform );
-    bPointEntity->setEnabled( false );
-
-    bTextEntity     = new Qt3DCore::QEntity( bPointEntity );
-    auto* bTextMesh = new Qt3DExtras::QExtrudedTextMesh( bTextEntity );
-    bTextMesh->setText( QStringLiteral( "B" ) );
-    bTextMesh->setDepth( 0.05f );
-
-    bTextEntity->setEnabled( true );
-    bTextTransform = new Qt3DCore::QTransform( bTextEntity );
-    bTextTransform->setRotation( QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), -90 ) );
-    bTextTransform->setScale( 2.0f );
-    bTextTransform->setTranslation( QVector3D( 0, -.2f, 0 ) );
-    bTextEntity->addComponent( bTextTransform );
-    bTextEntity->addComponent( bTextMesh );
-    bTextEntity->addComponent( material );
-  }
-
-  {
-    pointsEntity = new Qt3DCore::QEntity( rootEntity );
-
-    pointsMesh = new Qt3DExtras::QSphereMesh( bPointEntity );
-    pointsMesh->setRadius( .2f );
-    pointsMesh->setSlices( 20 );
-    pointsMesh->setRings( 20 );
-
-    pointsMaterial = new Qt3DExtras::QPhongMaterial( bPointEntity );
-    pointsMaterial->setDiffuse( QColor( "purple" ) );
-  }
+  QObject::connect(
+    this, &GlobalPlanner::setToolbarToAdditionalPoint, widget, &GlobalPlannerToolbar::setToolbarToAdditionalPoint );
+  QObject::connect( this, &GlobalPlanner::resetToolbar, widget, &GlobalPlannerToolbar::resetToolbar );
 }
 
 GlobalPlanner::~GlobalPlanner() {
@@ -157,14 +76,12 @@ GlobalPlanner::~GlobalPlanner() {
 }
 
 void
-GlobalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
+GlobalPlanner::setPose( const Eigen::Vector3d&           position,
+                        const Eigen::Quaterniond&        orientation,
+                        const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::Option::NoPlanner ) ) {
     this->position    = toPoint3( position );
     this->orientation = orientation;
-
-    auto quat = toQQuaternion( orientation );
-    aPointTransform->setRotation( quat );
-    bPointTransform->setRotation( quat );
 
     auto position2D = to2D( position );
 
@@ -172,10 +89,7 @@ GlobalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaternion
       abPolyline->push_back( position2D );
     }
 
-    //        QElapsedTimer timer;
-    //        timer.start();
     plan.expand( position2D );
-    //        qDebug() << "Cycle Time plan.expandPlan:" << timer.nsecsElapsed() << "ns";
   }
 }
 
@@ -183,7 +97,6 @@ void
 GlobalPlanner::setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::Option::NoPlanner ) ) {
     if( options.testFlag( CalculationOption::CalculateLocalOffsets ) && options.testFlag( CalculationOption::NoOrientation ) ) {
-      std::cout << "GlobalPlanner::setPoseLeftEdge " << this << ", " << position << std::endl;
       positionLeftEdgeOfImplement = toPoint3( position );
 
       auto point2D = to2D( position );
@@ -200,7 +113,6 @@ void
 GlobalPlanner::setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::Option::NoPlanner ) ) {
     if( options.testFlag( CalculationOption::CalculateLocalOffsets ) && options.testFlag( CalculationOption::NoOrientation ) ) {
-      std::cout << "GlobalPlanner::setPoseRightEdge " << this << ", " << position << std::endl;
       positionRightEdgeOfImplement = toPoint3( position );
 
       auto point2D = to2D( position );
@@ -220,24 +132,15 @@ GlobalPlanner::setField( std::shared_ptr< Polygon_with_holes_2 > field ) {
 
 void
 GlobalPlanner::setAPoint() {
-  std::cout << "setAPoint " << this << std::endl;
-  aPointTransform->setTranslation( toQVector3D( position ) );
-
-  aPointEntity->setEnabled( true );
-  bPointEntity->setEnabled( false );
-  pointsEntity->setEnabled( false );
-
   aPoint     = position;
   abPolyline = std::make_shared< std::vector< Point_2 > >();
   abPolyline->push_back( to2D( position ) );
+
+  Q_EMIT planPolylineChanged( abPolyline );
 }
 
 void
 GlobalPlanner::setBPoint() {
-  std::cout << "setBPoint " << this << std::endl;
-  bPointTransform->setTranslation( toQVector3D( position ) );
-  bPointEntity->setEnabled( true );
-
   bPoint = position;
   abPolyline->push_back( to2D( position ) );
 
@@ -248,7 +151,6 @@ GlobalPlanner::setBPoint() {
 
 void
 GlobalPlanner::setAdditionalPoint() {
-  std::cout << "setAdditionalPoint " << this << std::endl;
   abPolyline->push_back( to2D( position ) );
   createPlanAB();
 }
@@ -272,35 +174,13 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
   Point_2 position2D = to2D( position );
 
   if( polyline->size() > 2 ) {
-    aPointEntity->setEnabled( false );
-    bPointEntity->setEnabled( false );
-    widget->setToolbarToAdditionalPoint();
+    Q_EMIT setToolbarToAdditionalPoint();
 
-    for( const auto& child : qAsConst( pointsEntity->children() ) ) {
-      if( auto* childPtr = qobject_cast< Qt3DCore::QEntity* >( child ) ) {
-        childPtr->setEnabled( false );
-        childPtr->deleteLater();
-      }
-    }
-
-    for( const auto& point : *polyline ) {
-      auto* entity = new Qt3DCore::QEntity( pointsEntity );
-
-      auto* transform = new Qt3DCore::QTransform( entity );
-      transform->setTranslation( toQVector3D( point ) );
-
-      entity->addComponent( pointsMaterial );
-      entity->addComponent( pointsMesh );
-      entity->addComponent( transform );
-
-      entity->setEnabled( true );
-    }
-
-    pointsEntity->setEnabled( true );
-
-    plan.resetPlanWith( make_shared< PathPrimitiveSequence >( *polyline, std::sqrt( implementSegment.squared_length() ), true, 0 ) );
+    plan.resetPlanWith(
+      make_shared< PathPrimitiveSequence >( *polyline, std::sqrt( implementSegment.squared_length() ), true, 0 ) );
 
     Q_EMIT planChanged( plan );
+    Q_EMIT planPolylineChanged( polyline );
   }
 
   if( polyline->size() == 2 ) {
@@ -308,17 +188,13 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
     bPoint    = to3D( polyline->back() );
     abSegment = Segment_3( aPoint, bPoint );
 
-    aPointTransform->setTranslation( toQVector3D( aPoint ) );
-    bPointTransform->setTranslation( toQVector3D( bPoint ) );
-    aPointEntity->setEnabled( true );
-    bPointEntity->setEnabled( true );
-
-    widget->setToolbarToAdditionalPoint();
+    Q_EMIT setToolbarToAdditionalPoint();
 
     plan.resetPlanWith(
       make_shared< PathPrimitiveLine >( to2D( abSegment ).supporting_line(), std::sqrt( implementSegment.squared_length() ), true, 0 ) );
 
     Q_EMIT planChanged( plan );
+    Q_EMIT planPolylineChanged( polyline );
   }
 
   plan.expand( position2D );
@@ -326,20 +202,15 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
 
 void
 GlobalPlanner::createPlanAB() {
-  std::cout << "GlobalPlanner::createPlanAB " << this << ", " << abSegment.squared_length() << ", " << implementSegment.squared_length()
-            << std::endl;
   if( abSegment.squared_length() > 0.25 && implementSegment.squared_length() > 1 ) {
-    std::cout << "GlobalPlanner::createPlanAB 2 " << this << std::endl;
 
     Point_2 position2D = to2D( position );
 
     if( abPolyline->size() == 2 ) {
-      std::cout << "GlobalPlanner::createPlanAB 3 " << this << std::endl;
       createPlanPolyline( abPolyline );
     }
 
     if( abPolyline->size() > 2 ) {
-      std::cout << "GlobalPlanner::createPlanAB 4 " << this << std::endl;
       planOptimitionController = new PlanOptimitionController( abPolyline, 0.1 );
       QObject::connect(
         planOptimitionController, &PlanOptimitionController::simplifyPolylineResult, this, &GlobalPlanner::createPlanPolyline );
@@ -351,7 +222,7 @@ GlobalPlanner::createPlanAB() {
 
 void
 GlobalPlanner::snapPlanAB() {
-  if( abSegment.squared_length() > 1 ) {
+  if( !plan.plan->empty() ) {
     Point_2 position2D = to2D( position );
 
     double xte              = 0;
@@ -370,8 +241,11 @@ GlobalPlanner::snapPlanAB() {
     bPoint    = bPoint.transform( transformation3D );
     abSegment = Segment_3( aPoint, bPoint );
 
-    aPointTransform->setTranslation( toQVector3D( aPoint ) );
-    bPointTransform->setTranslation( toQVector3D( bPoint ) );
+    for( auto& point : *abPolyline ) {
+      point = point.transform( transformation2D );
+    }
+
+    Q_EMIT planPolylineChanged( abPolyline );
 
     //    QElapsedTimer timer;
     //    timer.start();
@@ -452,14 +326,10 @@ GlobalPlanner::openAbLineFromFile( QFile& file ) {
 
           if( index == 0 ) {
             aPoint = tmwPoint;
-            aPointTransform->setTranslation( toQVector3D( tmwPoint ) );
           }
 
           if( index == 1 ) {
-            bPoint = tmwPoint;
-            bPointTransform->setTranslation( toQVector3D( tmwPoint ) );
-            aPointEntity->setEnabled( true );
-            bPointEntity->setEnabled( true );
+            bPoint    = tmwPoint;
             abSegment = Segment_3( aPoint, tmwPoint );
           }
 
@@ -467,6 +337,8 @@ GlobalPlanner::openAbLineFromFile( QFile& file ) {
 
           ++index;
         }
+
+        Q_EMIT planPolylineChanged( abPolyline );
 
       } break;
 
@@ -480,7 +352,7 @@ GlobalPlanner::openAbLineFromFile( QFile& file ) {
 
 void
 GlobalPlanner::newField() {
-  widget->resetToolbar();
+  Q_EMIT resetToolbar();
   abPolyline = std::make_shared< std::vector< Point_2 > >();
 }
 
@@ -546,20 +418,16 @@ GlobalPlanner::setPassSettings( const int forwardPasses, const int reversePasses
 void
 GlobalPlanner::setPassNumberTo( const int ) {}
 
-GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
-                                            MyMainWindow*                mainWindow,
-                                            KDDockWidgets::Location      location,
-                                            QMenu*                       menu,
-                                            GeographicConvertionWrapper* tmw,
-                                            Qt3DCore::QEntity*           rootEntity )
-    : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ), tmw( tmw ) {
+GlobalPlannerFactory::GlobalPlannerFactory(
+  QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, GeographicConvertionWrapper* tmw )
+    : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ) {
   qRegisterMetaType< Plan >();
   qRegisterMetaType< PlanGlobal >();
 }
 
 QNEBlock*
 GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw, rootEntity );
+  auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
   auto* b      = createBaseBlock( scene, object, id, true );
   object->moveToThread( thread );
 
@@ -577,6 +445,7 @@ GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr< Polygon_with_holes_2 > ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
-
+  b->addOutputPort( QStringLiteral( "Plan Polyline" ),
+                    QLatin1String( SIGNAL( planPolylineChanged( std::shared_ptr< std::vector< Point_2 > > ) ) ) );
   return b;
 }

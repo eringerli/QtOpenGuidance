@@ -303,9 +303,8 @@ public:
   BlockBase*    poseSimulation = nullptr;
   TerrainModel* terrainModel   = nullptr;
 
-  BlockBase* fieldManager       = nullptr;
-  BlockBase* globalPlanner      = nullptr;
-  BlockBase* globalPlannerModel = nullptr;
+  BlockBase* fieldManager  = nullptr;
+  BlockBase* globalPlanner = nullptr;
 
 private:
   Ui::SettingsDialog* ui = nullptr;
@@ -360,6 +359,7 @@ private:
   BlockFactory* xteGuidanceFactory             = nullptr;
   BlockFactory* sectionControlFactory          = nullptr;
   BlockFactory* pathPlannerModelFactory        = nullptr;
+  BlockFactory* globalPlannerModelFactory      = nullptr;
 
   BlockFactory* valueTransmissionBase64DataFactory = nullptr;
   BlockFactory* valueTransmissionNumberFactory     = nullptr;
