@@ -99,6 +99,7 @@ public:
   const QString getName() { return name; }
 
 public:
-  QObject* object = nullptr;
+  QObject* object  = nullptr;
+  QObject* object2 = nullptr;
   QString  typeString;
 };

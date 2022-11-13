@@ -89,7 +89,13 @@ QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* pa
   }
 }
 
-QNEBlock::~QNEBlock() { object->deleteLater(); }
+QNEBlock::~QNEBlock() {
+  object->deleteLater();
+
+  if( object2 ) {
+    object2->deleteLater();
+  }
+}
 
 QNEPort*
 QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags, bool embedded ) {

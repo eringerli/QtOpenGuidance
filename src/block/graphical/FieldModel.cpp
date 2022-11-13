@@ -1,0 +1,181 @@
+// Copyright( C ) 2020 Christian Riggenbach
+//
+// This program is free software:
+// you can redistribute it and / or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// ( at your option ) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY;
+// without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see < https : //www.gnu.org/licenses/>.
+
+#include "FieldModel.h"
+
+#include <QObject>
+
+#include <QQuaternion>
+#include <QVector2D>
+#include <QVector3D>
+
+#include <Qt3DCore/QAttribute>
+#include <Qt3DCore/QBuffer>
+#include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
+#include <Qt3DRender/QTexture>
+#include <Qt3DRender/QTextureWrapMode>
+
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QSphereMesh>
+#include <Qt3DExtras/QText2DEntity>
+#include <Qt3DExtras/QTextureMaterial>
+
+#include <QDebug>
+
+#include "CGAL/Kernel/global_functions_3.h"
+#include "CGAL/enum.h"
+#include "CGAL/number_utils_classes.h"
+#include "block/BlockBase.h"
+
+#include "qneblock.h"
+#include "qneport.h"
+
+#include "3d/BufferMesh.h"
+#include "3d/BufferMeshWithNormals.h"
+
+#include "helpers/cgalHelper.h"
+
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/Plan.h"
+
+#include "kinematic/PathPrimitive.h"
+#include "kinematic/PathPrimitiveArc.h"
+#include "kinematic/PathPrimitiveLine.h"
+#include "kinematic/PathPrimitiveRay.h"
+#include "kinematic/PathPrimitiveSegment.h"
+#include "kinematic/PathPrimitiveSequence.h"
+
+#include <QBrush>
+#include <QJsonObject>
+#include <QSharedPointer>
+#include <QVector>
+#include <cmath>
+#include <functional>
+#include <utility>
+
+FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity ) {
+  baseEntity          = new Qt3DCore::QEntity( rootEntity );
+  baseTransform       = new Qt3DCore::QTransform( baseEntity );
+  baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
+  baseEntity->addComponent( baseTransform );
+
+  perimeterEntity = new Qt3DCore::QEntity( baseEntity );
+  pointsEntity    = new Qt3DCore::QEntity( baseEntity );
+
+  perimeterEntity->setEnabled( false );
+  pointsEntity->setEnabled( false );
+
+  perimeterMesh = new BufferMesh( perimeterEntity );
+  perimeterMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::LineStrip );
+  perimeterEntity->addComponent( perimeterMesh );
+
+  pointsMesh = new BufferMesh( pointsEntity );
+  pointsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
+  pointsEntity->addComponent( pointsMesh );
+
+  perimeterMaterial = new Qt3DExtras::QPhongMaterial( perimeterEntity );
+  perimeterEntity->addComponent( perimeterMaterial );
+
+  pointsMaterial = new Qt3DExtras::QPhongMaterial( pointsEntity );
+  pointsEntity->addComponent( pointsMaterial );
+
+  refreshColors();
+}
+
+void
+FieldModel::toJSON( QJsonObject& json ) {
+  QJsonObject valuesObject;
+
+  valuesObject[QStringLiteral( "visible" )]        = visible;
+  valuesObject[QStringLiteral( "perimeterColor" )] = perimeterColor.name();
+  valuesObject[QStringLiteral( "pointsColor" )]    = pointsColor.name();
+
+  json[QStringLiteral( "values" )] = valuesObject;
+}
+
+void
+FieldModel::fromJSON( QJsonObject& json ) {
+  if( json[QStringLiteral( "values" )].isObject() ) {
+    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+
+    visible      = valuesObject[QStringLiteral( "visible" )].toBool( true );
+    perimeterColor = QColor( valuesObject[QStringLiteral( "perimeterColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+    pointsColor    = QColor( valuesObject[QStringLiteral( "pointsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
+
+    refreshColors();
+  }
+}
+
+void
+FieldModel::refreshColors() {
+  perimeterMaterial->setAmbient( perimeterColor );
+  pointsMaterial->setAmbient( pointsColor );
+}
+
+void
+FieldModel::setVisible( const bool visible ) {
+  this->visible = visible;
+  baseEntity->setEnabled( visible );
+}
+
+void
+FieldModel::setPoints( const std::vector< Epick::Point_3 >& pointsVector ) {
+  points.clear();
+
+  for( const auto& point : pointsVector ) {
+    points.push_back( toQVector3D( point ) );
+  }
+
+  pointsMesh->bufferUpdate( points );
+  pointsEntity->setEnabled( true );
+}
+
+void
+FieldModel::addPoint( const Eigen::Vector3d& point ) {
+  points.push_back( toQVector3D( point ) );
+
+  pointsMesh->bufferUpdate( points );
+  pointsEntity->setEnabled( true );
+}
+
+void
+FieldModel::clearPoints() {
+  points.clear();
+  pointsEntity->setEnabled( false );
+}
+
+void
+FieldModel::setField( std::shared_ptr< Polygon_with_holes_2 > field ) {
+  QVector< QVector3D > meshSegmentPoints;
+
+  for( const auto& vi : field->outer_boundary() ) {
+    meshSegmentPoints << toQVector3D( vi, 0.1f );
+  }
+
+  meshSegmentPoints.push_back( meshSegmentPoints.first() );
+  perimeterMesh->bufferUpdate( meshSegmentPoints );
+
+  perimeterEntity->setEnabled( true );
+}
+
+void
+FieldModel::clearField() {
+  perimeterEntity->setEnabled( false );
+}

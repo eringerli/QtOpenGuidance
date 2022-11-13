@@ -45,7 +45,7 @@ class FieldManager : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw );
+  explicit FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw );
 
   ~FieldManager() {}
 
@@ -98,6 +98,11 @@ Q_SIGNALS:
   void pointsGeneratedForFieldBoundaryChanged( NUMBER_SIGNATURE_SIGNAL );
   void pointsInFieldBoundaryChanged( NUMBER_SIGNATURE_SIGNAL );
 
+  void pointAdded( const Eigen::Vector3d& );
+  void pointsSet( const std::vector< Epick::Point_3 >& );
+  void pointsCleared();
+  void fieldCleared();
+
 public:
   Point_3            position    = Point_3( 0, 0, 0 );
   Eigen::Quaterniond orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
@@ -107,7 +112,6 @@ public:
 
 private:
   QWidget*                     mainWindow = nullptr;
-  Qt3DCore::QEntity*           rootEntity = nullptr;
   GeographicConvertionWrapper* tmw        = nullptr;
 
   std::vector< Epick::Point_3 > points;
@@ -125,24 +129,6 @@ private:
 
   std::shared_ptr< Polygon_with_holes_2 > currentField;
   double                                  currentAlpha = 0;
-
-  Qt3DCore::QEntity*          m_baseEntity        = nullptr;
-  Qt3DCore::QTransform*       m_baseTransform     = nullptr;
-  Qt3DCore::QEntity*          m_pointsEntity      = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity    = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity2   = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity3   = nullptr;
-  Qt3DCore::QEntity*          m_segmentsEntity4   = nullptr;
-  BufferMesh*                 m_pointsMesh        = nullptr;
-  BufferMesh*                 m_segmentsMesh      = nullptr;
-  BufferMesh*                 m_segmentsMesh2     = nullptr;
-  BufferMesh*                 m_segmentsMesh3     = nullptr;
-  BufferMesh*                 m_segmentsMesh4     = nullptr;
-  Qt3DExtras::QPhongMaterial* m_pointsMaterial    = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial  = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial2 = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial3 = nullptr;
-  Qt3DExtras::QPhongMaterial* m_segmentsMaterial4 = nullptr;
 };
 
 class FieldManagerFactory : public BlockFactory {

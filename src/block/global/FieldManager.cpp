@@ -18,6 +18,8 @@
 
 #include "FieldManager.h"
 
+#include "block/graphical/FieldModel.h"
+
 #include "ThreadWeaver/DebuggingAids"
 
 #include "qneblock.h"
@@ -49,66 +51,11 @@
 
 #include "helpers/GeoJsonHelper.h"
 
-FieldManager::FieldManager( QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-    : mainWindow( mainWindow ), tmw( tmw ) {
+FieldManager::FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : mainWindow( mainWindow ), tmw( tmw ) {
   ThreadWeaver::setDebugLevel( true, 0 );
 
-  // test for recording
-  {
-    m_baseEntity    = new Qt3DCore::QEntity( rootEntity );
-    m_baseTransform = new Qt3DCore::QTransform( m_baseEntity );
-    m_baseEntity->addComponent( m_baseTransform );
-
-    m_pointsEntity    = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity  = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity2 = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity3 = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity4 = new Qt3DCore::QEntity( m_baseEntity );
-    m_segmentsEntity->setEnabled( false );
-    m_segmentsEntity2->setEnabled( false );
-    m_segmentsEntity3->setEnabled( false );
-
-    m_pointsMesh = new BufferMesh( m_pointsEntity );
-    m_pointsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
-    m_pointsEntity->addComponent( m_pointsMesh );
-
-    m_segmentsMesh = new BufferMesh( m_segmentsEntity );
-    m_segmentsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::LineStrip );
-    m_segmentsEntity->addComponent( m_segmentsMesh );
-
-    m_segmentsMesh2 = new BufferMesh( m_segmentsEntity2 );
-    m_segmentsMesh2->view()->setPrimitiveType( Qt3DCore::QGeometryView::LineStrip );
-    m_segmentsEntity2->addComponent( m_segmentsMesh2 );
-
-    m_segmentsMesh3 = new BufferMesh( m_segmentsEntity3 );
-    m_segmentsMesh3->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
-    m_segmentsEntity3->addComponent( m_segmentsMesh3 );
-
-    m_segmentsMesh4 = new BufferMesh( m_segmentsEntity4 );
-    m_segmentsMesh4->view()->setPrimitiveType( Qt3DCore::QGeometryView::LineStrip );
-    m_segmentsEntity4->addComponent( m_segmentsMesh4 );
-
-    m_pointsMaterial    = new Qt3DExtras::QPhongMaterial( m_pointsEntity );
-    m_segmentsMaterial  = new Qt3DExtras::QPhongMaterial( m_segmentsEntity );
-    m_segmentsMaterial2 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity2 );
-    m_segmentsMaterial3 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity3 );
-    m_segmentsMaterial4 = new Qt3DExtras::QPhongMaterial( m_segmentsEntity4 );
-
-    m_pointsMaterial->setAmbient( Qt::yellow );
-    m_segmentsMaterial->setAmbient( Qt::white );
-    m_segmentsMaterial2->setAmbient( Qt::green );
-    m_segmentsMaterial3->setAmbient( Qt::blue );
-    m_segmentsMaterial4->setAmbient( Qt::red );
-
-    m_pointsEntity->addComponent( m_pointsMaterial );
-    m_segmentsEntity->addComponent( m_segmentsMaterial );
-    m_segmentsEntity2->addComponent( m_segmentsMaterial2 );
-    m_segmentsEntity3->addComponent( m_segmentsMaterial3 );
-    m_segmentsEntity4->addComponent( m_segmentsMaterial4 );
-  }
-
   // FIXME remove!
-  auto file = QFile( "/home/christian/Documents/PlatformIO/Projects/QtOpenGuidance/fields/test-8.geojson" );
+  auto file = QFile( "/home/christian/Schreibtisch/QtOpenGuidance/fields/test-8.geojson" );
   openFieldFromFile( file );
 }
 
@@ -162,12 +109,13 @@ FieldManager::setPoseLeftEdge( const Eigen::Vector3d& position, const Eigen::Qua
     } else {
       if( !recordOnRightEdgeOfImplement ) {
         if( recordNextPoint ) {
-          points.push_back( positionLeftEdgeOfImplement );
+          points.push_back( toPoint3( position ) );
           recordNextPoint = false;
           recalculateField();
         } else {
           if( recordContinous ) {
-            points.push_back( positionLeftEdgeOfImplement );
+            points.push_back( toPoint3( position ) );
+            Q_EMIT pointAdded( position );
             recordNextPoint = false;
             Q_EMIT pointsRecordedChanged( points.size(), CalculationOption::Option::None );
           }
@@ -186,12 +134,13 @@ FieldManager::setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Qu
     } else {
       if( recordOnRightEdgeOfImplement ) {
         if( recordNextPoint ) {
-          points.push_back( positionRightEdgeOfImplement );
+          points.push_back( toPoint3( position ) );
           recordNextPoint = false;
           recalculateField();
         } else {
           if( recordContinous ) {
-            points.push_back( positionRightEdgeOfImplement );
+            points.push_back( toPoint3( position ) );
+            Q_EMIT pointAdded( position );
             recordNextPoint = false;
             Q_EMIT pointsRecordedChanged( points.size(), CalculationOption::Option::None );
           }
@@ -299,28 +248,22 @@ FieldManager::openFieldFromFile( QFile& file ) {
 
           newField = true;
 
-          m_segmentsMesh2->bufferUpdate( positions );
-          m_segmentsEntity2->setEnabled( true );
-
           Q_EMIT fieldChanged( currentField );
         }
       } break;
 
       case GeoJsonHelper::GeometryType::MultiPoint: {
-        QVector< QVector3D > positions;
         points.clear();
 
         for( const auto& point : std::get< GeoJsonHelper::MultiPointType >( member.second ) ) {
           auto tmwPoint = tmw->Forward( point );
-          positions.push_back( toQVector3D( tmwPoint ) );
           points.emplace_back( toPoint3( tmwPoint ) );
         }
 
-        m_segmentsMesh3->bufferUpdate( positions );
-        m_segmentsEntity3->setEnabled( true );
-
         Q_EMIT pointsGeneratedForFieldBoundaryChanged( 0, CalculationOption::Option::None );
         Q_EMIT pointsRecordedChanged( points.size(), CalculationOption::Option::None );
+
+        Q_EMIT pointsSet( points );
 
         newRawPoints = true;
       } break;
@@ -340,6 +283,7 @@ FieldManager::openFieldFromFile( QFile& file ) {
 void
 FieldManager::newField() {
   points.clear();
+  Q_EMIT fieldCleared();
 }
 
 void
@@ -419,6 +363,8 @@ FieldManager::recordOnEdgeOfImplementChanged( const bool right ) {
 
 void
 FieldManager::recalculateField() {
+  Q_EMIT pointsSet( points );
+
   alphaShape();
 }
 
@@ -437,15 +383,6 @@ void
 FieldManager::alphaShapeFinished( const std::shared_ptr< Polygon_with_holes_2 >& field, const double /*alpha*/ ) {
   currentField = field;
 
-  QVector< QVector3D > meshSegmentPoints;
-
-  for( const auto& vi : field->outer_boundary() ) {
-    meshSegmentPoints << toQVector3D( vi, 0.1f );
-  }
-
-  meshSegmentPoints << meshSegmentPoints.first();
-  m_segmentsMesh4->bufferUpdate( meshSegmentPoints );
-
   Q_EMIT fieldChanged( currentField );
 }
 
@@ -463,10 +400,9 @@ FieldManager::fieldStatisticsChanged( const double pointsRecorded,
 
 QNEBlock*
 FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new FieldManager( mainWindow, rootEntity, tmw );
+  auto* object = new FieldManager( mainWindow, tmw );
   auto* b      = createBaseBlock( scene, object, id, true );
   object->moveToThread( thread );
-  addCompressedObject( object );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
@@ -477,11 +413,17 @@ FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Points Generated" ),
                     QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Points Boundary" ),
+                    QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
 
-  addCompressedSignal( QMetaMethod::fromSignal( &FieldManager::setPose ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &FieldManager::setPoseLeftEdge ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &FieldManager::setPoseRightEdge ) );
+  auto object2 = new FieldModel( rootEntity );
+  b->object2   = object2;
+
+  QObject::connect( object, &FieldManager::fieldChanged, object2, &FieldModel::setField );
+  QObject::connect( object, &FieldManager::fieldCleared, object2, &FieldModel::clearField );
+  QObject::connect( object, &FieldManager::pointAdded, object2, &FieldModel::addPoint );
+  QObject::connect( object, &FieldManager::pointsSet, object2, &FieldModel::setPoints );
+  QObject::connect( object, &FieldManager::pointsCleared, object2, &FieldModel::clearPoints );
 
   return b;
 }

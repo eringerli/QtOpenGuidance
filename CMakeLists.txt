@@ -405,6 +405,8 @@ addToUnifyGroupAndSources("${SOURCES_global}" "global")
 set(SOURCES_graphical
   src/block/graphical/CultivatedAreaModel.cpp
   src/block/graphical/CultivatedAreaModel.h
+  src/block/graphical/FieldModel.cpp
+  src/block/graphical/FieldModel.h
   src/block/graphical/GlobalPlannerModel.cpp
   src/block/graphical/GlobalPlannerModel.h
   src/block/graphical/PathPlannerModel.cpp
