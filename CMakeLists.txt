@@ -203,6 +203,15 @@ set(SOURCES_gui_toolbar
   src/gui/PassToolbar.h
   src/gui/SectionControlToolbar.cpp
   src/gui/SectionControlToolbar.h
+  src/gui/GuidanceTurningToolbar.ui
+  src/gui/GlobalPlannerToolbar.ui
+  src/gui/GuidanceToolbar.ui
+  src/gui/FieldsToolbar.ui
+  src/gui/CameraToolbar.ui
+  src/gui/PassToolbar.ui
+  src/gui/NewOpenSaveToolbar.ui
+  src/gui/FieldsOptimitionToolbar.ui
+  src/gui/SettingsDialog.ui
   )
 addToUnifyGroupAndSources("${SOURCES_gui_toolbar}" "gui")
 
@@ -230,6 +239,13 @@ set(SOURCES_gui_dock
   src/gui/dock/ValueDock.h
   src/gui/dock/XteDock.cpp
   src/gui/dock/XteDock.h
+  src/gui/dock/SliderDock.ui
+  src/gui/dock/ValueDock.ui
+  src/gui/dock/ActionDock.ui
+  src/gui/dock/ThreeValuesDock.ui
+  src/gui/dock/PlotDock.ui
+  src/gui/dock/XteDock.ui
+
   )
 addToUnifyGroupAndSources("${SOURCES_gui_dock}" "gui")
 
