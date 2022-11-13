@@ -78,8 +78,6 @@ public:
   QColor terrainColor = QColor( Qt::green );
 
 private:
-  Qt3DCore::QEntity*          rootEntity          = nullptr;
-  Qt3DCore::QTransform*       rootEntityTransform = nullptr;
   Qt3DCore::QEntity*          baseEntity          = nullptr;
   Qt3DCore::QTransform*       baseTransform       = nullptr;
   Qt3DCore::QEntity*          linesEntity         = nullptr;

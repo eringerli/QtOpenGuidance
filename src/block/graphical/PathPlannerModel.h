@@ -89,10 +89,8 @@ public:
   QColor bisectorsColor = QColor( Qt::blue );
 
 private:
-  Qt3DCore::QEntity*    rootEntity          = nullptr;
-  Qt3DCore::QTransform* rootEntityTransform = nullptr;
-
-  Qt3DCore::QEntity* baseEntity = nullptr;
+  Qt3DCore::QEntity*    baseEntity          = nullptr;
+  Qt3DCore::QTransform* baseEntityTransform = nullptr;
 
   Qt3DCore::QEntity*          arcEntity         = nullptr;
   Qt3DCore::QEntity*          linesEntity       = nullptr;

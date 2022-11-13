@@ -38,6 +38,9 @@ Q_SIGNALS:
 
   void recordOnEdgeOfImplementChanged( const bool right );
 
+private slots:
+  void on_pbEdgeOfImplement_clicked( bool checked );
+
 private:
   Ui::FieldsToolbar* ui        = nullptr;
   QBoxLayout*        boxLayout = nullptr;

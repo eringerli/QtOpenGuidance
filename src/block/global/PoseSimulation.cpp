@@ -299,7 +299,6 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
 
 void
 PoseSimulation::emitConfigSignals() {
-  qDebug() << "PoseSimulation::emitConfigSignals";
   Q_EMIT simulatorValuesChanged( a,
                                  b,
                                  c,
@@ -414,8 +413,6 @@ PoseSimulation::setInterval( int interval ) {
 
 void
 PoseSimulation::setSimulation( bool enabled ) {
-  qDebug() << "PoseSimulation::setSimulation" << enabled;
-
   m_enabled = enabled;
 
   if( enabled ) {
@@ -586,7 +583,6 @@ PoseSimulation::openTIN() {
 void
 PoseSimulation::openTINFromFile( QFile& file ) {
   auto geoJsonHelper = GeoJsonHelper( file );
-  geoJsonHelper.print();
 
   std::vector< Point_3 > points;
 

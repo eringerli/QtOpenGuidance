@@ -131,7 +131,7 @@ FieldOptimitionController::~FieldOptimitionController() {
     seqPointer->stop( nullptr );
   }
 
-  std::cout << "FieldOptimitionController::~~~FieldOptimitionController " << this << std::endl;
+  std::cout << "FieldOptimitionController::~FieldOptimitionController " << this << std::endl;
 }
 
 void

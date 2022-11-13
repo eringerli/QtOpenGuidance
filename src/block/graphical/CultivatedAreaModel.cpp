@@ -68,7 +68,7 @@ CultivatedAreaModel::createEntities() {
 }
 
 CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar )
-    : m_rootEntity( rootEntity ), newOpenSaveToolbar( newOpenSaveToolbar ) {
+    : m_rootEntity( rootEntity ) {
   // plug into new/open/save toolbar
   newCultivatedAreaAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Cultivated Area" ) );
   QObject::connect( newCultivatedAreaAction, &QAction::triggered, this, &CultivatedAreaModel::newCultivatedArea );

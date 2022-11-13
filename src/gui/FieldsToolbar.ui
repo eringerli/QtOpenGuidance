@@ -83,22 +83,17 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="focusPolicy">
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../../res/ressources.qrc">
-       <normaloff>:/icons/BoundaryRight.png</normaloff>
-       <normalon>:/icons/BoundaryLeft.png</normalon>:/icons/BoundaryRight.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
+      <string>|⟵</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -107,8 +102,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../res/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

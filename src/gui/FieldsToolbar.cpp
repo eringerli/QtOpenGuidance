@@ -33,3 +33,12 @@ FieldsToolbar::FieldsToolbar( QWidget* parent ) : QGroupBox( parent ), ui( new U
 }
 
 FieldsToolbar::~FieldsToolbar() { delete ui; }
+
+void
+FieldsToolbar::on_pbEdgeOfImplement_clicked( bool checked ) {
+  if( checked ) {
+    ui->pbEdgeOfImplement->setText( "⟶|" );
+  } else {
+    ui->pbEdgeOfImplement->setText( "|⟵" );
+  }
+}

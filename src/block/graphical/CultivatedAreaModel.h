@@ -73,8 +73,6 @@ private:
   void                createEntities();
 
 private:
-  NewOpenSaveToolbar* newOpenSaveToolbar;
-
   QAction* newCultivatedAreaAction;
   QAction* openCultivatedAreaAction;
   QAction* saveCultivatedAreaAction;

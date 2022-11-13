@@ -69,11 +69,11 @@
 #include <functional>
 #include <utility>
 
-PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) : rootEntity( rootEntity ) {
+PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) {
   baseEntity          = new Qt3DCore::QEntity( rootEntity );
-  rootEntityTransform = new Qt3DCore::QTransform( rootEntity );
-  rootEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );
-  baseEntity->addComponent( rootEntityTransform );
+  baseEntityTransform = new Qt3DCore::QTransform( baseEntity );
+  baseEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );
+  baseEntity->addComponent( baseEntityTransform );
 
   arcEntity       = new Qt3DCore::QEntity( baseEntity );
   linesEntity     = new Qt3DCore::QEntity( baseEntity );
@@ -345,7 +345,7 @@ PathPlannerModel::setPose( const Eigen::Vector3d&           position,
   if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     this->position    = position;
     this->orientation = orientation;
-    rootEntityTransform->setTranslation( QVector3D( 0, 0, position.z() ) );
+    baseEntityTransform->setTranslation( QVector3D( 0, 0, position.z() ) );
 
     if( visible ) {
       if( !plan.plan->empty() ) {

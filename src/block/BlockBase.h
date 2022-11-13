@@ -67,8 +67,6 @@ public:
 
   virtual QString getCategoryOfFactory() = 0;
 
-  //    virtual QString getDescriptionOfFactory() = 0;
-
   void addToCombobox( QComboBox* combobox );
 
   void addToTreeWidget( QTreeWidget* treeWidget );
@@ -81,8 +79,6 @@ public:
 
 public:
   QThread* thread = nullptr;
-  //  QThread* thread,
-  //  , thread( thread )
 
 protected:
   static const QColor modelColor;

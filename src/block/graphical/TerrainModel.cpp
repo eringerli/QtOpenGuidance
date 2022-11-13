@@ -97,11 +97,11 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )
 
-TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) : rootEntity( rootEntity ) {
+TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) {
   baseEntity          = new Qt3DCore::QEntity( rootEntity );
-  rootEntityTransform = new Qt3DCore::QTransform( rootEntity );
-  rootEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );
-  baseEntity->addComponent( rootEntityTransform );
+  baseTransform       = new Qt3DCore::QTransform( baseEntity );
+  baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
+  baseEntity->addComponent( baseTransform );
 
   linesEntity     = new Qt3DCore::QEntity( baseEntity );
   terrainEntity   = new Qt3DCore::QEntity( baseEntity );
@@ -168,11 +168,6 @@ TerrainModel::setSurface( std::shared_ptr< SurfaceMesh_3 > surfaceMesh ) {
   auto fnormals = surfaceMesh->add_property_map< face_descriptor, Vector_3 >( "f:normals", CGAL::NULL_VECTOR ).first;
 
   PMP::compute_normals( *surfaceMesh, vnormals, fnormals );
-  std::cout << "Vertex normals :" << std::endl;
-
-  for( vertex_descriptor vd : vertices( *surfaceMesh ) ) {
-    std::cout << vnormals[vd] << std::endl;
-  }
 
   Eigen::IOFormat CommaInitFmt( Eigen::StreamPrecision, Eigen::DontAlignCols, ", ", ", ", "", "", "(", ")" );
 
@@ -180,24 +175,16 @@ TerrainModel::setSurface( std::shared_ptr< SurfaceMesh_3 > surfaceMesh ) {
 
   QVector< QVector3D > trianglesWithNormals;
 
-  //  std::cout << "Face normals :" << std::endl;
-
   for( face_descriptor fd : faces( *surfaceMesh ) ) {
     auto       normal       = fnormals[fd];
     const auto normalVector = toQVector3D( normal );
 
-    //    std::vector<QVector3D> points;
     for( vertex_descriptor vd : CGAL::vertices_around_face( surfaceMesh->halfedge( fd ), *surfaceMesh ) ) {
-      //       points.emplace_back(convertPoint3ToQVector3D( get( ppm, vd ) ));
       trianglesWithNormals << toQVector3D( get( ppm, vd ) );
-      //      trianglesWithNormals << convertVector3ToQVector3D(vnormals[vd]);
       trianglesWithNormals << normalVector;
     }
 
     auto quaternion = Eigen::Quaterniond::FromTwoVectors( Eigen::Vector3d( 0, 0, 1 ), toEigenVector( normal ) );
-
-    //    std::cout << "vector: " << normal << " Euler: " << ( quaternionToTaitBryan(
-    //    quaternion ) * 180 / M_PI ).format( CommaInitFmt ) << std::endl;
   }
 
   terrainMesh->bufferUpdate( trianglesWithNormals );
@@ -208,8 +195,6 @@ TerrainModel::setSurface( std::shared_ptr< SurfaceMesh_3 > surfaceMesh ) {
   for( const auto& edge : surfaceMesh->edges() ) {
     auto point1 = surfaceMesh->point( surfaceMesh->vertex( edge, 0 ) );
     auto point2 = surfaceMesh->point( surfaceMesh->vertex( edge, 1 ) );
-
-    //    std::cout << "line: " << point1 << ", " << point2 << std::endl;
 
     lines << toQVector3D( point1 );
     lines << toQVector3D( point2 );
