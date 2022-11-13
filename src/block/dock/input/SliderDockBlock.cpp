@@ -130,7 +130,6 @@ SliderDockBlock::setValue( double value ) {
 
 void
 SliderDockBlock::valueChangedProxy( double value ) {
-  qDebug() << "SliderDockBlock::valueChangedProxy" << value;
   Q_EMIT valueChanged( value, CalculationOption::Option::None );
 }
 
