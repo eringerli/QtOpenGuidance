@@ -163,8 +163,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
   // initialise the wrapper for the geographic conversion, so all offsets are the same
   // application-wide
-  geographicConvertionWrapperGuidance  = new GeographicConvertionWrapper();
-  geographicConvertionWrapperSimulator = new GeographicConvertionWrapper();
+  geographicConvertionWrapper = new GeographicConvertionWrapper();
 
   ui->setupUi( this );
 
@@ -333,7 +332,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapperSimulator );
+  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
 
@@ -382,12 +381,15 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
            poseSimulationTmp,
            &PoseSimulation::setSteerAngle,
            Qt::QueuedConnection );
-  connect(
-    sdlInputPollingThread, &SdlInputPollingThread::velocityChanged, poseSimulationTmp, &PoseSimulation::setVelocity, Qt::QueuedConnection );
+  connect( sdlInputPollingThread,
+           &SdlInputPollingThread::velocityChanged,
+           poseSimulationTmp,
+           &PoseSimulation::setVelocity,
+           Qt::QueuedConnection );
 #endif
 
   // guidance
-  fieldManagerFactory = new FieldManagerFactory( calculationsThread, mainWindow, backgroundEntity, geographicConvertionWrapperGuidance );
+  fieldManagerFactory = new FieldManagerFactory( calculationsThread, mainWindow, foregroundEntity, geographicConvertionWrapper );
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
@@ -442,7 +444,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   pathPlannerModelFactory = new PathPlannerModelFactory( qt3dThread, middlegroundEntity );
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapperGuidance );
+  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapper );
   poseSynchroniserFactory            = new PoseSynchroniserFactory( calculationsThread );
   extendedKalmanFilterFactory        = new ExtendedKalmanFilterFactory( calculationsThread );
   trailerModelFactory                = new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR );
@@ -718,6 +720,8 @@ SettingsDialog::~SettingsDialog() {
   xteGuidanceFactory->deleteLater();
   globalPlannerModelFactory->deleteLater();
   pathPlannerModelFactory->deleteLater();
+
+  delete geographicConvertionWrapper;
 }
 
 QGraphicsScene*
@@ -1722,12 +1726,12 @@ SettingsDialog::on_pbMeterDefaults_clicked() {
 
 void
 SettingsDialog::on_rbCrsSimulatorTransverseMercator_toggled( bool checked ) {
-  geographicConvertionWrapperSimulator->useTM = checked;
+  geographicConvertionWrapper->useTM = checked;
 }
 
 void
 SettingsDialog::on_rbCrsGuidanceTransverseMercator_toggled( bool checked ) {
-  geographicConvertionWrapperGuidance->useTM = checked;
+  geographicConvertionWrapper->useTM = checked;
 }
 
 void

@@ -309,8 +309,7 @@ public:
 private:
   Ui::SettingsDialog* ui = nullptr;
 
-  GeographicConvertionWrapper* geographicConvertionWrapperGuidance  = nullptr;
-  GeographicConvertionWrapper* geographicConvertionWrapperSimulator = nullptr;
+  GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
 
   BlockFactory* poseSimulationFactory = nullptr;
 
