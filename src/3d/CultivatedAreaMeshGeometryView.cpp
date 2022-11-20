@@ -49,7 +49,7 @@ CultivatedAreaMeshGeometryView::addPointRight( const Point_3 point, const QVecto
 
 void
 CultivatedAreaMeshGeometryView::clear() {
-  qDebug() << "CultivatedAreaMesh::clear()";
+  qDebug() << "CultivatedAreaMeshGeometryView::clear()";
   static_cast< CultivatedAreaMeshGeometry* >( geometry() )->clear();
 }
 
@@ -62,4 +62,9 @@ CultivatedAreaMeshGeometryView::addTrackMesh( CultivatedAreaMeshGeometryView* tr
 void
 CultivatedAreaMeshGeometryView::optimise() {
   static_cast< CultivatedAreaMeshGeometry* >( geometry() )->optimise();
+}
+
+size_t
+CultivatedAreaMeshGeometryView::numPoints() const {
+  return static_cast< CultivatedAreaMeshGeometry* >( geometry() )->numPoints();
 }

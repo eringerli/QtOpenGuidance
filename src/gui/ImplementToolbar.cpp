@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see < https : //www.gnu.org/licenses/>.
 
-#include "SectionControlToolbar.h"
+#include "ImplementToolbar.h"
 
 #include "block/sectionControl/Implement.h"
 #include "block/sectionControl/ImplementSection.h"
@@ -28,7 +28,7 @@
 #include <QString>
 #include <QToolButton>
 
-SectionControlToolbar::SectionControlToolbar( Implement* implement, QWidget* parent ) : QGroupBox( parent ), implement( implement ) {
+ImplementToolbar::ImplementToolbar( Implement* implement, QWidget* parent ) : QGroupBox( parent ), implement( implement ) {
   setContentsMargins( 0, 0, 0, 0 );
 
   setMinimumSize( 60, 60 );
@@ -56,12 +56,12 @@ SectionControlToolbar::SectionControlToolbar( Implement* implement, QWidget* par
   pbAuto->setFocusPolicy( Qt::NoFocus );
   QObject::connect( pbAuto, SIGNAL( toggled( bool ) ), this, SLOT( autoToggled( bool ) ) );
 
-  QObject::connect( implement, &Implement::implementChanged, this, &SectionControlToolbar::implementChanged );
-  QObject::connect( implement, &Implement::sectionsChanged, this, &SectionControlToolbar::sectionsChanged );
+  QObject::connect( implement, &Implement::implementChanged, this, &ImplementToolbar::implementChanged );
+  QObject::connect( implement, &Implement::sectionsChanged, this, &ImplementToolbar::sectionsChanged );
 }
 
 QToolButton*
-SectionControlToolbar::addButtonToVector( const QString& name ) {
+ImplementToolbar::addButtonToVector( const QString& name ) {
   auto* button = new QToolButton( this );
   button->setText( name );
   buttons.push_back( button );
@@ -69,7 +69,7 @@ SectionControlToolbar::addButtonToVector( const QString& name ) {
 }
 
 void
-SectionControlToolbar::addSection( const QString& name ) {
+ImplementToolbar::addSection( const QString& name ) {
   if( horizontal ) {
     int currentCol = gridLayout->columnCount();
     gridLayout->addWidget( addButtonToVector( name ), 0, currentCol );
@@ -82,8 +82,8 @@ SectionControlToolbar::addSection( const QString& name ) {
 }
 
 void
-SectionControlToolbar::implementChanged( const QPointer< Implement >& ) {
-  if( this != qobject_cast< SectionControlToolbar* >( sender() ) ) {
+ImplementToolbar::implementChanged( const QPointer< Implement >& ) {
+  if( this != qobject_cast< ImplementToolbar* >( sender() ) ) {
     size_t numButtons = implement->sections.size() > 2 ? implement->sections.size() * 2 : ( implement->sections.size() - 1 ) * 2;
 
     static bool lastHorizontal = true;
@@ -153,25 +153,14 @@ SectionControlToolbar::implementChanged( const QPointer< Implement >& ) {
 }
 
 void
-SectionControlToolbar::sectionsChanged() {
+ImplementToolbar::sectionsChanged() {
   //  if( this != qobject_cast<SectionControlToolbar*>( sender() ) ) {
 
   //  }
 }
 
 void
-SectionControlToolbar::setDockLocation( Qt::DockWidgetArea area ) {
-  if( area == Qt::NoDockWidgetArea ) {
-    return;
-  }
-
-  horizontal = !( area == Qt::LeftDockWidgetArea || area == Qt::RightDockWidgetArea );
-
-  implementChanged( implement );
-}
-
-void
-SectionControlToolbar::forceOnOffToggled( bool checked ) {
+ImplementToolbar::forceOnOffToggled( bool checked ) {
   auto* clickedButton = qobject_cast< QToolButton* >( sender() );
 
   if( clickedButton != nullptr ) {
@@ -227,7 +216,7 @@ SectionControlToolbar::forceOnOffToggled( bool checked ) {
 }
 
 void
-SectionControlToolbar::autoToggled( bool checked ) {
+ImplementToolbar::autoToggled( bool checked ) {
   auto* clickedButton = qobject_cast< QToolButton* >( sender() );
 
   if( clickedButton != nullptr ) {
@@ -243,4 +232,10 @@ SectionControlToolbar::autoToggled( bool checked ) {
 
     implement->emitSectionsChanged();
   }
+}
+
+void
+ImplementToolbar::resizeEvent( QResizeEvent* event ) {
+  horizontal = ( event->size().width() > event->size().height() );
+  implementChanged( implement );
 }

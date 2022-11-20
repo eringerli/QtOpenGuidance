@@ -111,7 +111,7 @@ CultivatedAreaModel::setPose( const Eigen::Vector3d&           position,
 
           mesh->addPoints( positionCorrectedLeft, positionCorrectedRight, normalOfQuaternion );
 
-          if( mesh->vertexCount() > 1000 ) {
+          if( mesh->numPoints() > 1000 ) {
             mesh->optimise();
             sectionMeshes.at( i ) = createNewMesh();
 
@@ -131,7 +131,7 @@ CultivatedAreaModel::setImplement( const QPointer< Implement >& implement ) {
 
     for( auto& mesh : sectionMeshes ) {
       if( mesh != nullptr ) {
-        if( mesh->vertexCount() > 3 ) {
+        if( mesh->numPoints() > 3 ) {
           mesh->optimise();
         } else {
           mesh->setEnabled( false );
@@ -179,8 +179,6 @@ CultivatedAreaModel::createNewMesh() {
   auto* mesh = new CultivatedAreaMesh( entity );
   entity->addComponent( mesh );
 
-  QObject::connect( entity, &QObject::deleteLater, mesh, &QObject::deleteLater );
-
   return mesh;
 }
 
@@ -199,7 +197,7 @@ CultivatedAreaModel::setSections() {
 
       if( ( sectionStates.at( i ) = implement->isSectionOn( i ) ) ) {
       } else {
-        if( sectionMeshes.at( i )->vertexCount() > 3 ) {
+        if( sectionMeshes.at( i )->numPoints() > 3 ) {
           sectionMeshes.at( i )->optimise();
           sectionMeshes.at( i ) = createNewMesh();
         } else {
@@ -217,21 +215,20 @@ CultivatedAreaModel::newCultivatedArea() {
   m_baseEntity->setEnabled( false );
   m_layer->setEnabled( false );
 
-  //  for(auto& child : m_baseEntity->children()){
-  //    auto* entity = qobject_cast<Qt3DCore::QEntity*>(child);
-  //    if( entity != nullptr){
-  //      entity->setEnabled(false);
-  //    }
-  //  }
+  for( auto& child : m_baseEntity->children() ) {
+    auto* entity = qobject_cast< Qt3DCore::QEntity* >( child );
+    if( entity != nullptr ) {
+      entity->setEnabled( false );
+    }
+  }
 
   m_baseEntity->deleteLater();
 
   createEntities();
   Q_EMIT layerChanged( m_layer );
 
-  for( auto& mesh : sectionMeshes ) {
-    mesh = nullptr;
-  }
+  setImplement( implement );
+  setSections();
 
   m_baseEntity->setEnabled( true );
 }

@@ -27,7 +27,7 @@
 class MyMainWindow;
 class ImplementSection;
 class ImplementBlockModel;
-class SectionControlToolbar;
+class ImplementToolbar;
 
 #include <kddockwidgets/DockWidget.h>
 #include <kddockwidgets/KDDockWidgets.h>
@@ -62,7 +62,7 @@ public Q_SLOTS:
 
 public:
   KDDockWidgets::DockWidget* dock   = nullptr;
-  SectionControlToolbar*     widget = nullptr;
+  ImplementToolbar*          widget = nullptr;
 
   std::vector< ImplementSection* > sections;
 

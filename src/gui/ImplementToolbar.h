@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "kddockwidgets/KDDockWidgets.h"
 #include <QWidget>
 
 #include <QGroupBox>
@@ -27,22 +28,24 @@ class QGridLayout;
 class QLabel;
 class QToolButton;
 
-class SectionControlToolbar : public QGroupBox {
+class ImplementToolbar : public QGroupBox {
   Q_OBJECT
 
 public:
-  explicit SectionControlToolbar( Implement* implement, QWidget* parent = nullptr );
+  explicit ImplementToolbar( Implement* implement, QWidget* parent = nullptr );
 
 Q_SIGNALS:
 
 public Q_SLOTS:
   void sectionsChanged();
   void implementChanged( const QPointer< Implement >& );
-  void setDockLocation( const Qt::DockWidgetArea area );
 
 private Q_SLOTS:
   void forceOnOffToggled( const bool );
   void autoToggled( const bool );
+
+protected:
+  void resizeEvent( QResizeEvent* event ) override;
 
 private:
   QToolButton* addButtonToVector( const QString& name );

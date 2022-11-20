@@ -63,3 +63,8 @@ void
 CultivatedAreaMesh::optimise() {
   static_cast< CultivatedAreaMeshGeometryView* >( view() )->optimise();
 }
+
+size_t
+CultivatedAreaMesh::numPoints() const {
+  return static_cast< CultivatedAreaMeshGeometryView* >( view() )->numPoints();
+}

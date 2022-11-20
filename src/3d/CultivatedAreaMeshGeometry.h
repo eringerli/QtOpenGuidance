@@ -47,6 +47,8 @@ public:
 
   void optimise();
 
+  size_t numPoints() const;
+
 private:
   void addPointLeftWithoutUpdate( const Point_3 point, const QVector3D normalVector );
   void addPointRightWithoutUpdate( const Point_3 point, const QVector3D normalVector );

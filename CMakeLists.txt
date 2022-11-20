@@ -201,8 +201,8 @@ set(SOURCES_gui_toolbar
   src/gui/NewOpenSaveToolbar.h
   src/gui/PassToolbar.cpp
   src/gui/PassToolbar.h
-  src/gui/SectionControlToolbar.cpp
-  src/gui/SectionControlToolbar.h
+  src/gui/ImplementToolbar.cpp
+  src/gui/ImplementToolbar.h
   src/gui/GuidanceTurningToolbar.ui
   src/gui/GlobalPlannerToolbar.ui
   src/gui/GuidanceToolbar.ui

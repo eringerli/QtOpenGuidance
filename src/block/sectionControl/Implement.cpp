@@ -26,7 +26,7 @@
 #include <QAction>
 #include <QMenu>
 
-#include "gui/SectionControlToolbar.h"
+#include "gui/ImplementToolbar.h"
 #include "gui/model/ImplementBlockModel.h"
 
 #include "qneblock.h"
@@ -36,7 +36,7 @@
 
 Implement::Implement( const QString& uniqueName, MyMainWindow* mainWindow, KDDockWidgets::DockWidget** firstDock )
     : BlockBase(), firstDock( firstDock ) {
-  widget = new SectionControlToolbar( this, mainWindow );
+  widget = new ImplementToolbar( this, mainWindow );
   dock   = new KDDockWidgets::DockWidget( uniqueName );
 
   // add section 0: the section to control them all

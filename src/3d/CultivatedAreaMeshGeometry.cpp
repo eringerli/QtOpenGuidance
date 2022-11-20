@@ -317,6 +317,11 @@ CultivatedAreaMeshGeometry::optimise() {
   qDebug() << "CultivatedAreaMeshGeometry::optimise" << trackPointsLeft->size() << trackPointsRight->size();
 }
 
+size_t
+CultivatedAreaMeshGeometry::numPoints() const {
+  return trackPointsLeft->size() + trackPointsRight->size();
+}
+
 void
 CultivatedAreaMeshGeometry::simplifyPolylineResultLeft( std::shared_ptr< std::vector< Point_3 > >   resultPoints,
                                                         std::shared_ptr< std::vector< QVector3D > > resultNormals,
@@ -408,7 +413,7 @@ void
 CultivatedAreaMeshGeometry::simplifyPolylineResultRight( std::shared_ptr< std::vector< Point_3 > >   resultPoints,
                                                          std::shared_ptr< std::vector< QVector3D > > resultNormals,
                                                          const double                                maxDeviation ) {
-  std::cout << "CultivatedAreaMeshGeometry::simplifyPolylineResultLeft " << trackPointsRight->size() << " -> " << resultPoints->size()
+  std::cout << "CultivatedAreaMeshGeometry::simplifyPolylineResultRight " << trackPointsRight->size() << " -> " << resultPoints->size()
             << std::endl;
 
   trackPointsRight  = resultPoints;

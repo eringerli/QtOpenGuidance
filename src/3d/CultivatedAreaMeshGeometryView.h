@@ -47,4 +47,6 @@ public:
   void addTrackMesh( CultivatedAreaMeshGeometryView* trackMesh );
 
   void optimise();
+
+  size_t numPoints() const;
 };
