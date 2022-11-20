@@ -219,12 +219,8 @@ class PoseSimulationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PoseSimulationFactory( QThread*                     thread,
-                         QWidget*                     mainWindow,
-                         GeographicConvertionWrapper* geographicConvertionWrapper )
-      : BlockFactory( thread )
-      , mainWindow( mainWindow )
-      , geographicConvertionWrapper( geographicConvertionWrapper ) {}
+  PoseSimulationFactory( QThread* thread, QWidget* mainWindow, GeographicConvertionWrapper* geographicConvertionWrapper )
+      : BlockFactory( thread ), mainWindow( mainWindow ), geographicConvertionWrapper( geographicConvertionWrapper ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Pose Simulation" ); }
 

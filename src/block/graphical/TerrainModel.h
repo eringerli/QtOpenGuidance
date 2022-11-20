@@ -78,14 +78,14 @@ public:
   QColor terrainColor = QColor( Qt::green );
 
 private:
-  Qt3DCore::QEntity*          baseEntity          = nullptr;
-  Qt3DCore::QTransform*       baseTransform       = nullptr;
-  Qt3DCore::QEntity*          linesEntity         = nullptr;
-  Qt3DCore::QEntity*          terrainEntity       = nullptr;
-  BufferMesh*                 linesMesh           = nullptr;
-  BufferMeshWithNormals*      terrainMesh         = nullptr;
-  Qt3DExtras::QPhongMaterial* linesMaterial       = nullptr;
-  Qt3DExtras::QPhongMaterial* terrainMaterial     = nullptr;
+  Qt3DCore::QEntity*          baseEntity      = nullptr;
+  Qt3DCore::QTransform*       baseTransform   = nullptr;
+  Qt3DCore::QEntity*          linesEntity     = nullptr;
+  Qt3DCore::QEntity*          terrainEntity   = nullptr;
+  BufferMesh*                 linesMesh       = nullptr;
+  BufferMeshWithNormals*      terrainMesh     = nullptr;
+  Qt3DExtras::QPhongMaterial* linesMaterial   = nullptr;
+  Qt3DExtras::QPhongMaterial* terrainMaterial = nullptr;
 
 private:
 };

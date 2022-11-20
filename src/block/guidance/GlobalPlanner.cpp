@@ -75,9 +75,7 @@ GlobalPlanner::~GlobalPlanner() {
 }
 
 void
-GlobalPlanner::setPose( const Eigen::Vector3d&           position,
-                        const Eigen::Quaterniond&        orientation,
-                        const CalculationOption::Options options ) {
+GlobalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::Option::NoPlanner ) ) {
     this->position    = toPoint3( position );
     this->orientation = orientation;
@@ -177,8 +175,7 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
   if( polyline->size() > 2 ) {
     Q_EMIT setToolbarToAdditionalPoint();
 
-    plan.resetPlanWith(
-      make_shared< PathPrimitiveSequence >( *polyline, std::sqrt( implementSegment.squared_length() ), true, 0 ) );
+    plan.resetPlanWith( make_shared< PathPrimitiveSequence >( *polyline, std::sqrt( implementSegment.squared_length() ), true, 0 ) );
 
     Q_EMIT planChanged( plan );
     Q_EMIT planPolylineChanged( polyline );

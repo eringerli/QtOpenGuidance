@@ -98,13 +98,13 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )
 
 TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) {
-  baseEntity          = new Qt3DCore::QEntity( rootEntity );
-  baseTransform       = new Qt3DCore::QTransform( baseEntity );
+  baseEntity    = new Qt3DCore::QEntity( rootEntity );
+  baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
   baseEntity->addComponent( baseTransform );
 
-  linesEntity     = new Qt3DCore::QEntity( baseEntity );
-  terrainEntity   = new Qt3DCore::QEntity( baseEntity );
+  linesEntity   = new Qt3DCore::QEntity( baseEntity );
+  terrainEntity = new Qt3DCore::QEntity( baseEntity );
 
   linesEntity->setEnabled( false );
   terrainEntity->setEnabled( false );

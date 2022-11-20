@@ -381,15 +381,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
            poseSimulationTmp,
            &PoseSimulation::setSteerAngle,
            Qt::QueuedConnection );
-  connect( sdlInputPollingThread,
-           &SdlInputPollingThread::velocityChanged,
-           poseSimulationTmp,
-           &PoseSimulation::setVelocity,
-           Qt::QueuedConnection );
+  connect(
+    sdlInputPollingThread, &SdlInputPollingThread::velocityChanged, poseSimulationTmp, &PoseSimulation::setVelocity, Qt::QueuedConnection );
 #endif
 
   // guidance
-  fieldManagerFactory = new FieldManagerFactory( calculationsThread, mainWindow, foregroundEntity, geographicConvertionWrapper );
+  fieldManagerFactory     = new FieldManagerFactory( calculationsThread, mainWindow, foregroundEntity, geographicConvertionWrapper );
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
@@ -432,7 +429,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
   localPlannerFactory    = new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( calculationsThread );
-  xteGuidanceFactory             = new XteGuidanceFactory( calculationsThread );
+  xteGuidanceFactory     = new XteGuidanceFactory( calculationsThread );
   sectionControlFactory =
     new SectionControlFactory( qt3dThread,
                                mainWindow,

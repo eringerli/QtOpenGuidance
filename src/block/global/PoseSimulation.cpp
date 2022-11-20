@@ -71,9 +71,9 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper
   rearLeftTire   = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
   rearRightTire  = std::make_unique< VehicleDynamics::TireLinear >( 3500 * 180 / M_PI );
 
-  vehicleDynamics = std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >(
-    frontLeftTire.get(),
-    /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
+  vehicleDynamics =
+    std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >( frontLeftTire.get(),
+                                                               /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
 }
 
 void
@@ -137,7 +137,7 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
 
     {
       if( tin ) {
-        auto point = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
+        auto point     = Point_3( state( int( ThreeWheeledFRHRL::StateNames::X ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Y ) ),
                               state( int( ThreeWheeledFRHRL::StateNames::Z ) ) );
         auto foundFace = tin->locate( point, lastFoundFace );

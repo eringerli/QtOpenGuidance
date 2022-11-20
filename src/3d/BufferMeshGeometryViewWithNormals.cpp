@@ -29,8 +29,7 @@
 #include <Qt3DCore/QAttribute>
 #include <Qt3DCore/QBuffer>
 
-BufferMeshGeometryViewWithNormals::BufferMeshGeometryViewWithNormals( Qt3DCore::QNode* parent )
-    : Qt3DCore::QGeometryView( parent ) {
+BufferMeshGeometryViewWithNormals::BufferMeshGeometryViewWithNormals( Qt3DCore::QNode* parent ) : Qt3DCore::QGeometryView( parent ) {
   auto* geometry = new BufferMeshGeometryWithNormals( this );
   QGeometryView::setGeometry( geometry );
 }

@@ -80,14 +80,14 @@ public:
   QColor pointsColor    = QColor( Qt::blue );
 
 private:
-  Qt3DCore::QEntity*          baseEntity          = nullptr;
-  Qt3DCore::QTransform*       baseTransform       = nullptr;
-  Qt3DCore::QEntity*          perimeterEntity     = nullptr;
-  Qt3DCore::QEntity*          pointsEntity        = nullptr;
-  BufferMesh*                 perimeterMesh       = nullptr;
-  BufferMesh*                 pointsMesh          = nullptr;
-  Qt3DExtras::QPhongMaterial* perimeterMaterial   = nullptr;
-  Qt3DExtras::QPhongMaterial* pointsMaterial      = nullptr;
+  Qt3DCore::QEntity*          baseEntity        = nullptr;
+  Qt3DCore::QTransform*       baseTransform     = nullptr;
+  Qt3DCore::QEntity*          perimeterEntity   = nullptr;
+  Qt3DCore::QEntity*          pointsEntity      = nullptr;
+  BufferMesh*                 perimeterMesh     = nullptr;
+  BufferMesh*                 pointsMesh        = nullptr;
+  Qt3DExtras::QPhongMaterial* perimeterMaterial = nullptr;
+  Qt3DExtras::QPhongMaterial* pointsMaterial    = nullptr;
 
   QVector< QVector3D > points;
 
