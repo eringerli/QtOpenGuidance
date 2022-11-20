@@ -301,7 +301,6 @@ public:
   NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;
 
   BlockBase*    poseSimulation = nullptr;
-  TerrainModel* terrainModel   = nullptr;
 
   BlockBase* fieldManager  = nullptr;
   BlockBase* globalPlanner = nullptr;

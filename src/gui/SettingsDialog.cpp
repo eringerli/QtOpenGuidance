@@ -26,6 +26,7 @@
 
 #include <QDebug>
 
+#include "gui/OpenSaveHelper.h"
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qneport.h"
@@ -332,13 +333,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper );
+  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper, backgroundEntity );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->objects.front() );
 
-  terrainModel = new TerrainModel( backgroundEntity );
-
   auto* poseSimulationTmp = qobject_cast< PoseSimulation* >( poseSimulationBlock->objects.front() );
+  poseSimulationTmp->openTINFromString( "/home/christian/Schreibtisch/QtOpenGuidance/terrain/test4.geojson" );
 
   {
     QObject::connect( this, &SettingsDialog::simulatorValuesChanged, poseSimulationTmp, &PoseSimulation::setSimulatorValues );
@@ -347,9 +347,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     QObject::connect( poseSimulationTmp, &PoseSimulation::simulatorValuesChanged, this, &SettingsDialog::setSimulatorValues );
 
     auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Terrain Model" ) );
-    QObject::connect( openFieldAction, &QAction::triggered, poseSimulationTmp, &PoseSimulation::openTIN );
-
-    QObject::connect( poseSimulationTmp, &PoseSimulation::surfaceChanged, terrainModel, &TerrainModel::setSurface );
+    QObject::connect( openFieldAction, &QAction::triggered, poseSimulationTmp->openSaveHelper, &OpenSaveHelper::open );
   }
 
   // SPNAV
@@ -395,10 +393,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     QObject::connect( newFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::newField );
 
     auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open Field" ) );
-    QObject::connect( openFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::openField );
+    QObject::connect( openFieldAction, &QAction::triggered, fieldManagerObject->openSaveHelper, &OpenSaveHelper::open );
 
     auto* saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save Field" ) );
-    QObject::connect( saveFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::saveField );
+    QObject::connect( saveFieldAction, &QAction::triggered, fieldManagerObject->openSaveHelper, &OpenSaveHelper::save );
 
     fieldManager = fieldManagerObject;
   }
@@ -417,10 +415,10 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     QObject::connect( newAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::newAbLine );
 
     auto* openAbLineAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
-    QObject::connect( openAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::openAbLine );
+    QObject::connect( openAbLineAction, &QAction::triggered, globalPlanner->openSaveHelper, &OpenSaveHelper::open );
 
     auto* saveAbLineAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
-    QObject::connect( saveAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
+    QObject::connect( saveAbLineAction, &QAction::triggered, globalPlanner->openSaveHelper, &OpenSaveHelper::save );
 
     this->globalPlanner = globalPlanner;
   }
@@ -695,8 +693,6 @@ SettingsDialog::~SettingsDialog() {
 
   poseSimulationFactory->deleteLater();
   poseSimulation->deleteLater();
-
-  terrainModel->deleteLater();
 
 #ifdef SPNAV_ENABLED
   spaceNavigatorPollingThread->stop();

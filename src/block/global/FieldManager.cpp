@@ -42,6 +42,8 @@
 
 #include "gui/FieldsOptimitionToolbar.h"
 
+#include "gui/OpenSaveHelper.h"
+
 #include "kinematic/PathPrimitive.h"
 
 #include "helpers/cgalHelper.h"
@@ -51,8 +53,13 @@
 
 #include "helpers/GeoJsonHelper.h"
 
-FieldManager::FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : mainWindow( mainWindow ), tmw( tmw ) {
+FieldManager::FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : tmw( tmw ) {
   ThreadWeaver::setDebugLevel( true, 0 );
+
+  openSaveHelper = new OpenSaveHelper( "Open Field", "GeoJSON Files (*.geojson)", mainWindow );
+
+  QObject::connect( openSaveHelper, &OpenSaveHelper::openFile, this, &FieldManager::openFieldFromString );
+  QObject::connect( openSaveHelper, &OpenSaveHelper::saveFile, this, &FieldManager::saveFieldToString );
 
   // FIXME remove!
   auto file = QFile( "/home/christian/Schreibtisch/QtOpenGuidance/fields/test-8.geojson" );
@@ -153,48 +160,6 @@ FieldManager::setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Qu
 }
 
 void
-FieldManager::openField() {
-  QMetaObject::invokeMethod( mainWindow, [this]() {
-    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-    QString dir;
-
-    auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Field" ), dir, selectedFilter );
-    fileDialog->setFileMode( QFileDialog::ExistingFile );
-    fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
-
-    // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-    // this is needed, as the file dialog on android is asynchonous, so you have to connect
-    // to the signals instead of using the static functions for the dialogs
-#ifdef Q_OS_ANDROID
-    QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-      if( !fileName.isEmpty() ) {
-        // some string wrangling on android to get the native file name
-        QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
-
-        if( !loadFile.open( QIODevice::ReadOnly ) ) {
-          qWarning() << "Couldn't open save file.";
-        } else {
-          openAbLineFromFile( loadFile );
-        }
-      }
-
-      // block all further signals, so no double opening happens
-      fileDialog->blockSignals( true );
-
-      fileDialog->deleteLater();
-    } );
-#else
-    QObject::connect( fileDialog, &QFileDialog::fileSelected, this, &FieldManager::openFieldFromString );
-
-    // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
-    QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
-
-    QMetaObject::invokeMethod( mainWindow, [&fileDialog]() { fileDialog->open(); } );
-#endif
-  } );
-}
-
-void
 FieldManager::openFieldFromString( const QString& fileName ) {
   if( !fileName.isEmpty() ) {
     // some string wrangling on android to get the native file name
@@ -280,22 +245,6 @@ void
 FieldManager::newField() {
   points.clear();
   Q_EMIT fieldCleared();
-}
-
-void
-FieldManager::saveField() {
-  if( currentField || !points.empty() ) {
-    QMetaObject::invokeMethod( mainWindow, [this]() {
-      QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-      QString dir;
-      QString fileName = QFileDialog::getSaveFileName(
-        mainWindow, tr( "Save Field" ), dir, tr( "All Files (*);;GeoJSON Files (*.geojson)" ), &selectedFilter );
-
-      if( !fileName.isEmpty() ) {
-        QMetaObject::invokeMethod( this, [this, &fileName]() { saveFieldToString( fileName ); } );
-      }
-    } );
-  }
 }
 
 void

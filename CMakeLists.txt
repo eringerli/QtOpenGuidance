@@ -199,6 +199,8 @@ set(SOURCES_gui_toolbar
   src/gui/GuidanceToolbar.h
   src/gui/NewOpenSaveToolbar.cpp
   src/gui/NewOpenSaveToolbar.h
+  src/gui/OpenSaveHelper.h
+  src/gui/OpenSaveHelper.cpp
   src/gui/PassToolbar.cpp
   src/gui/PassToolbar.h
   src/gui/ImplementToolbar.cpp

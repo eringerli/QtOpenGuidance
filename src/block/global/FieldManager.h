@@ -42,6 +42,7 @@ class CgalThread;
 class CgalWorker;
 
 class FieldModel;
+class OpenSaveHelper;
 
 class FieldManager : public BlockBase {
   Q_OBJECT
@@ -62,11 +63,9 @@ public Q_SLOTS:
 
   void newField();
 
-  void openField();
   void openFieldFromString( const QString& fileName );
   void openFieldFromFile( QFile& file );
 
-  void saveField();
   void saveFieldToString( QString fileName );
   void saveFieldToFile( QFile& file );
 
@@ -114,8 +113,9 @@ public:
   Point_3 positionLeftEdgeOfImplement  = Point_3( 0, 0, 0 );
   Point_3 positionRightEdgeOfImplement = Point_3( 0, 0, 0 );
 
+  OpenSaveHelper* openSaveHelper = nullptr;
+
 private:
-  QWidget*                     mainWindow = nullptr;
   GeographicConvertionWrapper* tmw        = nullptr;
 
   std::vector< Epick::Point_3 > points;

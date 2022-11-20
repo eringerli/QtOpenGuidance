@@ -57,6 +57,11 @@ using DelaunayTriangulationProjectedXY = CGAL::Delaunay_triangulation_2< Project
 using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 class QFile;
+class OpenSaveHelper;
+
+namespace Qt3DCore {
+  class QEntity;
+};
 
 class PoseSimulation : public BlockBase {
   Q_OBJECT
@@ -97,7 +102,6 @@ public Q_SLOTS:
                                    const double noiseAccelerometer,
                                    const double noiseGyro );
 
-  void openTIN();
   void openTINFromString( QString fileName );
   void openTINFromFile( QFile& file );
 
@@ -146,6 +150,9 @@ public:
 
 protected:
   void timerEvent( QTimerEvent* event ) override;
+
+public:
+  OpenSaveHelper* openSaveHelper = nullptr;
 
 private:
   QWidget* mainWindow = nullptr;
@@ -219,8 +226,14 @@ class PoseSimulationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PoseSimulationFactory( QThread* thread, QWidget* mainWindow, GeographicConvertionWrapper* geographicConvertionWrapper )
-      : BlockFactory( thread ), mainWindow( mainWindow ), geographicConvertionWrapper( geographicConvertionWrapper ) {}
+  PoseSimulationFactory( QThread*                     thread,
+                         QWidget*                     mainWindow,
+                         GeographicConvertionWrapper* geographicConvertionWrapper,
+                         Qt3DCore::QEntity*           rootEntity )
+      : BlockFactory( thread )
+      , mainWindow( mainWindow )
+      , geographicConvertionWrapper( geographicConvertionWrapper )
+      , rootEntity( rootEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Pose Simulation" ); }
 
@@ -231,4 +244,5 @@ public:
 private:
   QWidget*                     mainWindow                  = nullptr;
   GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
+  Qt3DCore::QEntity*           rootEntity                  = nullptr;
 };

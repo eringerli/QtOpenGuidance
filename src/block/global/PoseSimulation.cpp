@@ -18,6 +18,8 @@
 
 #include "PoseSimulation.h"
 
+#include "block/graphical/TerrainModel.h"
+
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -33,14 +35,9 @@
 #include <QElapsedTimer>
 #include <QEvent>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QSphereMesh>
-
 #include <QDebug>
+
+#include "gui/OpenSaveHelper.h"
 
 #include "helpers/GeoJsonHelper.h"
 #include "helpers/cgalHelper.h"
@@ -74,6 +71,10 @@ PoseSimulation::PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper
   vehicleDynamics =
     std::make_unique< VehicleDynamics::VehicleNonLinear3DOF >( frontLeftTire.get(),
                                                                /*frontRightTire.get(),*/ rearLeftTire.get() /*, rearRightTire.get()*/ );
+
+  openSaveHelper = new OpenSaveHelper( "Open Terrain", "GeoJSON Files (*.geojson)", mainWindow );
+
+  QObject::connect( openSaveHelper, &OpenSaveHelper::openFile, this, &PoseSimulation::openTINFromString );
 }
 
 void
@@ -175,10 +176,6 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
 
           lastFoundFace = foundFace;
         }
-      } else {
-        auto file = QFile( "/home/christian/Schreibtisch/QtOpenGuidance/terrain/test4.geojson" );
-        file.open( QIODevice::ReadOnly );
-        openTINFromFile( file );
       }
     }
 
@@ -521,48 +518,6 @@ PoseSimulation::setNoiseStandartDeviations(
 }
 
 void
-PoseSimulation::openTIN() {
-  QMetaObject::invokeMethod( mainWindow, [this]() {
-    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-    QString dir;
-
-    auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved Field" ), dir, selectedFilter );
-    fileDialog->setFileMode( QFileDialog::ExistingFile );
-    fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
-
-    // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-    // this is needed, as the file dialog on android is asynchonous, so you have to connect
-    // to the signals instead of using the static functions for the dialogs
-#ifdef Q_OS_ANDROID
-    QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-      if( !fileName.isEmpty() ) {
-        // some string wrangling on android to get the native file name
-        QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
-
-        if( !loadFile.open( QIODevice::ReadOnly ) ) {
-          qWarning() << "Couldn't open save file.";
-        } else {
-          openAbLineFromFile( loadFile );
-        }
-      }
-
-      // block all further signals, so no double opening happens
-      fileDialog->blockSignals( true );
-
-      fileDialog->deleteLater();
-    } );
-#else
-    QObject::connect( fileDialog, &QFileDialog::fileSelected, this, &PoseSimulation::openTINFromString );
-
-    // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
-    QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
-
-    QMetaObject::invokeMethod( mainWindow, [&fileDialog]() { fileDialog->open(); } );
-#endif
-  } );
-}
-
-void
 PoseSimulation::openTINFromString( QString fileName ) {
   if( !fileName.isEmpty() ) {
     // some string wrangling on android to get the native file name
@@ -632,6 +587,11 @@ PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new PoseSimulation( mainWindow, geographicConvertionWrapper );
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
+
+  auto obj2 = new TerrainModel( rootEntity );
+  b->addObject( obj2 );
+
+  QObject::connect( obj, &PoseSimulation::surfaceChanged, obj2, &TerrainModel::setSurface );
 
   b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );

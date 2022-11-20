@@ -32,6 +32,7 @@
 #include "gui/FieldsOptimitionToolbar.h"
 #include "gui/GlobalPlannerToolbar.h"
 #include "gui/MyMainWindow.h"
+#include "gui/OpenSaveHelper.h"
 
 #include "block/graphical/GlobalPlannerModel.h"
 
@@ -61,6 +62,11 @@ GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindo
   dock   = new KDDockWidgets::DockWidget( uniqueName );
 
   abPolyline = std::make_shared< std::vector< Point_2 > >();
+
+  openSaveHelper = new OpenSaveHelper( "Open A/B-Line", "GeoJSON Files (*.geojson)", mainWindow );
+
+  QObject::connect( openSaveHelper, &OpenSaveHelper::openFile, this, &GlobalPlanner::openAbLineFromString );
+  QObject::connect( openSaveHelper, &OpenSaveHelper::saveFile, this, &GlobalPlanner::saveAbLineToString );
 
   QObject::connect( widget, &GlobalPlannerToolbar::setAPoint, this, &GlobalPlanner::aPointSet );
   QObject::connect( widget, &GlobalPlannerToolbar::setBPoint, this, &GlobalPlanner::bPointSet );
@@ -255,48 +261,6 @@ GlobalPlanner::snapPlanAB() {
 }
 
 void
-GlobalPlanner::openAbLine() {
-  QMetaObject::invokeMethod( mainWindow, [this]() {
-    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-    QString dir;
-
-    auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved AB-Line/Curve" ), dir, selectedFilter );
-    fileDialog->setFileMode( QFileDialog::ExistingFile );
-    fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
-
-    // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-    // this is needed, as the file dialog on android is asynchonous, so you have to connect
-    // to the signals instead of using the static functions for the dialogs
-#ifdef Q_OS_ANDROID
-    QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-      if( !fileName.isEmpty() ) {
-        // some string wrangling on android to get the native file name
-        QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
-
-        if( !loadFile.open( QIODevice::ReadOnly ) ) {
-          qWarning() << "Couldn't open save file.";
-        } else {
-          openAbLineFromFile( loadFile );
-        }
-      }
-
-      // block all further signals, so no double opening happens
-      fileDialog->blockSignals( true );
-
-      fileDialog->deleteLater();
-    } );
-#else
-    QObject::connect( fileDialog, &QFileDialog::fileSelected, this, &GlobalPlanner::openAbLineFromString );
-
-    // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
-    QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
-
-    QMetaObject::invokeMethod( mainWindow, [&fileDialog]() { fileDialog->open(); } );
-#endif
-  } );
-}
-
-void
 GlobalPlanner::openAbLineFromString( const QString& fileName ) {
   if( !fileName.isEmpty() ) {
     // some string wrangling on android to get the native file name
@@ -354,22 +318,6 @@ void
 GlobalPlanner::newAbLine() {
   Q_EMIT resetToolbar();
   abPolyline = std::make_shared< std::vector< Point_2 > >();
-}
-
-void
-GlobalPlanner::saveAbLine() {
-  if( abSegment.squared_length() > 1 && implementSegment.squared_length() > 1 ) {
-    QMetaObject::invokeMethod( mainWindow, [this]() {
-      QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-      QString dir;
-      QString fileName = QFileDialog::getSaveFileName(
-        mainWindow, tr( "Save AB-Line/Curve" ), dir, tr( "All Files (*);;GeoJSON Files (*.geojson)" ), &selectedFilter );
-
-      if( !fileName.isEmpty() ) {
-        QMetaObject::invokeMethod( this, [this, &fileName]() { saveAbLineToString( fileName ); } );
-      }
-    } );
-  }
 }
 
 void

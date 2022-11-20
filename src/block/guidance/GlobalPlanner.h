@@ -33,6 +33,7 @@ class BufferMesh;
 class GeographicConvertionWrapper;
 class Plan;
 class PlanGlobal;
+class OpenSaveHelper;
 
 namespace Qt3DCore {
   class QEntity;
@@ -73,13 +74,11 @@ public Q_SLOTS:
 
   void snap();
 
-  void openAbLine();
   void openAbLineFromString( const QString& fileName );
   void openAbLineFromFile( QFile& file );
 
   void newAbLine();
 
-  void saveAbLine();
   void saveAbLineToString( QString fileName );
   void saveAbLineToFile( QFile& file );
 
@@ -133,6 +132,8 @@ public:
   KDDockWidgets::DockWidget* dock       = nullptr;
 
   GeographicConvertionWrapper* tmw = nullptr;
+
+  OpenSaveHelper* openSaveHelper = nullptr;
 
 private:
   QPointer< PlanOptimitionController > planOptimitionController;
