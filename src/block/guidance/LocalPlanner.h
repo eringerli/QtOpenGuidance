@@ -69,6 +69,7 @@ Q_SIGNALS:
   void planChanged( const Plan& );
   void triggerPlanPose( POSE_SIGNATURE_SIGNAL );
   void resetTurningStateOfDock();
+  void passNumberChanged( NUMBER_SIGNATURE_SIGNAL );
 
 public:
   Eigen::Vector3d    position             = Eigen::Vector3d( 0, 0, 0 );

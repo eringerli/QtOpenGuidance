@@ -111,6 +111,7 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
         if( plan.plan->empty() ) {
           plan.plan->push_back( lastPrimitive );
           Q_EMIT planChanged( plan );
+          Q_EMIT passNumberChanged( double( lastPrimitive->passNumber ), CalculationOption::Options() );
         }
       }
     } else {
@@ -409,6 +410,7 @@ LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( POSE_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Pass Number" ), QLatin1String( SIGNAL( passNumberChanged( NUMBER_SIGNATURE ) ) ) );
 
   return b;
 }
