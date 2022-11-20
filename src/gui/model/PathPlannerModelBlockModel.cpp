@@ -78,14 +78,16 @@ PathPlannerModelBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              return block->getName();
+      for( auto& object : block->objects ) {
+        if( qobject_cast< PathPlannerModel* >( object ) != nullptr ) {
+          if( countRow++ == index.row() ) {
+            switch( index.column() ) {
+              case 0:
+                return block->getName();
 
-            case 1:
-              return QVariant::fromValue( block );
+              case 1:
+                return QVariant::fromValue( block );
+            }
           }
         }
       }
@@ -105,13 +107,15 @@ PathPlannerModelBlockModel::setData( const QModelIndex& index, const QVariant& v
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( /*auto* object = */ qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      for( auto& object : block->objects ) {
+        if( qobject_cast< PathPlannerModel* >( object ) != nullptr ) {
+          if( countRow++ == index.row() ) {
+            switch( index.column() ) {
+              case 0:
+                block->setName( qvariant_cast< QString >( value ) );
+                Q_EMIT dataChanged( index, index, QVector< int >() << role );
+                return true;
+            }
           }
         }
       }
@@ -146,8 +150,10 @@ PathPlannerModelBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
+      for( auto& object : block->objects ) {
+        if( qobject_cast< PathPlannerModel* >( object ) != nullptr ) {
+          ++countBuffer;
+        }
       }
     }
   }

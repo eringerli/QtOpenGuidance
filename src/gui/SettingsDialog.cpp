@@ -1243,17 +1243,19 @@ SettingsDialog::setPathPlannerSettings() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
-      block->setName( ui->lePathPlannerName->text() );
-      pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
-      pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
+        block->setName( ui->lePathPlannerName->text() );
+        pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
+        pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
 
-      pathPlannerModel->individualRayColor     = ui->cbPathPlannerRayColor->isChecked();
-      pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
-      pathPlannerModel->bisectorsVisible       = ui->cbPathPlannerBisectors->isChecked();
+        pathPlannerModel->individualRayColor     = ui->cbPathPlannerRayColor->isChecked();
+        pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
+        pathPlannerModel->bisectorsVisible       = ui->cbPathPlannerBisectors->isChecked();
 
-      pathPlannerModel->refreshColors();
+        pathPlannerModel->refreshColors();
+      }
     }
   }
 }
@@ -1869,47 +1871,49 @@ SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      ui->gbPathPlanner->blockSignals( true );
-      ui->lePathPlannerName->blockSignals( true );
-      ui->dsbPathlPlannerZOffset->blockSignals( true );
-      ui->dsbPathlPlannerViewbox->blockSignals( true );
-      ui->cbPathPlannerRayColor->blockSignals( true );
-      ui->cbPathPlannerSegmentColor->blockSignals( true );
-      ui->cbPathPlannerBisectors->blockSignals( true );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        ui->gbPathPlanner->blockSignals( true );
+        ui->lePathPlannerName->blockSignals( true );
+        ui->dsbPathlPlannerZOffset->blockSignals( true );
+        ui->dsbPathlPlannerViewbox->blockSignals( true );
+        ui->cbPathPlannerRayColor->blockSignals( true );
+        ui->cbPathPlannerSegmentColor->blockSignals( true );
+        ui->cbPathPlannerBisectors->blockSignals( true );
 
-      ui->gbPathPlanner->setChecked( pathPlannerModel->visible );
-      ui->lePathPlannerName->setText( block->getName() );
-      ui->dsbPathlPlannerZOffset->setValue( pathPlannerModel->zOffset );
-      ui->dsbPathlPlannerViewbox->setValue( pathPlannerModel->viewBox );
+        ui->gbPathPlanner->setChecked( pathPlannerModel->visible );
+        ui->lePathPlannerName->setText( block->getName() );
+        ui->dsbPathlPlannerZOffset->setValue( pathPlannerModel->zOffset );
+        ui->dsbPathlPlannerViewbox->setValue( pathPlannerModel->viewBox );
 
-      ui->lbPathPlannerLineColor->setText( pathPlannerModel->linesColor.name() );
-      ui->lbPathPlannerLineColor->setPalette( pathPlannerModel->linesColor );
-      ui->lbPathPlannerLineColor->setAutoFillBackground( true );
+        ui->lbPathPlannerLineColor->setText( pathPlannerModel->linesColor.name() );
+        ui->lbPathPlannerLineColor->setPalette( pathPlannerModel->linesColor );
+        ui->lbPathPlannerLineColor->setAutoFillBackground( true );
 
-      ui->lbPathPlannerRayColor->setText( pathPlannerModel->raysColor.name() );
-      ui->lbPathPlannerRayColor->setPalette( pathPlannerModel->raysColor );
-      ui->lbPathPlannerRayColor->setAutoFillBackground( true );
+        ui->lbPathPlannerRayColor->setText( pathPlannerModel->raysColor.name() );
+        ui->lbPathPlannerRayColor->setPalette( pathPlannerModel->raysColor );
+        ui->lbPathPlannerRayColor->setAutoFillBackground( true );
 
-      ui->lbPathPlannerSegmentColor->setText( pathPlannerModel->segmentsColor.name() );
-      ui->lbPathPlannerSegmentColor->setPalette( pathPlannerModel->segmentsColor );
-      ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
+        ui->lbPathPlannerSegmentColor->setText( pathPlannerModel->segmentsColor.name() );
+        ui->lbPathPlannerSegmentColor->setPalette( pathPlannerModel->segmentsColor );
+        ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
 
-      ui->lbPathPlannerBisectorsColor->setText( pathPlannerModel->bisectorsColor.name() );
-      ui->lbPathPlannerBisectorsColor->setPalette( pathPlannerModel->bisectorsColor );
-      ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
+        ui->lbPathPlannerBisectorsColor->setText( pathPlannerModel->bisectorsColor.name() );
+        ui->lbPathPlannerBisectorsColor->setPalette( pathPlannerModel->bisectorsColor );
+        ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
 
-      ui->cbPathPlannerRayColor->setChecked( pathPlannerModel->individualRayColor );
-      ui->cbPathPlannerSegmentColor->setChecked( pathPlannerModel->individualSegmentColor );
-      ui->cbPathPlannerBisectors->setChecked( pathPlannerModel->bisectorsVisible );
+        ui->cbPathPlannerRayColor->setChecked( pathPlannerModel->individualRayColor );
+        ui->cbPathPlannerSegmentColor->setChecked( pathPlannerModel->individualSegmentColor );
+        ui->cbPathPlannerBisectors->setChecked( pathPlannerModel->bisectorsVisible );
 
-      ui->gbPathPlanner->blockSignals( false );
-      ui->lePathPlannerName->blockSignals( false );
-      ui->dsbPathlPlannerZOffset->blockSignals( false );
-      ui->dsbPathlPlannerViewbox->blockSignals( false );
-      ui->cbPathPlannerRayColor->blockSignals( false );
-      ui->cbPathPlannerSegmentColor->blockSignals( false );
-      ui->cbPathPlannerBisectors->blockSignals( false );
+        ui->gbPathPlanner->blockSignals( false );
+        ui->lePathPlannerName->blockSignals( false );
+        ui->dsbPathlPlannerZOffset->blockSignals( false );
+        ui->dsbPathlPlannerViewbox->blockSignals( false );
+        ui->cbPathPlannerRayColor->blockSignals( false );
+        ui->cbPathPlannerSegmentColor->blockSignals( false );
+        ui->cbPathPlannerBisectors->blockSignals( false );
+      }
     }
   }
 };
@@ -1960,17 +1964,19 @@ SettingsDialog::on_pbPathPlannerArcColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      const QColor color = QColorDialog::getColor( pathPlannerModel->arcColor, this, QStringLiteral( "Select Arc Color" ) );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        const QColor color = QColorDialog::getColor( pathPlannerModel->arcColor, this, QStringLiteral( "Select Arc Color" ) );
 
-      if( color.isValid() ) {
-        pathPlannerModel->arcColor = color;
+        if( color.isValid() ) {
+          pathPlannerModel->arcColor = color;
 
-        ui->lbPathPlannerArcColor->setText( color.name() );
-        ui->lbPathPlannerArcColor->setPalette( color );
-        ui->lbPathPlannerArcColor->setAutoFillBackground( true );
+          ui->lbPathPlannerArcColor->setText( color.name() );
+          ui->lbPathPlannerArcColor->setPalette( color );
+          ui->lbPathPlannerArcColor->setAutoFillBackground( true );
 
-        pathPlannerModel->refreshColors();
+          pathPlannerModel->refreshColors();
+        }
       }
     }
   }
@@ -1982,17 +1988,19 @@ SettingsDialog::on_pbPathPlannerLineColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      const QColor color = QColorDialog::getColor( pathPlannerModel->linesColor, this, QStringLiteral( "Select Line Color" ) );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        const QColor color = QColorDialog::getColor( pathPlannerModel->linesColor, this, QStringLiteral( "Select Line Color" ) );
 
-      if( color.isValid() ) {
-        pathPlannerModel->linesColor = color;
+        if( color.isValid() ) {
+          pathPlannerModel->linesColor = color;
 
-        ui->lbPathPlannerLineColor->setText( color.name() );
-        ui->lbPathPlannerLineColor->setPalette( color );
-        ui->lbPathPlannerLineColor->setAutoFillBackground( true );
+          ui->lbPathPlannerLineColor->setText( color.name() );
+          ui->lbPathPlannerLineColor->setPalette( color );
+          ui->lbPathPlannerLineColor->setAutoFillBackground( true );
 
-        pathPlannerModel->refreshColors();
+          pathPlannerModel->refreshColors();
+        }
       }
     }
   }
@@ -2004,17 +2012,19 @@ SettingsDialog::on_pbPathPlannerRayColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      const QColor color = QColorDialog::getColor( pathPlannerModel->raysColor, this, QStringLiteral( "Select Ray Color" ) );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        const QColor color = QColorDialog::getColor( pathPlannerModel->raysColor, this, QStringLiteral( "Select Ray Color" ) );
 
-      if( color.isValid() ) {
-        pathPlannerModel->raysColor = color;
+        if( color.isValid() ) {
+          pathPlannerModel->raysColor = color;
 
-        ui->lbPathPlannerRayColor->setText( color.name() );
-        ui->lbPathPlannerRayColor->setPalette( color );
-        ui->lbPathPlannerRayColor->setAutoFillBackground( true );
+          ui->lbPathPlannerRayColor->setText( color.name() );
+          ui->lbPathPlannerRayColor->setPalette( color );
+          ui->lbPathPlannerRayColor->setAutoFillBackground( true );
 
-        pathPlannerModel->refreshColors();
+          pathPlannerModel->refreshColors();
+        }
       }
     }
   }
@@ -2026,17 +2036,19 @@ SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      const QColor color = QColorDialog::getColor( pathPlannerModel->segmentsColor, this, QStringLiteral( "Select Segment Color" ) );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        const QColor color = QColorDialog::getColor( pathPlannerModel->segmentsColor, this, QStringLiteral( "Select Segment Color" ) );
 
-      if( color.isValid() ) {
-        pathPlannerModel->segmentsColor = color;
+        if( color.isValid() ) {
+          pathPlannerModel->segmentsColor = color;
 
-        ui->lbPathPlannerSegmentColor->setText( color.name() );
-        ui->lbPathPlannerSegmentColor->setPalette( color );
-        ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
+          ui->lbPathPlannerSegmentColor->setText( color.name() );
+          ui->lbPathPlannerSegmentColor->setPalette( color );
+          ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
 
-        pathPlannerModel->refreshColors();
+          pathPlannerModel->refreshColors();
+        }
       }
     }
   }
@@ -2048,17 +2060,19 @@ SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
-      const QColor color = QColorDialog::getColor( pathPlannerModel->bisectorsColor, this, QStringLiteral( "Select Bisectors Color" ) );
+    for( auto& object : block->objects ) {
+      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
+        const QColor color = QColorDialog::getColor( pathPlannerModel->bisectorsColor, this, QStringLiteral( "Select Bisectors Color" ) );
 
-      if( color.isValid() ) {
-        pathPlannerModel->bisectorsColor = color;
+        if( color.isValid() ) {
+          pathPlannerModel->bisectorsColor = color;
 
-        ui->lbPathPlannerBisectorsColor->setText( color.name() );
-        ui->lbPathPlannerBisectorsColor->setPalette( color );
-        ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
+          ui->lbPathPlannerBisectorsColor->setText( color.name() );
+          ui->lbPathPlannerBisectorsColor->setPalette( color );
+          ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
 
-        pathPlannerModel->refreshColors();
+          pathPlannerModel->refreshColors();
+        }
       }
     }
   }
