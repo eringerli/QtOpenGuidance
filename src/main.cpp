@@ -268,7 +268,7 @@ main( int argc, char** argv ) {
 
   cameraEntity->lens()->setProjectionType( Qt3DRender::QCameraLens::PerspectiveProjection );
   cameraEntity->lens()->setNearPlane( 1.0f );
-  cameraEntity->lens()->setFarPlane( 2000 );
+  cameraEntity->lens()->setFarPlane( 8000 );
   cameraEntity->setPosition( QVector3D( 0, 0, 20.0f ) );
   cameraEntity->setUpVector( QVector3D( 0, 1, 0 ) );
   cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
