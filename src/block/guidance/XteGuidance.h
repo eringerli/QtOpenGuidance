@@ -50,7 +50,8 @@ Q_SIGNALS:
   void passNumberChanged( NUMBER_SIGNATURE_SIGNAL );
 
 private:
-  Plan plan;
+  Plan                         plan;
+  Plan::ConstPrimitiveIterator lastFoundPrimitive;
 };
 
 class XteGuidanceFactory : public BlockFactory {

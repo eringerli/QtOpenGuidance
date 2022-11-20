@@ -90,10 +90,11 @@ public:
 private:
   void calculateTurning( bool changeExistingTurn );
 
-  Plan globalPlan;
-  Plan plan;
+  Plan                         globalPlan;
+  Plan::ConstPrimitiveIterator lastNearestPrimitiveGlobalPlan;
+  Plan::PrimitiveSharedPointer lastPrimitiveGlobalPlan = nullptr;
 
-  Plan::PrimitiveSharedPointer lastPrimitive = nullptr;
+  Plan localPlan;
 
   bool    turningLeft       = false;
   bool    turningRight      = false;

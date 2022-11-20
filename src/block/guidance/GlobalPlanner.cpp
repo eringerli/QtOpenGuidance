@@ -99,8 +99,11 @@ GlobalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaternion
     plan.expand( position2D );
 
     double distance         = 0;
-    auto   nearestPrimitive = plan.getNearestPrimitive( to2D( position ), distance );
+    auto   nearestPrimitive = plan.getNearestPrimitive( to2D( position ), distance, &lastNearestPrimitive );
 
+    // this generates a new plan with the least amount of primitives possible: the diagonal distance of the view rect is divided by the
+    // implement width, which gives the maximum new primitive number. Then the plan is filled: try to add the half of this number on each
+    // side of the nearest primitive
     if( nearestPrimitive != plan.plan->cend() && nearestPrimitive != lastNearestPrimitive ) {
       int64_t distanceToFront = std::distance( plan.plan->cbegin(), nearestPrimitive );
       int64_t distanceToEnd   = std::distance( nearestPrimitive, plan.plan->cend() );
@@ -266,7 +269,7 @@ GlobalPlanner::snapPlanAB() {
     Point_2 position2D = to2D( position );
 
     double xte              = 0;
-    auto   nearestPrimitive = plan.getNearestPrimitive( position2D, xte );
+    auto   nearestPrimitive = plan.getNearestPrimitive( position2D, xte, &lastNearestPrimitive );
     xte                     = std::sqrt( xte );
     xte *= ( *nearestPrimitive )->offsetSign( position2D );
     double angleDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );

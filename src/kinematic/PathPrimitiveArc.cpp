@@ -117,7 +117,7 @@ PathPrimitiveArc::distanceToPointSquared( const Point_2 point ) {
     return CGAL::squared_distance( point, endPoint );
   }
 
-  return qInf();
+  return std::numeric_limits< double >::infinity();
 
   //  if( bisectorLine.has_on_positive_side( point ) ) {
   //    return CGAL::squared_distance( point, startPoint );

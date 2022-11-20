@@ -23,23 +23,21 @@
 
 class Plan {
 public:
-  enum class Type : uint8_t { OnlyLines, OnlySegments, OnlyRays, Mixed = 100 };
-
   Plan();
-  Plan( const Type type );
 
 public:
-  Type                                                              type = Type::Mixed;
-  std::shared_ptr< std::deque< std::shared_ptr< PathPrimitive > > > plan;
+  typedef std::shared_ptr< PathPrimitive >     PrimitiveSharedPointer;
+  typedef std::deque< PrimitiveSharedPointer > PlanData;
 
-  typedef std::shared_ptr< PathPrimitive > PrimitiveSharedPointer;
-  typedef decltype( plan->begin() )        PrimitiveIterator;
-  typedef decltype( plan->cbegin() )       ConstPrimitiveIterator;
+  std::shared_ptr< PlanData > plan;
+
+  typedef decltype( plan->begin() )  PrimitiveIterator;
+  typedef decltype( plan->cbegin() ) ConstPrimitiveIterator;
 
 public:
   void transform( const Aff_transformation_2& transformation );
 
-  ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, double& distanceSquared );
+  ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, double& distanceSquared, ConstPrimitiveIterator* tip = nullptr );
 };
 
 Q_DECLARE_METATYPE( Plan );

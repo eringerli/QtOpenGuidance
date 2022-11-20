@@ -23,7 +23,6 @@
 class PlanGlobal : public Plan {
 public:
   PlanGlobal() = default;
-  PlanGlobal( const Type type );
 
 public:
   void resetPlanWith( const PrimitiveSharedPointer& referencePrimitive );

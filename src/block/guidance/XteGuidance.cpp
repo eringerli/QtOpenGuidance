@@ -29,54 +29,38 @@ XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&
   if( !options.testFlag( CalculationOption::NoXte ) ) {
     const Point_2 position2D = to2D( position );
 
-    if( !plan.plan->empty() ) {
-      double                           distanceSquared  = qInf();
-      std::shared_ptr< PathPrimitive > nearestPrimitive = nullptr;
+    double distanceSquared;
+    auto   nearestPrimitive = plan.getNearestPrimitive( position2D, distanceSquared, &lastFoundPrimitive );
 
-      for( const auto& pathPrimitive : *plan.plan ) {
-        if( plan.type == Plan::Type::OnlyLines || pathPrimitive->isOn( position2D ) ) {
-          double currentDistanceSquared = pathPrimitive->distanceToPointSquared( position2D );
+    lastFoundPrimitive = nearestPrimitive;
 
-          if( currentDistanceSquared < distanceSquared ) {
-            nearestPrimitive = pathPrimitive;
-            distanceSquared  = currentDistanceSquared;
-          } else {
-            if( plan.type == Plan::Type::OnlyLines ) {
-              // the plan is ordered, so we can take the fast way out...
-              break;
-            }
-          }
-        }
-      }
+    if( nearestPrimitive != plan.plan->cend() ) {
+      double offsetDistance = std::sqrt( distanceSquared ) * ( *nearestPrimitive )->offsetSign( position2D );
 
-      if( nearestPrimitive ) {
-        double offsetDistance = std::sqrt( distanceSquared ) * nearestPrimitive->offsetSign( position2D );
-
-        Q_EMIT headingOfPathChanged( nearestPrimitive->angleAtPointDegrees( position2D ), options );
-        Q_EMIT curvatureOfPathChanged( nearestPrimitive->curvature(), options );
-        Q_EMIT xteChanged( offsetDistance, options );
-        Q_EMIT passNumberChanged( nearestPrimitive->passNumber, options );
-        return;
-      }
+      Q_EMIT headingOfPathChanged( ( *nearestPrimitive )->angleAtPointDegrees( position2D ), options );
+      Q_EMIT curvatureOfPathChanged( ( *nearestPrimitive )->curvature(), options );
+      Q_EMIT xteChanged( offsetDistance, options );
+      Q_EMIT passNumberChanged( ( *nearestPrimitive )->passNumber, options );
+    } else {
+      Q_EMIT headingOfPathChanged( std::numeric_limits< double >::infinity(), options );
+      Q_EMIT xteChanged( std::numeric_limits< double >::infinity(), options );
+      Q_EMIT curvatureOfPathChanged( 0, options );
+      Q_EMIT passNumberChanged( std::numeric_limits< double >::infinity(), options );
     }
-
-    Q_EMIT headingOfPathChanged( qInf(), options );
-    Q_EMIT xteChanged( qInf(), options );
-    Q_EMIT curvatureOfPathChanged( 0, options );
-    Q_EMIT passNumberChanged( qInf(), options );
   }
 }
 
 void
 XteGuidance::setPlan( const Plan& plan ) {
-  this->plan = plan;
+  this->plan         = plan;
+  lastFoundPrimitive = plan.plan->cend();
 }
 
 void
 XteGuidance::emitConfigSignals() {
-  Q_EMIT xteChanged( qInf(), CalculationOption::Option::None );
-  Q_EMIT headingOfPathChanged( qInf(), CalculationOption::Option::None );
-  Q_EMIT passNumberChanged( qInf(), CalculationOption::Option::None );
+  Q_EMIT xteChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
+  Q_EMIT headingOfPathChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
+  Q_EMIT passNumberChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
 }
 
 QNEBlock*

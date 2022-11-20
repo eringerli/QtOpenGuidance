@@ -141,8 +141,8 @@ public:
 
 private:
   QPointer< PlanOptimitionController > planOptimitionController;
-  Plan::ConstPrimitiveIterator         lastNearestPrimitive;
   Plan                                 planForModel = Plan();
+  Plan::ConstPrimitiveIterator         lastNearestPrimitive;
 };
 
 class GlobalPlannerFactory : public BlockFactory {

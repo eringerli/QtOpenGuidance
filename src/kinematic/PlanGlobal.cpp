@@ -18,7 +18,9 @@
 
 #include "PlanGlobal.h"
 
-PlanGlobal::PlanGlobal( const Plan::Type type ) : Plan( type ) {}
+#include <QDebug>
+
+#include <QElapsedTimer>
 
 void
 PlanGlobal::resetPlanWith( const Plan::PrimitiveSharedPointer& referencePrimitive ) {
@@ -48,6 +50,9 @@ PlanGlobal::createNewPrimitiveOnTheRight() {
 void
 PlanGlobal::expand( Point_2 position2D ) {
   if( !plan->empty() ) {
+    //    QElapsedTimer timer;
+    //    timer.start();
+
     // make sure, at least pathsInReserve primitives exist on both sides of the reference
     while( ( plan->size() / 2 ) < pathsInReserve ) {
       createNewPrimitiveOnTheLeft();
@@ -61,5 +66,7 @@ PlanGlobal::expand( Point_2 position2D ) {
     while( !( *( plan->cend() - 1 - pathsInReserve ) )->leftOf( position2D ) ) {
       createNewPrimitiveOnTheRight();
     }
+
+    //    qDebug() << "Cycle Time PlanGlobal::expand:" << timer.nsecsElapsed() << "ns";
   }
 }

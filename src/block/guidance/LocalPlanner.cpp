@@ -80,40 +80,39 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
 
     if( !turningLeft && !turningRight ) {
       if( !globalPlan.plan->empty() ) {
-        double distanceSquared          = qInf();
-        auto   nearestPrimitive         = globalPlan.getNearestPrimitive( position2D, distanceSquared );
+        double distanceSquared          = std::numeric_limits< double >::infinity();
+        auto   nearestPrimitive         = globalPlan.getNearestPrimitive( position2D, distanceSquared, &lastNearestPrimitiveGlobalPlan );
+        lastNearestPrimitiveGlobalPlan  = nearestPrimitive;
         double distanceNearestPrimitive = std::sqrt( distanceSquared );
 
-        if( !lastPrimitive ||
-            ( !forceCurrentPath &&
-              distanceNearestPrimitive < ( std::sqrt( lastPrimitive->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) ) {
-          lastPrimitive = *nearestPrimitive;
-          plan.type     = globalPlan.type;
-          plan.plan->clear();
+        if( !lastPrimitiveGlobalPlan ||
+            ( !forceCurrentPath && distanceNearestPrimitive <
+                                     ( std::sqrt( lastPrimitiveGlobalPlan->distanceToPointSquared( position2D ) ) - pathHysteresis ) ) ) {
+          lastPrimitiveGlobalPlan = *nearestPrimitive;
+          localPlan.plan->clear();
         }
 
-        if( lastPrimitive->anyDirection ) {
-          double angleLastPrimitiveDegrees = lastPrimitive->angleAtPointDegrees( position2D );
+        if( lastPrimitiveGlobalPlan->anyDirection ) {
+          double angleLastPrimitiveDegrees = lastPrimitiveGlobalPlan->angleAtPointDegrees( position2D );
           double steerAngleAbsoluteDegrees = steeringAngleDegrees + radiansToDegrees( getYaw( quaternionToTaitBryan( orientation ) ) );
 
           if( std::abs( std::abs( steerAngleAbsoluteDegrees ) - std::abs( angleLastPrimitiveDegrees ) ) > 95 ) {
-            auto reverse          = lastPrimitive->createReverse();
-            reverse->anyDirection = false;
-            lastPrimitive         = reverse;
-            plan.type             = globalPlan.type;
-            plan.plan->clear();
+            auto reverse            = lastPrimitiveGlobalPlan->createReverse();
+            reverse->anyDirection   = false;
+            lastPrimitiveGlobalPlan = reverse;
+            localPlan.plan->clear();
           }
         }
 
-        if( plan.plan->empty() ) {
-          plan.plan->push_back( lastPrimitive );
-          Q_EMIT planChanged( plan );
-          Q_EMIT passNumberChanged( double( lastPrimitive->passNumber ), CalculationOption::Options() );
+        if( localPlan.plan->empty() ) {
+          localPlan.plan->push_back( lastPrimitiveGlobalPlan );
+          Q_EMIT planChanged( localPlan );
+          Q_EMIT passNumberChanged( double( lastPrimitiveGlobalPlan->passNumber ), CalculationOption::Options() );
         }
       }
     } else {
-      if( !plan.plan->empty() ) {
-        const auto* const sequence = plan.plan->front()->castToSequence();
+      if( !localPlan.plan->empty() ) {
+        const auto* const sequence = localPlan.plan->front()->castToSequence();
 
         const auto step = sequence->findSequencePrimitiveIndex( position2D );
 
@@ -133,8 +132,9 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
 
 void
 LocalPlanner::setPlan( const Plan& plan ) {
-  this->globalPlan = plan;
-  lastPrimitive    = nullptr;
+  this->globalPlan               = plan;
+  lastNearestPrimitiveGlobalPlan = plan.plan->cend();
+  lastPrimitiveGlobalPlan        = nullptr;
 }
 
 void
@@ -171,9 +171,9 @@ LocalPlanner::turnLeftToggled( bool state ) {
     turningRight      = false;
     calculateTurning( existingTurn );
   } else {
-    turningLeft   = false;
-    turningRight  = false;
-    lastPrimitive = nullptr;
+    turningLeft             = false;
+    turningRight            = false;
+    lastPrimitiveGlobalPlan = nullptr;
   }
 }
 
@@ -185,9 +185,9 @@ LocalPlanner::turnRightToggled( bool state ) {
     turningLeft       = false;
     calculateTurning( existingTurn );
   } else {
-    turningLeft   = false;
-    turningRight  = false;
-    lastPrimitive = nullptr;
+    turningLeft             = false;
+    turningRight            = false;
+    lastPrimitiveGlobalPlan = nullptr;
   }
 }
 
@@ -216,8 +216,8 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
       headingTurnStart  = headingDegrees;
     }
 
-    double distanceSquared  = qInf();
-    auto   nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
+    double distanceSquared  = std::numeric_limits< double >::infinity();
+    auto   nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared, &lastNearestPrimitiveGlobalPlan );
 
     double angleNearestPrimitiveDegrees = ( *nearestPrimitive )->angleAtPointDegrees( positionTurnStart );
     bool   searchUp                     = turningLeft;
@@ -247,7 +247,7 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
                 << "us" << std::endl;
       start = std::chrono::high_resolution_clock::now();
     }
-    nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared );
+    nearestPrimitive = globalPlan.getNearestPrimitive( positionTurnStart, distanceSquared, &lastNearestPrimitiveGlobalPlan );
 
     auto perpendicularLine = ( *nearestPrimitive )->perpendicularAtPoint( positionTurnStart );
 
@@ -376,10 +376,9 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
           step->print();
         }
 
-        plan.plan->clear();
-        plan.plan->push_back( std::make_shared< PathPrimitiveSequence >( sequence, bisectors, 0, false, 0 ) );
-        plan.type = Plan::Type::Mixed;
-        Q_EMIT planChanged( plan );
+        localPlan.plan->clear();
+        localPlan.plan->push_back( std::make_shared< PathPrimitiveSequence >( sequence, bisectors, 0, false, 0 ) );
+        Q_EMIT planChanged( localPlan );
       }
     }
   }
