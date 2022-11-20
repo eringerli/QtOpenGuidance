@@ -522,58 +522,58 @@ PoseSimulation::setNoiseStandartDeviations(
 
 void
 PoseSimulation::openTIN() {
-  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-  QString dir;
+  QMetaObject::invokeMethod( mainWindow, [this]() {
+    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+    QString dir;
 
-  auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved Field" ), dir, selectedFilter );
-  fileDialog->setFileMode( QFileDialog::ExistingFile );
-  fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
+    auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved Field" ), dir, selectedFilter );
+    fileDialog->setFileMode( QFileDialog::ExistingFile );
+    fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
 
-  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-  // this is needed, as the file dialog on android is asynchonous, so you have to connect
-  // to the signals instead of using the static functions for the dialogs
+    // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+    // this is needed, as the file dialog on android is asynchonous, so you have to connect
+    // to the signals instead of using the static functions for the dialogs
 #ifdef Q_OS_ANDROID
-  QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-    if( !fileName.isEmpty() ) {
-      // some string wrangling on android to get the native file name
-      QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+    QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
+      if( !fileName.isEmpty() ) {
+        // some string wrangling on android to get the native file name
+        QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
-      if( !loadFile.open( QIODevice::ReadOnly ) ) {
-        qWarning() << "Couldn't open save file.";
-      } else {
-        openFieldFromFile( loadFile );
+        if( !loadFile.open( QIODevice::ReadOnly ) ) {
+          qWarning() << "Couldn't open save file.";
+        } else {
+          openAbLineFromFile( loadFile );
+        }
       }
-    }
 
-    // block all further signals, so no double opening happens
-    fileDialog->blockSignals( true );
+      // block all further signals, so no double opening happens
+      fileDialog->blockSignals( true );
 
-    fileDialog->deleteLater();
-  } );
+      fileDialog->deleteLater();
+    } );
 #else
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString& fileName ) {
-    if( !fileName.isEmpty() ) {
-      // some string wrangling on android to get the native file name
-      QFile loadFile( fileName );
+    QObject::connect( fileDialog, &QFileDialog::fileSelected, this, &PoseSimulation::openTINFromString );
 
-      if( !loadFile.open( QIODevice::ReadOnly ) ) {
-        qWarning() << "Couldn't open save file.";
-      } else {
-        openTINFromFile( loadFile );
-      }
-    }
+    // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+    QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
 
-    // block all further signals, so no double opening happens
-    fileDialog->blockSignals( true );
-
-    fileDialog->deleteLater();
-  } );
+    QMetaObject::invokeMethod( mainWindow, [&fileDialog]() { fileDialog->open(); } );
 #endif
+  } );
+}
 
-  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
-  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+void
+PoseSimulation::openTINFromString( QString fileName ) {
+  if( !fileName.isEmpty() ) {
+    // some string wrangling on android to get the native file name
+    QFile loadFile( fileName );
 
-  fileDialog->open();
+    if( !loadFile.open( QIODevice::ReadOnly ) ) {
+      qWarning() << "Couldn't open save file.";
+    } else {
+      openTINFromFile( loadFile );
+    }
+  }
 }
 
 void
@@ -596,12 +596,21 @@ PoseSimulation::openTINFromFile( QFile& file ) {
     }
   }
 
-  tin = make_unique< DelaunayTriangulationProjectedXY >( points.cbegin(), points.cend() );
+  if( !points.empty() ) {
+    auto state = m_enabled;
+    setSimulation( false );
 
-  auto surfaceMesh = make_shared< SurfaceMesh_3 >();
-  CGAL::copy_face_graph( *tin, *surfaceMesh );
+    lastFoundFace = nullptr;
 
-  Q_EMIT surfaceChanged( surfaceMesh );
+    tin = make_unique< DelaunayTriangulationProjectedXY >( points.cbegin(), points.cend() );
+
+    auto surfaceMesh = make_shared< SurfaceMesh_3 >();
+    CGAL::copy_face_graph( *tin, *surfaceMesh );
+
+    Q_EMIT surfaceChanged( surfaceMesh );
+
+    setSimulation( state );
+  }
 }
 
 void

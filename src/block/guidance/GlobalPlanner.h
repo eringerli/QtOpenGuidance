@@ -59,22 +59,24 @@ public Q_SLOTS:
 
   void setField( std::shared_ptr< Polygon_with_holes_2 > field );
 
-  void setAPoint();
+  void aPointSet();
 
-  void setBPoint();
+  void bPointSet();
 
-  void setAdditionalPoint();
+  void additionalPointSet();
 
-  void setAdditionalPointsContinous( ACTION_SIGNATURE_SLOT );
+  void additionalPointsContinousSet( ACTION_SIGNATURE_SLOT );
 
   void snap();
 
   void openAbLine();
+  void openAbLineFromString( const QString& fileName );
   void openAbLineFromFile( QFile& file );
 
-  void newField();
+  void newAbLine();
 
   void saveAbLine();
+  void saveAbLineToString( QString fileName );
   void saveAbLineToFile( QFile& file );
 
   void setPlannerSettings( const int pathsInReserve, const double maxDeviation );
@@ -122,14 +124,13 @@ public:
 
   PlanGlobal plan = PlanGlobal();
 
-  GlobalPlannerToolbar*      widget = nullptr;
-  KDDockWidgets::DockWidget* dock   = nullptr;
+  MyMainWindow*              mainWindow = nullptr;
+  GlobalPlannerToolbar*      widget     = nullptr;
+  KDDockWidgets::DockWidget* dock       = nullptr;
 
   GeographicConvertionWrapper* tmw = nullptr;
 
 private:
-  QWidget* mainWindow = nullptr;
-
   QPointer< PlanOptimitionController > planOptimitionController;
 };
 

@@ -55,7 +55,7 @@ GlobalPlannerToolbar::resetToolbar() {
 }
 
 void
-GlobalPlannerToolbar::setToolbarToAdditionalPoint() {
+GlobalPlannerToolbar::toolbarToAdditionalPointSet() {
   ui->pbAB->setText( QStringLiteral( "+" ) );
   ui->pbAB->setCheckable( false );
 }

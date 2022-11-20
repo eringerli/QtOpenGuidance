@@ -418,14 +418,14 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
     QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlanner, &GlobalPlanner::setPlannerSettings );
 
-    auto* newFieldAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
-    QObject::connect( newFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::newField );
+    auto* newAbLineAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New AB-Line/Curve" ) );
+    QObject::connect( newAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::newAbLine );
 
-    auto* openFieldAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
-    QObject::connect( openFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::openAbLine );
+    auto* openAbLineAction = newOpenSaveToolbar->openMenu->addAction( QStringLiteral( "Open AB-Line/Curve" ) );
+    QObject::connect( openAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::openAbLine );
 
-    auto* saveFieldAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
-    QObject::connect( saveFieldAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
+    auto* saveAbLineAction = newOpenSaveToolbar->saveMenu->addAction( QStringLiteral( "Save AB-Line/Curve" ) );
+    QObject::connect( saveAbLineAction, &QAction::triggered, globalPlanner, &GlobalPlanner::saveAbLine );
 
     this->globalPlanner = globalPlanner;
   }

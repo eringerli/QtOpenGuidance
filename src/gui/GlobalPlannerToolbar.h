@@ -33,7 +33,7 @@ public:
   explicit GlobalPlannerToolbar( QWidget* parent = nullptr );
   ~GlobalPlannerToolbar();
   void resetToolbar();
-  void setToolbarToAdditionalPoint();
+  void toolbarToAdditionalPointSet();
 
 private Q_SLOTS:
   void on_pbAB_clicked( bool checked );

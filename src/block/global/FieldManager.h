@@ -41,13 +41,15 @@ class QFile;
 class CgalThread;
 class CgalWorker;
 
+class FieldModel;
+
 class FieldManager : public BlockBase {
   Q_OBJECT
 
 public:
   explicit FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw );
 
-  ~FieldManager() {}
+  ~FieldManager();
 
 private:
   void alphaShape();
@@ -61,9 +63,11 @@ public Q_SLOTS:
   void newField();
 
   void openField();
+  void openFieldFromString( const QString& fileName );
   void openFieldFromFile( QFile& file );
 
   void saveField();
+  void saveFieldToString( QString fileName );
   void saveFieldToFile( QFile& file );
 
   void setContinousRecord( const bool enabled );

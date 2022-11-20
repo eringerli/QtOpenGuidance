@@ -98,6 +98,7 @@ public Q_SLOTS:
                                    const double noiseGyro );
 
   void openTIN();
+  void openTINFromString( QString fileName );
   void openTINFromFile( QFile& file );
 
 Q_SIGNALS:

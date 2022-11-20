@@ -59,6 +59,8 @@ FieldManager::FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tm
   openFieldFromFile( file );
 }
 
+FieldManager::~FieldManager() {}
+
 void
 FieldManager::alphaShape() {
   QElapsedTimer timer;
@@ -152,61 +154,58 @@ FieldManager::setPoseRightEdge( const Eigen::Vector3d& position, const Eigen::Qu
 
 void
 FieldManager::openField() {
-  std::cout << "FieldManager::openField" << std::endl;
-  qDebug() << "FieldManager::openField";
+  QMetaObject::invokeMethod( mainWindow, [this]() {
+    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+    QString dir;
 
-  QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-  QString dir;
+    auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Field" ), dir, selectedFilter );
+    fileDialog->setFileMode( QFileDialog::ExistingFile );
+    fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
 
-  auto* fileDialog = new QFileDialog( mainWindow, tr( "Open Saved Field" ), dir, selectedFilter );
-  fileDialog->setFileMode( QFileDialog::ExistingFile );
-  fileDialog->setNameFilter( tr( "All Files (*);;GeoJSON Files (*.geojson)" ) );
-
-  // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
-  // this is needed, as the file dialog on android is asynchonous, so you have to connect
-  // to the signals instead of using the static functions for the dialogs
+    // connect the signal QFileDialog::urlSelected to a lambda, which opens the file.
+    // this is needed, as the file dialog on android is asynchonous, so you have to connect
+    // to the signals instead of using the static functions for the dialogs
 #ifdef Q_OS_ANDROID
-  QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
-    if( !fileName.isEmpty() ) {
-      // some string wrangling on android to get the native file name
-      QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
+    QObject::connect( fileDialog, &QFileDialog::urlSelected, this, [this, fileDialog]( QUrl fileName ) {
+      if( !fileName.isEmpty() ) {
+        // some string wrangling on android to get the native file name
+        QFile loadFile( QUrl::fromPercentEncoding( fileName.toString().split( QStringLiteral( "%3A" ) ).at( 1 ).toUtf8() ) );
 
-      if( !loadFile.open( QIODevice::ReadOnly ) ) {
-        qWarning() << "Couldn't open save file.";
-      } else {
-        openFieldFromFile( loadFile );
+        if( !loadFile.open( QIODevice::ReadOnly ) ) {
+          qWarning() << "Couldn't open save file.";
+        } else {
+          openAbLineFromFile( loadFile );
+        }
       }
-    }
 
-    // block all further signals, so no double opening happens
-    fileDialog->blockSignals( true );
+      // block all further signals, so no double opening happens
+      fileDialog->blockSignals( true );
 
-    fileDialog->deleteLater();
-  } );
+      fileDialog->deleteLater();
+    } );
 #else
-  QObject::connect( fileDialog, &QFileDialog::fileSelected, mainWindow, [this, fileDialog]( const QString& fileName ) {
-    if( !fileName.isEmpty() ) {
-      // some string wrangling on android to get the native file name
-      QFile loadFile( fileName );
+    QObject::connect( fileDialog, &QFileDialog::fileSelected, this, &FieldManager::openFieldFromString );
 
-      if( !loadFile.open( QIODevice::ReadOnly ) ) {
-        qWarning() << "Couldn't open save file.";
-      } else {
-        openFieldFromFile( loadFile );
-      }
-    }
+    // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
+    QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
 
-    // block all further signals, so no double opening happens
-    fileDialog->blockSignals( true );
-
-    fileDialog->deleteLater();
-  } );
+    QMetaObject::invokeMethod( mainWindow, [&fileDialog]() { fileDialog->open(); } );
 #endif
+  } );
+}
 
-  // connect finished to deleteLater, so the dialog gets deleted when Cancel is pressed
-  QObject::connect( fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater );
+void
+FieldManager::openFieldFromString( const QString& fileName ) {
+  if( !fileName.isEmpty() ) {
+    // some string wrangling on android to get the native file name
+    QFile loadFile( fileName );
 
-  fileDialog->open();
+    if( !loadFile.open( QIODevice::ReadOnly ) ) {
+      qWarning() << "Couldn't open save file.";
+    } else {
+      openFieldFromFile( loadFile );
+    }
+  }
 }
 
 void
@@ -217,9 +216,6 @@ FieldManager::openFieldFromFile( QFile& file ) {
       return;
     }
   }
-
-  std::cout << "FieldManager::openFieldFromFile" << file.fileName().toStdString() << std::endl;
-  qDebug() << "FieldManager::openFieldFromFile " << file.fileName();
 
   auto geoJsonHelper = GeoJsonHelper( file );
 
@@ -289,19 +285,28 @@ FieldManager::newField() {
 void
 FieldManager::saveField() {
   if( currentField || !points.empty() ) {
-    QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
-    QString dir;
-    QString fileName = QFileDialog::getSaveFileName(
-      mainWindow, tr( "Save Field" ), dir, tr( "All Files (*);;GeoJSON Files (*.geojson)" ), &selectedFilter );
+    QMetaObject::invokeMethod( mainWindow, [this]() {
+      QString selectedFilter = QStringLiteral( "GeoJSON Files (*.geojson)" );
+      QString dir;
+      QString fileName = QFileDialog::getSaveFileName(
+        mainWindow, tr( "Save Field" ), dir, tr( "All Files (*);;GeoJSON Files (*.geojson)" ), &selectedFilter );
 
-    if( !fileName.isEmpty() ) {
-      QFile saveFile( fileName );
-
-      if( !saveFile.open( QIODevice::WriteOnly ) ) {
-        qWarning() << "Couldn't open save file.";
-        return;
+      if( !fileName.isEmpty() ) {
+        QMetaObject::invokeMethod( this, [this, &fileName]() { saveFieldToString( fileName ); } );
       }
+    } );
+  }
+}
 
+void
+FieldManager::saveFieldToString( QString fileName ) {
+  if( !fileName.isEmpty() ) {
+    // some string wrangling on android to get the native file name
+    QFile saveFile( fileName );
+
+    if( !saveFile.open( QIODevice::WriteOnly ) ) {
+      qWarning() << "Couldn't open save file.";
+    } else {
       saveFieldToFile( saveFile );
     }
   }
@@ -413,17 +418,16 @@ FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Points Generated" ),
                     QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Points Boundary" ),
-                    QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
 
-  auto object2 = new FieldModel( rootEntity );
-  b->object2   = object2;
+  auto fieldModel = new FieldModel( rootEntity );
+  b->addObject( fieldModel );
 
-  QObject::connect( object, &FieldManager::fieldChanged, object2, &FieldModel::setField );
-  QObject::connect( object, &FieldManager::fieldCleared, object2, &FieldModel::clearField );
-  QObject::connect( object, &FieldManager::pointAdded, object2, &FieldModel::addPoint );
-  QObject::connect( object, &FieldManager::pointsSet, object2, &FieldModel::setPoints );
-  QObject::connect( object, &FieldManager::pointsCleared, object2, &FieldModel::clearPoints );
+  QObject::connect( object, &FieldManager::fieldChanged, fieldModel, &FieldModel::setField );
+  QObject::connect( object, &FieldManager::fieldCleared, fieldModel, &FieldModel::clearField );
+  QObject::connect( object, &FieldManager::pointAdded, fieldModel, &FieldModel::addPoint );
+  QObject::connect( object, &FieldManager::pointsSet, fieldModel, &FieldModel::setPoints );
+  QObject::connect( object, &FieldManager::pointsCleared, fieldModel, &FieldModel::clearPoints );
 
   return b;
 }
