@@ -28,13 +28,13 @@ ValueTransmissionBase::ValueTransmissionBase( const int id ) : BlockBase(), id( 
   repeatTimer  = std::make_unique< QBasicTimer >();
 }
 
-void
-ValueTransmissionBase::toJSON( QJsonObject& json ) {
+QJsonObject
+ValueTransmissionBase::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "id" )]            = id;
   valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
   valuesObject[QStringLiteral( "repeatTimeMs" )]  = repeatTimeMs;
-  json[QStringLiteral( "values" )]                = valuesObject;
+  return valuesObject;
 }
 
 void

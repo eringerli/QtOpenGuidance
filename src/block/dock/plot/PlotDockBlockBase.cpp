@@ -41,8 +41,8 @@ PlotDockBlockBase::~PlotDockBlockBase() {
   dock->deleteLater();
 }
 
-void
-PlotDockBlockBase::toJSON( QJsonObject& json ) {
+QJsonObject
+PlotDockBlockBase::toJSON() {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "XAxisVisible" )]      = getXAxisVisible();
@@ -51,20 +51,16 @@ PlotDockBlockBase::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "AutoscrollEnabled" )] = getAutoscrollEnabled();
   valuesObject[QStringLiteral( "Window" )]            = getWindow();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-PlotDockBlockBase::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-    setXAxisVisible( valuesObject[QStringLiteral( "XAxisVisible" )].toBool( false ) );
-    setYAxisVisible( valuesObject[QStringLiteral( "YAxisVisible" )].toBool( true ) );
-    setYAxisDescription( valuesObject[QStringLiteral( "YAxisDescription" )].toString( QString() ) );
-    setAutoscrollEnabled( valuesObject[QStringLiteral( "AutoscrollEnabled" )].toBool( true ) );
-    setWindow( valuesObject[QStringLiteral( "Window" )].toDouble( 20 ) );
-  }
+PlotDockBlockBase::fromJSON( QJsonObject& valuesObject ) {
+  setXAxisVisible( valuesObject[QStringLiteral( "XAxisVisible" )].toBool( false ) );
+  setYAxisVisible( valuesObject[QStringLiteral( "YAxisVisible" )].toBool( true ) );
+  setYAxisDescription( valuesObject[QStringLiteral( "YAxisDescription" )].toString( QString() ) );
+  setAutoscrollEnabled( valuesObject[QStringLiteral( "AutoscrollEnabled" )].toBool( true ) );
+  setWindow( valuesObject[QStringLiteral( "Window" )].toDouble( 20 ) );
 }
 
 bool

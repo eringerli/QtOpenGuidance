@@ -58,8 +58,8 @@ class GlobalPlannerModel : public BlockBase {
 public:
   explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity );
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
   void refreshColors();
 

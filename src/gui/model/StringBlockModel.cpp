@@ -84,7 +84,7 @@ StringBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< StringObject* >( block->object ) ) {
+      if( auto* object = qobject_cast< StringObject* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -111,7 +111,7 @@ StringBlockModel::setData( const QModelIndex& index, const QVariant& value, int 
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< StringObject* >( block->object ) ) {
+      if( auto* object = qobject_cast< StringObject* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -158,7 +158,7 @@ StringBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< StringObject* >( block->object ) != nullptr ) {
+      if( qobject_cast< StringObject* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

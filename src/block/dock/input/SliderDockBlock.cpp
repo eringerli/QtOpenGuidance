@@ -59,8 +59,8 @@ SliderDockBlock::emitConfigSignals() {
   Q_EMIT valueChanged( widget->getValue(), CalculationOption::Option::None );
 }
 
-void
-SliderDockBlock::toJSON( QJsonObject& json ) {
+QJsonObject
+SliderDockBlock::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "Value" )]          = widget->getValue();
   valuesObject[QStringLiteral( "Decimals" )]       = widget->getDecimals();
@@ -71,48 +71,44 @@ SliderDockBlock::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "ResetOnStart" )]   = widget->resetOnStart;
   valuesObject[QStringLiteral( "SliderInverted" )] = widget->getSliderInverted();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-SliderDockBlock::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+SliderDockBlock::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "ResetOnStart" )].isBool() ) {
+    widget->resetOnStart = valuesObject[QStringLiteral( "ResetOnStart" )].toBool();
+  }
 
-    if( valuesObject[QStringLiteral( "ResetOnStart" )].isBool() ) {
-      widget->resetOnStart = valuesObject[QStringLiteral( "ResetOnStart" )].toBool();
-    }
+  if( valuesObject[QStringLiteral( "Decimals" )].isDouble() ) {
+    widget->setDecimals( valuesObject[QStringLiteral( "Decimals" )].toDouble() );
+  }
 
-    if( valuesObject[QStringLiteral( "Decimals" )].isDouble() ) {
-      widget->setDecimals( valuesObject[QStringLiteral( "Decimals" )].toDouble() );
-    }
+  if( valuesObject[QStringLiteral( "Maximum" )].isDouble() ) {
+    widget->setMaximum( valuesObject[QStringLiteral( "Maximum" )].toDouble() );
+  }
 
-    if( valuesObject[QStringLiteral( "Maximum" )].isDouble() ) {
-      widget->setMaximum( valuesObject[QStringLiteral( "Maximum" )].toDouble() );
-    }
+  if( valuesObject[QStringLiteral( "Minimum" )].isDouble() ) {
+    widget->setMinimum( valuesObject[QStringLiteral( "Minimum" )].toDouble() );
+  }
 
-    if( valuesObject[QStringLiteral( "Minimum" )].isDouble() ) {
-      widget->setMinimum( valuesObject[QStringLiteral( "Minimum" )].toDouble() );
-    }
+  if( valuesObject[QStringLiteral( "DefaultValue" )].isDouble() ) {
+    widget->setDefaultValue( valuesObject[QStringLiteral( "DefaultValue" )].toDouble() );
+  }
 
-    if( valuesObject[QStringLiteral( "DefaultValue" )].isDouble() ) {
-      widget->setDefaultValue( valuesObject[QStringLiteral( "DefaultValue" )].toDouble() );
-    }
+  if( valuesObject[QStringLiteral( "Unit" )].isDouble() ) {
+    widget->setUnit( valuesObject[QStringLiteral( "Unit" )].toString() );
+  }
 
-    if( valuesObject[QStringLiteral( "Unit" )].isDouble() ) {
-      widget->setUnit( valuesObject[QStringLiteral( "Unit" )].toString() );
-    }
+  if( valuesObject[QStringLiteral( "SliderInverted" )].isBool() ) {
+    widget->setSliderInverted( valuesObject[QStringLiteral( "SliderInverted" )].toBool() );
+  }
 
-    if( valuesObject[QStringLiteral( "SliderInverted" )].isBool() ) {
-      widget->setSliderInverted( valuesObject[QStringLiteral( "SliderInverted" )].toBool() );
-    }
-
-    if( widget->resetOnStart ) {
-      widget->setValue( widget->getDefaultValue() );
-    } else {
-      if( valuesObject[QStringLiteral( "Value" )].isDouble() ) {
-        widget->setValue( valuesObject[QStringLiteral( "Value" )].toDouble() );
-      }
+  if( widget->resetOnStart ) {
+    widget->setValue( widget->getDefaultValue() );
+  } else {
+    if( valuesObject[QStringLiteral( "Value" )].isDouble() ) {
+      widget->setValue( valuesObject[QStringLiteral( "Value" )].toDouble() );
     }
   }
 }

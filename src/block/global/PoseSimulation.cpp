@@ -321,8 +321,8 @@ PoseSimulation::emitConfigSignals() {
   Q_EMIT velocityChanged( 0, CalculationOption::Option::None );
 }
 
-void
-PoseSimulation::toJSON( QJsonObject& json ) {
+QJsonObject
+PoseSimulation::toJSON() {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "a" )]      = this->a;
@@ -339,65 +339,61 @@ PoseSimulation::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "Cx" )]     = this->Cx;
   valuesObject[QStringLiteral( "slip" )]   = this->slipX;
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-PoseSimulation::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+PoseSimulation::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "a" )].isDouble() ) {
+    this->a = valuesObject[QStringLiteral( "a" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "a" )].isDouble() ) {
-      this->a = valuesObject[QStringLiteral( "a" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "b" )].isDouble() ) {
+    this->b = valuesObject[QStringLiteral( "b" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "b" )].isDouble() ) {
-      this->b = valuesObject[QStringLiteral( "b" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "c" )].isDouble() ) {
+    this->c = valuesObject[QStringLiteral( "c" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "c" )].isDouble() ) {
-      this->c = valuesObject[QStringLiteral( "c" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Caf" )].isDouble() ) {
+    this->Caf = valuesObject[QStringLiteral( "Caf" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Caf" )].isDouble() ) {
-      this->Caf = valuesObject[QStringLiteral( "Caf" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Car" )].isDouble() ) {
+    this->Car = valuesObject[QStringLiteral( "Car" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Car" )].isDouble() ) {
-      this->Car = valuesObject[QStringLiteral( "Car" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Cah" )].isDouble() ) {
+    this->Cah = valuesObject[QStringLiteral( "Cah" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Cah" )].isDouble() ) {
-      this->Cah = valuesObject[QStringLiteral( "Cah" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "m" )].isDouble() ) {
+    this->m = valuesObject[QStringLiteral( "m" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "m" )].isDouble() ) {
-      this->m = valuesObject[QStringLiteral( "m" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Iz" )].isDouble() ) {
+    this->Iz = valuesObject[QStringLiteral( "Iz" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Iz" )].isDouble() ) {
-      this->Iz = valuesObject[QStringLiteral( "Iz" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "sigmaF" )].isDouble() ) {
+    this->sigmaF = valuesObject[QStringLiteral( "sigmaF" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "sigmaF" )].isDouble() ) {
-      this->sigmaF = valuesObject[QStringLiteral( "sigmaF" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "sigmaR" )].isDouble() ) {
+    this->sigmaR = valuesObject[QStringLiteral( "sigmaR" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "sigmaR" )].isDouble() ) {
-      this->sigmaR = valuesObject[QStringLiteral( "sigmaR" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "sigmaH" )].isDouble() ) {
+    this->sigmaH = valuesObject[QStringLiteral( "sigmaH" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "sigmaH" )].isDouble() ) {
-      this->sigmaH = valuesObject[QStringLiteral( "sigmaH" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Cx" )].isDouble() ) {
+    this->Cx = valuesObject[QStringLiteral( "Cx" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Cx" )].isDouble() ) {
-      this->Cx = valuesObject[QStringLiteral( "Cx" )].toDouble();
-    }
-
-    if( valuesObject[QStringLiteral( "slip" )].isDouble() ) {
-      this->slipX = valuesObject[QStringLiteral( "slip" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "slip" )].isDouble() ) {
+    this->slipX = valuesObject[QStringLiteral( "slip" )].toDouble();
   }
 }
 

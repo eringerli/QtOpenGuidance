@@ -103,7 +103,7 @@ TransmissionBlockModel::data( const QModelIndex& index, int role ) const {
         auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
         if( block != nullptr ) {
-          if( auto* object = qobject_cast< ValueTransmissionBase* >( block->object ) ) {
+          if( auto* object = qobject_cast< ValueTransmissionBase* >( block->objects.front() ) ) {
             if( countRow++ == index.row() ) {
               switch( index.column() ) {
                 case 0:
@@ -154,7 +154,7 @@ TransmissionBlockModel::setData( const QModelIndex& index, const QVariant& value
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< ValueTransmissionBase* >( block->object ) ) {
+      if( auto* object = qobject_cast< ValueTransmissionBase* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -199,7 +199,7 @@ TransmissionBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< ValueTransmissionBase* >( block->object ) != nullptr ) {
+      if( qobject_cast< ValueTransmissionBase* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

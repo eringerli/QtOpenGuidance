@@ -29,6 +29,8 @@
 
 #include <QGraphicsPathItem>
 
+#include <vector>
+
 class QNEPort;
 
 class QNEBlock
@@ -61,6 +63,8 @@ public:
   void setType( const QString str );
 
   QNEPort* getPortWithName( const QString& name, bool output );
+
+  void addObject( QObject* object );
 
   bool systemBlock = false;
 
@@ -99,7 +103,6 @@ public:
   const QString getName() { return name; }
 
 public:
-  QObject* object  = nullptr;
-  QObject* object2 = nullptr;
-  QString  typeString;
+  std::vector< QObject* > objects;
+  QString                 typeString;
 };

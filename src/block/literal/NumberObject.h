@@ -32,8 +32,8 @@ public:
 
   void emitConfigSignals() override;
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 Q_SIGNALS:
   void numberChanged( NUMBER_SIGNATURE_SIGNAL );

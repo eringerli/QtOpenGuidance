@@ -53,7 +53,9 @@ int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
 int QNEBlock::m_nextUserId   = int( IdRange::UserIdStart );
 
 QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* parent )
-    : QGraphicsPathItem( parent ), systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ), object( object ) {
+    : QGraphicsPathItem( parent ), systemBlock( systemBlock ), width( 20 ), height( cornerRadius * 2 ) {
+  addObject( object );
+
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, cornerRadius, cornerRadius );
   setPath( p );
@@ -90,10 +92,8 @@ QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* pa
 }
 
 QNEBlock::~QNEBlock() {
-  object->deleteLater();
-
-  if( object2 ) {
-    object2->deleteLater();
+  for( auto& object : objects ) {
+    object->deleteLater();
   }
 }
 
@@ -176,10 +176,12 @@ QNEBlock::setName( const QString& name, bool setFromLabel ) {
 
   this->name = name;
 
-  auto* obj = qobject_cast< BlockBase* >( object );
+  for( auto& object : objects ) {
+    auto* obj = qobject_cast< BlockBase* >( object );
 
-  if( obj != nullptr ) {
-    obj->setName( name );
+    if( obj != nullptr ) {
+      obj->setName( name );
+    }
   }
 
   resizeBlockWidth();
@@ -209,6 +211,11 @@ QNEBlock::getPortWithName( const QString& name, bool output ) {
 }
 
 void
+QNEBlock::addObject( QObject* object ) {
+  objects.push_back( object );
+}
+
+void
 QNEBlock::toJSON( QJsonObject& json ) {
   QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
@@ -219,7 +226,19 @@ QNEBlock::toJSON( QJsonObject& json ) {
   blockObject[QStringLiteral( "positionX" )] = x();
   blockObject[QStringLiteral( "positionY" )] = y();
 
-  qobject_cast< BlockBase* >( object )->toJSON( blockObject );
+  {
+    int i = 0;
+    for( auto& object : objects ) {
+      auto obj = qobject_cast< BlockBase* >( object );
+      if( obj ) {
+        auto json = obj->toJSON();
+        if( !json.empty() ) {
+          blockObject[QStringLiteral( "value" ) + QString::number( i )] = json;
+        }
+      }
+      ++i;
+    }
+  }
 
   blocksArray.append( blockObject );
 
@@ -229,7 +248,17 @@ QNEBlock::toJSON( QJsonObject& json ) {
 void
 QNEBlock::fromJSON( QJsonObject& json ) const {
   if( json[QStringLiteral( "values" )].isObject() ) {
-    qobject_cast< BlockBase* >( object )->fromJSON( json );
+    auto jsonValue = json[QStringLiteral( "values" )].toObject();
+    qobject_cast< BlockBase* >( objects.front() )->fromJSON( jsonValue );
+  }
+
+  int i = 0;
+  for( auto& object : objects ) {
+    if( json[QStringLiteral( "value" ) + QString::number( i )].isObject() ) {
+      auto jsonValue = json[QStringLiteral( "value" ) + QString::number( i )].toObject();
+      qobject_cast< BlockBase* >( object )->fromJSON( jsonValue );
+    }
+    ++i;
   }
 }
 

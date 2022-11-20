@@ -126,28 +126,24 @@ TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-void
-TerrainModel::toJSON( QJsonObject& json ) {
+QJsonObject
+TerrainModel::toJSON() {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "visible" )]      = visible;
   valuesObject[QStringLiteral( "terrainColor" )] = terrainColor.name();
   valuesObject[QStringLiteral( "lineColor" )]    = linesColor.name();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-TerrainModel::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+TerrainModel::fromJSON( QJsonObject& valuesObject ) {
+  visible      = valuesObject[QStringLiteral( "visible" )].toBool( true );
+  terrainColor = QColor( valuesObject[QStringLiteral( "terrainColor" )].toString( QStringLiteral( "#00aa00" ) ) );
+  linesColor   = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
 
-    visible      = valuesObject[QStringLiteral( "visible" )].toBool( true );
-    terrainColor = QColor( valuesObject[QStringLiteral( "terrainColor" )].toString( QStringLiteral( "#00aa00" ) ) );
-    linesColor   = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-
-    refreshColors();
-  }
+  refreshColors();
 }
 
 void

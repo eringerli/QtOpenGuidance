@@ -78,7 +78,7 @@ PathPlannerModelBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< PathPlannerModel* >( block->object ) != nullptr ) {
+      if( qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -105,7 +105,7 @@ PathPlannerModelBlockModel::setData( const QModelIndex& index, const QVariant& v
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( /*auto* object = */ qobject_cast< PathPlannerModel* >( block->object ) != nullptr ) {
+      if( /*auto* object = */ qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -146,7 +146,7 @@ PathPlannerModelBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< PathPlannerModel* >( block->object ) != nullptr ) {
+      if( qobject_cast< PathPlannerModel* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

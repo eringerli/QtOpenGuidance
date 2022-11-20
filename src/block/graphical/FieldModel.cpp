@@ -99,28 +99,24 @@ FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-void
-FieldModel::toJSON( QJsonObject& json ) {
+QJsonObject
+FieldModel::toJSON() {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "visible" )]        = visible;
   valuesObject[QStringLiteral( "perimeterColor" )] = perimeterColor.name();
   valuesObject[QStringLiteral( "pointsColor" )]    = pointsColor.name();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-FieldModel::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+FieldModel::fromJSON( QJsonObject& valuesObject ) {
+  visible        = valuesObject[QStringLiteral( "visible" )].toBool( true );
+  perimeterColor = QColor( valuesObject[QStringLiteral( "perimeterColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+  pointsColor    = QColor( valuesObject[QStringLiteral( "pointsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
 
-    visible      = valuesObject[QStringLiteral( "visible" )].toBool( true );
-    perimeterColor = QColor( valuesObject[QStringLiteral( "perimeterColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-    pointsColor    = QColor( valuesObject[QStringLiteral( "pointsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
-
-    refreshColors();
-  }
+  refreshColors();
 }
 
 void

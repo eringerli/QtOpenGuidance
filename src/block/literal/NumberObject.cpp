@@ -31,21 +31,17 @@ NumberObject::emitConfigSignals() {
   Q_EMIT numberChanged( number, CalculationOption::Option::None );
 }
 
-void
-NumberObject::toJSON( QJsonObject& json ) {
+QJsonObject
+NumberObject::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "Number" )] = number;
-  json[QStringLiteral( "values" )]         = valuesObject;
+  return valuesObject;
 }
 
 void
-NumberObject::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-    if( valuesObject[QStringLiteral( "Number" )].isDouble() ) {
-      number = valuesObject[QStringLiteral( "Number" )].toDouble();
-    }
+NumberObject::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "Number" )].isDouble() ) {
+    number = valuesObject[QStringLiteral( "Number" )].toDouble();
   }
 }
 

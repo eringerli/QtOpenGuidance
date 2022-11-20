@@ -87,7 +87,7 @@ VectorBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< VectorObject* >( block->object ) ) {
+      if( auto* object = qobject_cast< VectorObject* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -120,7 +120,7 @@ VectorBlockModel::setData( const QModelIndex& index, const QVariant& value, int 
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< VectorObject* >( block->object ) ) {
+      if( auto* object = qobject_cast< VectorObject* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -179,7 +179,7 @@ VectorBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< VectorObject* >( block->object ) != nullptr ) {
+      if( qobject_cast< VectorObject* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

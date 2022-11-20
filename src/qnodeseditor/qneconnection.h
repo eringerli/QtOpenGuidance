@@ -30,6 +30,8 @@
 #include <QGraphicsPathItem>
 #include <QObject>
 
+#include <vector>
+
 class QNEPort;
 
 class QNEConnection : public QGraphicsPathItem {
@@ -61,5 +63,5 @@ private:
   QNEPort* m_port1 = nullptr;
   QNEPort* m_port2 = nullptr;
 
-  QMetaObject::Connection connection;
+  std::vector< QMetaObject::Connection > connections;
 };

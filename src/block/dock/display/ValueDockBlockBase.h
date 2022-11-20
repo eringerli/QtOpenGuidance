@@ -33,8 +33,8 @@ public:
 
   virtual ~ValueDockBlockBase() { dock->deleteLater(); }
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 public:
   virtual const QFont&   getFont()       = 0;

@@ -37,8 +37,8 @@ public:
 
   virtual ~PlotDockBlockBase();
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 public:
   bool          getXAxisVisible();

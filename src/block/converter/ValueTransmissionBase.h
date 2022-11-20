@@ -32,8 +32,8 @@ class ValueTransmissionBase : public BlockBase {
 public:
   explicit ValueTransmissionBase( const int id );
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 public Q_SLOTS:
   void setTimeoutTimeMs( int value );

@@ -25,8 +25,8 @@
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstValueDock       = nullptr;
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstThreeValuesDock = nullptr;
 
-void
-ValueDockBlockBase::toJSON( QJsonObject& json ) {
+QJsonObject
+ValueDockBlockBase::toJSON() {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "Font" )]        = QJsonValue::fromVariant( QVariant( getFont() ) );
@@ -36,19 +36,15 @@ ValueDockBlockBase::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "Unit" )]        = getUnit();
   valuesObject[QStringLiteral( "UnitVisible" )] = unitVisible();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-ValueDockBlockBase::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-    setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value< QFont >() );
-    setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
-    setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
-    setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );
-    setUnit( valuesObject[QStringLiteral( "Unit" )].toString( QString() ) );
-    setUnitVisible( valuesObject[QStringLiteral( "UnitVisible" )].toBool( false ) );
-  }
+ValueDockBlockBase::fromJSON( QJsonObject& valuesObject ) {
+  setFont( valuesObject[QStringLiteral( "Font" )].toVariant().value< QFont >() );
+  setPrecision( valuesObject[QStringLiteral( "Precision" )].toInt( 0 ) );
+  setScale( valuesObject[QStringLiteral( "Scale" )].toDouble( 1 ) );
+  setFieldWidth( valuesObject[QStringLiteral( "FieldWitdh" )].toInt( 0 ) );
+  setUnit( valuesObject[QStringLiteral( "Unit" )].toString( QString() ) );
+  setUnitVisible( valuesObject[QStringLiteral( "UnitVisible" )].toBool( false ) );
 }

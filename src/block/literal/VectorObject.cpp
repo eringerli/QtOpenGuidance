@@ -31,31 +31,27 @@ VectorObject::emitConfigSignals() {
   Q_EMIT vectorChanged( vector );
 }
 
-void
-VectorObject::toJSON( QJsonObject& json ) {
+QJsonObject
+VectorObject::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = vector.x();
   valuesObject[QStringLiteral( "Y" )] = vector.y();
   valuesObject[QStringLiteral( "Z" )] = vector.z();
-  json[QStringLiteral( "values" )]    = valuesObject;
+  return valuesObject;
 }
 
 void
-VectorObject::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+VectorObject::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
+    vector.x() = valuesObject[QStringLiteral( "X" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
-      vector.x() = valuesObject[QStringLiteral( "X" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
+    vector.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
-      vector.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
-    }
-
-    if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
-      vector.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
+    vector.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
   }
 }
 

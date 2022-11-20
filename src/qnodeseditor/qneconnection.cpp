@@ -68,7 +68,9 @@ QNEConnection::~QNEConnection() {
     }
   }
 
-  QObject::disconnect( connection );
+  for( auto& connection : connections ) {
+    QObject::disconnect( connection );
+  }
 }
 
 void
@@ -105,20 +107,26 @@ QNEConnection::setPort1( QNEPort* p ) {
 
 bool
 QNEConnection::setPort2( QNEPort* p ) {
-  connection = QObject::connect( m_port1->block()->object,
-                                 ( m_port1->slotSignalSignature.latin1() ),
-                                 p->block()->object,
-                                 ( p->slotSignalSignature.latin1() ),
-                                 Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
+  bool connectionMade = false;
+  for( auto& from : m_port1->block()->objects ) {
+    for( auto& to : p->block()->objects ) {
+      auto connection = QObject::connect( from,
+                                          ( m_port1->slotSignalSignature.latin1() ),
+                                          to,
+                                          ( p->slotSignalSignature.latin1() ),
+                                          Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
 
-  if( connection ) {
-    m_port2 = p;
-    m_port2->connections().push_back( this );
+      if( connection ) {
+        m_port2 = p;
+        m_port2->connections().push_back( this );
 
-    return true;
+        connections.emplace_back( std::move( connection ) );
+        connectionMade |= true;
+      }
+    }
   }
 
-  return false;
+  return connectionMade;
 }
 
 void

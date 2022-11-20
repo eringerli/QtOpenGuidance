@@ -139,9 +139,9 @@ Q_SIGNALS:
 public:
   virtual void emitConfigSignals() override;
 
-  virtual void toJSON( QJsonObject& json ) override;
+  virtual QJsonObject toJSON() override;
 
-  virtual void fromJSON( QJsonObject& json ) override;
+  virtual void fromJSON( QJsonObject& ) override;
 
 protected:
   void timerEvent( QTimerEvent* event ) override;

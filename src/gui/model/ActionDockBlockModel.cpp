@@ -93,7 +93,7 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
       auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
-        if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
+        if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
           if( countRow++ == index.row() ) {
             switch( index.column() ) {
               case 1:
@@ -117,7 +117,7 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
       auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
-        if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
+        if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
           if( countRow++ == index.row() ) {
             switch( index.column() ) {
               case 0:
@@ -145,7 +145,7 @@ ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& value, 
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< ActionDockBlock* >( block->object ) ) {
+      if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -205,7 +205,7 @@ ActionDockBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< ActionDockBlock* >( block->object ) != nullptr ) {
+      if( qobject_cast< ActionDockBlock* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

@@ -31,21 +31,17 @@ StringObject::emitConfigSignals() {
   Q_EMIT stringChanged( string );
 }
 
-void
-StringObject::toJSON( QJsonObject& json ) {
+QJsonObject
+StringObject::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "String" )] = string;
-  json[QStringLiteral( "values" )]         = valuesObject;
+  return valuesObject;
 }
 
 void
-StringObject::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
-
-    if( valuesObject[QStringLiteral( "String" )].isString() ) {
-      string = valuesObject[QStringLiteral( "String" )].toString();
-    }
+StringObject::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "String" )].isString() ) {
+    string = valuesObject[QStringLiteral( "String" )].toString();
   }
 }
 

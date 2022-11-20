@@ -474,14 +474,14 @@ main( int argc, char** argv ) {
   // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( qt3dThread, rootRootEntity, cameraEntity );
   auto*         cameraControllerBlock   = cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
-  auto*         cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->object );
+  auto*         cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->objects.front() );
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
-  view->installEventFilter( cameraControllerBlock->object );
+  view->installEventFilter( cameraControllerBlock->objects.front() );
 
   // grid block
   BlockFactory* gridModelFactory = new GridModelFactory( qt3dThread, middlegroundEntity, cameraEntity );
   auto*         gridModelBlock   = gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
-  auto*         gridModel        = qobject_cast< GridModel* >( gridModelBlock->object );
+  auto*         gridModel        = qobject_cast< GridModel* >( gridModelBlock->objects.front() );
 
   // FPS measuremend block
   BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( qt3dThread, middlegroundEntity );

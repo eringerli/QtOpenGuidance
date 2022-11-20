@@ -122,8 +122,8 @@ PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-void
-PathPlannerModel::toJSON( QJsonObject& json ) {
+QJsonObject
+PathPlannerModel::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "visible" )]                = visible;
   valuesObject[QStringLiteral( "zOffset" )]                = zOffset;
@@ -138,30 +138,26 @@ PathPlannerModel::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "rayColor" )]               = raysColor.name();
   valuesObject[QStringLiteral( "bisectorsColor" )]         = bisectorsColor.name();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-PathPlannerModel::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+PathPlannerModel::fromJSON( QJsonObject& valuesObject ) {
+  visible                = valuesObject[QStringLiteral( "visible" )].toBool( true );
+  zOffset                = valuesObject[QStringLiteral( "zOffset" )].toDouble( 0.1 );
+  viewBox                = valuesObject[QStringLiteral( "viewBox" )].toDouble( 50 );
+  individualArcColor     = valuesObject[QStringLiteral( "individualArcColor" )].toBool( false );
+  individualSegmentColor = valuesObject[QStringLiteral( "individualSegmentColor" )].toBool( false );
+  individualRayColor     = valuesObject[QStringLiteral( "individualRayColor" )].toBool( false );
+  bisectorsVisible       = valuesObject[QStringLiteral( "bisectorsVisible" )].toBool( false );
 
-    visible                = valuesObject[QStringLiteral( "visible" )].toBool( true );
-    zOffset                = valuesObject[QStringLiteral( "zOffset" )].toDouble( 0.1 );
-    viewBox                = valuesObject[QStringLiteral( "viewBox" )].toDouble( 50 );
-    individualArcColor     = valuesObject[QStringLiteral( "individualArcColor" )].toBool( false );
-    individualSegmentColor = valuesObject[QStringLiteral( "individualSegmentColor" )].toBool( false );
-    individualRayColor     = valuesObject[QStringLiteral( "individualRayColor" )].toBool( false );
-    bisectorsVisible       = valuesObject[QStringLiteral( "bisectorsVisible" )].toBool( false );
+  arcColor       = QColor( valuesObject[QStringLiteral( "arcColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+  linesColor     = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+  segmentsColor  = QColor( valuesObject[QStringLiteral( "segmentColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+  raysColor      = QColor( valuesObject[QStringLiteral( "rayColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+  bisectorsColor = QColor( valuesObject[QStringLiteral( "bisectorsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
 
-    arcColor       = QColor( valuesObject[QStringLiteral( "arcColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-    linesColor     = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-    segmentsColor  = QColor( valuesObject[QStringLiteral( "segmentColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-    raysColor      = QColor( valuesObject[QStringLiteral( "rayColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-    bisectorsColor = QColor( valuesObject[QStringLiteral( "bisectorsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
-
-    refreshColors();
-  }
+  refreshColors();
 }
 
 void

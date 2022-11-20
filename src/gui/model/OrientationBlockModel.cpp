@@ -102,7 +102,7 @@ OrientationBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< OrientationBlock* >( block->object ) ) {
+      if( auto* object = qobject_cast< OrientationBlock* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -147,7 +147,7 @@ OrientationBlockModel::setData( const QModelIndex& index, const QVariant& value,
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( auto* object = qobject_cast< OrientationBlock* >( block->object ) ) {
+      if( auto* object = qobject_cast< OrientationBlock* >( block->objects.front() ) ) {
         if( countRow++ == index.row() ) {
           auto taitBryan = quaternionToTaitBryan( object->orientation );
 
@@ -239,7 +239,7 @@ OrientationBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< OrientationBlock* >( block->object ) != nullptr ) {
+      if( qobject_cast< OrientationBlock* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

@@ -78,7 +78,7 @@ ImplementBlockModel::data( const QModelIndex& index, int role ) const {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< Implement* >( block->object ) != nullptr ) {
+      if( qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -105,7 +105,7 @@ ImplementBlockModel::setData( const QModelIndex& index, const QVariant& value, i
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( /*auto* object = */ qobject_cast< Implement* >( block->object ) != nullptr ) {
+      if( /*auto* object = */ qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
         if( countRow++ == index.row() ) {
           switch( index.column() ) {
             case 0:
@@ -146,7 +146,7 @@ ImplementBlockModel::resetModel() {
     auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
     if( block != nullptr ) {
-      if( qobject_cast< Implement* >( block->object ) != nullptr ) {
+      if( qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
         ++countBuffer;
       }
     }

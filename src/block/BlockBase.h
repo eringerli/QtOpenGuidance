@@ -28,6 +28,7 @@
 #include "helpers/signatures.h"
 
 #include "CompressorApplication.h"
+#include "qjsonobject.h"
 
 class QJsonObject;
 class QComboBox;
@@ -45,8 +46,8 @@ public:
 
   virtual void emitConfigSignals() {}
 
-  virtual void toJSON( QJsonObject& ) {}
-  virtual void fromJSON( QJsonObject& ) {}
+  virtual QJsonObject toJSON() { return QJsonObject(); }
+  virtual void        fromJSON( QJsonObject& ) {}
 
   virtual void setName( const QString& ) {}
 };

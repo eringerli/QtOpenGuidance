@@ -334,11 +334,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   // simulator
   poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
-  poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
+  poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->objects.front() );
 
   terrainModel = new TerrainModel( backgroundEntity );
 
-  auto* poseSimulationTmp = qobject_cast< PoseSimulation* >( poseSimulationBlock->object );
+  auto* poseSimulationTmp = qobject_cast< PoseSimulation* >( poseSimulationBlock->objects.front() );
 
   {
     QObject::connect( this, &SettingsDialog::simulatorValuesChanged, poseSimulationTmp, &PoseSimulation::setSimulatorValues );
@@ -393,7 +393,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto* fieldManagerObject = qobject_cast< FieldManager* >( fieldManagerBlock->object );
+    auto* fieldManagerObject = qobject_cast< FieldManager* >( fieldManagerBlock->objects.front() );
     auto* newFieldAction     = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Field" ) );
     QObject::connect( newFieldAction, &QAction::triggered, fieldManagerObject, &FieldManager::newField );
 
@@ -414,7 +414,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   auto* globalPlannerModelBlock = globalPlannerModelFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
-    auto* globalPlanner = qobject_cast< GlobalPlanner* >( globalPlannerBlock->object );
+    auto* globalPlanner = qobject_cast< GlobalPlanner* >( globalPlannerBlock->objects.front() );
 
     QObject::connect( this, &SettingsDialog::plannerSettingsChanged, globalPlanner, &GlobalPlanner::setPlannerSettings );
 
@@ -1253,7 +1253,7 @@ SettingsDialog::setPathPlannerSettings() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
       block->setName( ui->lePathPlannerName->text() );
       pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
@@ -1879,7 +1879,7 @@ SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       ui->gbPathPlanner->blockSignals( true );
       ui->lePathPlannerName->blockSignals( true );
       ui->dsbPathlPlannerZOffset->blockSignals( true );
@@ -1970,7 +1970,7 @@ SettingsDialog::on_pbPathPlannerArcColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->arcColor, this, QStringLiteral( "Select Arc Color" ) );
 
       if( color.isValid() ) {
@@ -1992,7 +1992,7 @@ SettingsDialog::on_pbPathPlannerLineColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->linesColor, this, QStringLiteral( "Select Line Color" ) );
 
       if( color.isValid() ) {
@@ -2014,7 +2014,7 @@ SettingsDialog::on_pbPathPlannerRayColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->raysColor, this, QStringLiteral( "Select Ray Color" ) );
 
       if( color.isValid() ) {
@@ -2036,7 +2036,7 @@ SettingsDialog::on_pbPathPlannerSegmentColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->segmentsColor, this, QStringLiteral( "Select Segment Color" ) );
 
       if( color.isValid() ) {
@@ -2058,7 +2058,7 @@ SettingsDialog::on_pbPathPlannerBisectorsColor_clicked() {
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
   if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->object ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block->objects.front() ) ) {
       const QColor color = QColorDialog::getColor( pathPlannerModel->bisectorsColor, this, QStringLiteral( "Select Bisectors Color" ) );
 
       if( color.isValid() ) {

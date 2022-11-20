@@ -68,8 +68,8 @@ Implement::emitConfigSignals() {
   Q_EMIT implementChanged( this );
 }
 
-void
-Implement::toJSON( QJsonObject& json ) {
+QJsonObject
+Implement::toJSON() {
   if( sections.size() > 1 ) {
     QJsonArray array;
 
@@ -83,24 +83,22 @@ Implement::toJSON( QJsonObject& json ) {
 
     QJsonObject valuesObject;
     valuesObject[QStringLiteral( "Sections" )] = array;
-    json[QStringLiteral( "values" )]           = valuesObject;
+    return valuesObject;
   }
+
+  return QJsonObject();
 }
 
 void
-Implement::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+Implement::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "Sections" )].isArray() ) {
+    QJsonArray sectionArray = valuesObject[QStringLiteral( "Sections" )].toArray();
 
-    if( valuesObject[QStringLiteral( "Sections" )].isArray() ) {
-      QJsonArray sectionArray = valuesObject[QStringLiteral( "Sections" )].toArray();
-
-      for( const auto& sectionIndex : qAsConst( sectionArray ) ) {
-        QJsonObject sectionObject = sectionIndex.toObject();
-        sections.push_back( new ImplementSection( sectionObject[QStringLiteral( "overlapLeft" )].toDouble( 0 ),
-                                                  sectionObject[QStringLiteral( "widthOfSection" )].toDouble( 0 ),
-                                                  sectionObject[QStringLiteral( "overlapRight" )].toDouble( 0 ) ) );
-      }
+    for( const auto& sectionIndex : qAsConst( sectionArray ) ) {
+      QJsonObject sectionObject = sectionIndex.toObject();
+      sections.push_back( new ImplementSection( sectionObject[QStringLiteral( "overlapLeft" )].toDouble( 0 ),
+                                                sectionObject[QStringLiteral( "widthOfSection" )].toDouble( 0 ),
+                                                sectionObject[QStringLiteral( "overlapRight" )].toDouble( 0 ) ) );
     }
   }
 }

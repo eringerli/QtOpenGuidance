@@ -31,36 +31,32 @@ OrientationBlock::emitConfigSignals() {
   Q_EMIT orientationChanged( orientation );
 }
 
-void
-OrientationBlock::toJSON( QJsonObject& json ) {
+QJsonObject
+OrientationBlock::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = orientation.x();
   valuesObject[QStringLiteral( "Y" )] = orientation.y();
   valuesObject[QStringLiteral( "Z" )] = orientation.z();
   valuesObject[QStringLiteral( "W" )] = orientation.w();
-  json[QStringLiteral( "values" )]    = valuesObject;
+  return valuesObject;
 }
 
 void
-OrientationBlock::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+OrientationBlock::fromJSON( QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
+    orientation.x() = valuesObject[QStringLiteral( "X" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
-      orientation.x() = valuesObject[QStringLiteral( "X" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
+    orientation.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Y" )].isDouble() ) {
-      orientation.y() = valuesObject[QStringLiteral( "Y" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
+    orientation.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
+  }
 
-    if( valuesObject[QStringLiteral( "Z" )].isDouble() ) {
-      orientation.z() = valuesObject[QStringLiteral( "Z" )].toDouble();
-    }
-
-    if( valuesObject[QStringLiteral( "W" )].isDouble() ) {
-      orientation.w() = valuesObject[QStringLiteral( "W" )].toDouble();
-    }
+  if( valuesObject[QStringLiteral( "W" )].isDouble() ) {
+    orientation.w() = valuesObject[QStringLiteral( "W" )].toDouble();
   }
 }
 

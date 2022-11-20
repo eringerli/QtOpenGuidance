@@ -63,7 +63,7 @@ ImplementSectionModel::setHeaderData( int section, Qt::Orientation orientation, 
 int
 ImplementSectionModel::rowCount( const QModelIndex& /*parent*/ ) const {
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( implement != nullptr ) {
       return implement->sections.size() - 1;
@@ -85,7 +85,7 @@ ImplementSectionModel::data( const QModelIndex& index, int role ) const {
   }
 
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( implement != nullptr ) {
       if( size_t( index.row() ) < ( implement->sections.size() - 1 ) ) {
@@ -112,7 +112,7 @@ ImplementSectionModel::data( const QModelIndex& index, int role ) const {
 bool
 ImplementSectionModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( implement != nullptr ) {
       if( size_t( index.row() ) < ( implement->sections.size() - 1 ) ) {
@@ -145,7 +145,7 @@ ImplementSectionModel::setData( const QModelIndex& index, const QVariant& value,
 bool
 ImplementSectionModel::insertRows( int row, int count, const QModelIndex& parent ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( implement != nullptr ) {
       beginInsertRows( parent, row, row + ( count - 1 ) );
@@ -170,7 +170,7 @@ ImplementSectionModel::insertRows( int row, int count, const QModelIndex& parent
 bool
 ImplementSectionModel::removeRows( int row, int count, const QModelIndex& parent ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( ( implement != nullptr ) && size_t( row + 1 ) < implement->sections.size() ) {
       beginRemoveRows( parent, row, row + ( count - 1 ) );
@@ -193,7 +193,7 @@ ImplementSectionModel::removeRows( int row, int count, const QModelIndex& parent
 bool
 ImplementSectionModel::swapElements( int first, int second ) {
   if( block != nullptr ) {
-    auto* implement = qobject_cast< Implement* >( block->object );
+    auto* implement = qobject_cast< Implement* >( block->objects.front() );
 
     if( implement != nullptr ) {
       if( first < second ) {

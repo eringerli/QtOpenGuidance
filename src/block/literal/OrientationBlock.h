@@ -35,8 +35,8 @@ public:
 
   void emitConfigSignals() override;
 
-  void toJSON( QJsonObject& json ) override;
-  void fromJSON( QJsonObject& json ) override;
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 public Q_SLOTS:
   void setAveragerEnabled( ACTION_SIGNATURE_SLOT );

@@ -151,8 +151,8 @@ GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-void
-GlobalPlannerModel::toJSON( QJsonObject& json ) {
+QJsonObject
+GlobalPlannerModel::toJSON() {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "visible" )]     = visible;
   valuesObject[QStringLiteral( "sizeOfPoint" )] = sizeOfPoint;
@@ -160,23 +160,19 @@ GlobalPlannerModel::toJSON( QJsonObject& json ) {
   valuesObject[QStringLiteral( "bColor" )]      = bColor.name();
   valuesObject[QStringLiteral( "pointColor" )]  = pointColor.name();
 
-  json[QStringLiteral( "values" )] = valuesObject;
+  return valuesObject;
 }
 
 void
-GlobalPlannerModel::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+GlobalPlannerModel::fromJSON( QJsonObject& valuesObject ) {
+  visible     = valuesObject[QStringLiteral( "visible" )].toBool( true );
+  sizeOfPoint = valuesObject[QStringLiteral( "sizeOfPoint" )].toDouble( 1 );
+  aColor      = QColor( valuesObject[QStringLiteral( "aColor" )].toString( QStringLiteral( "#ffa500" ) ) );
+  bColor      = QColor( valuesObject[QStringLiteral( "bColor" )].toString( QStringLiteral( "#ffa500" ) ) );
+  pointColor  = QColor( valuesObject[QStringLiteral( "pointColor" )].toString( QStringLiteral( "#800080" ) ) );
 
-    visible     = valuesObject[QStringLiteral( "visible" )].toBool( true );
-    sizeOfPoint = valuesObject[QStringLiteral( "sizeOfPoint" )].toDouble( 1 );
-    aColor      = QColor( valuesObject[QStringLiteral( "aColor" )].toString( QStringLiteral( "#ffa500" ) ) );
-    bColor      = QColor( valuesObject[QStringLiteral( "bColor" )].toString( QStringLiteral( "#ffa500" ) ) );
-    pointColor  = QColor( valuesObject[QStringLiteral( "pointColor" )].toString( QStringLiteral( "#800080" ) ) );
-
-    refreshColors();
-    setSizeOfPoint( sizeOfPoint );
-  }
+  refreshColors();
+  setSizeOfPoint( sizeOfPoint );
 }
 
 void
