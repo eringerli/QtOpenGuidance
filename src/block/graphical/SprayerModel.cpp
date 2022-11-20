@@ -342,10 +342,10 @@ SprayerModel::updateProprotions() {
 
 QNEBlock*
 SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new SprayerModel( rootEntity, usePBR );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new SprayerModel( rootEntity, usePBR );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( NUMBER_SIGNATURE ) ) ) );

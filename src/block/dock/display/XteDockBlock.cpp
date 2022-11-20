@@ -121,21 +121,21 @@ XteDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new XteDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new XteDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( firstDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    firstDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    firstDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnRight, firstDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnRight, firstDock );
   }
 
   b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );

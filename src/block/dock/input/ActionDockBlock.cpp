@@ -72,21 +72,21 @@ ActionDockBlock::setTheme( const QString& theme ) {
 
 QNEBlock*
 ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new ActionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new ActionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( firstActionDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    firstActionDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    firstActionDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, firstActionDock );
   }
 
   b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( ACTION_SIGNATURE ) ) ) );

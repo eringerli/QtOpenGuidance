@@ -116,7 +116,7 @@ public:
   OpenSaveHelper* openSaveHelper = nullptr;
 
 private:
-  GeographicConvertionWrapper* tmw        = nullptr;
+  GeographicConvertionWrapper* tmw = nullptr;
 
   std::vector< Epick::Point_3 > points;
   bool                          recordContinous              = false;

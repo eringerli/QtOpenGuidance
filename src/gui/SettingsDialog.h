@@ -300,7 +300,7 @@ public:
 public:
   NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;
 
-  BlockBase*    poseSimulation = nullptr;
+  BlockBase* poseSimulation = nullptr;
 
   BlockBase* fieldManager  = nullptr;
   BlockBase* globalPlanner = nullptr;

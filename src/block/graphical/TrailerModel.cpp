@@ -318,10 +318,10 @@ TrailerModel::setPosePivotPoint( const Eigen::Vector3d&           position,
 
 QNEBlock*
 TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new TrailerModel( rootEntity, usePBR );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new TrailerModel( rootEntity, usePBR );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );

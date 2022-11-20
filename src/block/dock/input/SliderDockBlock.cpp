@@ -135,21 +135,21 @@ SliderDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new SliderDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new SliderDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( firstSliderValueDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    firstSliderValueDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    firstSliderValueDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstSliderValueDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, firstSliderValueDock );
   }
 
   b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( NUMBER_SIGNATURE ) ) ) );

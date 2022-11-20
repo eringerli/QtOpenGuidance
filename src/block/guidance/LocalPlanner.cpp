@@ -40,13 +40,6 @@
 #include "kinematic/PathPrimitiveSegment.h"
 #include "kinematic/PathPrimitiveSequence.h"
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QSphereMesh>
-
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
 
@@ -390,16 +383,16 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
 
 QNEBlock*
 LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new LocalPlanner( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
+  auto* obj = new LocalPlanner( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
-  mainWindow->addDockWidget( object->dock, location );
+  mainWindow->addDockWidget( obj->dock, location );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );

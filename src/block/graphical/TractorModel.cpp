@@ -367,10 +367,10 @@ TractorModel::setSteeringAngleRight( double steerAngle, const CalculationOption:
 
 QNEBlock*
 TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new TractorModel( rootEntity, usePBR );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new TractorModel( rootEntity, usePBR );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );

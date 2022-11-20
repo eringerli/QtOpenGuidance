@@ -388,21 +388,21 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
 
 QNEBlock*
 GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
-  auto* b      = createBaseBlock( scene, object, id, true );
-  object->moveToThread( thread );
+  auto* obj = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
+  auto* b   = createBaseBlock( scene, obj, id, true );
+  obj->moveToThread( thread );
 
-  object->dock->setTitle( QStringLiteral( "Global Planner" ) );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( QStringLiteral( "Global Planner" ) );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
-  mainWindow->addDockWidget( object->dock, location );
+  mainWindow->addDockWidget( obj->dock, location );
 
   auto* globalPlannerModel = new GlobalPlannerModel( rootEntity );
 
   b->addObject( globalPlannerModel );
-  QObject::connect( object, &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );
+  QObject::connect( obj, &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );

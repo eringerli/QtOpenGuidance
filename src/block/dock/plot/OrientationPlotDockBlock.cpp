@@ -107,25 +107,25 @@ OrientationPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new OrientationPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new OrientationPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( PlotDockBlockBase::firstPlotDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    PlotDockBlockBase::firstPlotDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    PlotDockBlockBase::firstPlotDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
   }
 
   QObject::connect(
-    object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
+    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
   b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );

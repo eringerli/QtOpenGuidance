@@ -431,10 +431,10 @@ PathPlannerModel::setPose( const Eigen::Vector3d&           position,
 
 QNEBlock*
 PathPlannerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new PathPlannerModel( rootEntity );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new PathPlannerModel( rootEntity );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );

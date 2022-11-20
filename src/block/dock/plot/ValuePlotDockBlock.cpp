@@ -119,25 +119,25 @@ ValuePlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new ValuePlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new ValuePlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( PlotDockBlockBase::firstPlotDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    PlotDockBlockBase::firstPlotDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    PlotDockBlockBase::firstPlotDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, PlotDockBlockBase::firstPlotDock );
   }
 
   QObject::connect(
-    object->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, object, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
+    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
   b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( NUMBER_SIGNATURE ) ) ) );

@@ -137,20 +137,20 @@ ImplementFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new Implement( getNameOfFactory() + QString::number( id ), mainWindow, &firstDock );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
+  auto* obj = new Implement( getNameOfFactory() + QString::number( id ), mainWindow, &firstDock );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( firstDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    firstDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    firstDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, firstDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, firstDock );
   }
 
   b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( POSE_SIGNATURE ) ) ) );

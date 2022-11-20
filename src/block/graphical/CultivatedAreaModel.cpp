@@ -255,10 +255,10 @@ CultivatedAreaModel::saveCultivatedAreaToFile( QFile& file ) {
 
 QNEBlock*
 CultivatedAreaModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new CultivatedAreaModel( rootEntity, newOpenSaveToolbar );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new CultivatedAreaModel( rootEntity, newOpenSaveToolbar );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );

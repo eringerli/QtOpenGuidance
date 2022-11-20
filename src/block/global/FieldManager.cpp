@@ -31,7 +31,6 @@
 #include <QFileDialog>
 #include <QVector>
 
-
 #include "gui/FieldsOptimitionToolbar.h"
 
 #include "gui/OpenSaveHelper.h"
@@ -182,7 +181,7 @@ FieldManager::openFieldFromFile( QFile& file ) {
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::Polygon: {
-        Polygon_2            poly;
+        Polygon_2 poly;
 
         const auto& polygon = std::get< GeoJsonHelper::PolygonType >( member.second );
 
@@ -352,9 +351,9 @@ FieldManager::fieldStatisticsChanged( const double pointsRecorded,
 
 QNEBlock*
 FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new FieldManager( mainWindow, tmw );
-  auto* b      = createBaseBlock( scene, object, id, true );
-  object->moveToThread( thread );
+  auto* obj = new FieldManager( mainWindow, tmw );
+  auto* b   = createBaseBlock( scene, obj, id, true );
+  obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
@@ -370,11 +369,11 @@ FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto fieldModel = new FieldModel( rootEntity );
   b->addObject( fieldModel );
 
-  QObject::connect( object, &FieldManager::fieldChanged, fieldModel, &FieldModel::setField );
-  QObject::connect( object, &FieldManager::fieldCleared, fieldModel, &FieldModel::clearField );
-  QObject::connect( object, &FieldManager::pointAdded, fieldModel, &FieldModel::addPoint );
-  QObject::connect( object, &FieldManager::pointsSet, fieldModel, &FieldModel::setPoints );
-  QObject::connect( object, &FieldManager::pointsCleared, fieldModel, &FieldModel::clearPoints );
+  QObject::connect( obj, &FieldManager::fieldChanged, fieldModel, &FieldModel::setField );
+  QObject::connect( obj, &FieldManager::fieldCleared, fieldModel, &FieldModel::clearField );
+  QObject::connect( obj, &FieldManager::pointAdded, fieldModel, &FieldModel::addPoint );
+  QObject::connect( obj, &FieldManager::pointsSet, fieldModel, &FieldModel::setPoints );
+  QObject::connect( obj, &FieldManager::pointsCleared, fieldModel, &FieldModel::clearPoints );
 
   return b;
 }

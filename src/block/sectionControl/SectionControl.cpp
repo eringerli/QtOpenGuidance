@@ -407,17 +407,17 @@ SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new SectionControl( getNameOfFactory() + QString::number( id ), mainWindow, rootEntity, frameGraphParent );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new SectionControl( getNameOfFactory() + QString::number( id ), mainWindow, rootEntity, frameGraphParent );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->labelTurnOnTexture );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->labelTurnOnTexture );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
-  mainWindow->addDockWidget( object->dock, location );
+  mainWindow->addDockWidget( obj->dock, location );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );

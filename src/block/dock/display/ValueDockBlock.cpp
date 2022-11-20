@@ -119,21 +119,21 @@ ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     id = QNEBlock::getNextUserId();
   }
 
-  auto* object = new ValueDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b      = createBaseBlock( scene, object, id );
-  object->moveToThread( thread );
-  addCompressedObject( object );
+  auto* obj = new ValueDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* b   = createBaseBlock( scene, obj, id );
+  obj->moveToThread( thread );
+  addCompressedObject( obj );
 
-  object->dock->setTitle( getNameOfFactory() );
-  object->dock->setWidget( object->widget );
+  obj->dock->setTitle( getNameOfFactory() );
+  obj->dock->setWidget( obj->widget );
 
-  menu->addAction( object->dock->toggleAction() );
+  menu->addAction( obj->dock->toggleAction() );
 
   if( ValueDockBlockBase::firstValueDock == nullptr ) {
-    mainWindow->addDockWidget( object->dock, location );
-    ValueDockBlockBase::firstValueDock = object->dock;
+    mainWindow->addDockWidget( obj->dock, location );
+    ValueDockBlockBase::firstValueDock = obj->dock;
   } else {
-    mainWindow->addDockWidget( object->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
+    mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
   }
 
   b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );

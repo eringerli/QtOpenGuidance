@@ -20,8 +20,7 @@
 
 #include <QObject>
 
-class OpenSaveHelper : public QObject
-{
+class OpenSaveHelper : public QObject {
   Q_OBJECT
 public:
   OpenSaveHelper() = delete;
