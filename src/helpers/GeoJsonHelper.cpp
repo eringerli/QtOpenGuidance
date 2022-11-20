@@ -85,9 +85,11 @@ QJsonArray
 GeoJsonHelper::assembleCoodinate( const GeoJsonHelper::PointType& point ) {
   QJsonArray coordinate;
 
-  coordinate.push_back( point.x() );
   coordinate.push_back( point.y() );
-  coordinate.push_back( point.z() );
+  coordinate.push_back( point.x() );
+  if( point.z() != 0 ) {
+    coordinate.push_back( point.z() );
+  }
 
   return coordinate;
 }

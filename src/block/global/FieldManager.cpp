@@ -31,14 +31,6 @@
 #include <QFileDialog>
 #include <QVector>
 
-#include <Qt3DCore/QEntity>
-#include <Qt3DCore/QTransform>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
-#include <Qt3DExtras/QExtrudedTextMesh>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QSphereMesh>
-
-#include "3d/BufferMesh.h"
 
 #include "gui/FieldsOptimitionToolbar.h"
 
@@ -190,7 +182,6 @@ FieldManager::openFieldFromFile( QFile& file ) {
   for( const auto& member : geoJsonHelper.members ) {
     switch( member.first ) {
       case GeoJsonHelper::GeometryType::Polygon: {
-        QVector< QVector3D > positions;
         Polygon_2            poly;
 
         const auto& polygon = std::get< GeoJsonHelper::PolygonType >( member.second );
@@ -198,7 +189,6 @@ FieldManager::openFieldFromFile( QFile& file ) {
         if( !polygon.empty() ) {
           for( const auto& point : polygon.front() ) {
             auto tmwPoint = tmw->Forward( point );
-            positions.push_back( toQVector3D( tmwPoint ) );
             poly.push_back( toPoint2( tmwPoint ) );
           }
 
@@ -216,7 +206,9 @@ FieldManager::openFieldFromFile( QFile& file ) {
       case GeoJsonHelper::GeometryType::MultiPoint: {
         points.clear();
 
-        for( const auto& point : std::get< GeoJsonHelper::MultiPointType >( member.second ) ) {
+        const auto& multiPoint = std::get< GeoJsonHelper::MultiPointType >( member.second );
+
+        for( const auto& point : multiPoint ) {
           auto tmwPoint = tmw->Forward( point );
           points.emplace_back( toPoint3( tmwPoint ) );
         }
@@ -269,16 +261,22 @@ FieldManager::saveFieldToFile( QFile& file ) {
   {
     auto polygon = GeoJsonHelper::PolygonType();
 
-    auto pointsOfPolygon = GeoJsonHelper::MultiPointType();
+    auto pointsOfPolygon = GeoJsonHelper::PointVector();
 
     for( const auto& vi : currentField->outer_boundary() ) {
       pointsOfPolygon.emplace_back( tmw->Reverse( toEigenVector( vi ) ) );
     }
 
     // add the first point again to close the polygon
-    pointsOfPolygon.push_back( pointsOfPolygon.front() );
 
-    polygon.emplace_back( pointsOfPolygon );
+    auto polygonPoints = GeoJsonHelper::PointVector();
+
+    for( const auto& point : pointsOfPolygon ) {
+      polygonPoints.push_back( removeZ( point ) );
+    }
+
+    polygon.emplace_back( polygonPoints );
+
     geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::Polygon, polygon );
   }
 

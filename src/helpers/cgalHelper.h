@@ -71,6 +71,16 @@ to2D( const Eigen::Vector3d& point ) {
 }
 
 inline const Point_3
+removeZ( const Point_3& point ) {
+  return Point_3( point.x(), point.y(), 0 );
+}
+
+inline const Eigen::Vector3d
+removeZ( const Eigen::Vector3d& point ) {
+  return Eigen::Vector3d( point.x(), point.y(), 0 );
+}
+
+inline const Point_3
 to3D( Point_2 point ) {
   return Point_3( point.x(), point.y(), 0 );
 }
