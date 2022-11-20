@@ -39,7 +39,7 @@ public:
 public:
   void transform( const Aff_transformation_2& transformation );
 
-  ConstPrimitiveIterator getNearestPrimitive( Point_2 position2D, double& distanceSquared );
+  ConstPrimitiveIterator getNearestPrimitive( const Point_2& position2D, double& distanceSquared );
 };
 
 Q_DECLARE_METATYPE( Plan );

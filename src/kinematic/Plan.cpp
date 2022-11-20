@@ -19,6 +19,8 @@
 #include "Plan.h"
 #include <limits>
 
+#include <QDebug>
+
 #include <QElapsedTimer>
 
 Plan::Plan() { plan = std::make_shared< std::deque< std::shared_ptr< PathPrimitive > > >(); }
@@ -33,32 +35,33 @@ Plan::transform( const Aff_transformation_2& transformation ) {
 }
 
 Plan::ConstPrimitiveIterator
-Plan::getNearestPrimitive( Point_2 position2D, double& distanceSquared ) {
-  //        QElapsedTimer timer;
-  //        timer.start();
-  auto nearestPrimitive = plan->cend();
-  distanceSquared       = std::numeric_limits< double >::infinity();
+Plan::getNearestPrimitive( const Point_2& position2D, double& distanceSquared ) {
+  distanceSquared = std::numeric_limits< double >::infinity();
 
-  for( auto it = plan->cbegin(), end = plan->cend(); it != end; ++it ) {
-    //    QElapsedTimer timer;
-    //    timer.start();
-    double currentDistanceSquared = ( *it )->distanceToPointSquared( position2D );
-    //    qDebug() << "Cycle Time ( *it )->distanceToPointSquared:" <<
-    //    timer.nsecsElapsed() << "ns";
+  if( plan->empty() ) {
+    return plan->cend();
+  }
 
-    if( currentDistanceSquared < distanceSquared ) {
-      nearestPrimitive = it;
-      distanceSquared  = currentDistanceSquared;
-    } else {
-      if( type == Plan::Type::OnlyLines ) {
-        // the plan is ordered, so we can take the fast way out...
-        break;
-      }
+  //  QElapsedTimer timer;
+  //  timer.start();
+
+  auto nearestPrimitiveOnTheLeft = std::partition_point(
+    plan->cbegin(), plan->cend(), [&position2D]( auto const& primitive ) { return !( primitive->leftOf( position2D ) ); } );
+
+  if( nearestPrimitiveOnTheLeft == plan->cend() ) {
+    --nearestPrimitiveOnTheLeft;
+  }
+
+  distanceSquared = ( *nearestPrimitiveOnTheLeft )->distanceToPointSquared( position2D );
+
+  if( distanceSquared > ( *nearestPrimitiveOnTheLeft )->implementWidth ) {
+    if( nearestPrimitiveOnTheLeft != plan->cbegin() ) {
+      --nearestPrimitiveOnTheLeft;
+      distanceSquared = ( *nearestPrimitiveOnTheLeft )->distanceToPointSquared( position2D );
     }
   }
 
-  //        qDebug() << "Cycle Time Plan::getNearestPrimitive:" << timer.nsecsElapsed() <<
-  //        "ns";
+  //  qDebug() << "Cycle Time Plan::getNearestPrimitive:" << timer.nsecsElapsed() << "ns";
 
-  return nearestPrimitive;
+  return nearestPrimitiveOnTheLeft;
 }
