@@ -34,6 +34,10 @@ class GeographicConvertionWrapper;
 class Plan;
 class PlanGlobal;
 
+namespace Qt3DCore {
+  class QEntity;
+}
+
 #include <kddockwidgets/DockWidget.h>
 #include <kddockwidgets/KDDockWidgets.h>
 
@@ -138,8 +142,12 @@ class GlobalPlannerFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  GlobalPlannerFactory(
-    QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, GeographicConvertionWrapper* tmw );
+  GlobalPlannerFactory( QThread*                     thread,
+                        MyMainWindow*                mainWindow,
+                        KDDockWidgets::Location      location,
+                        QMenu*                       menu,
+                        GeographicConvertionWrapper* tmw,
+                        Qt3DCore::QEntity*           rootEntity );
 
   QString getNameOfFactory() override { return QStringLiteral( "Global Planner Lines" ); }
 
@@ -152,4 +160,5 @@ private:
   KDDockWidgets::Location      location;
   QMenu*                       menu       = nullptr;
   GeographicConvertionWrapper* tmw        = nullptr;
+  Qt3DCore::QEntity*           rootEntity = nullptr;
 };

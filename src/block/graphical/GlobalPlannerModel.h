@@ -104,20 +104,3 @@ private:
 
 private:
 };
-
-class GlobalPlannerModelFactory : public BlockFactory {
-  Q_OBJECT
-
-public:
-  GlobalPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity )
-      : BlockFactory( thread ), rootEntity( rootEntity ) {}
-
-  QString getNameOfFactory() override { return QStringLiteral( "Global Path Planner Model" ); }
-
-  QString getCategoryOfFactory() override { return QStringLiteral( "Global" ); }
-
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
-
-private:
-  Qt3DCore::QEntity* rootEntity = nullptr;
-};

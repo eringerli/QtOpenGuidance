@@ -252,17 +252,3 @@ GlobalPlannerModel::showPlanPolyline( std::shared_ptr< std::vector< Point_2 > > 
     pointsEntity->setEnabled( true );
   }
 }
-
-QNEBlock*
-GlobalPlannerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* object = new GlobalPlannerModel( rootEntity );
-  auto* b      = createBaseBlock( scene, object, id, true );
-  object->moveToThread( thread );
-  addCompressedObject( object );
-
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Plan Polyline" ),
-                   QLatin1String( SLOT( showPlanPolyline( std::shared_ptr< std::vector< Point_2 > > ) ) ) );
-
-  return b;
-}

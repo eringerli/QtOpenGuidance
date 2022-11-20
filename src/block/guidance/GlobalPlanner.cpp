@@ -33,6 +33,8 @@
 #include "gui/GlobalPlannerToolbar.h"
 #include "gui/MyMainWindow.h"
 
+#include "block/graphical/GlobalPlannerModel.h"
+
 #include <QFileDialog>
 
 #include "kinematic/CgalWorker.h"
@@ -200,8 +202,8 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
 
 void
 GlobalPlanner::createPlanAB() {
-  if( abSegment.squared_length() > 0.25 && implementSegment.squared_length() > 1 ) {
-
+  if( ( ( abPolyline->size() >= 2 ) && ( Segment_2( abPolyline->front(), abPolyline->back() ).squared_length() > 0.25 ) ) &&
+      implementSegment.squared_length() > 1 ) {
     Point_2 position2D = to2D( position );
 
     if( abPolyline->size() == 2 ) {
@@ -425,9 +427,13 @@ GlobalPlanner::setPassSettings( const int forwardPasses, const int reversePasses
 void
 GlobalPlanner::setPassNumberTo( const int ) {}
 
-GlobalPlannerFactory::GlobalPlannerFactory(
-  QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, GeographicConvertionWrapper* tmw )
-    : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ) {
+GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
+                                            MyMainWindow*                mainWindow,
+                                            KDDockWidgets::Location      location,
+                                            QMenu*                       menu,
+                                            GeographicConvertionWrapper* tmw,
+                                            Qt3DCore::QEntity*           rootEntity )
+    : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ), rootEntity( rootEntity ) {
   qRegisterMetaType< Plan >();
   qRegisterMetaType< PlanGlobal >();
 }
@@ -444,6 +450,11 @@ GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   menu->addAction( object->dock->toggleAction() );
 
   mainWindow->addDockWidget( object->dock, location );
+
+  auto* globalPlannerModel = new GlobalPlannerModel( rootEntity );
+
+  b->addObject( globalPlannerModel );
+  QObject::connect( object, &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
