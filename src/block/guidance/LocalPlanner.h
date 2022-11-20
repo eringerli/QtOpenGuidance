@@ -29,6 +29,8 @@ class MyMainWindow;
 class BufferMesh;
 class GuidanceTurningToolbar;
 
+class PathPlannerModel;
+
 #include <kddockwidgets/DockWidget.h>
 #include <kddockwidgets/KDDockWidgets.h>
 
@@ -67,10 +69,12 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void planChanged( const Plan& );
+
   void triggerPlanPose( POSE_SIGNATURE_SIGNAL );
   void passNumberChanged( NUMBER_SIGNATURE_SIGNAL );
 
   void resetTurningStateOfDock();
+
 public:
   Eigen::Vector3d    position             = Eigen::Vector3d( 0, 0, 0 );
   Eigen::Quaterniond orientation          = Eigen::Quaterniond( 0, 0, 0, 0 );
@@ -79,8 +83,9 @@ public:
   double             minRadius            = 10;
   bool               forceCurrentPath     = false;
 
-  GuidanceTurningToolbar*    widget = nullptr;
-  KDDockWidgets::DockWidget* dock   = nullptr;
+  GuidanceTurningToolbar*    widget           = nullptr;
+  KDDockWidgets::DockWidget* dock             = nullptr;
+  PathPlannerModel*          pathPlannerModel = nullptr;
 
 private:
   void calculateTurning( bool changeExistingTurn );
@@ -104,8 +109,9 @@ class LocalPlannerFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  LocalPlannerFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+  LocalPlannerFactory(
+    QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
+      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Local Planner" ); }
 
@@ -116,5 +122,6 @@ public:
 private:
   MyMainWindow*           mainWindow = nullptr;
   KDDockWidgets::Location location;
-  QMenu*                  menu = nullptr;
+  QMenu*                  menu       = nullptr;
+  Qt3DCore::QEntity*      rootEntity = nullptr;
 };

@@ -34,6 +34,7 @@ class GeographicConvertionWrapper;
 class Plan;
 class PlanGlobal;
 class OpenSaveHelper;
+class PathPlannerModel;
 
 namespace Qt3DCore {
   class QEntity;
@@ -92,6 +93,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void planChanged( const Plan& );
+
+  void planChangedForModel( const Plan& );
   void planPolylineChanged( std::shared_ptr< std::vector< Point_2 > > );
 
   void setToolbarToAdditionalPoint();
@@ -127,9 +130,10 @@ public:
 
   PlanGlobal plan = PlanGlobal();
 
-  MyMainWindow*              mainWindow = nullptr;
-  GlobalPlannerToolbar*      widget     = nullptr;
-  KDDockWidgets::DockWidget* dock       = nullptr;
+  MyMainWindow*              mainWindow       = nullptr;
+  GlobalPlannerToolbar*      widget           = nullptr;
+  KDDockWidgets::DockWidget* dock             = nullptr;
+  PathPlannerModel*          pathPlannerModel = nullptr;
 
   GeographicConvertionWrapper* tmw = nullptr;
 
@@ -137,6 +141,8 @@ public:
 
 private:
   QPointer< PlanOptimitionController > planOptimitionController;
+  Plan::ConstPrimitiveIterator         lastNearestPrimitive;
+  Plan                                 planForModel = Plan();
 };
 
 class GlobalPlannerFactory : public BlockFactory {

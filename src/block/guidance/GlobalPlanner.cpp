@@ -50,6 +50,8 @@
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
 
+#include "block/graphical/PathPlannerModel.h"
+
 #include "helpers/GeoJsonHelper.h"
 #include "helpers/GeographicConvertionWrapper.h"
 
@@ -95,6 +97,36 @@ GlobalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaternion
     }
 
     plan.expand( position2D );
+
+    double distance         = 0;
+    auto   nearestPrimitive = plan.getNearestPrimitive( to2D( position ), distance );
+
+    if( nearestPrimitive != plan.plan->cend() && nearestPrimitive != lastNearestPrimitive ) {
+      int64_t distanceToFront = std::distance( plan.plan->cbegin(), nearestPrimitive );
+      int64_t distanceToEnd   = std::distance( nearestPrimitive, plan.plan->cend() );
+
+      int64_t implementNumInViewRectWorstCase =
+        std::sqrt( 2. * std::pow( pathPlannerModel->viewBox, 2 ) ) / std::sqrt( implementSegment.squared_length() );
+
+      if( ( distanceToFront + distanceToEnd ) < implementNumInViewRectWorstCase ) {
+        Q_EMIT planChangedForModel( plan );
+      } else {
+        auto distToBeginIterator = std::min( distanceToFront, implementNumInViewRectWorstCase / 2 );
+        auto distToEndIterator   = std::min( distanceToEnd, implementNumInViewRectWorstCase / 2 );
+
+        auto cbegin = nearestPrimitive;
+        auto cend   = nearestPrimitive;
+
+        std::advance( cbegin, -distToBeginIterator );
+        std::advance( cend, distToEndIterator );
+
+        planForModel.plan->clear();
+        std::copy( cbegin, cend, std::back_inserter( *( planForModel.plan ) ) );
+        Q_EMIT planChangedForModel( planForModel );
+      }
+
+      lastNearestPrimitive = nearestPrimitive;
+    }
   }
 }
 
@@ -185,6 +217,7 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
 
     plan.resetPlanWith( make_shared< PathPrimitiveSequence >( *polyline, std::sqrt( implementSegment.squared_length() ), true, 0 ) );
 
+    lastNearestPrimitive = plan.plan->cend();
     Q_EMIT planChanged( plan );
     Q_EMIT planPolylineChanged( polyline );
   }
@@ -199,6 +232,7 @@ GlobalPlanner::createPlanPolyline( std::shared_ptr< std::vector< Point_2 > > pol
     plan.resetPlanWith(
       make_shared< PathPrimitiveLine >( to2D( abSegment ).supporting_line(), std::sqrt( implementSegment.squared_length() ), true, 0 ) );
 
+    lastNearestPrimitive = plan.plan->cend();
     Q_EMIT planChanged( plan );
     Q_EMIT planPolylineChanged( polyline );
   }
@@ -391,6 +425,12 @@ GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
+
+  auto obj2 = new PathPlannerModel( rootEntity );
+  b->addObject( obj2 );
+  obj->pathPlannerModel = obj2;
+
+  QObject::connect( obj, &GlobalPlanner::planChangedForModel, obj2, &PathPlannerModel::setPlan );
 
   obj->dock->setTitle( QStringLiteral( "Global Planner" ) );
   obj->dock->setWidget( obj->widget );

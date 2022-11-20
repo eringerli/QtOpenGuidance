@@ -405,7 +405,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, geographicConvertionWrapper, middlegroundEntity );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
 
-
   {
     auto* globalPlanner = qobject_cast< GlobalPlanner* >( globalPlannerBlock->objects.front() );
 
@@ -423,7 +422,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     this->globalPlanner = globalPlanner;
   }
 
-  localPlannerFactory    = new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu );
+  localPlannerFactory =
+    new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, middlegroundEntity );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( calculationsThread );
   xteGuidanceFactory     = new XteGuidanceFactory( calculationsThread );
   sectionControlFactory =

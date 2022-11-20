@@ -259,7 +259,6 @@ PathPlannerModel::addPrimitiveToPositions( const Plan::PrimitiveSharedPointer& p
                                            QVector< QVector3D >&               positionsSegments ) {
   if( const auto* arc = primitive->castToArc() ) {
     if( newPlan ) {
-      std::cout << "newPlan: " << newPlan << std::endl;
       const auto& center = arc->centerPoint;
 
       auto startToCenterLine =

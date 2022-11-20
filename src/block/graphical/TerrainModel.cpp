@@ -199,17 +199,3 @@ TerrainModel::setSurface( std::shared_ptr< SurfaceMesh_3 > surfaceMesh ) {
   linesMesh->bufferUpdate( lines );
   linesEntity->setEnabled( true );
 }
-
-// QNEBlock*
-// TerrainModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-//   auto* object = new TerrainModel( rootEntity );
-//   auto* b      = createBaseBlock( scene, object, id );
-//   object->moveToThread( thread );
-//   //  addCompressedObject( object );
-
-//  //  b->addInputPort( QStringLiteral( "Terrain" ), QLatin1String( SLOT( setTerrain( POSE_SIGNATURE ) ) ) );
-
-//  b->setBrush( modelColor );
-
-//  return b;
-//}

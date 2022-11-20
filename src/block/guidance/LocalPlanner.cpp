@@ -43,6 +43,8 @@
 #include "kinematic/Plan.h"
 #include "kinematic/PlanGlobal.h"
 
+#include "block/graphical/PathPlannerModel.h"
+
 #include <dubins/dubins.h>
 
 LocalPlanner::LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow ) {
@@ -64,6 +66,8 @@ void
 LocalPlanner::setName( const QString& name ) {
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
+
+  pathPlannerModel->setName( name + " Model" );
 }
 
 void
@@ -386,6 +390,12 @@ LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new LocalPlanner( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
+
+  auto obj2 = new PathPlannerModel( rootEntity );
+  b->addObject( obj2 );
+  obj->pathPlannerModel = obj2;
+
+  QObject::connect( obj, &LocalPlanner::planChanged, obj2, &PathPlannerModel::setPlan );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
