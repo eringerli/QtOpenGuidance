@@ -443,7 +443,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   extendedKalmanFilterFactory        = new ExtendedKalmanFilterFactory( calculationsThread );
   trailerModelFactory                = new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR );
   tractorModelFactory                = new TractorModelFactory( qt3dThread, foregroundEntity, usePBR );
-  sprayerModelFactory                = new SprayerModelFactory( qt3dThread, middlegroundEntity, usePBR );
+  sprayerModelFactory                = new SprayerModelFactory( qt3dThread, foregroundEntity, usePBR );
   cultivatedAreaModelFactory         = new CultivatedAreaModelFactory( qt3dThread, middlegroundEntity, usePBR, newOpenSaveToolbar );
   fixedKinematicFactory              = new FixedKinematicFactory( calculationsThread );
   trailerKinematicFactory            = new TrailerKinematicFactory( calculationsThread );
