@@ -333,7 +333,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
   // simulator
-  poseSimulationFactory     = new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper, backgroundEntity );
+  poseSimulationFactory =
+    new PoseSimulationFactory( calculationsThread, mainWindow, geographicConvertionWrapper, backgroundEntity, usePBR );
   auto* poseSimulationBlock = poseSimulationFactory->createBlock( ui->gvNodeEditor->scene() );
   poseSimulation            = qobject_cast< PoseSimulation* >( poseSimulationBlock->objects.front() );
 

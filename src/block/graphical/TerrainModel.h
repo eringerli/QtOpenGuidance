@@ -32,6 +32,7 @@
 #include <Qt3DRender/QTextureWrapMode>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QText2DEntity>
@@ -60,7 +61,7 @@ class TerrainModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TerrainModel( Qt3DCore::QEntity* rootEntity );
+  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
 
   QJsonObject toJSON() override;
   void        fromJSON( QJsonObject& ) override;
@@ -78,30 +79,19 @@ public:
   QColor terrainColor = QColor( Qt::green );
 
 private:
+  bool usePBR = false;
+
   Qt3DCore::QEntity*          baseEntity      = nullptr;
   Qt3DCore::QTransform*       baseTransform   = nullptr;
   Qt3DCore::QEntity*          linesEntity     = nullptr;
   Qt3DCore::QEntity*          terrainEntity   = nullptr;
   BufferMesh*                 linesMesh       = nullptr;
   BufferMeshWithNormals*      terrainMesh     = nullptr;
-  Qt3DExtras::QPhongMaterial* linesMaterial   = nullptr;
-  Qt3DExtras::QPhongMaterial* terrainMaterial = nullptr;
+
+  Qt3DExtras::QPhongMaterial*      linesMaterial      = nullptr;
+  Qt3DExtras::QPhongMaterial*      terrainMaterial    = nullptr;
+  Qt3DExtras::QMetalRoughMaterial* linesMaterialPbr   = nullptr;
+  Qt3DExtras::QMetalRoughMaterial* terrainMaterialPbr = nullptr;
 
 private:
 };
-
-// class TerrainModelFactory : public BlockFactory {
-//   Q_OBJECT
-
-// public:
-//   TerrainModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread ), rootEntity( rootEntity ) {}
-
-//  QString getNameOfFactory() override { return QStringLiteral( "Path Planner Model" ); }
-
-//  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
-
-//  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
-
-// private:
-//   Qt3DCore::QEntity* rootEntity = nullptr;
-// };

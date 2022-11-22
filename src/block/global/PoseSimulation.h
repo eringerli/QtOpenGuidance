@@ -229,11 +229,13 @@ public:
   PoseSimulationFactory( QThread*                     thread,
                          QWidget*                     mainWindow,
                          GeographicConvertionWrapper* geographicConvertionWrapper,
-                         Qt3DCore::QEntity*           rootEntity )
+                         Qt3DCore::QEntity*           rootEntity,
+                         bool                         usePBR )
       : BlockFactory( thread )
       , mainWindow( mainWindow )
       , geographicConvertionWrapper( geographicConvertionWrapper )
-      , rootEntity( rootEntity ) {}
+      , rootEntity( rootEntity )
+      , usePBR( usePBR ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Pose Simulation" ); }
 
@@ -245,4 +247,5 @@ private:
   QWidget*                     mainWindow                  = nullptr;
   GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
   Qt3DCore::QEntity*           rootEntity                  = nullptr;
+  bool                         usePBR                      = false;
 };

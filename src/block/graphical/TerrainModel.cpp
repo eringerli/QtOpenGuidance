@@ -32,6 +32,7 @@
 #include <Qt3DRender/QTextureWrapMode>
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QMetalRoughMaterial>
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QText2DEntity>
@@ -97,7 +98,7 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )
 
-TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) {
+TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) : usePBR( usePBR ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
@@ -117,11 +118,17 @@ TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity ) {
   terrainMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Triangles );
   terrainEntity->addComponent( terrainMesh );
 
-  terrainMaterial = new Qt3DExtras::QPhongMaterial( terrainEntity );
-  linesMaterial   = new Qt3DExtras::QPhongMaterial( linesEntity );
-
-  terrainEntity->addComponent( terrainMaterial );
-  linesEntity->addComponent( linesMaterial );
+  if( usePBR ) {
+    terrainMaterialPbr = new Qt3DExtras::QMetalRoughMaterial( terrainEntity );
+    linesMaterialPbr   = new Qt3DExtras::QMetalRoughMaterial( linesEntity );
+    terrainEntity->addComponent( terrainMaterialPbr );
+    linesEntity->addComponent( linesMaterialPbr );
+  } else {
+    terrainMaterial = new Qt3DExtras::QPhongMaterial( terrainEntity );
+    linesMaterial   = new Qt3DExtras::QPhongMaterial( linesEntity );
+    terrainEntity->addComponent( terrainMaterial );
+    linesEntity->addComponent( linesMaterial );
+  }
 
   refreshColors();
 }
@@ -148,8 +155,20 @@ TerrainModel::fromJSON( QJsonObject& valuesObject ) {
 
 void
 TerrainModel::refreshColors() {
-  linesMaterial->setAmbient( linesColor );
-  terrainMaterial->setAmbient( terrainColor );
+  if( usePBR ) {
+    linesMaterialPbr->setBaseColor( linesColor );
+    linesMaterialPbr->setMetalness( 0.0f );
+    linesMaterialPbr->setRoughness( 0.5f );
+
+    terrainMaterialPbr->setBaseColor( terrainColor );
+    terrainMaterialPbr->setMetalness( 0.0f );
+    terrainMaterialPbr->setRoughness( 0.5f );
+  } else {
+    linesMaterial->setShininess( 0.05f );
+    terrainMaterial->setShininess( 0.05f );
+    linesMaterial->setAmbient( linesColor );
+    terrainMaterial->setAmbient( terrainColor );
+  }
 }
 
 void

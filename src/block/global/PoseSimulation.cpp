@@ -588,7 +588,7 @@ PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
 
-  auto obj2 = new TerrainModel( rootEntity );
+  auto obj2 = new TerrainModel( rootEntity, usePBR );
   b->addObject( obj2 );
 
   QObject::connect( obj, &PoseSimulation::surfaceChanged, obj2, &TerrainModel::setSurface );
