@@ -36,7 +36,8 @@ class CameraController : public BlockBase {
 public:
   explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity );
 
-  ~CameraController();
+  QJsonObject toJSON() override;
+  void        fromJSON( QJsonObject& ) override;
 
 protected:
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
@@ -66,9 +67,6 @@ public Q_SLOTS:
   void resetCamera();
 
   void setCameraSmoothing( const int orientationSmoothing, const int positionSmoothing );
-
-  void saveValuesToConfig();
-  void loadValuesFromConfig();
 
 private:
   void calculateOffset();

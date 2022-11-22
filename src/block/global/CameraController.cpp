@@ -53,12 +53,32 @@ CameraController::CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::Q
 
   // make the light follow the camera
   QObject::connect( m_cameraEntity, SIGNAL( positionChanged( QVector3D ) ), m_lightTransform, SLOT( setTranslation( QVector3D ) ) );
-
-  loadValuesFromConfig();
-  calculateOffset();
 }
 
-CameraController::~CameraController() { saveValuesToConfig(); }
+QJsonObject
+CameraController::toJSON() {
+  QJsonObject valuesObject;
+
+  valuesObject[QStringLiteral( "lenghtToViewCenter" )]   = lenghtToViewCenter;
+  valuesObject[QStringLiteral( "panAngle" )]             = panAngle;
+  valuesObject[QStringLiteral( "tiltAngle" )]            = tiltAngle;
+  valuesObject[QStringLiteral( "orientationSmoothing" )] = orientationSmoothing;
+  valuesObject[QStringLiteral( "positionSmoothing" )]    = positionSmoothing;
+
+  return valuesObject;
+}
+
+void
+CameraController::fromJSON( QJsonObject& valuesObject ) {
+  lenghtToViewCenter   = valuesObject[QStringLiteral( "lenghtToViewCenter" )].toDouble( 20 );
+  panAngle             = valuesObject[QStringLiteral( "panAngle" )].toDouble( 0 );
+  tiltAngle            = valuesObject[QStringLiteral( "tiltAngle" )].toDouble( 39 );
+  orientationSmoothing = valuesObject[QStringLiteral( "orientationSmoothing" )].toDouble( 0.1 );
+  positionSmoothing    = valuesObject[QStringLiteral( "positionSmoothing" )].toDouble( 0.9 );
+
+  positionSmoothingInv = 1 - positionSmoothing;
+  calculateOffset();
+}
 
 bool
 CameraController::eventFilter( QObject*, QEvent* event ) {
@@ -192,39 +212,12 @@ CameraController::setCameraSmoothing( const int orientationSmoothing, const int 
 
   this->positionSmoothingInv = double( positionSmoothing ) / 100;
   this->positionSmoothing    = 1 - positionSmoothingInv;
-
-  saveValuesToConfig();
 }
 
 void
 CameraController::calculateOffset() {
   m_offset = QQuaternion::fromAxisAndAngle( QVector3D( 0, 0, 1 ), panAngle ) *
              QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) * QVector3D( -lenghtToViewCenter, 0, 0 );
-}
-
-void
-CameraController::saveValuesToConfig() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
-
-  settings.setValue( QStringLiteral( "Camera/lenghtToViewCenter" ), lenghtToViewCenter );
-  settings.setValue( QStringLiteral( "Camera/panAngle" ), panAngle );
-  settings.setValue( QStringLiteral( "Camera/tiltAngle" ), tiltAngle );
-  settings.setValue( QStringLiteral( "Camera/orientationSmoothing" ), float( orientationSmoothing ) );
-  settings.setValue( QStringLiteral( "Camera/positionSmoothing" ), positionSmoothing );
-
-  settings.sync();
-}
-
-void
-CameraController::loadValuesFromConfig() {
-  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
-
-  lenghtToViewCenter   = settings.value( QStringLiteral( "Camera/lenghtToViewCenter" ), 20 ).toFloat();
-  panAngle             = settings.value( QStringLiteral( "Camera/panAngle" ), 0 ).toFloat();
-  tiltAngle            = settings.value( QStringLiteral( "Camera/tiltAngle" ), 39 ).toFloat();
-  orientationSmoothing = settings.value( QStringLiteral( "Camera/orientationSmoothing" ), 0.1 ).toDouble();
-  positionSmoothing    = settings.value( QStringLiteral( "Camera/positionSmoothing" ), 0.9 ).toDouble();
-  positionSmoothingInv = 1 - positionSmoothing;
 }
 
 QNEBlock*

@@ -570,9 +570,6 @@ main( int argc, char** argv ) {
   settingDialog->onStart();
   QObject::connect( mainWindow, &MyMainWindow::closed, settingDialog, &SettingsDialog::onExit );
 
-  // camera controller
-  QObject::connect( mainWindow, &MyMainWindow::closed, cameraController, &CameraController::saveValuesToConfig );
-
   mainWindow->layout()->update();
   mainWindow->layout()->activate();
   mainWindow->layout()->update();
