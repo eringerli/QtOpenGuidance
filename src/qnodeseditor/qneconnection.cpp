@@ -120,7 +120,7 @@ QNEConnection::setPort2( QNEPort* p ) {
         m_port2 = p;
         m_port2->connections().push_back( this );
 
-        connections.emplace_back( std::move( connection ) );
+        connections.push_back( std::move( connection ) );
         connectionMade |= true;
       }
     }

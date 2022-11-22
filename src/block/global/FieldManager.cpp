@@ -209,7 +209,7 @@ FieldManager::openFieldFromFile( QFile& file ) {
 
         for( const auto& point : multiPoint ) {
           auto tmwPoint = tmw->Forward( point );
-          points.emplace_back( toPoint3( tmwPoint ) );
+          points.push_back( toPoint3( tmwPoint ) );
         }
 
         Q_EMIT pointsGeneratedForFieldBoundaryChanged( 0, CalculationOption::Option::None );
@@ -263,7 +263,7 @@ FieldManager::saveFieldToFile( QFile& file ) {
     auto pointsOfPolygon = GeoJsonHelper::PointVector();
 
     for( const auto& vi : currentField->outer_boundary() ) {
-      pointsOfPolygon.emplace_back( tmw->Reverse( toEigenVector( vi ) ) );
+      pointsOfPolygon.push_back( tmw->Reverse( toEigenVector( vi ) ) );
     }
 
     // add the first point again to close the polygon
@@ -274,7 +274,7 @@ FieldManager::saveFieldToFile( QFile& file ) {
       polygonPoints.push_back( removeZ( point ) );
     }
 
-    polygon.emplace_back( polygonPoints );
+    polygon.push_back( std::move( polygonPoints ) );
 
     geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::Polygon, polygon );
   }
@@ -284,7 +284,7 @@ FieldManager::saveFieldToFile( QFile& file ) {
     auto rawPoints = GeoJsonHelper::MultiPointType();
 
     for( const auto& point : points ) {
-      rawPoints.emplace_back( tmw->Reverse( toEigenVector( point ) ) );
+      rawPoints.push_back( tmw->Reverse( toEigenVector( point ) ) );
     }
 
     geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::MultiPoint, rawPoints );

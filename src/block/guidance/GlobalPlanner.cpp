@@ -378,7 +378,7 @@ GlobalPlanner::saveAbLineToFile( QFile& file ) {
     auto lineString    = GeoJsonHelper::LineStringType();
 
     for( const auto& point : *abPolyline ) {
-      lineString.emplace_back( tmw->Reverse( toEigenVector( point ) ) );
+      lineString.push_back( tmw->Reverse( toEigenVector( point ) ) );
     }
 
     geoJsonHelper.addFeature( GeoJsonHelper::GeometryType::LineString, std::move( lineString ) );

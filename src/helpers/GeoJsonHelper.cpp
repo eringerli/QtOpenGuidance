@@ -38,7 +38,7 @@ GeoJsonHelper::~GeoJsonHelper() = default;
 
 void
 GeoJsonHelper::addFeature( const GeoJsonHelper::GeometryType& type, const GeoJsonHelper::FeatureType& feature ) {
-  members.emplace_back( std::make_pair( type, feature ) );
+  members.push_back( std::make_pair( type, feature ) );
 }
 
 void
@@ -187,7 +187,7 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
               case GeometryType::Point: {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
                   if( auto coordinate = parseCoodinate( coordinatesJsonArray.value() ) ) {
-                    members.emplace_back( std::make_pair( type, coordinate.value() ) );
+                    members.push_back( std::make_pair( type, coordinate.value() ) );
                   }
                 }
               } break;
@@ -195,7 +195,7 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
               case GeometryType::MultiPoint:
               case GeometryType::LineString: {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-                  members.emplace_back( std::make_pair( type, parseCoordinatesArray( coordinatesJsonArray.value() ) ) );
+                  members.push_back( std::make_pair( type, parseCoordinatesArray( coordinatesJsonArray.value() ) ) );
                 }
 
               } break;
@@ -206,11 +206,11 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
 
                   for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
                     if( coordinatesArray.isArray() ) {
-                      polygon.emplace_back( parseCoordinatesArray( coordinatesArray.toArray() ) );
+                      polygon.push_back( parseCoordinatesArray( coordinatesArray.toArray() ) );
                     }
                   }
 
-                  members.emplace_back( std::make_pair( type, polygon ) );
+                  members.push_back( std::make_pair( type, polygon ) );
                 }
               } break;
 
@@ -222,12 +222,12 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
                     if( coordinatesArray.isArray() ) {
                       for( const auto& coordinatesArrayNested : coordinatesArray.toArray() ) {
                         if( coordinatesArrayNested.isArray() ) {
-                          polygon.emplace_back( parseCoordinatesArray( coordinatesArrayNested.toArray() ) );
+                          polygon.push_back( parseCoordinatesArray( coordinatesArrayNested.toArray() ) );
                         }
                       }
                     }
 
-                    members.emplace_back( std::make_pair( GeometryType::Polygon, polygon ) );
+                    members.push_back( std::make_pair( GeometryType::Polygon, polygon ) );
                   }
                 }
               } break;

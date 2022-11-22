@@ -542,7 +542,7 @@ PoseSimulation::openTINFromFile( QFile& file ) {
       case GeoJsonHelper::GeometryType::MultiPoint: {
         for( const auto& point : std::get< GeoJsonHelper::MultiPointType >( member.second ) ) {
           auto tmwPoint = tmw->Forward( point );
-          points.emplace_back( toPoint3( tmwPoint ) );
+          points.push_back( toPoint3( tmwPoint ) );
         }
       } break;
 
