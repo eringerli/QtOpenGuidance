@@ -36,11 +36,11 @@ FixedKinematic::setPose( const Eigen::Vector3d&           position,
                          const Eigen::Quaterniond&        orientation,
                          const CalculationOption::Options options ) {
   hookToPivot.setPose( position, orientation, options );
-  pivotToTow.setPose( hookToPivot.positionCalculated, hookToPivot.orientation, options );
+  pivotToTow.setPose( hookToPivot.positionCalculated, hookToPivot.orientationCalculated, options );
 
   Q_EMIT poseHookPointChanged( position, orientation, options );
-  Q_EMIT posePivotPointChanged( hookToPivot.positionCalculated, hookToPivot.orientation, options );
-  Q_EMIT poseTowPointChanged( pivotToTow.positionCalculated, pivotToTow.orientation, options );
+  Q_EMIT posePivotPointChanged( hookToPivot.positionCalculated, hookToPivot.orientationCalculated, options );
+  Q_EMIT poseTowPointChanged( pivotToTow.positionCalculated, pivotToTow.orientationCalculated, options );
 }
 
 QNEBlock*

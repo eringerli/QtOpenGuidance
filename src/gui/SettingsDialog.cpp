@@ -98,6 +98,7 @@
 #include "block/guidance/GlobalPlanner.h"
 #include "block/guidance/LocalPlanner.h"
 #include "block/guidance/PoseSynchroniser.h"
+#include "block/guidance/SimpleMpcGuidance.h"
 #include "block/guidance/StanleyGuidance.h"
 #include "block/guidance/XteGuidance.h"
 
@@ -426,7 +427,9 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   localPlannerFactory =
     new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, middlegroundEntity );
   stanleyGuidanceFactory = new StanleyGuidanceFactory( calculationsThread );
-  xteGuidanceFactory     = new XteGuidanceFactory( calculationsThread );
+  simpleMpcGuidanceFactory =
+    new SimpleMpcGuidanceFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, foregroundEntity );
+  xteGuidanceFactory = new XteGuidanceFactory( calculationsThread );
   sectionControlFactory =
     new SectionControlFactory( qt3dThread,
                                mainWindow,
@@ -506,6 +509,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   transverseMercatorConverterFactory->addToTreeWidget( ui->twBlocks );
   xteGuidanceFactory->addToTreeWidget( ui->twBlocks );
   stanleyGuidanceFactory->addToTreeWidget( ui->twBlocks );
+  simpleMpcGuidanceFactory->addToTreeWidget( ui->twBlocks );
   localPlannerFactory->addToTreeWidget( ui->twBlocks );
   sectionControlFactory->addToTreeWidget( ui->twBlocks );
   pathPlannerModelFactory->addToTreeWidget( ui->twBlocks );
@@ -707,6 +711,7 @@ SettingsDialog::~SettingsDialog() {
 
   plannerGuiFactory->deleteLater();
   localPlannerFactory->deleteLater();
+  simpleMpcGuidanceFactory->deleteLater();
   stanleyGuidanceFactory->deleteLater();
   xteGuidanceFactory->deleteLater();
   globalPlannerModelFactory->deleteLater();

@@ -353,6 +353,7 @@ private:
   BlockFactory* globalPlannerFactory           = nullptr;
   BlockFactory* localPlannerFactory            = nullptr;
   BlockFactory* stanleyGuidanceFactory         = nullptr;
+  BlockFactory* simpleMpcGuidanceFactory       = nullptr;
   BlockFactory* sideslipAnglesEstimatorFactory = nullptr;
   BlockFactory* xteGuidanceFactory             = nullptr;
   BlockFactory* sectionControlFactory          = nullptr;

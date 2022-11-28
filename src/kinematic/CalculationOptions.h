@@ -39,9 +39,11 @@ public:
     /// only do numerical calulations, no XTE stuff
     NoXte = ( 1 << 5 ),
 
-    CalculateLocalOffsets = ( 1 << 10 ) | NoXte | NoOrientation | NoGraphics | NoControl,
+    CalculateLocalOffsets = ( 1 << 6 ) | NoXte | NoOrientation | NoGraphics | NoControl,
 
-    CalculateMpcUpdate = ( 1 << 11 ) | NoGraphics | NoPlanner | NoControl,
+    CalculateMpcUpdate = ( 1 << 7 ) | NoGraphics | NoPlanner | NoControl,
+
+    RestoreStateToBeforeMpcCalculation = ( 1 << 8 ) | NoOrientation | NoGraphics | NoPlanner | NoControl | NoXte
   };
   Q_DECLARE_FLAGS( Options, Option )
   Q_FLAG( Options )

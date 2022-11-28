@@ -105,7 +105,12 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
         }
 
         if( localPlan.plan->empty() ) {
-          localPlan.plan->push_back( lastPrimitiveGlobalPlan );
+          if( targetPrimitiveGlobalPlan ) {
+            localPlan.plan->push_back( targetPrimitiveGlobalPlan );
+          } else {
+            localPlan.plan->push_back( lastPrimitiveGlobalPlan );
+          }
+
           Q_EMIT planChanged( localPlan );
           Q_EMIT passNumberChanged( double( lastPrimitiveGlobalPlan->passNumber ), CalculationOption::Options() );
         }
@@ -115,8 +120,6 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
         const auto* const sequence = localPlan.plan->front()->castToSequence();
 
         const auto step = sequence->findSequencePrimitiveIndex( position2D );
-
-        //        std::cout << "step: " << step << ", " << sequence->sequence.size() << std::endl;
 
         if( step >= ( sequence->sequence.size() - 1 ) ) {
           turningLeft  = false;
@@ -135,6 +138,7 @@ LocalPlanner::setPlan( const Plan& plan ) {
   this->globalPlan               = plan;
   lastNearestPrimitiveGlobalPlan = plan.plan->cend();
   lastPrimitiveGlobalPlan        = nullptr;
+  targetPrimitiveGlobalPlan      = nullptr;
 }
 
 void
@@ -258,6 +262,8 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
     } else {
       targetLineIt = nearestPrimitive + ( searchUp ? rightSkip : -rightSkip );
     }
+
+    targetPrimitiveGlobalPlan = *targetLineIt;
 
     if( targetLineIt != globalPlan.plan->cend() ) {
       Point_2 resultingPoint;

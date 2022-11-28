@@ -40,18 +40,22 @@ public Q_SLOTS:
   void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
+  void setPoseInitialMpcPivot( POSE_SIGNATURE_SLOT );
 
 Q_SIGNALS:
   void poseChanged( POSE_SIGNATURE_SIGNAL );
 
 public:
-  Eigen::Vector3d    positionCalculated = Eigen::Vector3d( -1, 0, 0 );
-  Eigen::Quaterniond orientation        = Eigen::Quaterniond( 0, 0, 0, 0 );
+  Eigen::Vector3d    positionCalculated    = Eigen::Vector3d( -1, 0, 0 );
+  Eigen::Quaterniond orientationCalculated = Eigen::Quaterniond( 0, 0, 0, 0 );
 
   Eigen::Vector3d lastPosition = Eigen::Vector3d( 0, 0, 0 );
 
   double maxJackknifeAngleRad = degreesToRadians( double( 120 ) );
   double maxAngleRad          = degreesToRadians( double( 150 ) );
+
+  Eigen::Vector3d    positionMpcInitialPivot    = Eigen::Vector3d( 0, 0, 0 );
+  Eigen::Quaterniond orientationMpcInitialPivot = Eigen::Quaterniond( 0, 0, 0, 0 );
 
   FixedKinematicPrimitive fixedKinematic;
 };

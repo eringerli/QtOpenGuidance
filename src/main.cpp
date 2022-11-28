@@ -145,6 +145,8 @@ registerEigenTypes() {
   qRegisterMetaType< Eigen::Vector4d >();
 
   qRegisterMetaType< Eigen::Quaterniond >();
+
+  qRegisterMetaType< std::shared_ptr< std::vector< double > > >();
 }
 
 int

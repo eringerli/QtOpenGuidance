@@ -401,6 +401,8 @@ set(SOURCES_dock_input
 addToUnifyGroupAndSources("${SOURCES_dock_input}" "dock")
 
 set(SOURCES_dock_plot
+  src/block/dock/plot/MpcPlotDockBlock.cpp
+  src/block/dock/plot/MpcPlotDockBlock.h
   src/block/dock/plot/OrientationPlotDockBlock.cpp
   src/block/dock/plot/OrientationPlotDockBlock.h
   src/block/dock/plot/PlotDockBlockBase.cpp
@@ -443,6 +445,8 @@ set(SOURCES_guidance
   src/block/guidance/LocalPlanner.h
   src/block/guidance/GlobalPlanner.cpp
   src/block/guidance/GlobalPlanner.h
+  src/block/guidance/SimpleMpcGuidance.cpp
+  src/block/guidance/SimpleMpcGuidance.h
   src/block/guidance/PoseSynchroniser.cpp
   src/block/guidance/PoseSynchroniser.h
   src/block/guidance/StanleyGuidance.cpp

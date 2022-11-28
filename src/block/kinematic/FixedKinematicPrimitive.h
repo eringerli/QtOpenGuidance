@@ -42,9 +42,9 @@ public:
   static Eigen::Vector3d calculate( const Eigen::Vector3d& position, const Eigen::Vector3d& offset, const Eigen::Quaterniond& rotation );
 
 public:
-  Eigen::Vector3d    positionCalculated = Eigen::Vector3d( 0, 0, 0 );
-  Eigen::Quaterniond orientation        = Eigen::Quaterniond( 0, 0, 0, 0 );
-  Eigen::Vector3d    offset             = Eigen::Vector3d( -1, 0, 0 );
+  Eigen::Vector3d    positionCalculated    = Eigen::Vector3d( 0, 0, 0 );
+  Eigen::Quaterniond orientationCalculated = Eigen::Quaterniond( 0, 0, 0, 0 );
+  Eigen::Vector3d    offset                = Eigen::Vector3d( -1, 0, 0 );
 };
 
 class FixedKinematicPrimitiveFactory : public BlockFactory {

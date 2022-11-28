@@ -28,10 +28,14 @@ FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
 
 Eigen::Vector3d
 FixedKinematicPrimitive::calculate( const Eigen::Vector3d& position, const Eigen::Vector3d& offset, const Eigen::Quaterniond& rotation ) {
-  Eigen::Vector3d positionCorrection = rotation * offset;
+  if( offset != Eigen::Vector3d( 0, 0, 0 ) ) {
+    Eigen::Vector3d positionCorrection = rotation * offset;
 
-  return Eigen::Vector3d(
-    position.x() + positionCorrection.x(), position.y() + positionCorrection.y(), position.z() + positionCorrection.z() );
+    return Eigen::Vector3d(
+      position.x() + positionCorrection.x(), position.y() + positionCorrection.y(), position.z() + positionCorrection.z() );
+  } else {
+    return position;
+  }
 }
 
 void
@@ -39,14 +43,14 @@ FixedKinematicPrimitive::setPose( const Eigen::Vector3d&           position,
                                   const Eigen::Quaterniond&        rotation,
                                   const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::NoOrientation ) ) {
-    orientation = rotation;
+    orientationCalculated = rotation;
   } else {
-    orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
+    orientationCalculated = Eigen::Quaterniond( 0, 0, 0, 0 );
   }
 
-  positionCalculated = calculate( position, offset, orientation );
+  positionCalculated = calculate( position, offset, orientationCalculated );
 
-  Q_EMIT poseChanged( positionCalculated, orientation, options );
+  Q_EMIT poseChanged( positionCalculated, orientationCalculated, options );
 }
 
 QNEBlock*

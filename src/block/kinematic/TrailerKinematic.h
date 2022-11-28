@@ -40,6 +40,7 @@ public Q_SLOTS:
   void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
+  void setPoseInitialMpcPivot( POSE_SIGNATURE_SLOT );
 
 Q_SIGNALS:
   void poseHookPointChanged( POSE_SIGNATURE_SIGNAL );

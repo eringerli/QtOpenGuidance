@@ -94,6 +94,8 @@ private:
   Plan::ConstPrimitiveIterator lastNearestPrimitiveGlobalPlan;
   Plan::PrimitiveSharedPointer lastPrimitiveGlobalPlan = nullptr;
 
+  Plan::PrimitiveSharedPointer targetPrimitiveGlobalPlan = nullptr;
+
   Plan localPlan;
 
   bool    turningLeft       = false;
