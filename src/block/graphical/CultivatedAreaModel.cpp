@@ -258,15 +258,12 @@ CultivatedAreaModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new CultivatedAreaModel( rootEntity, newOpenSaveToolbar );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
   b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
 
   b->addOutputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &CultivatedAreaModel::setPose ) );
 
   b->setBrush( modelColor );
 

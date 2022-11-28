@@ -122,7 +122,6 @@ ValuePlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ValuePlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -143,11 +142,6 @@ ValuePlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Number 2" ), QLatin1String( SLOT( addValue2( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Number 3" ), QLatin1String( SLOT( addValue3( NUMBER_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &ValuePlotDockBlock::addValue0 ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &ValuePlotDockBlock::addValue1 ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &ValuePlotDockBlock::addValue2 ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &ValuePlotDockBlock::addValue3 ) );
 
   b->setBrush( dockColor );
 

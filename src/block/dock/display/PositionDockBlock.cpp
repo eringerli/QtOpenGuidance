@@ -137,7 +137,6 @@ PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new PositionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -153,9 +152,6 @@ PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &PositionDockBlock::setWGS84Position ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &PositionDockBlock::setPose ) );
 
   b->setBrush( dockColor );
 

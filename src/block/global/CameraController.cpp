@@ -225,11 +225,8 @@ CameraControllerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &CameraController::setPose ) );
 
   return b;
 }

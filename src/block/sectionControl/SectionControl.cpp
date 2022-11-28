@@ -410,7 +410,6 @@ SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new SectionControl( getNameOfFactory() + QString::number( id ), mainWindow, rootEntity, frameGraphParent );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->labelTurnOnTexture );
@@ -423,8 +422,6 @@ SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
   b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
   b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &SectionControl::setPose ) );
 
   return b;
 }

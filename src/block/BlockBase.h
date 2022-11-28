@@ -27,7 +27,6 @@
 
 #include "helpers/signatures.h"
 
-#include "CompressorApplication.h"
 #include "qjsonobject.h"
 
 class QJsonObject;

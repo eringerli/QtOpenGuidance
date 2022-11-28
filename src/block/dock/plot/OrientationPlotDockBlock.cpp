@@ -110,7 +110,6 @@ OrientationPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new OrientationPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -129,9 +128,6 @@ OrientationPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &OrientationPlotDockBlock::setOrientation ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &OrientationPlotDockBlock::setPose ) );
 
   b->setBrush( dockColor );
 

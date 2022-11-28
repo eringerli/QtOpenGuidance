@@ -84,7 +84,6 @@ MpcPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new MpcPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );

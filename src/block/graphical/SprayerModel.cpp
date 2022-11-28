@@ -345,15 +345,11 @@ SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new SprayerModel( rootEntity, usePBR );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
   b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &SprayerModel::setPose ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &SprayerModel::setHeight ) );
 
   b->setBrush( modelColor );
 

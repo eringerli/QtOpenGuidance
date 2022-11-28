@@ -370,7 +370,6 @@ TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new TractorModel( rootEntity, usePBR );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
@@ -381,12 +380,6 @@ TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPoseHookPoint ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPosePivotPoint ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setPoseTowPoint ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setSteeringAngleLeft ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TractorModel::setSteeringAngleRight ) );
 
   b->setBrush( modelColor );
 

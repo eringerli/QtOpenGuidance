@@ -77,8 +77,6 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/Qt3DWindow>
 
-#include "CompressorApplication.h"
-
 #include "gui/CameraToolbar.h"
 #include "gui/FieldsOptimitionToolbar.h"
 #include "gui/FieldsToolbar.h"
@@ -161,7 +159,7 @@ main( int argc, char** argv ) {
   //  qSetMessagePattern( "%{file}:%{line}, %{function}: %{message}" );
 
   //  QApplication app( argc, argv );
-  CompressorApplication< QApplication > app( argc, argv );
+  QApplication app( argc, argv );
   QApplication::setOrganizationDomain( QStringLiteral( "QtOpenGuidance.org" ) );
   QApplication::setApplicationName( QStringLiteral( "QtOpenGuidance" ) );
 

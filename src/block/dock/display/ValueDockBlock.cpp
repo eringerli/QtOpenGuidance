@@ -122,7 +122,6 @@ ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ValueDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -137,8 +136,6 @@ ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &ValueDockBlock::setValue ) );
 
   b->setBrush( dockColor );
 

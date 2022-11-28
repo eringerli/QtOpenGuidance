@@ -433,12 +433,9 @@ PathPlannerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new PathPlannerModel( rootEntity );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &PathPlannerModel::setPose ) );
 
   b->setBrush( modelColor );
 

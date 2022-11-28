@@ -138,7 +138,6 @@ SliderDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new SliderDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -153,8 +152,6 @@ SliderDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( NUMBER_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &SliderDockBlock::valueChanged ) );
 
   b->setBrush( inputDockColor );
 

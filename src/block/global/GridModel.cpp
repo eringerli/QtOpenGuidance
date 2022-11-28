@@ -241,11 +241,8 @@ GridModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new GridModel( rootEntity, m_cameraEntity );
   auto* b   = createBaseBlock( scene, obj, id, true );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &GridModel::setPose ) );
 
   return b;
 }

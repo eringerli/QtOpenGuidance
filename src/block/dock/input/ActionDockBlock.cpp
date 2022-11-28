@@ -75,7 +75,6 @@ ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ActionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -90,8 +89,6 @@ ActionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   b->addOutputPort( QStringLiteral( "Action with State" ), QLatin1String( SIGNAL( action( ACTION_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &ActionDockBlock::action ) );
 
   b->setBrush( inputDockColor );
 

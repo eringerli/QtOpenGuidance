@@ -321,17 +321,12 @@ TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new TrailerModel( rootEntity, usePBR );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPoseHookPoint ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPosePivotPoint ) );
-  addCompressedSignal( QMetaMethod::fromSignal( &TrailerModel::setPoseTowPoint ) );
 
   b->setBrush( modelColor );
 

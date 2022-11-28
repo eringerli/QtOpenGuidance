@@ -124,7 +124,6 @@ XteDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new XteDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
-  addCompressedObject( obj );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -139,8 +138,6 @@ XteDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
-
-  addCompressedSignal( QMetaMethod::fromSignal( &XteDockBlock::setXte ) );
 
   b->setBrush( dockColor );
 
