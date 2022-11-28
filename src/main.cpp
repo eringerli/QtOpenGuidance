@@ -196,11 +196,6 @@ main( int argc, char** argv ) {
 
   qDebug() << "OpenGL: " << view->format().majorVersion() << view->format().minorVersion();
 
-  //  qDebug() << "DPI: " << qApp->desktop()->logicalDpiX() <<
-  //  qApp->desktop()->logicalDpiY()
-  //           << qApp->desktop()->devicePixelRatioF() << qApp->desktop()->widthMM()
-  //           << qApp->desktop()->heightMM();
-
   registerEigenTypes();
   registerCgalTypes();
 
@@ -208,7 +203,7 @@ main( int argc, char** argv ) {
   //  QSize screenSize = view->screen()->size();
   //  container->setMinimumSize( QSize( 500, 400 ) );
   //  container->setMaximumSize( screenSize );
-  container->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  container->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
 
   // create MainWindow and set the parameters for the docks
   KDDockWidgets::MainWindowOptions options = KDDockWidgets::MainWindowOption_HasCentralFrame;
@@ -279,9 +274,6 @@ main( int argc, char** argv ) {
   view->setRootEntity( rootRootEntity );
 
   view->defaultFrameGraph()->setClearColor( QColor( 0x4d, 0x4d, 0x4f ) );
-  view->defaultFrameGraph()->setFrustumCullingEnabled( false );
-  //  view->defaultFrameGraph()->setGamma( 2.2f );
-  //  view->defaultFrameGraph()->setShowDebugOverlay( true );
   view->defaultFrameGraph()->setFrustumCullingEnabled( true );
 
   //  // sort the QT3D objects, so transparency works
@@ -320,33 +312,46 @@ main( int argc, char** argv ) {
   }
 
   // reordering the framegraph
-  {
+  /*if( false ) */ {
+    // add the layer to enable rendering in the fore/middle/background
+
     frustumCulling->setParent( cameraSelector );
 
-    auto* noDraw = new Qt3DRender::QNoDraw( clearBuffers );
+    auto* noDrawClearBuffers = new Qt3DRender::QNoDraw( clearBuffers );
 
-    // add the layer to enable rendering in the fore/middle/background
-    auto* backgroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( frustumCulling );
+    auto clearBufferType = Qt3DRender::QClearBuffers::DepthBuffer;
+
+    auto* clearBuffersForBackground = new Qt3DRender::QClearBuffers( frustumCulling );
+    clearBuffersForBackground->setBuffers( clearBufferType );
+    auto* backgroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( clearBuffersForBackground );
     backgroundRenderingLayerFilter->addLayer( foregroundRenderingLayer );
     backgroundRenderingLayerFilter->addLayer( middlegroundRenderingLayer );
+    //    backgroundRenderingLayerFilter->addLayer( backgroundRenderingLayer );
     backgroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+    //    auto* noDrawForBackground = new Qt3DRender::QNoDraw( backgroundRenderingLayerFilter );
 
     auto* clearBuffersForMiddleground = new Qt3DRender::QClearBuffers( frustumCulling );
-    clearBuffersForMiddleground->setBuffers( Qt3DRender::QClearBuffers::DepthStencilBuffer );
+    clearBuffersForMiddleground->setBuffers( clearBufferType );
     auto* middlegroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( clearBuffersForMiddleground );
     middlegroundRenderingLayerFilter->addLayer( foregroundRenderingLayer );
+    //    middlegroundRenderingLayerFilter->addLayer( middlegroundRenderingLayer );
     middlegroundRenderingLayerFilter->addLayer( backgroundRenderingLayer );
     middlegroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+    //    auto* noDrawForMiddleground = new Qt3DRender::QNoDraw( middlegroundRenderingLayerFilter );
 
     auto* clearBuffersForForeground = new Qt3DRender::QClearBuffers( frustumCulling );
-    clearBuffersForForeground->setBuffers( Qt3DRender::QClearBuffers::DepthStencilBuffer );
+    clearBuffersForForeground->setBuffers( clearBufferType );
     auto* foregroundRenderingLayerFilter = new Qt3DRender::QLayerFilter( clearBuffersForForeground );
+    //    foregroundRenderingLayerFilter->addLayer( foregroundRenderingLayer );
     foregroundRenderingLayerFilter->addLayer( middlegroundRenderingLayer );
     foregroundRenderingLayerFilter->addLayer( backgroundRenderingLayer );
     foregroundRenderingLayerFilter->setFilterMode( Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers );
+    //    auto* noDrawForForeground = new Qt3DRender::QNoDraw( foregroundRenderingLayerFilter );
 
     debugOverlay->setParent( foregroundRenderingLayerFilter );
   }
+
+  view->activeFrameGraph()->dumpObjectTree();
 
   //  foregroundRenderingLayerFilter->setFilterMode(Qt3DRender::QLayerFilter::FilterMode::DiscardAnyMatchingLayers);
 

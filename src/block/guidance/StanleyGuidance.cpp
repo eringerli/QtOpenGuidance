@@ -144,8 +144,6 @@ StanleyGuidance::setXteRearWheels( double distance, const CalculationOption::Opt
       Q_EMIT steerAngleChanged( steerAngleRequested, CalculationOption::Option::None );
       yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
     }
-  } else {
-    qDebug() << "StanleyGuidance::setXteRearWheels CalculationOption::NoControl";
   }
 }
 

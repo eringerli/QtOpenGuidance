@@ -36,5 +36,6 @@ public:
   explicit BufferMesh( Qt3DCore::QNode* parent = nullptr );
   ~BufferMesh();
 
+public Q_SLOTS:
   void bufferUpdate( const QVector< QVector3D >& pos );
 };

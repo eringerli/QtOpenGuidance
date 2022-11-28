@@ -55,7 +55,7 @@ CultivatedAreaOptimitionController::CultivatedAreaOptimitionController( std::sha
                                                                         std::shared_ptr< std::vector< QVector3D > > normalsPointer )
     : pointsPointer( pointsPointer ), normalsPointer( normalsPointer ) {
   std::cout << "CultivatedAreaOptimitionController::CultivatedAreaOptimitionController " << this << std::endl;
-  ThreadWeaver::setDebugLevel( true, 10 );
+  //  ThreadWeaver::setDebugLevel( true, 10 );
 }
 
 void
