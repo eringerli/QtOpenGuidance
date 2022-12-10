@@ -118,7 +118,7 @@ public:
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
 
-  QString getNameOfFactory() override { return QStringLiteral( "Model Predictive Control" ); }
+  QString getNameOfFactory() override { return QStringLiteral( "Simple Model Predictive Control" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
