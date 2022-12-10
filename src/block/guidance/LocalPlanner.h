@@ -37,6 +37,7 @@ public Q_SLOTS:
   void setName( const QString& name ) override;
 
   void setPose( POSE_SIGNATURE_SLOT );
+  void setPoseLast( POSE_SIGNATURE_SLOT );
 
   void setPlan( const Plan& plan );
 

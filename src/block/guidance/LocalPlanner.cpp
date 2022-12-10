@@ -100,18 +100,44 @@ LocalPlanner::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
           Q_EMIT passNumberChanged( double( lastPrimitiveGlobalPlan->passNumber ), CalculationOption::Options() );
         }
       }
-    } else {
+    } /* else {
+       if( !localPlan.plan->empty() ) {
+         const auto* const sequence = localPlan.plan->front()->castToSequence();
+
+         const auto step = sequence->findSequencePrimitiveIndex( position2D );
+
+         if( step >= ( sequence->sequence.size() - 1 ) ) {
+           turningLeft  = false;
+           turningRight = false;
+           Q_EMIT resetTurningStateOfDock();
+
+           setPose( position, orientation, options );
+         }
+       }
+     }*/
+  }
+}
+
+void
+LocalPlanner::setPoseLast( const Eigen::Vector3d&           position,
+                           const Eigen::Quaterniond&        orientation,
+                           const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::NoPlanner ) ) {
+    if( turningLeft || turningRight ) {
       if( !localPlan.plan->empty() ) {
         const auto* const sequence = localPlan.plan->front()->castToSequence();
+        if( sequence ) {
+          const Point_2 position2D = to2D( position );
 
-        const auto step = sequence->findSequencePrimitiveIndex( position2D );
+          const auto step = sequence->findSequencePrimitiveIndex( position2D );
 
-        if( step >= ( sequence->sequence.size() - 1 ) ) {
-          turningLeft  = false;
-          turningRight = false;
-          Q_EMIT resetTurningStateOfDock();
+          if( step >= ( sequence->sequence.size() - 1 ) ) {
+            turningLeft  = false;
+            turningRight = false;
+            Q_EMIT resetTurningStateOfDock();
 
-          setPose( position, orientation, options );
+            setPose( position, orientation, options );
+          }
         }
       }
     }
@@ -395,6 +421,7 @@ LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   mainWindow->addDockWidget( obj->dock, location );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Pose Last" ), QLatin1String( SLOT( setPoseLast( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
   b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( NUMBER_SIGNATURE ) ) ) );
