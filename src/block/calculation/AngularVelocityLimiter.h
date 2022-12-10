@@ -34,11 +34,11 @@ class AngularVelocityLimiterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  AngularVelocityLimiterFactory( QThread* thread ) : BlockFactory( thread ) {}
+  AngularVelocityLimiterFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Angular Velocity Limiter" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

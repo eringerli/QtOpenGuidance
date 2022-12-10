@@ -106,11 +106,11 @@ class UbxParserFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  UbxParserFactory( QThread* thread ) : BlockFactory( thread ) {}
+  UbxParserFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "UBX Parser" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

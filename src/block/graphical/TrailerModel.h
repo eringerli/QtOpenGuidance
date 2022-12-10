@@ -68,13 +68,13 @@ class TrailerModelFactory : public BlockFactory {
 
 public:
   TrailerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, const bool usePBR )
-      : BlockFactory( thread ), rootEntity( rootEntity ), usePBR( usePBR ) {}
+      : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Trailer Model" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

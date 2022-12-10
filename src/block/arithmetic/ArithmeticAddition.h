@@ -33,7 +33,7 @@ class ArithmeticAdditionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread ) {}
+  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "ArithmeticAddition" ); }
 
@@ -41,5 +41,5 @@ public:
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Arithmetic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

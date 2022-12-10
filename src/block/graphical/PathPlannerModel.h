@@ -113,13 +113,13 @@ class PathPlannerModelFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PathPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread ), rootEntity( rootEntity ) {}
+  PathPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, false ), rootEntity( rootEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Path Planner Model" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

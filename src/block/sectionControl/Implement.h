@@ -60,13 +60,13 @@ class ImplementFactory : public BlockFactory {
 
 public:
   ImplementFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, ImplementBlockModel* model )
-      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Implement" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Section Control" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   MyMainWindow*              mainWindow = nullptr;

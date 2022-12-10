@@ -32,11 +32,11 @@ class CommunicationJrkFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  CommunicationJrkFactory( QThread* thread ) : BlockFactory( thread ) {}
+  CommunicationJrkFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Communication JRK" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Legacy Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

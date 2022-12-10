@@ -34,11 +34,11 @@ class DebugSinkFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  DebugSinkFactory( QThread* thread ) : BlockFactory( thread ) {}
+  DebugSinkFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Console Output" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

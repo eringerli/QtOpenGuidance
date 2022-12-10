@@ -41,11 +41,11 @@ class TrailerKinematicFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  TrailerKinematicFactory( QThread* thread ) : BlockFactory( thread ) {}
+  TrailerKinematicFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Trailer Kinematic" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

@@ -32,7 +32,7 @@ class NmeaParserHDTFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread ) {}
+  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser HDT" ); }
 
@@ -40,5 +40,5 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for HDT sentences" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

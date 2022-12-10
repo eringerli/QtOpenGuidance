@@ -49,11 +49,11 @@ class FileStreamFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FileStreamFactory( QThread* thread ) : BlockFactory( thread ) {}
+  FileStreamFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "File Stream" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

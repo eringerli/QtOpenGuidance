@@ -92,11 +92,11 @@ class StanleyGuidanceFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  StanleyGuidanceFactory( QThread* thread ) : BlockFactory( thread ) {}
+  StanleyGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Stanley Path Follower" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

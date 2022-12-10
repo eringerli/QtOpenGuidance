@@ -403,7 +403,7 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
                                             QMenu*                       menu,
                                             GeographicConvertionWrapper* tmw,
                                             Qt3DCore::QEntity*           rootEntity )
-    : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ), rootEntity( rootEntity ) {
+    : BlockFactory( thread, true ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ), rootEntity( rootEntity ) {
   qRegisterMetaType< Plan >();
   qRegisterMetaType< PlanGlobal >();
 }
@@ -411,7 +411,7 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
 QNEBlock*
 GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
-  auto* b   = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   auto obj2 = new PathPlannerModel( rootEntity );

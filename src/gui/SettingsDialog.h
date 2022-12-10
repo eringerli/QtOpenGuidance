@@ -305,67 +305,7 @@ private:
   SdlInputPollingThread* sdlInputPollingThread = nullptr;
 #endif
 
-  BlockFactory* transverseMercatorConverterFactory = nullptr;
-  BlockFactory* poseSynchroniserFactory            = nullptr;
-  BlockFactory* extendedKalmanFilterFactory        = nullptr;
-  BlockFactory* tractorModelFactory                = nullptr;
-  BlockFactory* trailerModelFactory                = nullptr;
-  BlockFactory* sprayerModelFactory                = nullptr;
-  BlockFactory* cultivatedAreaModelFactory         = nullptr;
-  BlockFactory* fixedKinematicFactory              = nullptr;
-  BlockFactory* trailerKinematicFactory            = nullptr;
-  BlockFactory* fixedKinematicPrimitiveFactory     = nullptr;
-  BlockFactory* trailerKinematicPrimitiveFactory   = nullptr;
-  BlockFactory* debugSinkFactory                   = nullptr;
-  BlockFactory* udpSocketFactory                   = nullptr;
-
-#ifdef SERIALPORT_ENABLED
-  BlockFactory* serialPortFactory = nullptr;
-#endif
-
-  BlockFactory* fileStreamFactory             = nullptr;
-  BlockFactory* ackermannSteeringFactory      = nullptr;
-  BlockFactory* angularVelocityLimiterFactory = nullptr;
-  BlockFactory* ubxParserFactory              = nullptr;
-  BlockFactory* nmeaParserGGAFactory          = nullptr;
-  BlockFactory* nmeaParserHDTFactory          = nullptr;
-  BlockFactory* nmeaParserRMCFactory          = nullptr;
-  BlockFactory* communicationPgn7ffeFactory   = nullptr;
-  BlockFactory* communicationJrkFactory       = nullptr;
-
-  BlockFactory* fieldManagerFactory            = nullptr;
-  BlockFactory* plannerGuiFactory              = nullptr;
-  BlockFactory* globalPlannerFactory           = nullptr;
-  BlockFactory* localPlannerFactory            = nullptr;
-  BlockFactory* stanleyGuidanceFactory         = nullptr;
-  BlockFactory* simpleMpcGuidanceFactory       = nullptr;
-  BlockFactory* sideslipAnglesEstimatorFactory = nullptr;
-  BlockFactory* xteGuidanceFactory             = nullptr;
-  BlockFactory* sectionControlFactory          = nullptr;
-  BlockFactory* pathPlannerModelFactory        = nullptr;
-  BlockFactory* globalPlannerModelFactory      = nullptr;
-
-  BlockFactory* valueTransmissionBase64DataFactory = nullptr;
-  BlockFactory* valueTransmissionNumberFactory     = nullptr;
-  BlockFactory* valueTransmissionQuaternionFactory = nullptr;
-  BlockFactory* valueTransmissionStateFactory      = nullptr;
-
-  BlockFactory* vectorFactory      = nullptr;
-  BlockFactory* orientationFactory = nullptr;
-  BlockFactory* numberFactory      = nullptr;
-  BlockFactory* stringFactory      = nullptr;
-
-  BlockFactory* arithmeticAddition       = nullptr;
-  BlockFactory* arithmeticSubtraction    = nullptr;
-  BlockFactory* arithmeticMultiplication = nullptr;
-  BlockFactory* arithmeticDivision       = nullptr;
-
-  BlockFactory* comparisonEqualTo          = nullptr;
-  BlockFactory* comparisonNotEqualTo       = nullptr;
-  BlockFactory* comparisonGreaterThan      = nullptr;
-  BlockFactory* comparisonLessThan         = nullptr;
-  BlockFactory* comparisonGreaterOrEqualTo = nullptr;
-  BlockFactory* comparisonLessOrEqualTo    = nullptr;
+  std::vector< std::unique_ptr< BlockFactory > > factories;
 
   QSortFilterProxyModel* filterModelValues     = nullptr;
   VectorBlockModel*      vectorBlockModel      = nullptr;

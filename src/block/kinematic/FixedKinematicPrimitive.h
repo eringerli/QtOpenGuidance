@@ -36,11 +36,11 @@ class FixedKinematicPrimitiveFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread ) {}
+  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Fixed Kinematic Primitive" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

@@ -30,7 +30,7 @@ FpsMeasurement::frameActionTriggered( const float dt ) {
 QNEBlock*
 FpsMeasurementFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new FpsMeasurement( rootEntity );
-  auto* b   = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   b->addOutputPort( QStringLiteral( "FPS" ), QLatin1String( SIGNAL( fpsChanged( NUMBER_SIGNATURE ) ) ) );

@@ -36,7 +36,7 @@ class NmeaParserGGAFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread ) {}
+  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser GGA/GNS" ); }
 
@@ -44,5 +44,5 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for GGA/GNS sentences" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

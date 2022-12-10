@@ -43,7 +43,7 @@ class BlockFactory : public QObject {
 
 public:
   BlockFactory() = delete;
-  BlockFactory( QThread* thread ) : thread( thread ) {}
+  BlockFactory( QThread* thread, bool systemBlock ) : thread( thread ), systemBlock( systemBlock ) {}
   ~BlockFactory() {}
 
   virtual QString getNameOfFactory() = 0;
@@ -58,12 +58,13 @@ public:
 
   virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) = 0;
 
-  QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock = false );
+  QNEBlock* createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id );
 
   static bool isIdUnique( QGraphicsScene* scene, int id );
 
 public:
-  QThread* thread = nullptr;
+  QThread* thread      = nullptr;
+  bool     systemBlock = false;
 
 protected:
   static const QColor modelColor;

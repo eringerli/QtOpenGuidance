@@ -68,7 +68,7 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread ) {}
+  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "ExtendedKalmanFilter" ); }
 
@@ -76,5 +76,5 @@ public:
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

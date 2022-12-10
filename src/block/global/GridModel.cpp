@@ -224,7 +224,7 @@ GridModel::currentIndexChanged( const int currentIndex ) {
 QNEBlock*
 GridModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new GridModel( rootEntity, m_cameraEntity );
-  auto* b   = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );

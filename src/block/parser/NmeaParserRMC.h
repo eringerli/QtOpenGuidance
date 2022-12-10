@@ -33,7 +33,7 @@ class NmeaParserRMCFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserRMCFactory( QThread* thread ) : BlockFactory( thread ) {}
+  NmeaParserRMCFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser RMC" ); }
 
@@ -41,5 +41,5 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for RMC sentences" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

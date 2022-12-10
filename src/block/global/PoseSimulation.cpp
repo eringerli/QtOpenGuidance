@@ -570,7 +570,7 @@ PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset ) {
 QNEBlock*
 PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new PoseSimulation( mainWindow, geographicConvertionWrapper );
-  auto* b   = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   auto obj2 = new TerrainModel( rootEntity, usePBR );

@@ -32,11 +32,11 @@ class ValueTransmissionNumberFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionNumberFactory( QThread* thread ) : BlockFactory( thread ) {}
+  ValueTransmissionNumberFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Value Transmit Number" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

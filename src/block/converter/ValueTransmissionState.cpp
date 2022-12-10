@@ -39,7 +39,7 @@ ValueTransmissionState::dataReceive( const QByteArray& data ) {
 QNEBlock*
 ValueTransmissionStateFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new ValueTransmissionState( id );
-  auto* b   = createBaseBlock( scene, obj, id, false );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );

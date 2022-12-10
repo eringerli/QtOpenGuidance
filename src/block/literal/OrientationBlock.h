@@ -50,13 +50,13 @@ class OrientationBlockFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  OrientationBlockFactory( QThread* thread, OrientationBlockModel* model ) : BlockFactory( thread ), model( model ) {}
+  OrientationBlockFactory( QThread* thread, OrientationBlockModel* model ) : BlockFactory( thread, false ), model( model ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Orientation" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   OrientationBlockModel* model = nullptr;

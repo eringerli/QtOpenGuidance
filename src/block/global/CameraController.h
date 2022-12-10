@@ -86,13 +86,13 @@ class CameraControllerFactory : public BlockFactory {
 
 public:
   CameraControllerFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : BlockFactory( thread ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
+      : BlockFactory( thread, true ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Camera Controller" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity*   m_rootEntity   = nullptr;

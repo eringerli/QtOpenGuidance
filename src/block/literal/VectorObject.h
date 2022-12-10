@@ -34,7 +34,7 @@ class VectorFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  VectorFactory( QThread* thread, VectorBlockModel* model ) : BlockFactory( thread ), model( model ) {}
+  VectorFactory( QThread* thread, VectorBlockModel* model ) : BlockFactory( thread, false ), model( model ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Vector3D" ); }
 
@@ -42,7 +42,7 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "3D Vector" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   VectorBlockModel* model = nullptr;

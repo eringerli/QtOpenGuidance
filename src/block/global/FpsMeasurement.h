@@ -32,13 +32,13 @@ class FpsMeasurementFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FpsMeasurementFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread ), rootEntity( rootEntity ) {}
+  FpsMeasurementFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, true ), rootEntity( rootEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Fps Measurement" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

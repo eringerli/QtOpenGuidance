@@ -85,13 +85,13 @@ class GridModelFactory : public BlockFactory {
 
 public:
   GridModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : BlockFactory( thread ), rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
+      : BlockFactory( thread, true ), rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Grid Model" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity*   rootEntity     = nullptr;

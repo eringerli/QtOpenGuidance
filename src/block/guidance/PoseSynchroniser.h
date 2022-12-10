@@ -35,11 +35,11 @@ class PoseSynchroniserFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PoseSynchroniserFactory( QThread* thread ) : BlockFactory( thread ) {}
+  PoseSynchroniserFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Pose Synchroniser" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

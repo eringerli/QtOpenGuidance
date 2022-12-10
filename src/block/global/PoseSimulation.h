@@ -216,7 +216,7 @@ public:
                          GeographicConvertionWrapper* geographicConvertionWrapper,
                          Qt3DCore::QEntity*           rootEntity,
                          bool                         usePBR )
-      : BlockFactory( thread )
+      : BlockFactory( thread, true )
       , mainWindow( mainWindow )
       , geographicConvertionWrapper( geographicConvertionWrapper )
       , rootEntity( rootEntity )
@@ -226,7 +226,7 @@ public:
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   QWidget*                     mainWindow                  = nullptr;

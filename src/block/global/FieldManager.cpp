@@ -337,7 +337,7 @@ FieldManager::fieldStatisticsChanged( const double pointsRecorded,
 QNEBlock*
 FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* obj = new FieldManager( mainWindow, tmw );
-  auto* b   = createBaseBlock( scene, obj, id, true );
+  auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );

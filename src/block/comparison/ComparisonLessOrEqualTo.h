@@ -35,7 +35,7 @@ class ComparisonLessOrEqualToFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComparisonLessOrEqualToFactory( QThread* thread ) : BlockFactory( thread ) {}
+  ComparisonLessOrEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "ComparisonLessOrEqualTo" ); }
 
@@ -43,5 +43,5 @@ public:
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Comparison" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

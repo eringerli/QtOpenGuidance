@@ -38,13 +38,13 @@ class AckermannSteeringFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  AckermannSteeringFactory( QThread* thread ) : BlockFactory( thread ) {}
+  AckermannSteeringFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Ackermann Steering" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
 };

@@ -116,13 +116,13 @@ class SimpleMpcGuidanceFactory : public BlockFactory {
 public:
   SimpleMpcGuidanceFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
-      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Model Predictive Control" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

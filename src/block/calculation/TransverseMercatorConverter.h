@@ -38,13 +38,13 @@ class TransverseMercatorConverterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread ), tmw( tmw ) {}
+  TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread, false ), tmw( tmw ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Transverse Mercator" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   GeographicConvertionWrapper* tmw = nullptr;

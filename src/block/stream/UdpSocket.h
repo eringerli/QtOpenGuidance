@@ -39,11 +39,11 @@ class UdpSocketFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  UdpSocketFactory( QThread* thread ) : BlockFactory( thread ) {}
+  UdpSocketFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "UDP Socket" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

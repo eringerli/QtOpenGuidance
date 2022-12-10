@@ -84,7 +84,7 @@ public:
                          QMenu*                       menu,
                          Qt3DCore::QEntity*           rootEntity,
                          Qt3DRender::QFrameGraphNode* frameGraphParent )
-      : BlockFactory( thread )
+      : BlockFactory( thread, false )
       , mainWindow( mainWindow )
       , location( location )
       , menu( menu )
@@ -95,7 +95,7 @@ public:
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Section Control" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   MyMainWindow*                mainWindow = nullptr;

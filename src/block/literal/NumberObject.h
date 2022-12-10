@@ -31,13 +31,13 @@ class NumberFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NumberFactory( QThread* thread, NumberBlockModel* model ) : BlockFactory( thread ), model( model ) {}
+  NumberFactory( QThread* thread, NumberBlockModel* model ) : BlockFactory( thread, false ), model( model ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Number" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   NumberBlockModel* model = nullptr;

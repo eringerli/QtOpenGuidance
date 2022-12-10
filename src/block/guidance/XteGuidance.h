@@ -43,11 +43,11 @@ class XteGuidanceFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread ) {}
+  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Cross Track Error" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

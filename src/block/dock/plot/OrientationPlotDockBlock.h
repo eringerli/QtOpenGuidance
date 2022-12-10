@@ -32,7 +32,7 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
 
 public:
   OrientationPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "OrientationPlotDockBlock" ); }
 
@@ -40,7 +40,7 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "Orientation Plot Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

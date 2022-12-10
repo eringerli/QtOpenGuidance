@@ -125,13 +125,13 @@ class FieldManagerFactory : public BlockFactory {
 
 public:
   FieldManagerFactory( QThread* thread, QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-      : BlockFactory( thread ), mainWindow( mainWindow ), rootEntity( rootEntity ), tmw( tmw ) {}
+      : BlockFactory( thread, true ), mainWindow( mainWindow ), rootEntity( rootEntity ), tmw( tmw ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Field Manager" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   QWidget*                     mainWindow = nullptr;

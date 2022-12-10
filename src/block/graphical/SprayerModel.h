@@ -58,13 +58,13 @@ class SprayerModelFactory : public BlockFactory {
 
 public:
   SprayerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, bool usePBR )
-      : BlockFactory( thread ), rootEntity( rootEntity ), usePBR( usePBR ) {}
+      : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Sprayer Model" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

@@ -35,11 +35,11 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread ) {}
+  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Value Transmit Quaternion" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

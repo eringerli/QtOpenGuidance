@@ -32,11 +32,11 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  CommunicationPgn7ffeFactory( QThread* thread ) : BlockFactory( thread ) {}
+  CommunicationPgn7ffeFactory( QThread* thread ) : BlockFactory( thread, false ) {}
 
   QString getNameOfFactory() override { return QStringLiteral( "Communication PGN 7FFE" ); }
 
   QString getCategoryOfFactory() override { return QStringLiteral( "Legacy Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id ) override;
+  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

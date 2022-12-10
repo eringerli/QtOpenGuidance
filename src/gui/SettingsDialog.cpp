@@ -23,6 +23,7 @@
 #include "MyMainWindow.h"
 #include <Qt3DExtras/QForwardRenderer>
 #include <Qt3DExtras/Qt3DWindow>
+#include <memory>
 
 #include "block/literal/NumberObject.h"
 #include "block/literal/OrientationBlock.h"
@@ -371,7 +372,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 #endif
 
   // guidance
-  fieldManagerFactory     = new FieldManagerFactory( calculationsThread, mainWindow, foregroundEntity, geographicConvertionWrapper );
+  auto fieldManagerFactory =
+    std::make_unique< FieldManagerFactory >( calculationsThread, mainWindow, foregroundEntity, geographicConvertionWrapper );
   auto* fieldManagerBlock = fieldManagerFactory->createBlock( ui->gvNodeEditor->scene() );
 
   {
@@ -388,7 +390,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     fieldManager = fieldManagerObject;
   }
 
-  globalPlannerFactory = new GlobalPlannerFactory(
+  auto globalPlannerFactory = std::make_unique< GlobalPlannerFactory >(
     calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, geographicConvertionWrapper, middlegroundEntity );
   auto* globalPlannerBlock = globalPlannerFactory->createBlock( ui->gvNodeEditor->scene() );
 
@@ -409,127 +411,79 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
     this->globalPlanner = globalPlanner;
   }
 
-  localPlannerFactory =
-    new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, middlegroundEntity );
-  stanleyGuidanceFactory = new StanleyGuidanceFactory( calculationsThread );
-  simpleMpcGuidanceFactory =
-    new SimpleMpcGuidanceFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, foregroundEntity );
-  xteGuidanceFactory = new XteGuidanceFactory( calculationsThread );
-  sectionControlFactory =
+  factories.emplace_back(
+    new LocalPlannerFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, middlegroundEntity ) );
+  factories.emplace_back( new LocalPlanOptimizerFactory(
+    calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, middlegroundEntity ) );
+  factories.emplace_back( new StanleyGuidanceFactory( calculationsThread ) );
+  factories.emplace_back( new SimpleMpcGuidanceFactory(
+    calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, foregroundEntity ) );
+  factories.emplace_back(
+    new MpcGuidanceFactory( calculationsThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbarMenu, foregroundEntity ) );
+  factories.emplace_back( new XteGuidanceFactory( calculationsThread ) );
+  factories.emplace_back(
     new SectionControlFactory( qt3dThread,
                                mainWindow,
                                KDDockWidgets::Location_OnBottom,
                                guidanceToolbarMenu,
                                backgroundEntity,
-                               static_cast< Qt3DRender::QFrameGraphNode* >( qt3dWindow->activeFrameGraph()->children().front() ) );
+                               static_cast< Qt3DRender::QFrameGraphNode* >( qt3dWindow->activeFrameGraph()->children().front() ) ) );
 
-  pathPlannerModelFactory = new PathPlannerModelFactory( qt3dThread, middlegroundEntity );
+  factories.emplace_back( new PathPlannerModelFactory( qt3dThread, middlegroundEntity ) );
 
   // Factories for the blocks
-  transverseMercatorConverterFactory = new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapper );
-  poseSynchroniserFactory            = new PoseSynchroniserFactory( calculationsThread );
-  extendedKalmanFilterFactory        = new ExtendedKalmanFilterFactory( calculationsThread );
-  trailerModelFactory                = new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR );
-  tractorModelFactory                = new TractorModelFactory( qt3dThread, foregroundEntity, usePBR );
-  sprayerModelFactory                = new SprayerModelFactory( qt3dThread, foregroundEntity, usePBR );
-  cultivatedAreaModelFactory         = new CultivatedAreaModelFactory( qt3dThread, middlegroundEntity, usePBR, newOpenSaveToolbar );
-  fixedKinematicFactory              = new FixedKinematicFactory( calculationsThread );
-  trailerKinematicFactory            = new TrailerKinematicFactory( calculationsThread );
-  fixedKinematicPrimitiveFactory     = new FixedKinematicPrimitiveFactory( calculationsThread );
-  trailerKinematicPrimitiveFactory   = new TrailerKinematicPrimitiveFactory( calculationsThread );
-  vectorFactory                      = new VectorFactory( guiThread, vectorBlockModel );
-  orientationFactory                 = new OrientationBlockFactory( guiThread, orientationBlockModel );
-  numberFactory                      = new NumberFactory( guiThread, numberBlockModel );
-  stringFactory                      = new StringFactory( guiThread, stringBlockModel );
-  debugSinkFactory                   = new DebugSinkFactory( guiThread );
-  udpSocketFactory                   = new UdpSocketFactory( guiThread );
+  factories.emplace_back( new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapper ) );
+  factories.emplace_back( new PoseSynchroniserFactory( calculationsThread ) );
+  factories.emplace_back( new ExtendedKalmanFilterFactory( calculationsThread ) );
+  factories.emplace_back( new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR ) );
+  factories.emplace_back( new TractorModelFactory( qt3dThread, foregroundEntity, usePBR ) );
+  factories.emplace_back( new SprayerModelFactory( qt3dThread, foregroundEntity, usePBR ) );
+  factories.emplace_back( new CultivatedAreaModelFactory( qt3dThread, middlegroundEntity, usePBR, newOpenSaveToolbar ) );
+  factories.emplace_back( new FixedKinematicFactory( calculationsThread ) );
+  factories.emplace_back( new TrailerKinematicFactory( calculationsThread ) );
+  factories.emplace_back( new FixedKinematicPrimitiveFactory( calculationsThread ) );
+  factories.emplace_back( new TrailerKinematicPrimitiveFactory( calculationsThread ) );
+  factories.emplace_back( new VectorFactory( guiThread, vectorBlockModel ) );
+  factories.emplace_back( new OrientationBlockFactory( guiThread, orientationBlockModel ) );
+  factories.emplace_back( new NumberFactory( guiThread, numberBlockModel ) );
+  factories.emplace_back( new StringFactory( guiThread, stringBlockModel ) );
+  factories.emplace_back( new DebugSinkFactory( guiThread ) );
+  factories.emplace_back( new UdpSocketFactory( guiThread ) );
 
-  arithmeticAddition       = new ArithmeticAdditionFactory( calculationsThread );
-  arithmeticSubtraction    = new ArithmeticSubtractionFactory( calculationsThread );
-  arithmeticMultiplication = new ArithmeticMultiplicationFactory( calculationsThread );
-  arithmeticDivision       = new ArithmeticDivisionFactory( calculationsThread );
+  factories.emplace_back( new ArithmeticAdditionFactory( calculationsThread ) );
+  factories.emplace_back( new ArithmeticSubtractionFactory( calculationsThread ) );
+  factories.emplace_back( new ArithmeticMultiplicationFactory( calculationsThread ) );
+  factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
-  comparisonEqualTo          = new ComparisonEqualToFactory( calculationsThread );
-  comparisonNotEqualTo       = new ComparisonNotEqualToFactory( calculationsThread );
-  comparisonGreaterThan      = new ComparisonGreaterThanFactory( calculationsThread );
-  comparisonLessThan         = new ComparisonLessThanFactory( calculationsThread );
-  comparisonGreaterOrEqualTo = new ComparisonGreaterOrEqualToFactory( calculationsThread );
-  comparisonLessOrEqualTo    = new ComparisonLessOrEqualToFactory( calculationsThread );
-
-#ifdef SERIALPORT_ENABLED
-  serialPortFactory = new SerialPortFactory( guiThread );
-#endif
-
-  fileStreamFactory             = new FileStreamFactory( guiThread );
-  communicationPgn7ffeFactory   = new CommunicationPgn7ffeFactory( guiThread );
-  communicationJrkFactory       = new CommunicationJrkFactory( guiThread );
-  ubxParserFactory              = new UbxParserFactory( calculationsThread );
-  nmeaParserGGAFactory          = new NmeaParserGGAFactory( calculationsThread );
-  nmeaParserHDTFactory          = new NmeaParserHDTFactory( calculationsThread );
-  nmeaParserRMCFactory          = new NmeaParserRMCFactory( calculationsThread );
-  ackermannSteeringFactory      = new AckermannSteeringFactory( calculationsThread );
-  angularVelocityLimiterFactory = new AngularVelocityLimiterFactory( calculationsThread );
-
-  valueTransmissionNumberFactory     = new ValueTransmissionNumberFactory( calculationsThread );
-  valueTransmissionQuaternionFactory = new ValueTransmissionQuaternionFactory( calculationsThread );
-  valueTransmissionStateFactory      = new ValueTransmissionStateFactory( calculationsThread );
-  valueTransmissionBase64DataFactory = new ValueTransmissionBase64DataFactory( calculationsThread );
-
-  vectorFactory->addToTreeWidget( ui->twBlocks );
-  orientationFactory->addToTreeWidget( ui->twBlocks );
-  numberFactory->addToTreeWidget( ui->twBlocks );
-  stringFactory->addToTreeWidget( ui->twBlocks );
-  fixedKinematicFactory->addToTreeWidget( ui->twBlocks );
-  fixedKinematicPrimitiveFactory->addToTreeWidget( ui->twBlocks );
-  tractorModelFactory->addToTreeWidget( ui->twBlocks );
-  trailerKinematicFactory->addToTreeWidget( ui->twBlocks );
-  trailerKinematicPrimitiveFactory->addToTreeWidget( ui->twBlocks );
-  trailerModelFactory->addToTreeWidget( ui->twBlocks );
-  sprayerModelFactory->addToTreeWidget( ui->twBlocks );
-  cultivatedAreaModelFactory->addToTreeWidget( ui->twBlocks );
-  ackermannSteeringFactory->addToTreeWidget( ui->twBlocks );
-  angularVelocityLimiterFactory->addToTreeWidget( ui->twBlocks );
-  poseSynchroniserFactory->addToTreeWidget( ui->twBlocks );
-  extendedKalmanFilterFactory->addToTreeWidget( ui->twBlocks );
-  transverseMercatorConverterFactory->addToTreeWidget( ui->twBlocks );
-  xteGuidanceFactory->addToTreeWidget( ui->twBlocks );
-  stanleyGuidanceFactory->addToTreeWidget( ui->twBlocks );
-  simpleMpcGuidanceFactory->addToTreeWidget( ui->twBlocks );
-  localPlannerFactory->addToTreeWidget( ui->twBlocks );
-  sectionControlFactory->addToTreeWidget( ui->twBlocks );
-  pathPlannerModelFactory->addToTreeWidget( ui->twBlocks );
-  ubxParserFactory->addToTreeWidget( ui->twBlocks );
-  nmeaParserGGAFactory->addToTreeWidget( ui->twBlocks );
-  nmeaParserHDTFactory->addToTreeWidget( ui->twBlocks );
-  nmeaParserRMCFactory->addToTreeWidget( ui->twBlocks );
-  debugSinkFactory->addToTreeWidget( ui->twBlocks );
-
-  arithmeticAddition->addToTreeWidget( ui->twBlocks );
-  arithmeticSubtraction->addToTreeWidget( ui->twBlocks );
-  arithmeticMultiplication->addToTreeWidget( ui->twBlocks );
-  arithmeticDivision->addToTreeWidget( ui->twBlocks );
-
-  comparisonEqualTo->addToTreeWidget( ui->twBlocks );
-  comparisonNotEqualTo->addToTreeWidget( ui->twBlocks );
-  comparisonGreaterThan->addToTreeWidget( ui->twBlocks );
-  comparisonLessThan->addToTreeWidget( ui->twBlocks );
-  comparisonGreaterOrEqualTo->addToTreeWidget( ui->twBlocks );
-  comparisonLessOrEqualTo->addToTreeWidget( ui->twBlocks );
-
-  valueTransmissionNumberFactory->addToTreeWidget( ui->twBlocks );
-  valueTransmissionQuaternionFactory->addToTreeWidget( ui->twBlocks );
-  valueTransmissionStateFactory->addToTreeWidget( ui->twBlocks );
-  valueTransmissionBase64DataFactory->addToTreeWidget( ui->twBlocks );
-
-  udpSocketFactory->addToTreeWidget( ui->twBlocks );
+  factories.emplace_back( new ComparisonEqualToFactory( calculationsThread ) );
+  factories.emplace_back( new ComparisonNotEqualToFactory( calculationsThread ) );
+  factories.emplace_back( new ComparisonGreaterThanFactory( calculationsThread ) );
+  factories.emplace_back( new ComparisonLessThanFactory( calculationsThread ) );
+  factories.emplace_back( new ComparisonGreaterOrEqualToFactory( calculationsThread ) );
+  factories.emplace_back( new ComparisonLessOrEqualToFactory( calculationsThread ) );
 
 #ifdef SERIALPORT_ENABLED
-  serialPortFactory->addToTreeWidget( ui->twBlocks );
+  factories.emplace_back( new SerialPortFactory( guiThread ) );
 #endif
 
-  fileStreamFactory->addToTreeWidget( ui->twBlocks );
-  communicationPgn7ffeFactory->addToTreeWidget( ui->twBlocks );
-  communicationJrkFactory->addToTreeWidget( ui->twBlocks );
+  factories.emplace_back( new FileStreamFactory( guiThread ) );
+  factories.emplace_back( new CommunicationPgn7ffeFactory( guiThread ) );
+  factories.emplace_back( new CommunicationJrkFactory( guiThread ) );
+  factories.emplace_back( new UbxParserFactory( calculationsThread ) );
+  factories.emplace_back( new NmeaParserGGAFactory( calculationsThread ) );
+  factories.emplace_back( new NmeaParserHDTFactory( calculationsThread ) );
+  factories.emplace_back( new NmeaParserRMCFactory( calculationsThread ) );
+  factories.emplace_back( new AckermannSteeringFactory( calculationsThread ) );
+  factories.emplace_back( new AngularVelocityLimiterFactory( calculationsThread ) );
+
+  factories.emplace_back( new ValueTransmissionNumberFactory( calculationsThread ) );
+  factories.emplace_back( new ValueTransmissionQuaternionFactory( calculationsThread ) );
+  factories.emplace_back( new ValueTransmissionStateFactory( calculationsThread ) );
+  factories.emplace_back( new ValueTransmissionBase64DataFactory( calculationsThread ) );
+
+  for( const auto& factory : factories ) {
+    factory->addToTreeWidget( ui->twBlocks );
+  }
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -627,51 +581,6 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 SettingsDialog::~SettingsDialog() {
   delete ui;
 
-  transverseMercatorConverterFactory->deleteLater();
-  poseSynchroniserFactory->deleteLater();
-  extendedKalmanFilterFactory->deleteLater();
-  tractorModelFactory->deleteLater();
-  trailerModelFactory->deleteLater();
-  sprayerModelFactory->deleteLater();
-  fixedKinematicFactory->deleteLater();
-  trailerKinematicFactory->deleteLater();
-  fixedKinematicPrimitiveFactory->deleteLater();
-  trailerKinematicPrimitiveFactory->deleteLater();
-  vectorFactory->deleteLater();
-  numberFactory->deleteLater();
-  stringFactory->deleteLater();
-  debugSinkFactory->deleteLater();
-  udpSocketFactory->deleteLater();
-
-  arithmeticAddition->deleteLater();
-  arithmeticSubtraction->deleteLater();
-  arithmeticMultiplication->deleteLater();
-  arithmeticDivision->deleteLater();
-
-  comparisonEqualTo->deleteLater();
-  comparisonNotEqualTo->deleteLater();
-  comparisonGreaterThan->deleteLater();
-  comparisonLessThan->deleteLater();
-  comparisonGreaterOrEqualTo->deleteLater();
-  comparisonLessOrEqualTo->deleteLater();
-
-  valueTransmissionNumberFactory->deleteLater();
-  valueTransmissionQuaternionFactory->deleteLater();
-  valueTransmissionStateFactory->deleteLater();
-  valueTransmissionBase64DataFactory->deleteLater();
-
-#ifdef SERIALPORT_ENABLED
-  serialPortFactory->deleteLater();
-#endif
-
-  fileStreamFactory->deleteLater();
-  communicationPgn7ffeFactory->deleteLater();
-  communicationJrkFactory->deleteLater();
-  nmeaParserGGAFactory->deleteLater();
-  nmeaParserHDTFactory->deleteLater();
-  nmeaParserRMCFactory->deleteLater();
-  ackermannSteeringFactory->deleteLater();
-
   vectorBlockModel->deleteLater();
   numberBlockModel->deleteLater();
   stringBlockModel->deleteLater();
@@ -681,7 +590,6 @@ SettingsDialog::~SettingsDialog() {
   implementBlockModel->deleteLater();
   implementSectionModel->deleteLater();
 
-  poseSimulationFactory->deleteLater();
   poseSimulation->deleteLater();
 
 #ifdef SPNAV_ENABLED
@@ -693,14 +601,6 @@ SettingsDialog::~SettingsDialog() {
 
   spnav_close();
 #endif
-
-  plannerGuiFactory->deleteLater();
-  localPlannerFactory->deleteLater();
-  simpleMpcGuidanceFactory->deleteLater();
-  stanleyGuidanceFactory->deleteLater();
-  xteGuidanceFactory->deleteLater();
-  globalPlannerModelFactory->deleteLater();
-  pathPlannerModelFactory->deleteLater();
 
   delete geographicConvertionWrapper;
 }

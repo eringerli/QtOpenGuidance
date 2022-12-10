@@ -40,7 +40,7 @@ BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
 }
 
 QNEBlock*
-BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id, bool systemBlock ) {
+BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id ) {
   if( id != 0 && !isIdUnique( scene, id ) ) {
     id = 0;
   }
