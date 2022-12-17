@@ -61,7 +61,7 @@ GeographicConvertionWrapper::Forward( const double latitude, const double longit
   }
 }
 
-Eigen::Vector3d
+const Eigen::Vector3d
 GeographicConvertionWrapper::Forward( const Eigen::Vector3d& point ) {
   auto x = double();
   auto y = double();

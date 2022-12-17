@@ -23,7 +23,7 @@ public:
 
   void Forward( const double latitude, const double longitude, double& x, double& y, double& z );
 
-  Eigen::Vector3d Forward( const Eigen::Vector3d& point );
+  const Eigen::Vector3d Forward( const Eigen::Vector3d& point );
 
   void Reverse( const double x, const double y, const double z, double& latitude, double& longitude, double& height );
 

@@ -100,18 +100,18 @@ toCgalVector( const Eigen::Vector3d& vector ) {
   return Vector_3( vector.x(), vector.y(), vector.z() );
 }
 
-inline Vector_2
+inline const Vector_2
 polarOffsetRad( const double angleRad, const double distance ) {
   return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
 }
 
-inline Vector_2
+inline const Vector_2
 polarOffsetDegrees( const double angleDegrees, const double distance ) {
   double angleRad = degreesToRadians( angleDegrees );
   return Vector_2( std::sin( angleRad ) * distance, -std::cos( angleRad ) * distance );
 }
 
-inline double
+inline const double
 angleOfLineDegrees( const Line_2& line ) {
   Vector_3 north( 1, 0, 0 );
   Vector_2 north2D( 1, 0 );
@@ -122,7 +122,7 @@ angleOfLineDegrees( const Line_2& line ) {
   return normalizeAngleDegrees( ( angleAB ) * ( CGAL::orientation( north2D, lineVector ) == CGAL::Sign::POSITIVE ? 1 : -1 ) );
 }
 
-inline double
+inline const double
 angleOfLineRadians( const Line_2& line ) {
   return degreesToRadians( angleOfLineDegrees( line ) );
 }
