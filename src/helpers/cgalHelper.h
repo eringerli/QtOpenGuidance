@@ -119,7 +119,7 @@ angleOfLineDegrees( const Line_2& line ) {
   Vector_2 lineVector = line.to_vector();
 
   double angleAB = CGAL::approximate_angle( north, ( Vector_3 )to3D( lineVector ) );
-  return normalizeAngleDegrees( ( angleAB )*CGAL::orientation( north2D, lineVector ) );
+  return normalizeAngleDegrees( ( angleAB ) * ( CGAL::orientation( north2D, lineVector ) == CGAL::Sign::POSITIVE ? 1 : -1 ) );
 }
 
 inline double
