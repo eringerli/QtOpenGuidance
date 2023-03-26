@@ -107,6 +107,11 @@ QNEPort::isOutput() const {
   return isOutput_;
 }
 
+const std::vector< QNEConnection* >&
+QNEPort::connections() const {
+  return m_connections;
+}
+
 std::vector< QNEConnection* >&
 QNEPort::connections() {
   return m_connections;

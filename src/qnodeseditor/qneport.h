@@ -47,8 +47,9 @@ public:
   void                           setName( const QString& n ) const;
   QString                        getName() const;
   void                           setIsOutput( bool o );
-  bool                           isOutput() const;
-  std::vector< QNEConnection* >& connections();
+  bool                                 isOutput() const;
+  std::vector< QNEConnection* >&       connections();
+  const std::vector< QNEConnection* >& connections() const;
   void                           setPortFlags( int );
 
   void contentsChanged();

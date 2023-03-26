@@ -57,6 +57,8 @@ public:
 
   void toJSON( QJsonObject& json ) const;
 
+  void highlight( bool highlight );
+
 private:
   QPointF  pos1;
   QPointF  pos2;
@@ -64,4 +66,6 @@ private:
   QNEPort* m_port2 = nullptr;
 
   std::vector< QMetaObject::Connection > connections;
+
+  bool highlighted = false;
 };

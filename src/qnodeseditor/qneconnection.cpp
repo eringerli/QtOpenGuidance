@@ -27,6 +27,7 @@
 
 #include "qneconnection.h"
 
+#include "qnamespace.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -80,9 +81,14 @@ QNEConnection::paint( QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
     painter->setBrush( Qt::NoBrush );
     setZValue( 1.5 );
   } else {
-    painter->setPen( QPen( Qt::darkGreen, 3 ) );
+    if( highlighted ) {
+      painter->setPen( QPen( Qt::darkMagenta, 3 ) );
+      setZValue( 0.5 );
+    } else {
+      painter->setPen( QPen( Qt::darkGreen, 3 ) );
+      setZValue( 0 );
+    }
     painter->setBrush( Qt::NoBrush );
-    setZValue( 0 );
   }
 
   painter->drawPath( path() );
@@ -174,4 +180,12 @@ QNEConnection::toJSON( QJsonObject& json ) const {
   connectionsArray.append( connectionObject );
 
   json[QStringLiteral( "connections" )] = connectionsArray;
+}
+
+void
+QNEConnection::highlight( bool highlight ) {
+  if( this->highlighted != highlight ) {
+    this->highlighted = highlight;
+    update();
+  }
 }

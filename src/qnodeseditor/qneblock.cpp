@@ -28,6 +28,7 @@
 #include "qneblock.h"
 
 #include <QFontMetrics>
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QPen>
@@ -135,6 +136,20 @@ QNEBlock::addOutputPort( const QString& name, QLatin1String signalSlotSignature,
   addPort( name, signalSlotSignature, true, 0, embedded );
 }
 
+QVariant
+QNEBlock::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant& value ) {
+  if( change == GraphicsItemChange::ItemSelectedHasChanged && scene() ) {
+    for( const auto child : childItems() ) {
+      if( const auto* port = qgraphicsitem_cast< QNEPort* >( child ) ) {
+        for( auto* connection : port->connections() ) {
+          connection->highlight( value.toBool() );
+        }
+      }
+    }
+  }
+  return QGraphicsItem::itemChange( change, value );
+}
+
 void
 QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) {
   Q_UNUSED( option )
@@ -185,13 +200,6 @@ QNEBlock::setName( const QString& name, bool setFromLabel ) {
   }
 
   resizeBlockWidth();
-}
-
-QVariant
-QNEBlock::itemChange( GraphicsItemChange change, const QVariant& value ) {
-  Q_UNUSED( change )
-
-  return value;
 }
 
 QNEPort*
