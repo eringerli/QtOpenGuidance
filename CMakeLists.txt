@@ -168,8 +168,8 @@ set(SOURCES_filter
   src/filter/MeanMovingWindow.cpp
   src/filter/MeanMovingWindow.h
   src/filter/SlewRateLimiter.h
-  src/block/ExtendedKalmanFilter.cpp
-  src/block/ExtendedKalmanFilter.h
+  src/block/filter/ExtendedKalmanFilter.cpp
+  src/block/filter/ExtendedKalmanFilter.h
   src/kinematic/VehicleDynamics/Tire.h
   src/kinematic/VehicleDynamics/TireLinear.cpp
   src/kinematic/VehicleDynamics/TireLinear.h

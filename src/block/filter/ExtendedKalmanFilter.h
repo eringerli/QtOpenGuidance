@@ -6,7 +6,7 @@
 #include <QElapsedTimer>
 #include <QObject>
 
-#include "BlockBase.h"
+#include "../BlockBase.h"
 
 #include "helpers/eigenHelper.h"
 
@@ -74,7 +74,7 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "Extended Kalman Filter" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Filter" ); }
 
   virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };
