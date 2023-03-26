@@ -24,6 +24,15 @@ MyMainWindow::readSettings() {
 
   restoreGeometry( settings.value( "geometry" ).toByteArray() );
   restoreState( settings.value( "windowState" ).toByteArray() );
+
+  show();
+
+  if( settings.value( "maximised" ).toBool() ) {
+    showMaximized();
+  } else {
+    showMaximized();
+    showNormal();
+  }
 }
 
 void
@@ -32,6 +41,7 @@ MyMainWindow::closeEvent( QCloseEvent* event ) {
 
   settings.setValue( "geometry", saveGeometry() );
   settings.setValue( "windowState", saveState() );
+  settings.setValue( "maximised", isMaximized() );
   settings.sync();
 
   QMainWindow::closeEvent( event );
