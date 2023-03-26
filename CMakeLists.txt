@@ -370,6 +370,8 @@ set(SOURCES_converter
   src/block/converter/ValueTransmissionBase64Data.h
   src/block/converter/ValueTransmissionBase.cpp
   src/block/converter/ValueTransmissionBase.h
+  src/block/converter/ValueTransmissionImuData.cpp
+  src/block/converter/ValueTransmissionImuData.h
   src/block/converter/ValueTransmissionNumber.cpp
   src/block/converter/ValueTransmissionNumber.h
   src/block/converter/ValueTransmissionQuaternion.cpp

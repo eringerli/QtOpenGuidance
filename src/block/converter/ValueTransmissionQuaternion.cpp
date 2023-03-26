@@ -14,12 +14,14 @@
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionQuaternion::ValueTransmissionQuaternion( int id ) : ValueTransmissionBase( id ) {}
+ValueTransmissionQuaternion::ValueTransmissionQuaternion( uint16_t cid ) : ValueTransmissionBase( cid ) {
+  reader = std::make_unique< QCborStreamReader >();
+}
 
 void
 ValueTransmissionQuaternion::setQuaternion( const Eigen::Quaterniond& quaternion ) {
   QCborMap map;
-  map[QStringLiteral( "channelId" )] = id;
+  map[QStringLiteral( "cid" )]       = cid;
   map[QStringLiteral( "x" )]         = quaternion.x();
   map[QStringLiteral( "y" )]         = quaternion.y();
   map[QStringLiteral( "z" )]         = quaternion.z();
@@ -34,7 +36,7 @@ ValueTransmissionQuaternion::dataReceive( const QByteArray& data ) {
 
   auto cbor = QCborValue::fromCbor( *reader );
 
-  if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
+  if( cbor.isMap() && ( cbor[QStringLiteral( "cid" )] == cid ) ) {
     auto x = cbor[QStringLiteral( "x" )].toDouble( 0 );
     auto y = cbor[QStringLiteral( "y" )].toDouble( 0 );
     auto z = cbor[QStringLiteral( "z" )].toDouble( 0 );

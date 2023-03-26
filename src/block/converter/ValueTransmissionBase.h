@@ -15,7 +15,7 @@ class ValueTransmissionBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueTransmissionBase( const int id );
+  explicit ValueTransmissionBase( const uint16_t cid );
 
   QJsonObject toJSON() override;
   void        fromJSON( QJsonObject& ) override;
@@ -24,10 +24,10 @@ public Q_SLOTS:
   void setTimeoutTimeMs( int value );
   void setRepeatTimeMs( int value );
 
-  void setTransmissionId( int id );
+  void setTransmissionId( uint16_t id );
 
 Q_SIGNALS:
-  void timedOut( int id );
+  void timedOut( uint16_t id );
 
 protected:
   void         timerEvent( QTimerEvent* event ) override;
@@ -35,9 +35,9 @@ protected:
   virtual void retransmit();
 
 public:
-  int id            = 0;
-  int timeoutTimeMs = 1000;
-  int repeatTimeMs  = 0;
+  uint16_t cid           = 0;
+  int      timeoutTimeMs = 1000;
+  int      repeatTimeMs  = 0;
 
 private:
   std::unique_ptr< QBasicTimer > timeoutTimer;

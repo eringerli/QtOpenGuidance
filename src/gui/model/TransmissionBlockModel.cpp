@@ -5,8 +5,10 @@
 
 #include "block/converter/ValueTransmissionBase.h"
 #include "block/converter/ValueTransmissionBase64Data.h"
+#include "block/converter/ValueTransmissionImuData.h"
 #include "block/converter/ValueTransmissionNumber.h"
 #include "block/converter/ValueTransmissionQuaternion.h"
+#include "block/converter/ValueTransmissionState.h"
 
 #include <QComboBox>
 #include <QGraphicsItem>
@@ -107,11 +109,19 @@ TransmissionBlockModel::data( const QModelIndex& index, int role ) const {
                     return QStringLiteral( "Quaternion" );
                   }
 
+                  if( qobject_cast< ValueTransmissionState* >( object ) != nullptr ) {
+                    return QStringLiteral( "State" );
+                  }
+
+                  if( qobject_cast< ValueTransmissionImuData* >( object ) != nullptr ) {
+                    return QStringLiteral( "IMU Data" );
+                  }
+
                   return QStringLiteral( "Unknown" );
                 }
 
                 case 2:
-                  return object->id;
+                  return object->cid;
 
                 case 3:
                   return object->timeoutTimeMs;
@@ -148,7 +158,7 @@ TransmissionBlockModel::setData( const QModelIndex& index, const QVariant& value
               return true;
 
             case 2:
-              object->id = value.toString().toInt();
+              object->cid = value.toString().toInt();
               Q_EMIT dataChanged( index, index, QVector< int >() << role );
               return true;
 

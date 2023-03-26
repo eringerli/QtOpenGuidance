@@ -14,7 +14,7 @@ class QCborStreamReader;
 class ValueTransmissionNumber : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionNumber( int );
+  explicit ValueTransmissionNumber( uint16_t cid );
 
 public Q_SLOTS:
   void setNumber( NUMBER_SIGNATURE_SLOT );

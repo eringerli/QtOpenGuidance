@@ -16,7 +16,7 @@ class QCborStreamReader;
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionQuaternion( int id );
+  explicit ValueTransmissionQuaternion( uint16_t cid );
 
 public Q_SLOTS:
   void setQuaternion( const Eigen::Quaterniond& quaternion );

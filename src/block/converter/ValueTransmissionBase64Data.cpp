@@ -14,15 +14,15 @@
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionBase64Data::ValueTransmissionBase64Data( int id ) : ValueTransmissionBase( id ) {
+ValueTransmissionBase64Data::ValueTransmissionBase64Data( uint16_t cid ) : ValueTransmissionBase( cid ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 
 void
 ValueTransmissionBase64Data::setData( const QByteArray& data ) {
   QCborMap map;
-  map[QStringLiteral( "channelId" )] = id;
-  map[QStringLiteral( "data" )]      = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
+  map[QStringLiteral( "cid" )] = cid;
+  map[QStringLiteral( "d" )]   = QString::fromLatin1( data.toBase64( QByteArray::OmitTrailingEquals ) );
 
   Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
 }
@@ -33,8 +33,8 @@ ValueTransmissionBase64Data::dataReceive( const QByteArray& data ) {
 
   auto cbor = QCborValue::fromCbor( *reader );
 
-  if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-    Q_EMIT dataChanged( QByteArray::fromBase64( cbor[QStringLiteral( "data" )].toString().toLatin1() ) );
+  if( cbor.isMap() && ( cbor[QStringLiteral( "cid" )] == cid ) ) {
+    Q_EMIT dataChanged( QByteArray::fromBase64( cbor[QStringLiteral( "d" )].toString().toLatin1() ) );
   }
 }
 

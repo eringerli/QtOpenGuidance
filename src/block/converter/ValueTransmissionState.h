@@ -14,7 +14,7 @@
 class ValueTransmissionState : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionState( int id );
+  explicit ValueTransmissionState( uint16_t cid );
 
 public Q_SLOTS:
   void setState( ACTION_SIGNATURE_SLOT );

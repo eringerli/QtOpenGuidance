@@ -14,15 +14,15 @@
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionNumber::ValueTransmissionNumber( int id ) : ValueTransmissionBase( id ) {
+ValueTransmissionNumber::ValueTransmissionNumber( uint16_t cid ) : ValueTransmissionBase( cid ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 
 void
 ValueTransmissionNumber::setNumber( const double number, CalculationOption::Options ) {
   QCborMap map;
-  map[QStringLiteral( "channelId" )] = id;
-  map[QStringLiteral( "number" )]    = number;
+  map[QStringLiteral( "cid" )] = cid;
+  map[QStringLiteral( "n" )]   = number;
 
   Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
 }
@@ -33,8 +33,8 @@ ValueTransmissionNumber::dataReceive( const QByteArray& data ) {
 
   auto cbor = QCborValue::fromCbor( *reader );
 
-  if( cbor.isMap() && ( cbor[QStringLiteral( "channelId" )] == id ) ) {
-    Q_EMIT numberChanged( cbor[QStringLiteral( "number" )].toDouble( 0 ), CalculationOption::Option::None );
+  if( cbor.isMap() && ( cbor[QStringLiteral( "cid" )] == cid ) ) {
+    Q_EMIT numberChanged( cbor[QStringLiteral( "n" )].toDouble( 0 ), CalculationOption::Option::None );
   }
 }
 

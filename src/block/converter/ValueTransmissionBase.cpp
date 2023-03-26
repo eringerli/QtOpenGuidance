@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QTimerEvent>
 
-ValueTransmissionBase::ValueTransmissionBase( const int id ) : BlockBase(), id( id ) {
+ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid ) : BlockBase(), cid( cid ) {
   timeoutTimer = std::make_unique< QBasicTimer >();
   repeatTimer  = std::make_unique< QBasicTimer >();
 }
@@ -16,7 +16,7 @@ ValueTransmissionBase::ValueTransmissionBase( const int id ) : BlockBase(), id( 
 QJsonObject
 ValueTransmissionBase::toJSON() {
   QJsonObject valuesObject;
-  valuesObject[QStringLiteral( "id" )]            = id;
+  valuesObject[QStringLiteral( "cid" )]           = cid;
   valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
   valuesObject[QStringLiteral( "repeatTimeMs" )]  = repeatTimeMs;
   return valuesObject;
@@ -24,20 +24,16 @@ ValueTransmissionBase::toJSON() {
 
 void
 ValueTransmissionBase::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    QJsonObject valuesObject = json[QStringLiteral( "values" )].toObject();
+  if( json[QStringLiteral( "cid" )].isDouble() ) {
+    cid = json[QStringLiteral( "cid" )].toInt();
+  }
 
-    if( valuesObject[QStringLiteral( "id" )].isDouble() ) {
-      id = valuesObject[QStringLiteral( "id" )].toInt();
-    }
+  if( json[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
+    timeoutTimeMs = json[QStringLiteral( "timeoutTimeMs" )].toInt();
+  }
 
-    if( valuesObject[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
-      timeoutTimeMs = valuesObject[QStringLiteral( "timeoutTimeMs" )].toInt();
-    }
-
-    if( valuesObject[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
-      repeatTimeMs = valuesObject[QStringLiteral( "repeatTimeMs" )].toInt();
-    }
+  if( json[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
+    repeatTimeMs = json[QStringLiteral( "repeatTimeMs" )].toInt();
   }
 }
 
@@ -52,14 +48,14 @@ ValueTransmissionBase::setRepeatTimeMs( int value ) {
 }
 
 void
-ValueTransmissionBase::setTransmissionId( int id ) {
-  this->id = id;
+ValueTransmissionBase::setTransmissionId( uint16_t id ) {
+  this->cid = id;
 }
 
 void
 ValueTransmissionBase::timerEvent( QTimerEvent* event ) {
   if( event->timerId() == timeoutTimer->timerId() ) {
-    Q_EMIT timedOut( id );
+    Q_EMIT timedOut( cid );
   }
 
   if( event->timerId() == repeatTimer->timerId() ) {

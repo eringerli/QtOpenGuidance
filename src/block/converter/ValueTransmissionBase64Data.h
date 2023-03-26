@@ -14,7 +14,7 @@ class QCborStreamReader;
 class ValueTransmissionBase64Data : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionBase64Data( int id );
+  explicit ValueTransmissionBase64Data( uint16_t cid );
 
 public Q_SLOTS:
   void setData( const QByteArray& data );
