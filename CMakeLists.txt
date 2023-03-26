@@ -230,6 +230,9 @@ set(SOURCES_gui_windows
 addToUnifyGroupAndSources("${SOURCES_gui_windows}" "gui_windows")
 
 set(SOURCES_gui_dock
+  src/gui/dock/ApplicationControl.cpp
+  src/gui/dock/ApplicationControl.h
+  src/gui/dock/ApplicationControl.ui
   src/gui/dock/ActionDock.cpp
   src/gui/dock/ActionDock.h
   src/gui/dock/PlotDock.cpp

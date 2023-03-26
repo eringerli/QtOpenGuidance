@@ -71,6 +71,7 @@
 #include "gui/NewOpenSaveToolbar.h"
 #include "gui/PassToolbar.h"
 #include "gui/SettingsDialog.h"
+#include "gui/dock/ApplicationControl.h"
 #include "gui/dock/SliderDock.h"
 
 #include "block/global/CameraController.h"
@@ -238,6 +239,16 @@ main( int argc, char** argv ) {
   guidaceToolbarDock->setWidget( guidanceToolbar );
   guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
   mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
+
+  auto* applicationControl     = new ApplicationControl( widget );
+  auto* applicationControlDock = new KDDockWidgets::DockWidget( QStringLiteral( "ApplicationControlDock" ) );
+  applicationControlDock->setWidget( applicationControl );
+  applicationControlDock->setTitle( applicationControl->windowTitle() );
+  guidanceToolbar->menu->addAction( applicationControlDock->toggleAction() );
+  mainWindow->addDockWidget( applicationControlDock, KDDockWidgets::Location_OnRight );
+
+  QObject::connect( applicationControl, &ApplicationControl::requestClose, mainWindow, &MyMainWindow::close );
+  QObject::connect( applicationControl, &ApplicationControl::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
 
   // Create setting Window
   auto* settingDialog = new SettingsDialog(
@@ -565,16 +576,6 @@ main( int argc, char** argv ) {
   mainWindow->layout()->update();
 
   mainWindow->readSettings();
-
-  // Show window
-#ifdef Q_OS_ANDROID
-  mainWindow->showMaximized();
-  mainWindow->resize( mainWindow->screen()->availableSize() / mainWindow->screen()->devicePixelRatio() );
-#else
-  //  mainWindow->resize( 1200, 800 );
-  mainWindow->show();
-//  mainWindow->readSettings();
-#endif
 
   return QApplication::exec();
 }

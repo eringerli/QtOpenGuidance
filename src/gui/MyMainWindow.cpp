@@ -27,11 +27,28 @@ MyMainWindow::readSettings() {
 
   show();
 
-  if( settings.value( "maximised" ).toBool() ) {
+  if( settings.value( "fullscreen" ).toBool() ) {
+    showFullScreen();
+  } else {
+    if( settings.value( "maximized" ).toBool() ) {
+      showMaximized();
+    } else {
+      showMaximized();
+      showNormal();
+    }
+  }
+}
+
+void
+MyMainWindow::toggleFullscreen() {
+  if( isFullScreen() ) {
     showMaximized();
   } else {
-    showMaximized();
-    showNormal();
+    if( isMaximized() ) {
+      showNormal();
+    } else {
+      showFullScreen();
+    }
   }
 }
 
@@ -41,7 +58,8 @@ MyMainWindow::closeEvent( QCloseEvent* event ) {
 
   settings.setValue( "geometry", saveGeometry() );
   settings.setValue( "windowState", saveState() );
-  settings.setValue( "maximised", isMaximized() );
+  settings.setValue( "maximized", isMaximized() );
+  settings.setValue( "fullscreen", isFullScreen() );
   settings.sync();
 
   QMainWindow::closeEvent( event );

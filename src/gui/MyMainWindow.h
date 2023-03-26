@@ -21,6 +21,9 @@ public:
 
   void readSettings();
 
+public slots:
+  void toggleFullscreen();
+
 protected:
   void closeEvent( QCloseEvent* event ) override;
 

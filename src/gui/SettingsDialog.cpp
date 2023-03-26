@@ -103,6 +103,7 @@
 #endif
 
 #include "block/converter/ValueTransmissionBase64Data.h"
+#include "block/converter/ValueTransmissionImuData.h"
 #include "block/converter/ValueTransmissionNumber.h"
 #include "block/converter/ValueTransmissionQuaternion.h"
 #include "block/converter/ValueTransmissionState.h"
@@ -643,17 +644,12 @@ SettingsDialog::onStart() {
 
 void
 SettingsDialog::onExit() {
-  // save the current config if enabled
   if( ui->cbSaveConfigOnExit->isChecked() ) {
     saveDefaultConfig();
   }
 
   if( ui->cbSaveDockPositionsOnExit->isChecked() ) {
-    QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
-    KDDockWidgets::LayoutSaver saver;
-
-    settings.setValue( QStringLiteral( "SavedDocks" ), saver.serializeLayout() );
-    settings.sync();
+    on_pbSaveDockPositionsAsDefault_clicked();
   }
 }
 
