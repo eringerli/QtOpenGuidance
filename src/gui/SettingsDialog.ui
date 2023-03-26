@@ -875,21 +875,7 @@
                  <string>General</string>
                 </attribute>
                 <layout class="QGridLayout" name="gridLayout_18">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Distance Front Axle to Center of Gravity</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLabel" name="label_24">
-                   <property name="text">
-                    <string>a</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
+                 <item row="1" column="2">
                   <widget class="QDoubleSpinBox" name="dsbSimGeneralA">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -915,257 +901,13 @@
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QLabel" name="label_16">
+                  <widget class="QLabel" name="label_13">
                    <property name="text">
-                    <string>Distance Rear Axle to Center of Gravity</string>
+                    <string>Distance Front Axle to Center of Gravity</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QLabel" name="label_27">
-                   <property name="text">
-                    <string>b</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralB">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> m</string>
-                   </property>
-                   <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>15.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>2.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Distance Implement to Rear Axle</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="label_33">
-                   <property name="text">
-                    <string>c</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralC">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> m</string>
-                   </property>
-                   <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>15.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>2.500000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_35">
-                   <property name="text">
-                    <string>Relaxation Lenght Front</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="label_34">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;f&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaF">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> m</string>
-                   </property>
-                   <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>3.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.340000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_37">
-                   <property name="text">
-                    <string>Relaxation Lenght Rear</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QLabel" name="label_36">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;r&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaR">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> m</string>
-                   </property>
-                   <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>3.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.340000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QLabel" name="label_39">
-                   <property name="text">
-                    <string>Relaxation Lenght Hitch</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="1">
-                  <widget class="QLabel" name="label_38">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaH">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> m</string>
-                   </property>
-                   <property name="minimum">
-                    <double>-10000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>3.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.010000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>0.400000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_41">
-                   <property name="text">
-                    <string>Cornering Stiffness Front (per Axle)</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="1">
-                  <widget class="QLabel" name="label_45">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralCaf">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> N/°</string>
-                   </property>
-                   <property name="decimals">
-                    <number>0</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-500000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>2000000.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>100.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>2400.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="0">
-                  <widget class="QLabel" name="label_42">
-                   <property name="text">
-                    <string>Cornering Stiffness Rear (per Axle)</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QLabel" name="label_43">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αr&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="2">
+                 <item row="8" column="2">
                   <widget class="QDoubleSpinBox" name="dsbSimGeneralCar">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1193,21 +935,152 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_39">
+                   <property name="text">
+                    <string>Relaxation Lenght Hitch</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="8" column="0">
-                  <widget class="QLabel" name="label_44">
+                  <widget class="QLabel" name="label_42">
                    <property name="text">
-                    <string>Cornering Stiffness Hitch (per Axle)</string>
+                    <string>Cornering Stiffness Rear (per Axle)</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="1">
-                  <widget class="QLabel" name="label_46">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_17">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αh&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>Distance Implement to Rear Axle</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="2">
+                 <item row="7" column="1">
+                  <widget class="QLabel" name="label_45">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaF">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> m</string>
+                   </property>
+                   <property name="minimum">
+                    <double>-10000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>3.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.340000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>c</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_16">
+                   <property name="text">
+                    <string>Distance Rear Axle to Center of Gravity</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralC">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> m</string>
+                   </property>
+                   <property name="minimum">
+                    <double>-10000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>15.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>2.500000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralB">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> m</string>
+                   </property>
+                   <property name="minimum">
+                    <double>-10000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>15.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>2.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_41">
+                   <property name="text">
+                    <string>Cornering Stiffness Front (per Axle)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QLabel" name="label_38">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;h&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="1">
+                  <widget class="QLabel" name="label_83">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;%&lt;span style=&quot; vertical-align:sub;&quot;&gt;Slip&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="0">
+                  <widget class="QLabel" name="label_80">
+                   <property name="text">
+                    <string>Slip in X Direction</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="2">
                   <widget class="QDoubleSpinBox" name="dsbSimGeneralCah">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1235,147 +1108,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="9" column="0">
-                  <widget class="QLabel" name="label_76">
-                   <property name="text">
-                    <string>Mass</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="1">
-                  <widget class="QLabel" name="label_79">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralM">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> kg</string>
-                   </property>
-                   <property name="decimals">
-                    <number>0</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-30000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>30000.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>100.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>5500.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="0">
-                  <widget class="QLabel" name="label_78">
-                   <property name="text">
-                    <string>Mass Moment of Inertia</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="1">
-                  <widget class="QLabel" name="label_77">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;I&lt;span style=&quot; vertical-align:sub;&quot;&gt;Z&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="10" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralIz">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> kg·m²</string>
-                   </property>
-                   <property name="decimals">
-                    <number>0</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-50000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>50000.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>100.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>9500.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="0">
-                  <widget class="QLabel" name="label_81">
-                   <property name="text">
-                    <string>Cornering Stiffness X Direction</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="1">
-                  <widget class="QLabel" name="label_47">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;X&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="11" column="2">
-                  <widget class="QDoubleSpinBox" name="dsbSimGeneralCx">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>1</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="suffix">
-                    <string> N/°</string>
-                   </property>
-                   <property name="decimals">
-                    <number>0</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-150000.000000000000000</double>
-                   </property>
-                   <property name="maximum">
-                    <double>2500000.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>100.000000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>5000.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="12" column="0">
-                  <widget class="QLabel" name="label_80">
-                   <property name="text">
-                    <string>Slip in X Direction</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="12" column="1">
-                  <widget class="QLabel" name="label_83">
-                   <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;%&lt;span style=&quot; vertical-align:sub;&quot;&gt;Slip&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="12" column="2">
+                 <item row="13" column="2">
                   <widget class="QDoubleSpinBox" name="dsbSimGeneralSlipX">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1403,7 +1136,202 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="13" column="0" colspan="3">
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_24">
+                   <property name="text">
+                    <string>a</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralCx">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> N/°</string>
+                   </property>
+                   <property name="decimals">
+                    <number>0</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-150000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>2500000.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>5000.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;r&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="1">
+                  <widget class="QLabel" name="label_79">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="label_27">
+                   <property name="text">
+                    <string>b</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSlewrateAutoSteering">
+                   <property name="suffix">
+                    <string> °/s</string>
+                   </property>
+                   <property name="minimum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>8.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_35">
+                   <property name="text">
+                    <string>Relaxation Lenght Front</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralCaf">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> N/°</string>
+                   </property>
+                   <property name="decimals">
+                    <number>0</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-500000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>2000000.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>2400.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="0">
+                  <widget class="QLabel" name="label_81">
+                   <property name="text">
+                    <string>Cornering Stiffness X Direction</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="label_44">
+                   <property name="text">
+                    <string>Cornering Stiffness Hitch (per Axle)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="1">
+                  <widget class="QLabel" name="label_77">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;I&lt;span style=&quot; vertical-align:sub;&quot;&gt;Z&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLabel" name="label_34">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;σ&lt;span style=&quot; vertical-align:sub;&quot;&gt;f&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="label_76">
+                   <property name="text">
+                    <string>Mass</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>Relaxation Lenght Rear</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaR">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> m</string>
+                   </property>
+                   <property name="minimum">
+                    <double>-10000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>3.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.340000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="0">
+                  <widget class="QLabel" name="label_78">
+                   <property name="text">
+                    <string>Mass Moment of Inertia</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="1">
+                  <widget class="QLabel" name="label_46">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αh&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="1">
+                  <widget class="QLabel" name="label_43">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;αr&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="14" column="0" colspan="3">
                   <spacer name="verticalSpacer">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
@@ -1415,6 +1343,101 @@
                     </size>
                    </property>
                   </spacer>
+                 </item>
+                 <item row="6" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralSigmaH">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> m</string>
+                   </property>
+                   <property name="minimum">
+                    <double>-10000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>3.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.400000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralM">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> kg</string>
+                   </property>
+                   <property name="decimals">
+                    <number>0</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-30000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>30000.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>5500.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="1">
+                  <widget class="QLabel" name="label_47">
+                   <property name="text">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;C&lt;span style=&quot; vertical-align:sub;&quot;&gt;X&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_40">
+                   <property name="text">
+                    <string>Maximal Slew Rate Auto Steering</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="2">
+                  <widget class="QDoubleSpinBox" name="dsbSimGeneralIz">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>1</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> kg·m²</string>
+                   </property>
+                   <property name="decimals">
+                    <number>0</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-50000.000000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>50000.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>100.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>9500.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -2771,7 +2794,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../res/ressources.qrc">:/graphics/Coordinate-system_object-orientation.jpg</pixmap>
+            <pixmap>:/graphics/Coordinate-system_object-orientation.jpg</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -4675,9 +4698,7 @@ Public License instead of this License.  But first, please read
    <header>qnegraphicsview.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../res/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

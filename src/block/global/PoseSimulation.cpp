@@ -294,7 +294,8 @@ PoseSimulation::emitConfigSignals() {
                                  sigmaR,
                                  sigmaH,
                                  Cx,
-                                 slipX );
+                                 slipX,
+                                 m_steerAngleAutosteerSlewRateLimiter.slewRate );
 
   Q_EMIT steerAngleChanged( m_steerAngle, CalculationOption::Option::None );
   Q_EMIT positionChanged( Eigen::Vector3d( x, y, height ) );
@@ -307,19 +308,20 @@ QJsonObject
 PoseSimulation::toJSON() {
   QJsonObject valuesObject;
 
-  valuesObject[QStringLiteral( "a" )]      = this->a;
-  valuesObject[QStringLiteral( "b" )]      = this->b;
-  valuesObject[QStringLiteral( "c" )]      = this->c;
-  valuesObject[QStringLiteral( "Caf" )]    = this->Caf;
-  valuesObject[QStringLiteral( "Car" )]    = this->Car;
-  valuesObject[QStringLiteral( "Cah" )]    = this->Cah;
-  valuesObject[QStringLiteral( "m" )]      = this->m;
-  valuesObject[QStringLiteral( "Iz" )]     = this->Iz;
-  valuesObject[QStringLiteral( "sigmaF" )] = this->sigmaF;
-  valuesObject[QStringLiteral( "sigmaR" )] = this->sigmaR;
-  valuesObject[QStringLiteral( "sigmaH" )] = this->sigmaH;
-  valuesObject[QStringLiteral( "Cx" )]     = this->Cx;
-  valuesObject[QStringLiteral( "slip" )]   = this->slipX;
+  valuesObject[QStringLiteral( "a" )]                 = this->a;
+  valuesObject[QStringLiteral( "b" )]                 = this->b;
+  valuesObject[QStringLiteral( "c" )]                 = this->c;
+  valuesObject[QStringLiteral( "Caf" )]               = this->Caf;
+  valuesObject[QStringLiteral( "Car" )]               = this->Car;
+  valuesObject[QStringLiteral( "Cah" )]               = this->Cah;
+  valuesObject[QStringLiteral( "m" )]                 = this->m;
+  valuesObject[QStringLiteral( "Iz" )]                = this->Iz;
+  valuesObject[QStringLiteral( "sigmaF" )]            = this->sigmaF;
+  valuesObject[QStringLiteral( "sigmaR" )]            = this->sigmaR;
+  valuesObject[QStringLiteral( "sigmaH" )]            = this->sigmaH;
+  valuesObject[QStringLiteral( "Cx" )]                = this->Cx;
+  valuesObject[QStringLiteral( "slip" )]              = this->slipX;
+  valuesObject[QStringLiteral( "slewRateAutoSteer" )] = this->m_steerAngleAutosteerSlewRateLimiter.slewRate;
 
   return valuesObject;
 }
@@ -377,6 +379,10 @@ PoseSimulation::fromJSON( QJsonObject& valuesObject ) {
   if( valuesObject[QStringLiteral( "slip" )].isDouble() ) {
     this->slipX = valuesObject[QStringLiteral( "slip" )].toDouble();
   }
+
+  if( valuesObject[QStringLiteral( "slewRateAutoSteer" )].isDouble() ) {
+    this->m_steerAngleAutosteerSlewRateLimiter.slewRate = valuesObject[QStringLiteral( "slewRateAutoSteer" )].toDouble();
+  }
 }
 
 void
@@ -420,7 +426,10 @@ PoseSimulation::setVelocity( double velocity, const CalculationOption::Options )
 
 void
 PoseSimulation::setSteerAngleFromAutosteer( double steerAngle, const CalculationOption::Options ) {
-  m_steerAngleFromAutosteer = steerAngle;
+  static QElapsedTimer timer;
+
+  double dT                 = std::min( double( timer.restart() ) / 1000., 1. );
+  m_steerAngleFromAutosteer = m_steerAngleAutosteerSlewRateLimiter.set( steerAngle, dT );
 }
 
 void
@@ -446,7 +455,8 @@ PoseSimulation::setSimulatorValues( const double a,
                                     const double sigmaR,
                                     const double sigmaH,
                                     const double Cx,
-                                    const double slipX ) {
+                                    const double slipX,
+                                    const double slewRateAutosteerSteering ) {
   this->a = a;
   this->b = b;
   this->c = c;
@@ -461,6 +471,8 @@ PoseSimulation::setSimulatorValues( const double a,
   this->sigmaH = sigmaH;
   this->Cx     = Cx;
   this->slipX  = slipX;
+
+  m_steerAngleAutosteerSlewRateLimiter.slewRate = slewRateAutosteerSteering;
 }
 
 void

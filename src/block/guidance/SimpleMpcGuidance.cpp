@@ -3,9 +3,11 @@
 
 #include "SimpleMpcGuidance.h"
 
-#include "block/dock/plot/MpcPlotDockBlock.h"
+#include "block/dock/plot/XyPlotDockBlock.h"
+#include "filter/SlewRateLimiter.h"
 #include "gui/MyMainWindow.h"
 #include "gui/dock/PlotDock.h"
+#include "helpers/anglesHelper.h"
 #include "qcustomplot.h"
 #include <QMenu>
 
@@ -18,6 +20,8 @@
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 #include "qphongmaterial.h"
+
+#include "filter/SlewRateLimiter.h"
 
 void
 SimpleMpcGuidance::setWheelbase( const double wheelbase, CalculationOption::Options options ) {
@@ -51,7 +55,14 @@ SimpleMpcGuidance::setSteerAngleThreshold( const double steerAngleThreshold, con
 
 void
 SimpleMpcGuidance::setWeight( const double weight, const CalculationOption::Options ) {
-  this->weight = weight;
+  if( weight > 0.2 || weight < -0.2 ) {
+    this->weight = weight;
+  }
+}
+
+void
+SimpleMpcGuidance::setMaxSlewRateSteering( const double maxSlewRateSteeringDegreesPerSec, const CalculationOption::Options ) {
+  this->maxSlewRateSteeringRadPerSec = degreesToRadians( maxSlewRateSteeringDegreesPerSec );
 }
 
 void
@@ -62,12 +73,25 @@ SimpleMpcGuidance::setPlan( const Plan& plan ) {
 
 void
 SimpleMpcGuidance::setSteerAngle( const double steerAngle, CalculationOption::Options options ) {
-  this->steerAngle = steerAngle;
+  this->steerAngleRadians = degreesToRadians( steerAngle );
 }
 
 void
 SimpleMpcGuidance::setVelocity( const double velocity, CalculationOption::Options options ) {
   this->velocity = velocity;
+}
+
+double
+SimpleMpcGuidance::calculateWeightFactor( const double index, const double size ) {
+  if( weight < .95 || weight > 1.05 ) {
+    if( weight > 0. ) {
+      return std::pow( weight / size * ( index + 1 ), 2 );
+    } else {
+      return std::pow( weight / size * ( size - index ), 2 );
+    }
+  }
+
+  return weight;
 }
 
 double
@@ -84,7 +108,14 @@ SimpleMpcGuidance::runMpc( const double           dT,
   this->recordHeadingOfPathTo = std::make_shared< std::vector< double > >();
   this->recordHeadingOfPathTo->reserve( steps );
 
-  double yawRadDifference = dT * velocity * std::tan( steeringAngleToCalculateWithRadians ) / wheelbase;
+  //  std::vector< double > yawRadDifference;
+  //  yawRadDifference.reserve( steps );
+
+  //  for( int step = 0; step < steps; ++step ) {
+
+  //  }
+
+  //  double yawRadDifference = dT * velocity * std::tan( steeringAngleToCalculateWithRadians ) / wheelbase;
 
   Eigen::Vector3d position = positionToStartFrom;
   double          yawRad   = yawToStartFromRadians;
@@ -94,7 +125,12 @@ SimpleMpcGuidance::runMpc( const double           dT,
 
   double dtVelocity = dT * velocity;
 
+  SlewRateLimiter< double > slewRateLimiter( maxSlewRateSteeringRadPerSec );
+  slewRateLimiter.previousValue = steerAngleRadians;
+
   for( int step = 0; step < steps; ++step ) {
+    double yawRadDifference = dT * velocity * std::tan( slewRateLimiter.set( steeringAngleToCalculateWithRadians, dT ) ) / wheelbase;
+
     Eigen::Vector3d positionDifference( dtVelocity * std::cos( yawRad ), dtVelocity * std::sin( yawRad ), 0 );
     position = position + positionDifference;
     yawRad   = normalizeAngleRadians( yawRad + yawRadDifference );
@@ -107,10 +143,14 @@ SimpleMpcGuidance::runMpc( const double           dT,
   }
 
   double costFunctionResult = 0;
-  double t                  = 0;
   for( int i = 0; i < recordXteTo->size(); ++i ) {
-    costFunctionResult += recordXteTo->at( i ) * ( 1 + std::pow( t, 2 ) / weight );
-    t += dT;
+    double xteFactor = calculateWeightFactor( i, recordXteTo->size() );
+    costFunctionResult += recordXteTo->at( i ) * xteFactor;
+    //    qDebug() << "heading: " << recordHeadingTo->at( i ) - degreesToRadians( recordHeadingOfPathTo->at( i ) ) << recordHeadingTo->at( i
+    //    )
+    //             << degreesToRadians( recordHeadingOfPathTo->at( i ) );
+
+    //    costFunctionResult += recordHeadingTo->at( i ) + recordHeadingOfPathTo->at( i );
   }
 
   return std::abs( costFunctionResult );
@@ -270,16 +310,9 @@ SimpleMpcGuidance::setPose( const Eigen::Vector3d&           positionPose,
     auto taitBryanOrientationPose = quaternionToTaitBryan( orientationPose );
     auto yawToStartFromRadians    = getYaw( taitBryanOrientationPose );
 
-    double steeringAngleToCalculateWithRadians = degreesToRadians( steerAngle );
-
     double dT = window / velocity / steps;
-    if( !newtonMethodMpc( positionPose,
-                          orientationPose,
-                          dT,
-                          yawToStartFromRadians,
-                          steeringAngleToCalculateWithRadians,
-                          steeringAngles,
-                          xtesCostFunctionResults ) ) {
+    if( !newtonMethodMpc(
+          positionPose, orientationPose, dT, yawToStartFromRadians, steerAngleRadians, steeringAngles, xtesCostFunctionResults ) ) {
       goldenRatioMpc( positionPose, orientationPose, dT, yawToStartFromRadians, steeringAngles, xtesCostFunctionResults );
     }
 
@@ -299,7 +332,8 @@ SimpleMpcGuidance::setPose( const Eigen::Vector3d&           positionPose,
     double t = 0;
     for( int i = 0; i < recordPointsTo->size(); ++i ) {
       points.push_back( toQVector3D( recordPointsTo->at( i ) ) );
-      points.push_back( toQVector3D( recordPointsTo->at( i ) ) - QVector3D( 0, recordXteForPointsTo->at( i ), 0 ) / weight );
+      points.push_back( toQVector3D( recordPointsTo->at( i ) ) -
+                        QVector3D( 0, recordXteForPointsTo->at( i ) * calculateWeightFactor( i, recordXteForPointsTo->size() ), 0 ) );
       t += dT;
       if( dT > window ) {
         t = 0;
@@ -309,7 +343,8 @@ SimpleMpcGuidance::setPose( const Eigen::Vector3d&           positionPose,
     Q_EMIT buffer2Changed( points2 );
 
     double processingTime = double( timer.nsecsElapsed() ) / 1.e6;
-    qDebug() << "Cycle Time SimpleMpcGuidance [ms]:" << Qt::fixed << qSetRealNumberPrecision( 4 ) << qSetFieldWidth( 7 ) << processingTime;
+    //    qDebug() << "Cycle Time SimpleMpcGuidance [ms]:" << Qt::fixed << qSetRealNumberPrecision( 4 ) << qSetFieldWidth( 7 ) <<
+    //    processingTime;
   }
 }
 
@@ -359,7 +394,7 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  auto* obj2 = new MpcPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* obj2 = new XyPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
   obj2->dock->setTitle( getNameOfFactory() );
   obj2->dock->setWidget( obj2->widget );
 
@@ -375,7 +410,7 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
   QObject::connect(
     obj2->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj2, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  QObject::connect( obj, &SimpleMpcGuidance::dockValuesChanged, obj2, &MpcPlotDockBlock::setValues );
+  QObject::connect( obj, &SimpleMpcGuidance::dockValuesChanged, obj2, &XyPlotDockBlock::setAngleCost );
 
   {
     auto entity = new Qt3DCore::QEntity( rootEntity );
@@ -406,16 +441,19 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Window" ), QLatin1String( SLOT( setWindow( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Steps" ), QLatin1String( SLOT( setSteps( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Weight" ), QLatin1String( SLOT( setWeight( NUMBER_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Steering Max Slew Rate" ), QLatin1String( SLOT( setMaxSlewRateSteering( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Steer Angle Threshold" ), QLatin1String( SLOT( setSteerAngleThreshold( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
   b->addInputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SLOT( setSteerAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+
+  b->addOutputPort( QStringLiteral( "Trigger Pose" ), QLatin1String( SIGNAL( triggerPose( POSE_SIGNATURE_SIGNAL ) ) ) );
+
   b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXTE( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Heading Of Path" ), QLatin1String( SLOT( setHeadingOfPath( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Result" ), QLatin1String( SLOT( setPoseResult( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Trigger Pose" ), QLatin1String( SIGNAL( triggerPose( POSE_SIGNATURE_SIGNAL ) ) ) );
   b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
   return b;

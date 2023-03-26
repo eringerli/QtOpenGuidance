@@ -10,14 +10,18 @@ class MyMainWindow;
 #include "PlotDockBlockBase.h"
 #include "block/BlockBase.h"
 
-class MpcPlotDockBlock : public PlotDockBlockBase {
+class XyPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit MpcPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit XyPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
 
 public Q_SLOTS:
-  void setValues( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
+  void setAngleCost( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
+
+  void setRawValues( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
+  void setRawValues2( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
+  void setRawValues3( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
 
 private:
   void rescale();

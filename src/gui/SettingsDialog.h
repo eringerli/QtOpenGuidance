@@ -98,7 +98,8 @@ Q_SIGNALS:
                                const double sigmaR,
                                const double sigmaH,
                                const double Cx,
-                               const double slip );
+                               const double slip,
+                               const double slewRateAutosteerSteering );
 public Q_SLOTS:
   void toggleVisibility();
 
@@ -122,7 +123,8 @@ public Q_SLOTS:
                            const double sigmaR,
                            const double sigmaH,
                            const double Cx,
-                           const double slipX );
+                           const double slipX,
+                           const double slewRateAutosteerSteering );
 
 private Q_SLOTS:
   void on_cbValues_currentIndexChanged( int index );
@@ -236,30 +238,19 @@ private Q_SLOTS:
   void on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int column );
 
   void on_dsbSimGeneralSlipX_valueChanged( double arg1 );
-
   void on_dsbSimGeneralA_valueChanged( double arg1 );
-
   void on_dsbSimGeneralB_valueChanged( double arg1 );
-
   void on_dsbSimGeneralC_valueChanged( double arg1 );
-
   void on_dsbSimGeneralSigmaF_valueChanged( double arg1 );
-
   void on_dsbSimGeneralSigmaR_valueChanged( double arg1 );
-
   void on_dsbSimGeneralSigmaH_valueChanged( double arg1 );
-
   void on_dsbSimGeneralCaf_valueChanged( double arg1 );
-
   void on_dsbSimGeneralCar_valueChanged( double arg1 );
-
   void on_dsbSimGeneralCah_valueChanged( double arg1 );
-
   void on_dsbSimGeneralM_valueChanged( double arg1 );
-
   void on_dsbSimGeneralIz_valueChanged( double arg1 );
-
   void on_dsbSimGeneralCx_valueChanged( double arg1 );
+  void on_dsbSimGeneralSlewrateAutoSteering_valueChanged( double arg1 );
 
 private:
   void saveGridValuesInSettings();

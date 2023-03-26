@@ -1353,7 +1353,9 @@ SettingsDialog::setSimulatorValues( const double a,
                                     const double sigmaR,
                                     const double sigmaH,
                                     const double Cx,
-                                    const double slipX ) {
+                                    const double slipX,
+                                    const double slewRateAutosteerSteering ) {
+  ui->dsbSimGeneralSlewrateAutoSteering->blockSignals( true );
   ui->dsbSimGeneralA->blockSignals( true );
   ui->dsbSimGeneralB->blockSignals( true );
   ui->dsbSimGeneralC->blockSignals( true );
@@ -1368,6 +1370,7 @@ SettingsDialog::setSimulatorValues( const double a,
   ui->dsbSimGeneralCx->blockSignals( true );
   ui->dsbSimGeneralSlipX->blockSignals( true );
 
+  ui->dsbSimGeneralSlewrateAutoSteering->setValue( slewRateAutosteerSteering );
   ui->dsbSimGeneralA->setValue( a );
   ui->dsbSimGeneralB->setValue( b );
   ui->dsbSimGeneralC->setValue( c );
@@ -1382,6 +1385,7 @@ SettingsDialog::setSimulatorValues( const double a,
   ui->dsbSimGeneralCx->setValue( Cx );
   ui->dsbSimGeneralSlipX->setValue( slipX * 100 );
 
+  ui->dsbSimGeneralSlewrateAutoSteering->blockSignals( false );
   ui->dsbSimGeneralA->blockSignals( false );
   ui->dsbSimGeneralB->blockSignals( false );
   ui->dsbSimGeneralC->blockSignals( false );
@@ -1540,7 +1544,8 @@ SettingsDialog::emitSimulatorValues() {
                                  ui->dsbSimGeneralSigmaR->value(),
                                  ui->dsbSimGeneralSigmaH->value(),
                                  ui->dsbSimGeneralCx->value(),
-                                 ui->dsbSimGeneralSlipX->value() / 100 );
+                                 ui->dsbSimGeneralSlipX->value() / 100,
+                                 ui->dsbSimGeneralSlewrateAutoSteering->value() );
 }
 
 void
@@ -2116,5 +2121,10 @@ SettingsDialog::on_dsbSimGeneralIz_valueChanged( double ) {
 
 void
 SettingsDialog::on_dsbSimGeneralCx_valueChanged( double ) {
+  emitSimulatorValues();
+}
+
+void
+SettingsDialog::on_dsbSimGeneralSlewrateAutoSteering_valueChanged( double ) {
   emitSimulatorValues();
 }

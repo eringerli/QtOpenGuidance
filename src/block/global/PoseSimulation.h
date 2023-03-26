@@ -25,6 +25,7 @@
 #include "kinematic/VehicleDynamics/VehicleNonLinear4DOF.h"
 
 #include "filter/3wFRHRL/SystemModel.h"
+#include "filter/SlewRateLimiter.h"
 
 using namespace std;
 using namespace GeographicLib;
@@ -79,7 +80,8 @@ public Q_SLOTS:
                            const double sigmaR,
                            const double sigmaH,
                            const double Cx,
-                           const double slipX );
+                           const double slipX,
+                           const double slewRateAutosteerSteering );
 
   void setNoiseStandartDeviations( const double noisePositionXY,
                                    const double noisePositionZ,
@@ -103,7 +105,8 @@ Q_SIGNALS:
                                const double sigmaR,
                                const double sigmaH,
                                const double Cx,
-                               const double slip );
+                               const double slip,
+                               const double slewRateAutosteerSteering );
 
   void simulationChanged( const bool );
   void intervalChanged( const int );
@@ -147,12 +150,13 @@ private:
   int  m_interval         = 50;
 
   QBasicTimer   m_timer;
-  int           m_timerId{};
+  int           m_timerId = 0;
   QElapsedTimer m_time;
 
-  double m_steerAngle              = 0;
-  double m_steerAngleFromAutosteer = 0;
-  double m_velocity                = 0;
+  double                    m_steerAngle                         = 0;
+  double                    m_steerAngleFromAutosteer            = 0;
+  SlewRateLimiter< double > m_steerAngleAutosteerSlewRateLimiter = SlewRateLimiter( 32. );
+  double                    m_velocity                           = 0;
 
   double a      = 1;
   double b      = 2;

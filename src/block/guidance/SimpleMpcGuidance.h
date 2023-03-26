@@ -11,6 +11,7 @@
 #include "block/BlockBase.h"
 #include "block/kinematic/FixedKinematicPrimitive.h"
 
+#include "helpers/anglesHelper.h"
 #include "helpers/eigenHelper.h"
 
 #include "kddockwidgets/KDDockWidgets.h"
@@ -43,6 +44,7 @@ public Q_SLOTS:
   void setSteps( NUMBER_SIGNATURE_SLOT );
   void setSteerAngleThreshold( NUMBER_SIGNATURE_SLOT );
   void setWeight( NUMBER_SIGNATURE_SLOT );
+  void setMaxSlewRateSteering( NUMBER_SIGNATURE_SLOT );
 
   void setPlan( const Plan& plan );
 
@@ -72,10 +74,11 @@ private:
   double steps                  = 40;
   double steerAngleThresholdRad = degreesToRadians( 0.5 );
 
-  double steerAngle = 0;
+  double steerAngleRadians = 0;
   double velocity   = 0;
 
   double weight = 1;
+  double maxSlewRateSteeringRadPerSec = degreesToRadians( 32. );
 
   Plan                         plan;
   Plan::ConstPrimitiveIterator lastFoundPrimitive;
@@ -101,13 +104,14 @@ private:
                        std::shared_ptr< std::vector< double > >& steeringAngles,
                        std::shared_ptr< std::vector< double > >& xtesCostFunctionResults );
 
-  bool newtonMethodMpc( const Eigen::Vector3d&                    positionPose,
-                        const Eigen::Quaterniond&                 orientationPose,
-                        const double                              dT,
-                        const double                              yawToStartFromRadians,
-                        const double                              steeringAngleToCalculateWithRadians,
-                        std::shared_ptr< std::vector< double > >& steeringAngles,
-                        std::shared_ptr< std::vector< double > >& xtesCostFunctionResults );
+  bool   newtonMethodMpc( const Eigen::Vector3d&                    positionPose,
+                          const Eigen::Quaterniond&                 orientationPose,
+                          const double                              dT,
+                          const double                              yawToStartFromRadians,
+                          const double                              steeringAngleToCalculateWithRadians,
+                          std::shared_ptr< std::vector< double > >& steeringAngles,
+                          std::shared_ptr< std::vector< double > >& xtesCostFunctionResults );
+  double calculateWeightFactor( const double index, const double size );
 };
 
 class SimpleMpcGuidanceFactory : public BlockFactory {

@@ -167,6 +167,7 @@ set(SOURCES_filter
   src/filter/KinematicModel/SystemModel.h
   src/filter/MeanMovingWindow.cpp
   src/filter/MeanMovingWindow.h
+  src/filter/SlewRateLimiter.h
   src/block/ExtendedKalmanFilter.cpp
   src/block/ExtendedKalmanFilter.h
   src/kinematic/VehicleDynamics/Tire.h
@@ -401,8 +402,8 @@ set(SOURCES_dock_input
 addToUnifyGroupAndSources("${SOURCES_dock_input}" "dock")
 
 set(SOURCES_dock_plot
-  src/block/dock/plot/MpcPlotDockBlock.cpp
-  src/block/dock/plot/MpcPlotDockBlock.h
+  src/block/dock/plot/XyPlotDockBlock.cpp
+  src/block/dock/plot/XyPlotDockBlock.h
   src/block/dock/plot/OrientationPlotDockBlock.cpp
   src/block/dock/plot/OrientationPlotDockBlock.h
   src/block/dock/plot/PlotDockBlockBase.cpp
