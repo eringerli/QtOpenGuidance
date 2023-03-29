@@ -10,6 +10,7 @@
 #include "helpers/anglesHelper.h"
 #include "qcustomplot.h"
 #include <QMenu>
+#include <limits>
 
 #include "3d/BufferMesh.h"
 
@@ -40,12 +41,16 @@ SimpleMpcGuidance::setAntennaPosition( const Eigen::Vector3d& offset ) {
 
 void
 SimpleMpcGuidance::setWindow( const double window, CalculationOption::Options options ) {
-  this->window = window;
+  if( window > 2 && window < 100 ) {
+    this->window = window;
+  }
 }
 
 void
 SimpleMpcGuidance::setSteps( const double steps, CalculationOption::Options options ) {
-  this->steps = steps;
+  if( steps > 3 && steps < 100 ) {
+    this->steps = steps;
+  }
 }
 
 void
