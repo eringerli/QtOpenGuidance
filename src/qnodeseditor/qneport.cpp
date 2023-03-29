@@ -26,6 +26,7 @@
  */
 
 #include "qneport.h"
+#include "qnamespace.h"
 #include "qneblock.h"
 
 #include <QFontMetrics>
@@ -45,6 +46,7 @@
 QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded ) : QGraphicsPathItem( parent ) {
   this->slotSignalSignature = slotSignalSignature;
   label                     = new QGraphicsTextItem( this );
+  label->setDefaultTextColor( Qt::black );
 
   QPainterPath p;
   p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
