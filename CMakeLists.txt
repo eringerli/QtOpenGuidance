@@ -85,6 +85,10 @@ find_package(CGAL REQUIRED)
 
 find_package(SDL2)
 
+find_package (GeographicLib REQUIRED)
+
+include_directories (${GeographicLib_INCLUDE_DIRS})
+
 #find_package(CGAL COMPONENTS Core)
 
 ########################################
@@ -106,9 +110,6 @@ else()
   message(STATUS "SDL2 - not found")
 endif()
 
-set(GEOGRAPHICLIB_LIB_TYPE STATIC)
-
-add_subdirectory(lib/geographiclib/ EXCLUDE_FROM_ALL)
 add_subdirectory(lib/dubins_curves/ EXCLUDE_FROM_ALL)
 
 # QCustomPlot
@@ -645,9 +646,9 @@ target_link_libraries(QtOpenGuidance
   KF5::ThreadWeaver
 #  Eigen3::Eigen
   KDAB::kddockwidgets
-  GeographicLib::GeographicLib_STATIC
+  ${GeographicLib_LIBRARIES}
   dubins
-  CGAL::CGAL # CGAL::CGAL_Core
+  CGAL::CGAL
   QCustomPlot
   qnodeseditor
   ${SPNAV_LIBRARY}
