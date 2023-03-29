@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PassToolbar</class>
- <widget class="QGroupBox" name="PassToolbar">
+ <widget class="QWidget" name="PassToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -20,6 +20,18 @@
    <string>Passes</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item row="6" column="0" colspan="2">
     <spacer name="verticalSpacer">
      <property name="orientation">

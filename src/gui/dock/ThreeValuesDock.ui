@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ThreeValuesDock</class>
- <widget class="QGroupBox" name="ThreeValuesDock">
+ <widget class="QWidget" name="ThreeValuesDock">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>112</width>
-    <height>103</height>
+    <height>132</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,11 +26,8 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="horizontalSpacing">
+   <property name="spacing">
     <number>2</number>
-   </property>
-   <property name="verticalSpacing">
-    <number>0</number>
    </property>
    <item row="3" column="0">
     <widget class="QLabel" name="lbThirdDesc">
@@ -44,7 +41,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -74,7 +70,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -104,7 +99,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -134,7 +128,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -164,7 +157,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -194,7 +186,6 @@
       <font>
        <family>Monospace</family>
        <pointsize>20</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>

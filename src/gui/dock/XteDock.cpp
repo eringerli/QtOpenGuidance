@@ -10,6 +10,8 @@ XteDock::XteDock( QWidget* parent ) : QGroupBox( parent ), ui( new Ui::XteDock )
   ui->setupUi( this );
 
   setContentsMargins( 0, 0, 0, 0 );
+
+  setXte( 0. );
 }
 
 XteDock::~XteDock() { delete ui; }

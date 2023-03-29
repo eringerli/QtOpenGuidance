@@ -42,9 +42,4 @@ CustomWidgetFactory::createTitleBar( KDDockWidgets::FloatingWindow* fw ) const {
   return new MyTitleBar( fw );
 }
 
-KDDockWidgets::Frame*
-CustomWidgetFactory::createCentralFrame( KDDockWidgets::QWidgetOrQuick* parent ) const {
-  return createFrame( parent, KDDockWidgets::FrameOptions() | KDDockWidgets::FrameOption_IsCentralFrame );
-}
-
 #include "MyFrameworkWidgetFactory.moc"

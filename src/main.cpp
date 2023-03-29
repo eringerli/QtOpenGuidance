@@ -62,6 +62,7 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/Qt3DWindow>
 
+#include "gui/ApplicationControlToolbar.h"
 #include "gui/CameraToolbar.h"
 #include "gui/FieldsOptimitionToolbar.h"
 #include "gui/FieldsToolbar.h"
@@ -71,7 +72,6 @@
 #include "gui/NewOpenSaveToolbar.h"
 #include "gui/PassToolbar.h"
 #include "gui/SettingsDialog.h"
-#include "gui/dock/ApplicationControl.h"
 #include "gui/dock/SliderDock.h"
 
 #include "block/global/CameraController.h"
@@ -240,15 +240,15 @@ main( int argc, char** argv ) {
   guidaceToolbarDock->setTitle( guidanceToolbar->windowTitle() );
   mainWindow->addDockWidget( guidaceToolbarDock, KDDockWidgets::Location_OnRight );
 
-  auto* applicationControl     = new ApplicationControl( widget );
-  auto* applicationControlDock = new KDDockWidgets::DockWidget( QStringLiteral( "ApplicationControlDock" ) );
-  applicationControlDock->setWidget( applicationControl );
-  applicationControlDock->setTitle( applicationControl->windowTitle() );
-  guidanceToolbar->menu->addAction( applicationControlDock->toggleAction() );
-  mainWindow->addDockWidget( applicationControlDock, KDDockWidgets::Location_OnRight );
+  auto* applicationControlToolbar     = new ApplicationControlToolbar( widget );
+  auto* applicationControlToolbarDock = new KDDockWidgets::DockWidget( QStringLiteral( "ApplicationControlToolbar" ) );
+  applicationControlToolbarDock->setWidget( applicationControlToolbar );
+  applicationControlToolbarDock->setTitle( applicationControlToolbar->windowTitle() );
+  guidanceToolbar->menu->addAction( applicationControlToolbarDock->toggleAction() );
+  mainWindow->addDockWidget( applicationControlToolbarDock, KDDockWidgets::Location_OnRight );
 
-  QObject::connect( applicationControl, &ApplicationControl::requestClose, mainWindow, &MyMainWindow::close );
-  QObject::connect( applicationControl, &ApplicationControl::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
+  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestClose, mainWindow, &MyMainWindow::close );
+  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
 
   // Create setting Window
   auto* settingDialog = new SettingsDialog(

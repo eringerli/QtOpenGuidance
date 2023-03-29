@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FieldsToolbar</class>
- <widget class="QGroupBox" name="FieldsToolbar">
+ <widget class="QWidget" name="FieldsToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>96</width>
+    <width>100</width>
     <height>262</height>
    </rect>
   </property>
@@ -14,6 +14,18 @@
    <string>Fields</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QToolButton" name="pbRecordContinous">
      <property name="sizePolicy">

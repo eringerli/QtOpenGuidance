@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FieldsOptimitionToolbar</class>
- <widget class="QGroupBox" name="FieldsOptimitionToolbar">
+ <widget class="QWidget" name="FieldsOptimitionToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>131</width>
+    <width>134</width>
     <height>584</height>
    </rect>
   </property>
@@ -14,6 +14,18 @@
    <string>Fields Optimition</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QToolButton" name="pbRecalculate">
      <property name="sizePolicy">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ApplicationControl</class>
- <widget class="QGroupBox" name="ApplicationControl">
+ <class>ApplicationControlToolbar</class>
+ <widget class="QWidget" name="ApplicationControlToolbar">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,6 +14,18 @@
    <string>App Ctrl</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QPushButton" name="pbFullscreen">
      <property name="sizePolicy">

@@ -185,6 +185,8 @@ set(SOURCES_filter
 addToUnifyGroupAndSources("${SOURCES_filter}" "filter")
 
 set(SOURCES_gui_toolbar
+  src/gui/ApplicationControlToolbar.cpp
+  src/gui/ApplicationControlToolbar.h
   src/gui/CameraToolbar.cpp
   src/gui/CameraToolbar.h
   src/gui/FieldsOptimitionToolbar.cpp
@@ -207,6 +209,7 @@ set(SOURCES_gui_toolbar
   src/gui/PassToolbar.h
   src/gui/ImplementToolbar.cpp
   src/gui/ImplementToolbar.h
+  src/gui/ApplicationControlToolbar.ui
   src/gui/GuidanceTurningToolbar.ui
   src/gui/GlobalPlannerToolbar.ui
   src/gui/GuidanceToolbar.ui
@@ -231,9 +234,6 @@ set(SOURCES_gui_windows
 addToUnifyGroupAndSources("${SOURCES_gui_windows}" "gui_windows")
 
 set(SOURCES_gui_dock
-  src/gui/dock/ApplicationControl.cpp
-  src/gui/dock/ApplicationControl.h
-  src/gui/dock/ApplicationControl.ui
   src/gui/dock/ActionDock.cpp
   src/gui/dock/ActionDock.h
   src/gui/dock/PlotDock.cpp

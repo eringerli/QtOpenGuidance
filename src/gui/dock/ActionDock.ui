@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ActionDock</class>
- <widget class="QGroupBox" name="ActionDock">
+ <widget class="QWidget" name="ActionDock">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>95</width>
-    <height>96</height>
+    <width>144</width>
+    <height>142</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GroupBox</string>
+   <string>Widget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinimumSize</enum>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QPushButton" name="pbAction">
      <property name="sizePolicy">
@@ -51,9 +66,6 @@
       <bool>false</bool>
      </property>
      <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
       <bool>false</bool>
      </property>
     </widget>
