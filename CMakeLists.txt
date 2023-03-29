@@ -385,6 +385,12 @@ set(SOURCES_converter
 )
 addToUnifyGroupAndSources("${SOURCES_converter}" "simpleblocks")
 
+set(SOURCES_valves
+  src/block/valves/ValveNumber.cpp
+  src/block/valves/ValveNumber.h
+)
+addToUnifyGroupAndSources("${SOURCES_valves}" "simpleblocks")
+
 set(SOURCES_dock_display
   src/block/dock/display/OrientationDockBlock.cpp
   src/block/dock/display/OrientationDockBlock.h

@@ -42,6 +42,8 @@
 #include "block/comparison/ComparisonLessThan.h"
 #include "block/comparison/ComparisonNotEqualTo.h"
 
+#include "block/valves/ValveNumber.h"
+
 #include "block/sectionControl/Implement.h"
 
 #include "block/graphical/PathPlannerModel.h"
@@ -456,6 +458,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new ArithmeticMultiplicationFactory( calculationsThread ) );
   factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
+  factories.emplace_back( new ValveNumberFactory( calculationsThread ) );
+
   factories.emplace_back( new ComparisonEqualToFactory( calculationsThread ) );
   factories.emplace_back( new ComparisonNotEqualToFactory( calculationsThread ) );
   factories.emplace_back( new ComparisonGreaterThanFactory( calculationsThread ) );
@@ -479,6 +483,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
   factories.emplace_back( new ValueTransmissionNumberFactory( calculationsThread ) );
   factories.emplace_back( new ValueTransmissionQuaternionFactory( calculationsThread ) );
+  factories.emplace_back( new ValueTransmissionImuDataFactory( calculationsThread ) );
   factories.emplace_back( new ValueTransmissionStateFactory( calculationsThread ) );
   factories.emplace_back( new ValueTransmissionBase64DataFactory( calculationsThread ) );
 
