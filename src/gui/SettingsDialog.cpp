@@ -30,9 +30,12 @@
 #include "block/literal/StringObject.h"
 #include "block/literal/VectorObject.h"
 
+#include "block/arithmetic/ArithmeticAbsolute.h"
 #include "block/arithmetic/ArithmeticAddition.h"
+#include "block/arithmetic/ArithmeticClamp.h"
 #include "block/arithmetic/ArithmeticDivision.h"
 #include "block/arithmetic/ArithmeticMultiplication.h"
+#include "block/arithmetic/ArithmeticNegation.h"
 #include "block/arithmetic/ArithmeticSubtraction.h"
 
 #include "block/comparison/ComparisonEqualTo.h"
@@ -460,9 +463,12 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new DebugSinkFactory( guiThread ) );
   factories.emplace_back( new UdpSocketFactory( guiThread ) );
 
+  factories.emplace_back( new ArithmeticAbsoluteFactory( calculationsThread ) );
   factories.emplace_back( new ArithmeticAdditionFactory( calculationsThread ) );
+  factories.emplace_back( new ArithmeticClampFactory( calculationsThread ) );
   factories.emplace_back( new ArithmeticSubtractionFactory( calculationsThread ) );
   factories.emplace_back( new ArithmeticMultiplicationFactory( calculationsThread ) );
+  factories.emplace_back( new ArithmeticNegationFactory( calculationsThread ) );
   factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
   factories.emplace_back( new ValveNumberFactory( calculationsThread ) );

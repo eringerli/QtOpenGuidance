@@ -328,12 +328,18 @@ set(SOURCES_3d
 addToUnifyGroupAndSources("${SOURCES_3d}" "3d")
 
 set(SOURCES_arithmetic
+  src/block/arithmetic/ArithmeticAbsolute.cpp
+  src/block/arithmetic/ArithmeticAbsolute.h
   src/block/arithmetic/ArithmeticAddition.cpp
   src/block/arithmetic/ArithmeticAddition.h
+  src/block/arithmetic/ArithmeticClamp.cpp
+  src/block/arithmetic/ArithmeticClamp.h
   src/block/arithmetic/ArithmeticDivision.cpp
   src/block/arithmetic/ArithmeticDivision.h
   src/block/arithmetic/ArithmeticMultiplication.cpp
   src/block/arithmetic/ArithmeticMultiplication.h
+  src/block/arithmetic/ArithmeticNegation.cpp
+  src/block/arithmetic/ArithmeticNegation.h
   src/block/arithmetic/ArithmeticSubtraction.cpp
   src/block/arithmetic/ArithmeticSubtraction.h
 )
