@@ -194,7 +194,7 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
       //                  << ", m_orientation: " <<
       //                  printQuaternionAsTaitBryanDegrees(m_orientation) << std::endl;
 
-      Q_EMIT orientationChanged( orientation );
+      Q_EMIT orientationChanged( orientation, CalculationOption::Option::None );
       m_orientation = orientation;
     }
 
@@ -224,7 +224,7 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
                                                    state( int( ThreeWheeledFRHRL::StateNames::Vz ) ) ) );
 
         // emit signal with antenna offset
-        Q_EMIT positionChanged( antennaKinematic.positionCalculated );
+        Q_EMIT positionChanged( antennaKinematic.positionCalculated, CalculationOption::Option::None );
 
         // in global coordinates: WGS84
         {
@@ -236,7 +236,7 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
                         longitude,
                         height );
 
-          Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, height ) );
+          Q_EMIT globalPositionChanged( Eigen::Vector3d( latitude, longitude, height ), CalculationOption::Option::None );
         }
       }
     }
@@ -265,7 +265,7 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
                                   state( int( ThreeWheeledFRHRL::StateNames::Vyaw ) ) );
     }
 
-    Q_EMIT imuDataChanged( m_orientation, accelerometerData, gyroData );
+    Q_EMIT imuDataChanged( deltaT, m_orientation, accelerometerData, gyroData );
 
     //    std::cout
     //      << "Simulator: Alpha F/R/H: "
@@ -309,8 +309,8 @@ PoseSimulation::emitConfigSignals() {
                                  m_steerAngleAutosteerSlewRateLimiter.slewRate );
 
   Q_EMIT steerAngleChanged( m_steerAngle, CalculationOption::Option::None );
-  Q_EMIT positionChanged( Eigen::Vector3d( x, y, height ) );
-  Q_EMIT orientationChanged( m_orientation );
+  Q_EMIT positionChanged( Eigen::Vector3d( x, y, height ), CalculationOption::Option::None );
+  Q_EMIT orientationChanged( m_orientation, CalculationOption::Option::None );
   Q_EMIT steerAngleChanged( 0, CalculationOption::Option::None );
   Q_EMIT velocityChanged( 0, CalculationOption::Option::None );
 }
@@ -608,17 +608,17 @@ PoseSimulationFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaOffset( const Eigen::Vector3d& ) ) ) );
   b->addInputPort( QStringLiteral( "Initial WGS84 Position" ), QLatin1String( SLOT( setInitialWGS84Position( const Eigen::Vector3d& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( POSITION_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SIGNAL( velocity3DChanged( POSITION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( const Eigen::Vector3d& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( POSITION_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
 
   b->addOutputPort(
     QStringLiteral( "IMU Data" ),
-    QLatin1String( SIGNAL( imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
+    QLatin1String( SIGNAL( imuDataChanged( const double, const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Processing Time [ms]" ), QLatin1String( SIGNAL( processingTimeChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Max Processing Time [ms]" ), QLatin1String( SIGNAL( maxProcessingTimeChanged( NUMBER_SIGNATURE ) ) ) );

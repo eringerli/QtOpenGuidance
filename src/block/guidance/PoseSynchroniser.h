@@ -16,9 +16,9 @@ public:
   explicit PoseSynchroniser() : BlockBase() {}
 
 public Q_SLOTS:
-  void setPosition( const Eigen::Vector3d& position );
+  void setPosition( POSITION_SIGNATURE_SLOT );
 
-  void setOrientation( const Eigen::Quaterniond& value );
+  void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 
 Q_SIGNALS:
   void poseChanged( POSE_SIGNATURE_SIGNAL );

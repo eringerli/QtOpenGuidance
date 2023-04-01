@@ -26,6 +26,14 @@
 #define NUMBER_SIGNATURE_SLOT   const double, const CalculationOption::Options = CalculationOption::Option::None
 #define NUMBER_SIGNATURE        const double, const CalculationOption::Options
 
+#define ORIENTATION_SIGNATURE_SIGNAL const Eigen::Quaterniond&, const CalculationOption::Options
+#define ORIENTATION_SIGNATURE_SLOT   const Eigen::Quaterniond&, const CalculationOption::Options = CalculationOption::Option::None
+#define ORIENTATION_SIGNATURE        const Eigen::Quaterniond&, const CalculationOption::Options
+
+#define POSITION_SIGNATURE_SIGNAL const Eigen::Vector3d&, const CalculationOption::Options
+#define POSITION_SIGNATURE_SLOT   const Eigen::Vector3d&, const CalculationOption::Options = CalculationOption::Option::None
+#define POSITION_SIGNATURE        const Eigen::Vector3d&, const CalculationOption::Options
+
 // , CalculationOption::Options
 
 // , CalculationOption::Option::NoOption

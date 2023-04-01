@@ -116,13 +116,13 @@ Q_SIGNALS:
   void antennaPositionChanged( const Eigen::Vector3d& );
 
   void steeringAngleChanged( NUMBER_SIGNATURE_SIGNAL );
-  void positionChanged( const Eigen::Vector3d& );
-  void globalPositionChanged( const Eigen::Vector3d& );
+  void positionChanged( POSITION_SIGNATURE_SIGNAL );
+  void globalPositionChanged( POSITION_SIGNATURE_SIGNAL );
   void velocity3DChanged( const Eigen::Vector3d& );
-  void orientationChanged( const Eigen::Quaterniond& );
+  void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
   void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  void imuDataChanged( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& );
+  void imuDataChanged( const double, const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& );
 
   void maxProcessingTimeChanged( NUMBER_SIGNATURE_SIGNAL );
   void processingTimeChanged( NUMBER_SIGNATURE_SIGNAL );

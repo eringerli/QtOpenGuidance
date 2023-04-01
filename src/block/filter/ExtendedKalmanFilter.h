@@ -26,15 +26,18 @@ public:
   explicit ExtendedKalmanFilter();
 
 public Q_SLOTS:
-  void setPosition( const Eigen::Vector3d& position );
+  void setPosition( POSITION_SIGNATURE_SLOT );
 
   void setVelocity3D( const Eigen::Vector3d& velocity3D );
 
-  void setImuData( const Eigen::Quaterniond& orientation, const Eigen::Vector3d& accelerometerData, const Eigen::Vector3d& gyroData );
+  void setImuData( const double              dT,
+                   const Eigen::Quaterniond& orientation,
+                   const Eigen::Vector3d&    accelerometerData,
+                   const Eigen::Vector3d&    gyroData );
 
-  void setOrientation( const Eigen::Quaterniond& value );
+  void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 
-  void setOrientationCorrection( const Eigen::Quaterniond& value );
+  void setOrientationCorrection( ORIENTATION_SIGNATURE_SLOT );
 
 private:
   void predict();

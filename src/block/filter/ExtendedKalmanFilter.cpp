@@ -22,7 +22,7 @@ ExtendedKalmanFilter::ExtendedKalmanFilter() {
 }
 
 void
-ExtendedKalmanFilter::setPosition( const Eigen::Vector3d& position ) {
+ExtendedKalmanFilter::setPosition( const Eigen::Vector3d&, const CalculationOption::Options ) {
   predict();
 
   KinematicModel::PositionMeasurementVector< double > measurement;
@@ -41,7 +41,8 @@ ExtendedKalmanFilter::setVelocity3D( const Eigen::Vector3d& velocity3D ) {
 }
 
 void
-ExtendedKalmanFilter::setImuData( const Eigen::Quaterniond& orientation,
+ExtendedKalmanFilter::setImuData( const double              dT,
+                                  const Eigen::Quaterniond& orientation,
                                   const Eigen::Vector3d&    accelerometerData,
                                   const Eigen::Vector3d&    gyroData ) {
   predict();
@@ -58,12 +59,12 @@ ExtendedKalmanFilter::setImuData( const Eigen::Quaterniond& orientation,
 }
 
 void
-ExtendedKalmanFilter::setOrientation( const Eigen::Quaterniond& value ) {
+ExtendedKalmanFilter::setOrientation( const Eigen::Quaterniond& value, const CalculationOption::Options ) {
   orientation = value;
 }
 
 void
-ExtendedKalmanFilter::setOrientationCorrection( const Eigen::Quaterniond& value ) {
+ExtendedKalmanFilter::setOrientationCorrection( const Eigen::Quaterniond& value, const CalculationOption::Options ) {
   orientationCorrection = value;
 }
 
@@ -97,14 +98,14 @@ ExtendedKalmanFilterFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
+  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( POSITION_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SLOT( setVelocity3D( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "IMU Data" ),
-                   QLatin1String( SLOT( setImuData( const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
+  b->addInputPort(
+    QStringLiteral( "IMU Data" ),
+    QLatin1String( SLOT( setImuData( const double, const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Orientation Correction" ),
-                   QLatin1String( SLOT( setOrientationCorrection( const Eigen::Quaterniond& ) ) ) );
+  b->addInputPort( QStringLiteral( "Orientation Correction" ), QLatin1String( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 

@@ -7,16 +7,16 @@
 #include "qneport.h"
 
 void
-PoseSynchroniser::setPosition( const Eigen::Vector3d& position ) {
+PoseSynchroniser::setPosition( const Eigen::Vector3d& position, const CalculationOption::Options options ) {
   this->position = position;
   //      QElapsedTimer timer;
   //      timer.start();
-  Q_EMIT poseChanged( this->position, orientation, CalculationOption::None );
+  Q_EMIT poseChanged( this->position, orientation, options );
   //      qDebug() << "Cycle Time PoseSynchroniser:  " << timer.nsecsElapsed() << "ns";
 }
 
 void
-PoseSynchroniser::setOrientation( const Eigen::Quaterniond& value ) {
+PoseSynchroniser::setOrientation( const Eigen::Quaterniond& value, const CalculationOption::Options ) {
   orientation = value;
 }
 
