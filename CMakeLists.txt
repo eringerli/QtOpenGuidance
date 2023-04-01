@@ -185,40 +185,35 @@ set(SOURCES_filter
 addToUnifyGroupAndSources("${SOURCES_filter}" "filter")
 
 set(SOURCES_gui_toolbar
-  src/gui/ApplicationControlToolbar.cpp
-  src/gui/ApplicationControlToolbar.h
-  src/gui/CameraToolbar.cpp
-  src/gui/CameraToolbar.h
-  src/gui/FieldsOptimitionToolbar.cpp
-  src/gui/FieldsOptimitionToolbar.h
-  src/gui/FieldsToolbar.cpp
-  src/gui/FieldsToolbar.h
-  src/gui/FontComboboxDelegate.h
-  src/gui/FontComboboxDelegate.cpp
-  src/gui/GlobalPlannerToolbar.cpp
-  src/gui/GlobalPlannerToolbar.h
-  src/gui/GuidanceTurningToolbar.cpp
-  src/gui/GuidanceTurningToolbar.h
-  src/gui/GuidanceToolbar.cpp
-  src/gui/GuidanceToolbar.h
-  src/gui/NewOpenSaveToolbar.cpp
-  src/gui/NewOpenSaveToolbar.h
-  src/gui/OpenSaveHelper.h
-  src/gui/OpenSaveHelper.cpp
-  src/gui/PassToolbar.cpp
-  src/gui/PassToolbar.h
-  src/gui/ImplementToolbar.cpp
-  src/gui/ImplementToolbar.h
-  src/gui/ApplicationControlToolbar.ui
-  src/gui/GuidanceTurningToolbar.ui
-  src/gui/GlobalPlannerToolbar.ui
-  src/gui/GuidanceToolbar.ui
-  src/gui/FieldsToolbar.ui
-  src/gui/CameraToolbar.ui
-  src/gui/PassToolbar.ui
-  src/gui/NewOpenSaveToolbar.ui
-  src/gui/FieldsOptimitionToolbar.ui
-  src/gui/SettingsDialog.ui
+  src/gui/toolbar/ApplicationControlToolbar.cpp
+  src/gui/toolbar/ApplicationControlToolbar.h
+  src/gui/toolbar/CameraToolbar.cpp
+  src/gui/toolbar/CameraToolbar.h
+  src/gui/toolbar/FieldsOptimitionToolbar.cpp
+  src/gui/toolbar/FieldsOptimitionToolbar.h
+  src/gui/toolbar/FieldsToolbar.cpp
+  src/gui/toolbar/FieldsToolbar.h
+  src/gui/toolbar/GlobalPlannerToolbar.cpp
+  src/gui/toolbar/GlobalPlannerToolbar.h
+  src/gui/toolbar/GuidanceTurningToolbar.cpp
+  src/gui/toolbar/GuidanceTurningToolbar.h
+  src/gui/toolbar/GuidanceToolbar.cpp
+  src/gui/toolbar/GuidanceToolbar.h
+  src/gui/toolbar/NewOpenSaveToolbar.cpp
+  src/gui/toolbar/NewOpenSaveToolbar.h
+  src/gui/toolbar/PassToolbar.cpp
+  src/gui/toolbar/PassToolbar.h
+  src/gui/toolbar/ImplementToolbar.cpp
+  src/gui/toolbar/ImplementToolbar.h
+  src/gui/toolbar/ApplicationControlToolbar.ui
+  src/gui/toolbar/GuidanceTurningToolbar.ui
+  src/gui/toolbar/GlobalPlannerToolbar.ui
+  src/gui/toolbar/GuidanceToolbar.ui
+  src/gui/toolbar/FieldsToolbar.ui
+  src/gui/toolbar/CameraToolbar.ui
+  src/gui/toolbar/PassToolbar.ui
+  src/gui/toolbar/NewOpenSaveToolbar.ui
+  src/gui/toolbar/FieldsOptimitionToolbar.ui
   )
 addToUnifyGroupAndSources("${SOURCES_gui_toolbar}" "gui")
 
@@ -230,6 +225,11 @@ set(SOURCES_gui_windows
   src/gui/MyFrameworkWidgetFactory.h
   src/gui/MyMainWindow.cpp
   src/gui/MyMainWindow.h
+  src/gui/FontComboboxDelegate.h
+  src/gui/FontComboboxDelegate.cpp
+  src/gui/OpenSaveHelper.h
+  src/gui/OpenSaveHelper.cpp
+  src/gui/SettingsDialog.ui
   )
 addToUnifyGroupAndSources("${SOURCES_gui_windows}" "gui_windows")
 
@@ -284,7 +284,7 @@ set(SOURCES_model
   src/gui/model/VectorBlockModel.cpp
   src/gui/model/VectorBlockModel.h
   )
-addToUnifyGroupAndSources("${SOURCES_model}" "model")
+addToUnifyGroupAndSources("${SOURCES_model}" "gui_model")
 
 set(SOURCES_cgal
   src/kinematic/cgal.h
@@ -600,15 +600,15 @@ set(SOURCES ${SOURCES}
 
 if(HAVE_SPNAV)
   set(SOURCES_spnav
-    src/gui/SpaceNavigatorPollingThread.cpp
-    src/gui/SpaceNavigatorPollingThread.h)
+    src/gui/thread/SpaceNavigatorPollingThread.cpp
+    src/gui/thread/SpaceNavigatorPollingThread.h)
   addToUnifyGroupAndSources("${SOURCES_spnav}" "gui_windows")
 endif()
 
 if (SDL2_FOUND)
   set(SOURCES_sdl2
-    src/gui/SdlInputPollingThread.cpp
-    src/gui/SdlInputPollingThread.h)
+    src/gui/thread/SdlInputPollingThread.cpp
+    src/gui/thread/SdlInputPollingThread.h)
   addToUnifyGroupAndSources("${SOURCES_sdl2}" "gui_windows")
 endif()
 

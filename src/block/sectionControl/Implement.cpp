@@ -11,8 +11,8 @@
 #include <QAction>
 #include <QMenu>
 
-#include "gui/ImplementToolbar.h"
 #include "gui/model/ImplementBlockModel.h"
+#include "gui/toolbar/ImplementToolbar.h"
 
 #include "qneblock.h"
 #include "qneport.h"

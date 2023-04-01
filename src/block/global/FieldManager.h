@@ -15,7 +15,7 @@
 
 #include "helpers/GeographicConvertionWrapper.h"
 
-#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/toolbar/FieldsOptimitionToolbar.h"
 
 #include "job/FieldOptimitionController.h"
 

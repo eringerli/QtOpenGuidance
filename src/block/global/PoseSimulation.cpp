@@ -5,6 +5,7 @@
 
 #include "block/graphical/TerrainModel.h"
 
+#include "qelapsedtimer.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -37,6 +38,7 @@
 //#include <CGAL/Triangulation_face_base_with_info_2.h>
 
 #include <CGAL/boost/graph/graph_traits_Delaunay_triangulation_2.h>
+#include <cmath>
 //#include <CGAL/boost/graph/graph_traits_Triangulation_data_structure_2.h>
 //#include <CGAL/boost/graph/graph_traits_Constrained_triangulation_plus_2.h>
 //#include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
@@ -120,6 +122,15 @@ PoseSimulation::timerEvent( QTimerEvent* event ) {
         }
       }
     }
+
+    //    for( const auto& number : state ) {
+    //      if( std::isnan( number ) ) {
+    //        return;
+    //      }
+    //      if( std::isinf( number ) ) {
+    //        return;
+    //      }
+    //    }
 
     {
       if( tin ) {
@@ -426,6 +437,10 @@ PoseSimulation::setVelocity( double velocity, const CalculationOption::Options )
 
 void
 PoseSimulation::setSteerAngleFromAutosteer( double steerAngle, const CalculationOption::Options ) {
+  if( steerAngle > 180 || steerAngle < -180 ) {
+    return;
+  }
+
   static QElapsedTimer timer;
 
   double dT                 = std::min( double( timer.restart() ) / 1000., 1. );

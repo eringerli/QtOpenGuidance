@@ -14,10 +14,10 @@
 
 #include <QScopedPointer>
 
-#include "gui/FieldsOptimitionToolbar.h"
-#include "gui/GlobalPlannerToolbar.h"
 #include "gui/MyMainWindow.h"
 #include "gui/OpenSaveHelper.h"
+#include "gui/toolbar/FieldsOptimitionToolbar.h"
+#include "gui/toolbar/GlobalPlannerToolbar.h"
 
 #include "block/graphical/GlobalPlannerModel.h"
 

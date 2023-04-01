@@ -62,17 +62,17 @@
 #include <Qt3DExtras/QOrbitCameraController>
 #include <Qt3DExtras/Qt3DWindow>
 
-#include "gui/ApplicationControlToolbar.h"
-#include "gui/CameraToolbar.h"
-#include "gui/FieldsOptimitionToolbar.h"
-#include "gui/FieldsToolbar.h"
-#include "gui/GuidanceToolbar.h"
-#include "gui/GuidanceTurningToolbar.h"
 #include "gui/MyMainWindow.h"
-#include "gui/NewOpenSaveToolbar.h"
-#include "gui/PassToolbar.h"
 #include "gui/SettingsDialog.h"
 #include "gui/dock/SliderDock.h"
+#include "gui/toolbar/ApplicationControlToolbar.h"
+#include "gui/toolbar/CameraToolbar.h"
+#include "gui/toolbar/FieldsOptimitionToolbar.h"
+#include "gui/toolbar/FieldsToolbar.h"
+#include "gui/toolbar/GuidanceToolbar.h"
+#include "gui/toolbar/GuidanceTurningToolbar.h"
+#include "gui/toolbar/NewOpenSaveToolbar.h"
+#include "gui/toolbar/PassToolbar.h"
 
 #include "block/global/CameraController.h"
 #include "block/global/FieldManager.h"

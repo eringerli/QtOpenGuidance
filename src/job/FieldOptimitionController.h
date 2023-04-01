@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QPointer>
 
-#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/toolbar/FieldsOptimitionToolbar.h"
 #include "helpers/cgalHelper.h"
 
 #include <CGAL/Alpha_shape_2.h>

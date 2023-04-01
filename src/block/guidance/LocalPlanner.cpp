@@ -12,8 +12,8 @@
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 
-#include "gui/GuidanceTurningToolbar.h"
 #include "gui/MyMainWindow.h"
+#include "gui/toolbar/GuidanceTurningToolbar.h"
 
 #include "helpers/eigenHelper.h"
 #include "kinematic/cgal.h"

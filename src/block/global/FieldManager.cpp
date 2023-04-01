@@ -16,7 +16,7 @@
 #include <QFileDialog>
 #include <QVector>
 
-#include "gui/FieldsOptimitionToolbar.h"
+#include "gui/toolbar/FieldsOptimitionToolbar.h"
 
 #include "gui/OpenSaveHelper.h"
 

@@ -24,7 +24,7 @@
 #include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
 
-#include "gui/NewOpenSaveToolbar.h"
+#include "gui/toolbar/NewOpenSaveToolbar.h"
 
 #include <QAction>
 #include <QFile>

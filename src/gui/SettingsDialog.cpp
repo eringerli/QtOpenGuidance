@@ -64,14 +64,17 @@
 #include "block/global/PoseSimulation.h"
 
 #ifdef SPNAV_ENABLED
-  #include "SpaceNavigatorPollingThread.h"
+  #include "thread/SpaceNavigatorPollingThread.h"
 #endif
 
 #ifdef SDL2_ENABLED
-  #include "SdlInputPollingThread.h"
+  #include "thread/SdlInputPollingThread.h"
 #endif
 
-#include "block/ExtendedKalmanFilter.h"
+#include "block/filter/CascadedComplementaryFilterImuFusion.h"
+#include "block/filter/ComplementaryFilterImuFusion.h"
+#include "block/filter/ExtendedKalmanFilter.h"
+
 #include "block/guidance/PoseSynchroniser.h"
 
 #include "block/calculation/TransverseMercatorConverter.h"
@@ -84,7 +87,9 @@
 #include "block/global/FieldManager.h"
 #include "block/graphical/PathPlannerModel.h"
 #include "block/guidance/GlobalPlanner.h"
+#include "block/guidance/LocalPlanOptimizer.h"
 #include "block/guidance/LocalPlanner.h"
+#include "block/guidance/MpcGuidance.h"
 #include "block/guidance/PoseSynchroniser.h"
 #include "block/guidance/SimpleMpcGuidance.h"
 #include "block/guidance/StanleyGuidance.h"
@@ -133,7 +138,7 @@
 #include <QSortFilterProxyModel>
 
 #include "FontComboboxDelegate.h"
-#include "NewOpenSaveToolbar.h"
+#include "toolbar/NewOpenSaveToolbar.h"
 
 #include "../helpers/cgalHelper.h"
 
@@ -438,6 +443,8 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new TransverseMercatorConverterFactory( calculationsThread, geographicConvertionWrapper ) );
   factories.emplace_back( new PoseSynchroniserFactory( calculationsThread ) );
   factories.emplace_back( new ExtendedKalmanFilterFactory( calculationsThread ) );
+  factories.emplace_back( new CascadedComplementaryFilterImuFusionFactory( calculationsThread ) );
+  factories.emplace_back( new ComplementaryFilterImuFusionFactory( calculationsThread ) );
   factories.emplace_back( new TrailerModelFactory( qt3dThread, foregroundEntity, usePBR ) );
   factories.emplace_back( new TractorModelFactory( qt3dThread, foregroundEntity, usePBR ) );
   factories.emplace_back( new SprayerModelFactory( qt3dThread, foregroundEntity, usePBR ) );
