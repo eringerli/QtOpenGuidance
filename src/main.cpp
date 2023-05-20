@@ -454,6 +454,7 @@ main( int argc, char** argv ) {
   factories.emplace_back( new ValuePlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
   factories.emplace_back(
     new OrientationPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
+  factories.emplace_back( new VectorPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
 
   factories.emplace_back( new ActionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
   factories.emplace_back( new SliderDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
