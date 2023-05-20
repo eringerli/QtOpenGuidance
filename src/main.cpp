@@ -90,6 +90,7 @@
 
 #include "block/dock/plot/OrientationPlotDockBlock.h"
 #include "block/dock/plot/ValuePlotDockBlock.h"
+#include "block/dock/plot/VectorPlotDockBlock.h"
 
 #include "block/dock/input/ActionDockBlock.h"
 #include "block/dock/input/SliderDockBlock.h"
@@ -442,65 +443,42 @@ main( int argc, char** argv ) {
   mainWindow->addDockWidget( simulatorFrequencyDock, KDDockWidgets::Location_OnRight, simulatorSteeringAngleDock );
   guidanceToolbar->menu->addAction( simulatorFrequencyDock->toggleAction() );
 
-  // XTE dock
-  BlockFactory* xteDockBlockFactory =
-    new XteDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnTop, guidanceToolbar->menu );
-  xteDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  std::vector< std::unique_ptr< BlockFactory > > factories;
 
-  // value dock
-  BlockFactory* valueDockBlockFactory =
-    new ValueDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  valueDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  factories.emplace_back( new XteDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnTop, guidanceToolbar->menu ) );
+  factories.emplace_back( new ValueDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
+  factories.emplace_back(
+    new OrientationDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
+  factories.emplace_back( new PositionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
 
-  // orientation dock
-  BlockFactory* orientationDockBlockFactory =
-    new OrientationDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  orientationDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  factories.emplace_back( new ValuePlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
+  factories.emplace_back(
+    new OrientationPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
 
-  // position dock
-  BlockFactory* positionDockBlockFactory =
-    new PositionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  positionDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  factories.emplace_back( new ActionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
+  factories.emplace_back( new SliderDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu ) );
 
-  // value plot dock
-  BlockFactory* valuePlotDockBlockFactory =
-    new ValuePlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  valuePlotDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  factories.emplace_back( new ImplementFactory(
+    qt3dThread, mainWindow, KDDockWidgets::Location_OnBottom, guidanceToolbar->menu, settingsDialog->implementBlockModel ) );
 
-  // orientation plot dock
-  BlockFactory* orientationPlotDockBlockFactory =
-    new OrientationPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  orientationPlotDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
-
-  // action dock
-  BlockFactory* actionDockBlockFactory =
-    new ActionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  actionDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
-
-  // slider dock
-  BlockFactory* sliderDockBlockFactory =
-    new SliderDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  sliderDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
-
-  // implements
-  auto* implementFactory = new ImplementFactory(
-    qt3dThread, mainWindow, KDDockWidgets::Location_OnBottom, guidanceToolbar->menu, settingsDialog->implementBlockModel );
-  implementFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  for( const auto& factory : factories ) {
+    factory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
+  }
 
   // camera block
-  BlockFactory* cameraControllerFactory = new CameraControllerFactory( qt3dThread, rootRootEntity, cameraEntity );
-  auto*         cameraControllerBlock   = cameraControllerFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
-  auto*         cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->objects.front() );
+  auto  cameraControllerFactory = std::make_unique< CameraControllerFactory >( qt3dThread, rootRootEntity, cameraEntity );
+  auto* cameraControllerBlock   = cameraControllerFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
+  auto* cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->objects.front() );
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
   view->installEventFilter( cameraControllerBlock->objects.front() );
 
   // grid block
-  BlockFactory* gridModelFactory = new GridModelFactory( qt3dThread, middlegroundEntity, cameraEntity );
-  auto*         gridModelBlock   = gridModelFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
-  auto*         gridModel        = qobject_cast< GridModel* >( gridModelBlock->objects.front() );
+  auto  gridModelFactory = std::make_unique< GridModelFactory >( qt3dThread, middlegroundEntity, cameraEntity );
+  auto* gridModelBlock   = gridModelFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
+  auto* gridModel        = qobject_cast< GridModel* >( gridModelBlock->objects.front() );
 
   // FPS measuremend block
-  BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( qt3dThread, middlegroundEntity );
+  auto fpsMeasurementFactory = std::make_unique< FpsMeasurementFactory >( qt3dThread, middlegroundEntity );
   fpsMeasurementFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
 
   // Setting Dialog
@@ -558,6 +536,7 @@ main( int argc, char** argv ) {
   QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ), settingsDialog->fieldManager, SLOT( recalculateField() ) );
   QObject::connect(
     settingsDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
+
   // ApplicationControlToolbar
   QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestClose, mainWindow, &MyMainWindow::close );
   QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
