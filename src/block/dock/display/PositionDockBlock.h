@@ -13,6 +13,8 @@ class ThreeValuesDock;
 #include "ValueDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
+
 class PositionDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
@@ -40,12 +42,15 @@ public Q_SLOTS:
 
   void setPose( POSE_SIGNATURE_SLOT );
 
-  void setWGS84Position( const Eigen::Vector3d& position );
+  void setVector( VECTOR_SIGNATURE_SLOT );
+  void setWgs84( VECTOR_SIGNATURE_SLOT );
 
 public:
   ThreeValuesDock* widget = nullptr;
 
   bool wgs84 = false;
+
+  RateLimiter rateLimiter;
 };
 
 class PositionDockBlockFactory : public BlockFactory {

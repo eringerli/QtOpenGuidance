@@ -29,6 +29,7 @@
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 #include "kinematic/Plan.h"
@@ -87,5 +88,5 @@ private:
   Qt3DExtras::QSphereMesh*    pointsMesh     = nullptr;
   Qt3DExtras::QPhongMaterial* pointsMaterial = nullptr;
 
-private:
+  RateLimiter rateLimiter;
 };

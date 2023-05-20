@@ -19,13 +19,13 @@ public:
   explicit ValueTransmissionQuaternion( uint16_t cid );
 
 public Q_SLOTS:
-  void setQuaternion( const Eigen::Quaterniond& quaternion );
+  void setQuaternion( ORIENTATION_SIGNATURE_SLOT );
 
   void dataReceive( const QByteArray& data );
 
 Q_SIGNALS:
   void dataToSend( const QByteArray& );
-  void quaternionChanged( const Eigen::Quaterniond );
+  void quaternionChanged( ORIENTATION_SIGNATURE_SIGNAL );
 
 private:
   std::unique_ptr< QCborStreamReader > reader;

@@ -260,7 +260,7 @@ TrailerModel::setProportions() {
 }
 
 void
-TrailerModel::setOffsetHookPointPosition( const Eigen::Vector3d& position ) {
+TrailerModel::setOffsetHookPointPosition( const Eigen::Vector3d& position, const CalculationOption::Options ) {
   m_offsetHookPoint = position;
   setProportions();
 }
@@ -277,14 +277,14 @@ TrailerModel::setTrackwidth( double trackwidth, const CalculationOption::Options
 
 void
 TrailerModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterTowPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_towPointTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
 void
 TrailerModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterHookPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_towHookTransform->setTranslation( toQVector3D( position ) );
   }
 }
@@ -293,7 +293,7 @@ void
 TrailerModel::setPosePivotPoint( const Eigen::Vector3d&           position,
                                  const Eigen::Quaterniond&        orientation,
                                  const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterPivotPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_pivotPointTransform->setTranslation( toQVector3D( position ) );
 
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
@@ -308,7 +308,7 @@ TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );

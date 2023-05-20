@@ -16,7 +16,7 @@ public:
   explicit NmeaParserRMC() : BlockBase() {}
 
 Q_SIGNALS:
-  void globalPositionChanged( const Eigen::Vector3d& );
+  void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
   void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
 public Q_SLOTS:

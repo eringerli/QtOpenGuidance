@@ -19,8 +19,8 @@ public:
   explicit TrailerKinematic() : BlockBase() {}
 
 public Q_SLOTS:
-  void setOffsetHookToPivot( const Eigen::Vector3d& offset );
-  void setOffsetPivotToTow( const Eigen::Vector3d& offset );
+  void setOffsetHookToPivot( VECTOR_SIGNATURE_SLOT );
+  void setOffsetPivotToTow( VECTOR_SIGNATURE_SLOT );
   void setMaxJackknifeAngle( NUMBER_SIGNATURE_SLOT );
   void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 

@@ -156,7 +156,7 @@ NmeaParserGGAFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );

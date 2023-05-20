@@ -94,14 +94,16 @@ OrientationDockBlock::setName( const QString& name ) {
 }
 
 void
-OrientationDockBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
-  const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
-  widget->setValues( getYaw( taitBryanDegrees ), getPitch( taitBryanDegrees ), getRoll( taitBryanDegrees ) );
+OrientationDockBlock::setOrientation( const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
+    const auto taitBryanDegrees = radiansToDegrees( quaternionToTaitBryan( orientation ) );
+    widget->setValues( getYaw( taitBryanDegrees ), getPitch( taitBryanDegrees ), getRoll( taitBryanDegrees ) );
+  }
 }
 
 void
 OrientationDockBlock::setPose( const Eigen::Vector3d&, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
     setOrientation( orientation );
   }
 }
@@ -128,7 +130,7 @@ OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
   }
 
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
+  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
   b->setBrush( dockColor );

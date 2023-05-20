@@ -3,6 +3,7 @@
 
 #include "VectorObject.h"
 
+#include "kinematic/CalculationOptions.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -13,7 +14,7 @@
 
 void
 VectorObject::emitConfigSignals() {
-  Q_EMIT vectorChanged( vector );
+  Q_EMIT vectorChanged( vector, CalculationOption::Option::None );
 }
 
 QJsonObject
@@ -46,7 +47,7 @@ VectorFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );
 
   b->setBrush( valueColor );
 

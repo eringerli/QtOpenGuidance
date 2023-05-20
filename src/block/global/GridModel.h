@@ -26,6 +26,7 @@
 #include "block/BlockBase.h"
 #include "block/kinematic/FixedKinematicPrimitive.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 #include "3d/BufferMesh.h"
@@ -78,6 +79,8 @@ private:
   double yStepCoarse = 10;
   double xStepMax    = 1;
   double yStepMax    = 1;
+
+  RateLimiter rateLimiter;
 };
 
 class GridModelFactory : public BlockFactory {

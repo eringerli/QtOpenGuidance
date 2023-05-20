@@ -186,7 +186,7 @@ void
 GlobalPlannerModel::setPose( const Eigen::Vector3d&           position,
                              const Eigen::Quaterniond&        orientation,
                              const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::Graphical ) ) {
     auto quat = toQQuaternion( orientation );
     aPointTransform->setRotation( quat );
     bPointTransform->setRotation( quat );

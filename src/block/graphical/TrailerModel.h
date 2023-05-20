@@ -9,7 +9,9 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
+#include "helpers/signatures.h"
 
 class TrailerModel : public BlockBase {
   Q_OBJECT
@@ -23,7 +25,7 @@ public Q_SLOTS:
   void setPoseTowPoint( POSE_SIGNATURE_SLOT );
   void setPosePivotPoint( POSE_SIGNATURE_SLOT );
 
-  void setOffsetHookPointPosition( const Eigen::Vector3d& position );
+  void setOffsetHookPointPosition( VECTOR_SIGNATURE_SLOT );
   void setTrackwidth( NUMBER_SIGNATURE_SLOT );
 
 private:
@@ -61,6 +63,10 @@ private:
 
   Eigen::Vector3d m_offsetHookPoint = Eigen::Vector3d( 6, 0, 0 );
   double          m_trackwidth      = 2.4f;
+
+  RateLimiter rateLimiterTowPoint;
+  RateLimiter rateLimiterHookPoint;
+  RateLimiter rateLimiterPivotPoint;
 };
 
 class TrailerModelFactory : public BlockFactory {

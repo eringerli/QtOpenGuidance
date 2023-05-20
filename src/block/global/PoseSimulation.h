@@ -20,6 +20,7 @@
 #include "block/kinematic/FixedKinematicPrimitive.h"
 #include "helpers/GeographicConvertionWrapper.h"
 
+#include "helpers/signatures.h"
 #include "kinematic/VehicleDynamics/TireLinear.h"
 #include "kinematic/VehicleDynamics/VehicleNonLinear3DOF.h"
 #include "kinematic/VehicleDynamics/VehicleNonLinear4DOF.h"
@@ -57,16 +58,16 @@ public:
 
 public Q_SLOTS:
   void setInterval( const int interval );
-  void setSimulation( ACTION_SIGNATURE );
+  void setSimulation( ACTION_SIGNATURE_SLOT );
   void setFrequency( NUMBER_SIGNATURE_SLOT );
   void setSteerAngle( NUMBER_SIGNATURE_SLOT );
   void setVelocity( NUMBER_SIGNATURE_SLOT );
   void setSteerAngleFromAutosteer( NUMBER_SIGNATURE_SLOT );
 
   void setWheelbase( NUMBER_SIGNATURE_SLOT );
-  void setAntennaOffset( const Eigen::Vector3d& offset );
-  void setInitialWGS84Position( const Eigen::Vector3d& position );
-  void autosteerEnabled( ACTION_SIGNATURE );
+  void setAntennaOffset( VECTOR_SIGNATURE_SLOT );
+  void setInitialWGS84Position( VECTOR_SIGNATURE_SLOT );
+  void autosteerEnabled( ACTION_SIGNATURE_SLOT );
 
   void setSimulatorValues( const double a,
                            const double b,
@@ -113,16 +114,16 @@ Q_SIGNALS:
 
   void steerAngleChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  void antennaPositionChanged( const Eigen::Vector3d& );
+  void antennaPositionChanged( VECTOR_SIGNATURE_SIGNAL );
 
   void steeringAngleChanged( NUMBER_SIGNATURE_SIGNAL );
-  void positionChanged( POSITION_SIGNATURE_SIGNAL );
-  void globalPositionChanged( POSITION_SIGNATURE_SIGNAL );
-  void velocity3DChanged( const Eigen::Vector3d& );
+  void positionChanged( VECTOR_SIGNATURE_SIGNAL );
+  void globalPositionChanged( VECTOR_SIGNATURE_SIGNAL );
+  void velocity3DChanged( VECTOR_SIGNATURE_SIGNAL );
   void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
   void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  void imuDataChanged( const double, const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& );
+  void imuDataChanged( IMU_SIGNATURE_SIGNAL );
 
   void maxProcessingTimeChanged( NUMBER_SIGNATURE_SIGNAL );
   void processingTimeChanged( NUMBER_SIGNATURE_SIGNAL );
@@ -194,17 +195,18 @@ private:
   StateType< double >                                      state;
   ThreeWheeledFRHRL::TractorImuGpsFusionModel< StateType > simulatorModel;
 
+  bool noisePositionXYActivated    = false;
+  bool noisePositionZActivated     = false;
+  bool noiseOrientationActivated   = false;
+  bool noiseAccelerometerActivated = false;
+  bool noiseGyroActivated          = false;
+
   std::default_random_engine         noiseGenerator;
-  bool                               noisePositionXYActivated    = false;
-  std::normal_distribution< double > noisePositionXY             = std::normal_distribution< double >( 0, 0.02 );
-  bool                               noisePositionZActivated     = false;
-  std::normal_distribution< double > noisePositionZ              = std::normal_distribution< double >( 0, 0.04 );
-  bool                               noiseOrientationActivated   = false;
-  std::normal_distribution< double > noiseOrientation            = std::normal_distribution< double >( 0, 0.001 );
-  bool                               noiseAccelerometerActivated = false;
-  std::normal_distribution< double > noiseAccelerometer          = std::normal_distribution< double >( 0, 0.01 );
-  bool                               noiseGyroActivated          = false;
-  std::normal_distribution< double > noiseGyro                   = std::normal_distribution< double >( 0, 0.01 );
+  std::normal_distribution< double > noisePositionXY    = std::normal_distribution< double >( 0, 0.02 );
+  std::normal_distribution< double > noisePositionZ     = std::normal_distribution< double >( 0, 0.04 );
+  std::normal_distribution< double > noiseOrientation   = std::normal_distribution< double >( 0, 0.001 );
+  std::normal_distribution< double > noiseAccelerometer = std::normal_distribution< double >( 0, 0.01 );
+  std::normal_distribution< double > noiseGyro          = std::normal_distribution< double >( 0, 0.01 );
 
   std::unique_ptr< DelaunayTriangulationProjectedXY > tin;
   DelaunayTriangulationProjectedXY::Face_handle       lastFoundFace;

@@ -108,7 +108,7 @@ ValueDockBlock::setName( const QString& name ) {
 
 void
 ValueDockBlock::setValue( const double value, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
     widget->setMeter( value );
   }
 }

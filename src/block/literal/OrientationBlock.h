@@ -26,12 +26,12 @@ public:
 public Q_SLOTS:
   void setAveragerEnabled( ACTION_SIGNATURE_SLOT );
 
-  void setOrientation( const Eigen::Quaterniond& orientation );
+  void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
 
 Q_SIGNALS:
-  void orientationChanged( const Eigen::Quaterniond& );
+  void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
 
 public:
   Eigen::Quaterniond orientation;

@@ -102,7 +102,7 @@ void
 CameraController::setPose( const Eigen::Vector3d&           position,
                            const Eigen::Quaterniond&        orientation,
                            const CalculationOption::Options options ) {
-  if( m_mode == 0 && !options.testFlag( CalculationOption::NoGraphics ) ) {
+  if( m_mode == 0 && !options.testFlag( CalculationOption::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::Graphical ) ) {
     m_orientationBuffer = QQuaternion::nlerp( m_orientationBuffer, toQQuaternion( orientation ), orientationSmoothing );
     positionBuffer      = position * positionSmoothing + positionBuffer * positionSmoothingInv;
 

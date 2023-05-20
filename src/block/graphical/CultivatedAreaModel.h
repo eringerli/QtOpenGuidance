@@ -18,6 +18,7 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 #include "../sectionControl/Implement.h"
@@ -77,6 +78,8 @@ private:
   std::vector< double >              sectionOffsets;
   std::vector< bool >                sectionStates;
   std::vector< CultivatedAreaMesh* > sectionMeshes;
+
+  RateLimiter rateLimiter;
 };
 
 class CultivatedAreaModelFactory : public BlockFactory {

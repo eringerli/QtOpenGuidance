@@ -45,8 +45,8 @@ Implement::emitConfigSignals() {
     width += section->widthOfSection - ( section->overlapLeft + section->overlapRight );
   }
 
-  Q_EMIT leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ) );
-  Q_EMIT rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ) );
+  Q_EMIT leftEdgeChanged( Eigen::Vector3d( 0, float( -width / 2 ), 0 ), CalculationOption::Option::None );
+  Q_EMIT rightEdgeChanged( Eigen::Vector3d( 0, float( width / 2 ), 0 ), CalculationOption::Option::None );
   Q_EMIT triggerLocalPose( Eigen::Vector3d( 0, 0, 0 ),
                            Eigen::Quaterniond( 0, 0, 0, 0 ),
                            CalculationOption::CalculateLocalOffsets | CalculationOption::NoOrientation );
@@ -141,8 +141,8 @@ ImplementFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( POSE_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer< Implement > ) ) ) );
   b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
-  b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( const Eigen::Vector3d& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( VECTOR_SIGNATURE ) ) ) );
+  b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( VECTOR_SIGNATURE ) ) ) );
 
   model->resetModel();
 

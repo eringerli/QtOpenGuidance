@@ -139,7 +139,7 @@ NmeaParserRMCFactory::createBlock( QGraphicsScene* scene, int id ) {
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
 
   b->setBrush( parserColor );

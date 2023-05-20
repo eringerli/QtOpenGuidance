@@ -37,8 +37,8 @@ public:
 
 Q_SIGNALS:
   void triggerLocalPose( POSE_SIGNATURE_SIGNAL );
-  void leftEdgeChanged( const Eigen::Vector3d& );
-  void rightEdgeChanged( const Eigen::Vector3d& );
+  void leftEdgeChanged( VECTOR_SIGNATURE_SIGNAL );
+  void rightEdgeChanged( VECTOR_SIGNATURE_SIGNAL );
   void implementChanged( const QPointer< Implement > );
   void sectionsChanged();
 

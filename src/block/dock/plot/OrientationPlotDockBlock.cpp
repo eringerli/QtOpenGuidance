@@ -3,6 +3,7 @@
 
 #include "OrientationPlotDockBlock.h"
 
+#include "helpers/RateLimiter.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -54,22 +55,24 @@ OrientationPlotDockBlock::OrientationPlotDockBlock( const QString& uniqueName, M
 }
 
 void
-OrientationPlotDockBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
-  const auto taitBryanDegrees      = radiansToDegrees( quaternionToTaitBryan( orientation ) );
-  double     currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
+OrientationPlotDockBlock::setOrientation( const Eigen::Quaterniond& orientation, const CalculationOption::Options ) {
+  if( rateLimiter.expired( RateLimiter::Type::PlotDock ) ) {
+    const auto taitBryanDegrees      = radiansToDegrees( quaternionToTaitBryan( orientation ) );
+    double     currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
-  widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, getRoll( taitBryanDegrees ) );
-  widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, getPitch( taitBryanDegrees ) );
-  widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, getYaw( taitBryanDegrees ) );
+    widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, getRoll( taitBryanDegrees ) );
+    widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, getPitch( taitBryanDegrees ) );
+    widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, getYaw( taitBryanDegrees ) );
 
-  rescale();
+    rescale();
+  }
 }
 
 void
 OrientationPlotDockBlock::setPose( const Eigen::Vector3d&,
                                    const Eigen::Quaterniond&        orientation,
                                    const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::PlotDock ) ) {
     setOrientation( orientation );
   }
 }
@@ -111,7 +114,7 @@ OrientationPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   QObject::connect(
     obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond& ) ) ) );
+  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
   b->setBrush( dockColor );

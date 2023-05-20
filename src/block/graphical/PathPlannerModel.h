@@ -26,9 +26,11 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/signatures.h"
 #include "qneblock.h"
 #include "qneport.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 #include "kinematic/Plan.h"
@@ -53,7 +55,7 @@ public Q_SLOTS:
 
   void setPlan( const Plan& plan );
 
-  void setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options );
+  void setPose( POSE_SIGNATURE_SLOT );
 
 public:
   Eigen::Vector3d    position    = Eigen::Vector3d( 0, 0, 0 );
@@ -95,6 +97,8 @@ private:
 
   bool newPlan      = false;
   bool arcsBuffered = false;
+
+  RateLimiter rateLimiter;
 
 private:
   Plan plan;

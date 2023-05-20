@@ -13,17 +13,17 @@
 #include <iostream>
 
 void
-TrailerKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
+TrailerKinematicPrimitive::setOffset( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
   fixedKinematic.setOffset( offset );
 }
 
 void
-TrailerKinematicPrimitive::setMaxJackknifeAngle( const double maxJackknifeAngle, CalculationOption::Options ) {
+TrailerKinematicPrimitive::setMaxJackknifeAngle( const double maxJackknifeAngle, const CalculationOption::Options ) {
   maxJackknifeAngleRad = degreesToRadians( maxJackknifeAngle );
 }
 
 void
-TrailerKinematicPrimitive::setMaxAngle( const double maxAngle, CalculationOption::Options ) {
+TrailerKinematicPrimitive::setMaxAngle( const double maxAngle, const CalculationOption::Options ) {
   maxAngleRad = degreesToRadians( maxAngle );
 }
 
@@ -107,7 +107,7 @@ TrailerKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );

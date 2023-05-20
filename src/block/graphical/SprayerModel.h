@@ -11,6 +11,7 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 class Implement;
@@ -51,6 +52,8 @@ private:
   float        m_height   = 1.0;
   const QColor sprayColor = QColor( qRgb( 0x23, 0xff, 0xed ) /*Qt::lightGray*/ );
   bool         usePBR     = true;
+
+  RateLimiter rateLimiter;
 };
 
 class SprayerModelFactory : public BlockFactory {

@@ -95,22 +95,29 @@ PositionDockBlock::setName( const QString& name ) {
 
 void
 PositionDockBlock::setPose( const Eigen::Vector3d& point, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
-    if( wgs84 ) {
-      widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
-    }
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
+    widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
 
     widget->setValues( point.x(), point.y(), point.z() );
   }
 }
 
 void
-PositionDockBlock::setWGS84Position( const Eigen::Vector3d& position ) {
-  if( !wgs84 ) {
-    widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
-  }
+PositionDockBlock::setVector( const Eigen::Vector3d& position, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
+    widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
 
-  widget->setValues( position.x(), position.y(), position.z() );
+    widget->setValues( position.x(), position.y(), position.z() );
+  }
+}
+
+void
+PositionDockBlock::setWgs84( const Eigen::Vector3d& position, const CalculationOption::Options options ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
+    widget->setDescriptions( QStringLiteral( "Lon" ), QStringLiteral( "Lat" ), QStringLiteral( "H" ) );
+
+    widget->setValues( position.x(), position.y(), position.z() );
+  }
 }
 
 QNEBlock*
@@ -135,7 +142,8 @@ PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
   }
 
-  b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWgs84( VECTOR_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Vector" ), QLatin1String( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
   b->setBrush( dockColor );

@@ -38,7 +38,7 @@ public:
 public Q_SLOTS:
   void setWheelbase( NUMBER_SIGNATURE_SLOT );
   void setTrackwidth( NUMBER_SIGNATURE_SLOT );
-  void setAntennaPosition( const Eigen::Vector3d& offset );
+  void setAntennaPosition( VECTOR_SIGNATURE_SLOT );
 
   void setWindow( NUMBER_SIGNATURE_SLOT );
   void setSteps( NUMBER_SIGNATURE_SLOT );

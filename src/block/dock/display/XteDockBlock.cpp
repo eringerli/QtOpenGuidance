@@ -36,7 +36,7 @@ XteDockBlock::setName( const QString& name ) {
 
 void
 XteDockBlock::setXte( const double xte, CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiter.expired( RateLimiter::Type::ValueDock ) ) {
     widget->setXte( xte );
   }
 }

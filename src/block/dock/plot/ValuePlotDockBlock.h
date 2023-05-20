@@ -10,11 +10,18 @@ class MyMainWindow;
 #include "PlotDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
+
 class ValuePlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
   explicit ValuePlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+
+  RateLimiter rateLimiterValue0;
+  RateLimiter rateLimiterValue1;
+  RateLimiter rateLimiterValue2;
+  RateLimiter rateLimiterValue3;
 
 public Q_SLOTS:
   void addValue0( NUMBER_SIGNATURE_SLOT );

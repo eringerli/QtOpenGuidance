@@ -22,10 +22,10 @@ public:
   explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw ) : BlockBase(), tmw( tmw ) {}
 
 public Q_SLOTS:
-  void setWGS84Position( const Eigen::Vector3d& position );
+  void setWGS84Position( VECTOR_SIGNATURE_SLOT );
 
 Q_SIGNALS:
-  void positionChanged( const Eigen::Vector3d& );
+  void positionChanged( VECTOR_SIGNATURE_SIGNAL );
 
 public:
   virtual void emitConfigSignals() override;

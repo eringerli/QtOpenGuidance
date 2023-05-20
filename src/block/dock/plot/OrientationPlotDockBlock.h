@@ -10,6 +10,7 @@ class MyMainWindow;
 #include "PlotDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 class OrientationPlotDockBlock : public PlotDockBlockBase {
@@ -19,12 +20,14 @@ public:
   explicit OrientationPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
 
 public Q_SLOTS:
-  void setOrientation( const Eigen::Quaterniond& orientation );
+  void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
 
 private:
   void rescale();
+
+  RateLimiter rateLimiter;
 };
 
 class OrientationPlotDockBlockFactory : public BlockFactory {

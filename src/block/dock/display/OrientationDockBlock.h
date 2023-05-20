@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "helpers/signatures.h"
 #include <QObject>
 
 class MyMainWindow;
@@ -11,6 +12,7 @@ class ThreeValuesDock;
 #include "ValueDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/anglesHelper.h"
 #include "helpers/eigenHelper.h"
 
@@ -39,12 +41,14 @@ public:
 public Q_SLOTS:
   void setName( const QString& name ) override;
 
-  void setOrientation( const Eigen::Quaterniond& orientation );
+  void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
 
 public:
   ThreeValuesDock* widget = nullptr;
+
+  RateLimiter rateLimiter;
 };
 
 class OrientationDockBlockFactory : public BlockFactory {

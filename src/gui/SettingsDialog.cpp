@@ -143,7 +143,8 @@
 #include "FontComboboxDelegate.h"
 #include "toolbar/NewOpenSaveToolbar.h"
 
-#include "../helpers/cgalHelper.h"
+#include "helpers/RateLimiter.h"
+#include "helpers/cgalHelper.h"
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
@@ -231,6 +232,16 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
 
       ui->dsbGamma->setValue( gamma );
       ui->cbShowDebugOverlay->setChecked( showDebugOverlay );
+    }
+
+    {
+      ui->sbRatePlotDocks->setValue( settings.value( QStringLiteral( "RateLimit/Plot" ), 30 ).toInt() );
+      ui->sbRateValueDocks->setValue( settings.value( QStringLiteral( "RateLimit/Value" ), 60 ).toInt() );
+      ui->sbRate3dView->setValue( settings.value( QStringLiteral( "RateLimit/Graphics" ), 30 ).toInt() );
+
+      RateLimiter::setRate( RateLimiter::Type::PlotDock, ui->sbRatePlotDocks->value() );
+      RateLimiter::setRate( RateLimiter::Type::ValueDock, ui->sbRateValueDocks->value() );
+      RateLimiter::setRate( RateLimiter::Type::Graphical, ui->sbRate3dView->value() );
     }
 
     // camera smoothing
@@ -2141,4 +2152,43 @@ SettingsDialog::on_dsbSimGeneralCx_valueChanged( double ) {
 void
 SettingsDialog::on_dsbSimGeneralSlewrateAutoSteering_valueChanged( double ) {
   emitSimulatorValues();
+}
+
+void
+SettingsDialog::on_pbRatePlotDefault_clicked() {
+  ui->sbRatePlotDocks->setValue( 30 );
+}
+
+void
+SettingsDialog::on_pbRateValueDefault_clicked() {
+  ui->sbRateValueDocks->setValue( 60 );
+}
+
+void
+SettingsDialog::on_pbRate3dDefault_clicked() {
+  ui->sbRate3dView->setValue( 30 );
+}
+
+void
+SettingsDialog::on_sbRatePlotDocks_valueChanged( int arg1 ) {
+  RateLimiter::setRate( RateLimiter::Type::PlotDock, arg1 );
+
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
+  settings.setValue( QStringLiteral( "RateLimit/Plot" ), arg1 );
+}
+
+void
+SettingsDialog::on_sbRateValueDocks_valueChanged( int arg1 ) {
+  RateLimiter::setRate( RateLimiter::Type::ValueDock, arg1 );
+
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
+  settings.setValue( QStringLiteral( "RateLimit/Value" ), arg1 );
+}
+
+void
+SettingsDialog::on_sbRate3dView_valueChanged( int arg1 ) {
+  RateLimiter::setRate( RateLimiter::Type::Graphical, arg1 );
+
+  QSettings settings( QStandardPaths::writableLocation( QStandardPaths::AppDataLocation ) + "/config.ini", QSettings::IniFormat );
+  settings.setValue( QStringLiteral( "RateLimit/Graphics" ), arg1 );
 }

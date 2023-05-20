@@ -15,7 +15,7 @@ public:
   explicit NmeaParserHDT() : BlockBase() {}
 
 Q_SIGNALS:
-  void orientationChanged( const Eigen::Quaterniond& );
+  void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
 
 public Q_SLOTS:
   void setData( const QByteArray& data );

@@ -24,7 +24,7 @@ public:
   void        fromJSON( QJsonObject& ) override;
 
 Q_SIGNALS:
-  void vectorChanged( const Eigen::Vector3d& );
+  void vectorChanged( VECTOR_SIGNATURE_SLOT );
 
 public:
   Eigen::Vector3d vector = Eigen::Vector3d( 0, 0, 0 );

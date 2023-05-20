@@ -48,7 +48,7 @@ UbxParser::setData( const QByteArray& data ) {
 
 void
 UbxParser::ubxNavHpPosLLH( uint32_t, double lon, double lat, double height, double, double hAcc, double vAcc ) {
-  Q_EMIT globalPositionChanged( Eigen::Vector3d( lon, lat, height ) );
+  Q_EMIT globalPositionChanged( Eigen::Vector3d( lon, lat, height ), CalculationOption::Option::None );
   Q_EMIT horizontalAccuracyChanged( hAcc, CalculationOption::Option::None );
   Q_EMIT verticalAccuracyChanged( vAcc, CalculationOption::Option::None );
 }
@@ -58,8 +58,9 @@ UbxParser::ubxNavRelPosNed( uint32_t, double, double, double relPosD, double rel
   Q_EMIT orientationDualAntennaChanged(
     // roll
     Eigen::AngleAxisd( ( std::asin( relPosD / relPosLenght ) - rollOffsetRad ) * rollFactor, Eigen::Vector3d::UnitX() ) *
-    // heading
-    Eigen::AngleAxisd( ( degreesToRadians( relPosHeading ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ) );
+      // heading
+      Eigen::AngleAxisd( ( degreesToRadians( relPosHeading ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ),
+    CalculationOption::Option::None );
   Q_EMIT distanceBetweenAntennasChanged( relPosLenght, CalculationOption::Option::None );
 }
 
@@ -70,11 +71,15 @@ UbxParser::UbxNavPvt(
   Q_EMIT numSatelitesChanged( numSatelites, CalculationOption::Option::None );
   Q_EMIT hdopChanged( pDOP, CalculationOption::Option::None );
 
-  Q_EMIT orientationMotionChanged( Eigen::Quaterniond(
-    Eigen::AngleAxisd( ( degreesToRadians( headingOfMotion ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ) ) );
+  Q_EMIT orientationMotionChanged(
+    Eigen::Quaterniond(
+      Eigen::AngleAxisd( ( degreesToRadians( headingOfMotion ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ) ),
+    CalculationOption::Option::None );
 
-  Q_EMIT orientationMotionChanged( Eigen::Quaterniond(
-    Eigen::AngleAxisd( ( degreesToRadians( headingOfVehicle ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ) ) );
+  Q_EMIT orientationMotionChanged(
+    Eigen::Quaterniond(
+      Eigen::AngleAxisd( ( degreesToRadians( headingOfVehicle ) - headingOffsetRad ) * headingFactor, Eigen::Vector3d::UnitZ() ) ),
+    CalculationOption::Option::None );
 }
 
 void
@@ -109,14 +114,14 @@ UbxParserFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "Roll Offset" ), QLatin1String( SLOT( setRollOffset( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Roll Factor" ), QLatin1String( SLOT( setRollFactor( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( const Eigen::Vector3d& ) ) ) );
+  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Orientation Dual Antenna" ),
-                    QLatin1String( SIGNAL( orientationDualAntennaChanged( const Eigen::Quaterniond& ) ) ) );
+                    QLatin1String( SIGNAL( orientationDualAntennaChanged( ORIENTATION_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ),
-                    QLatin1String( SIGNAL( orientationVehicleChanged( const Eigen::Quaterniond& ) ) ) );
+                    QLatin1String( SIGNAL( orientationVehicleChanged( ORIENTATION_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ),
-                    QLatin1String( SIGNAL( orientationMotionChanged( const Eigen::Quaterniond& ) ) ) );
+                    QLatin1String( SIGNAL( orientationMotionChanged( ORIENTATION_SIGNATURE ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Dist Antennas" ), QLatin1String( SIGNAL( distanceBetweenAntennasChanged( NUMBER_SIGNATURE ) ) ) );
   b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );

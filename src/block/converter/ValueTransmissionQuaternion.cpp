@@ -19,7 +19,7 @@ ValueTransmissionQuaternion::ValueTransmissionQuaternion( uint16_t cid ) : Value
 }
 
 void
-ValueTransmissionQuaternion::setQuaternion( const Eigen::Quaterniond& quaternion ) {
+ValueTransmissionQuaternion::setQuaternion( const Eigen::Quaterniond& quaternion, const CalculationOption::Options ) {
   QCborMap map;
   map[QStringLiteral( "cid" )]       = cid;
   map[QStringLiteral( "x" )]         = quaternion.x();
@@ -42,7 +42,7 @@ ValueTransmissionQuaternion::dataReceive( const QByteArray& data ) {
     auto z = cbor[QStringLiteral( "z" )].toDouble( 0 );
     auto w = cbor[QStringLiteral( "w" )].toDouble( 0 );
 
-    Q_EMIT quaternionChanged( Eigen::Quaterniond( w, x, y, z ) );
+    Q_EMIT quaternionChanged( Eigen::Quaterniond( w, x, y, z ), CalculationOption::Option::None );
   }
 }
 
@@ -53,9 +53,9 @@ ValueTransmissionQuaternionFactory::createBlock( QGraphicsScene* scene, int id )
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( const Eigen::Quaterniond ) ) ), false );
+  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( quaternionChanged( ORIENTATION_SIGNATURE ) ) ), false );
 
-  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( const Eigen::Quaterniond ) ) ), false );
+  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setQuaternion( ORIENTATION_SIGNATURE ) ) ), false );
   b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
 
   b->setBrush( converterColor );

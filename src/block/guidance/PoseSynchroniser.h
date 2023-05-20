@@ -16,7 +16,7 @@ public:
   explicit PoseSynchroniser() : BlockBase() {}
 
 public Q_SLOTS:
-  void setPosition( POSITION_SIGNATURE_SLOT );
+  void setPosition( VECTOR_SIGNATURE_SLOT );
 
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 

@@ -57,12 +57,12 @@ public:
   explicit UbxParser();
 
 Q_SIGNALS:
-  void globalPositionChanged( const Eigen::Vector3d& );
+  void globalPositionChanged( VECTOR_SIGNATURE_SIGNAL );
   void velocityChanged( NUMBER_SIGNATURE_SIGNAL );
 
-  void orientationDualAntennaChanged( const Eigen::Quaterniond& );
-  void orientationVehicleChanged( const Eigen::Quaterniond& );
-  void orientationMotionChanged( const Eigen::Quaterniond& );
+  void orientationDualAntennaChanged( ORIENTATION_SIGNATURE_SIGNAL );
+  void orientationVehicleChanged( ORIENTATION_SIGNATURE_SIGNAL );
+  void orientationMotionChanged( ORIENTATION_SIGNATURE_SIGNAL );
 
   void distanceBetweenAntennasChanged( NUMBER_SIGNATURE_SIGNAL );
   void numSatelitesChanged( NUMBER_SIGNATURE_SIGNAL );

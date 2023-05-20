@@ -3,11 +3,12 @@
 
 #include "FixedKinematicPrimitive.h"
 
+#include "kinematic/CalculationOptions.h"
 #include "qneblock.h"
 #include "qneport.h"
 
 void
-FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset ) {
+FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
   this->offset = -offset;
 }
 
@@ -44,7 +45,7 @@ FixedKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Offset" ), QLatin1String( SLOT( setOffset( Eigen::Vector3d ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset" ), QLatin1String( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
   b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );

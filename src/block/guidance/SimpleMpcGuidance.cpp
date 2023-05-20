@@ -35,7 +35,7 @@ SimpleMpcGuidance::setTrackwidth( const double trackwidth, CalculationOption::Op
 }
 
 void
-SimpleMpcGuidance::setAntennaPosition( const Eigen::Vector3d& offset ) {
+SimpleMpcGuidance::setAntennaPosition( const Eigen::Vector3d& offset, CalculationOption::Options ) {
   antennaKinematic.setOffset( -offset );
 }
 
@@ -390,7 +390,7 @@ SimpleMpcGuidance::setPoseResult( const Eigen::Vector3d&           position,
 
 void
 SimpleMpcGuidance::emitConfigSignals() {
-  Q_EMIT steerAngleChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
+  Q_EMIT steerAngleChanged( 0, CalculationOption::Option::None );
 }
 
 QNEBlock*
@@ -442,7 +442,7 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Trackwidth" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Window" ), QLatin1String( SLOT( setWindow( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Steps" ), QLatin1String( SLOT( setSteps( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Weight" ), QLatin1String( SLOT( setWeight( NUMBER_SIGNATURE ) ) ) );

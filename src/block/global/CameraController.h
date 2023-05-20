@@ -11,6 +11,7 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 #pragma once
@@ -79,6 +80,8 @@ private:
   float lenghtToViewCenter = 20;
   float panAngle           = 0;
   float tiltAngle          = 39;
+
+  RateLimiter rateLimiter;
 };
 
 class CameraControllerFactory : public BlockFactory {

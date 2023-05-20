@@ -1,38 +1,36 @@
-// Copyright( C ) 2022 Christian Riggenbach
-//
-// This program is free software:
-// you can redistribute it and / or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// ( at your option ) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-//      but WITHOUT ANY WARRANTY;
-// without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see < https : //www.gnu.org/licenses/>.
+// Copyright( C ) Christian Riggenbach
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #pragma once
+
+// clang-format off
 
 #define ACTION_SIGNATURE_SIGNAL const bool
 #define ACTION_SIGNATURE_SLOT   const bool
 #define ACTION_SIGNATURE        const bool
 
-#define NUMBER_SIGNATURE_SIGNAL const double, const CalculationOption::Options
-#define NUMBER_SIGNATURE_SLOT   const double, const CalculationOption::Options = CalculationOption::Option::None
-#define NUMBER_SIGNATURE        const double, const CalculationOption::Options
+#define NUMBER_SIGNATURE_SIGNAL const double,const CalculationOption::Options
+#define NUMBER_SIGNATURE_SLOT   const double,const CalculationOption::Options=CalculationOption::Option::None
+#define NUMBER_SIGNATURE        const double,const CalculationOption::Options
 
-#define ORIENTATION_SIGNATURE_SIGNAL const Eigen::Quaterniond&, const CalculationOption::Options
-#define ORIENTATION_SIGNATURE_SLOT   const Eigen::Quaterniond&, const CalculationOption::Options = CalculationOption::Option::None
-#define ORIENTATION_SIGNATURE        const Eigen::Quaterniond&, const CalculationOption::Options
+#define ORIENTATION_SIGNATURE_SIGNAL const Eigen::Quaterniond&,const CalculationOption::Options
+#define ORIENTATION_SIGNATURE_SLOT   const Eigen::Quaterniond&,const CalculationOption::Options=CalculationOption::Option::None
+#define ORIENTATION_SIGNATURE        const Eigen::Quaterniond&,const CalculationOption::Options
 
-#define POSITION_SIGNATURE_SIGNAL const Eigen::Vector3d&, const CalculationOption::Options
-#define POSITION_SIGNATURE_SLOT   const Eigen::Vector3d&, const CalculationOption::Options = CalculationOption::Option::None
-#define POSITION_SIGNATURE        const Eigen::Vector3d&, const CalculationOption::Options
+#define VECTOR_SIGNATURE_SIGNAL const Eigen::Vector3d&,const CalculationOption::Options
+#define VECTOR_SIGNATURE_SLOT   const Eigen::Vector3d&,const CalculationOption::Options=CalculationOption::Option::None
+#define VECTOR_SIGNATURE        const Eigen::Vector3d&,const CalculationOption::Options
+
+#define POSE_SIGNATURE_SIGNAL const Eigen::Vector3d&,const Eigen::Quaterniond&,const CalculationOption::Options
+#define POSE_SIGNATURE_SLOT \
+  const Eigen::Vector3d&,const Eigen::Quaterniond&,const CalculationOption::Options=CalculationOption::Option::None
+#define POSE_SIGNATURE const Eigen::Vector3d&,const Eigen::Quaterniond&,const CalculationOption::Options
+
+#define IMU_SIGNATURE_SIGNAL const double,const Eigen::Vector3d&,const Eigen::Vector3d&,const Eigen::Vector3d&
+#define IMU_SIGNATURE_SLOT   const double,const Eigen::Vector3d&,const Eigen::Vector3d&,const Eigen::Vector3d&
+#define IMU_SIGNATURE        const double,const Eigen::Vector3d&,const Eigen::Vector3d&,const Eigen::Vector3d&
+
+// clang-format on
 
 // , CalculationOption::Options
 
@@ -43,8 +41,3 @@
 // , CalculationOption::Options options ) { if( !options.testFlag( CalculationOption::Option::NoControl ) ) {
 
 // , CalculationOption::Options options ) { if( !options.testFlag( CalculationOption::Option::NoPlanner ) ) {
-
-#define POSE_SIGNATURE_SIGNAL const Eigen::Vector3d&, const Eigen::Quaterniond&, const CalculationOption::Options
-#define POSE_SIGNATURE_SLOT \
-  const Eigen::Vector3d&, const Eigen::Quaterniond&, const CalculationOption::Options = CalculationOption::Option::None
-#define POSE_SIGNATURE const Eigen::Vector3d&, const Eigen::Quaterniond&, const CalculationOption::Options

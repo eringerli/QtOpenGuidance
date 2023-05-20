@@ -11,6 +11,8 @@ class XteDock;
 #include "ValueDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
+
 class XteDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
@@ -40,6 +42,8 @@ public Q_SLOTS:
 
 public:
   XteDock* widget = nullptr;
+
+  RateLimiter rateLimiter;
 };
 
 class XteDockBlockFactory : public BlockFactory {

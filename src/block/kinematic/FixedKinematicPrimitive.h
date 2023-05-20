@@ -16,7 +16,7 @@ public:
   explicit FixedKinematicPrimitive() : BlockBase() {}
 
 public Q_SLOTS:
-  void setOffset( const Eigen::Vector3d& offset );
+  void setOffset( VECTOR_SIGNATURE_SLOT );
 
   void setPose( POSE_SIGNATURE_SLOT );
 

@@ -9,12 +9,12 @@
 #include "helpers/anglesHelper.h"
 
 void
-TrailerKinematic::setOffsetHookToPivot( const Eigen::Vector3d& offset ) {
+TrailerKinematic::setOffsetHookToPivot( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
   hookToPivot.setOffset( offset );
 }
 
 void
-TrailerKinematic::setOffsetPivotToTow( const Eigen::Vector3d& offset ) {
+TrailerKinematic::setOffsetPivotToTow( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
   pivotToTow.setOffset( offset );
 }
 
@@ -53,8 +53,8 @@ TrailerKinematicFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( VECTOR_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );

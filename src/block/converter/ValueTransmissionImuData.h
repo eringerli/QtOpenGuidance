@@ -20,13 +20,13 @@ public:
   explicit ValueTransmissionImuData( uint16_t cid );
 
 public Q_SLOTS:
-  void setImuData( const double dT, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& );
+  void setImuData( IMU_SIGNATURE_SLOT );
 
   void dataReceive( const QByteArray& data );
 
 Q_SIGNALS:
   void dataToSend( const QByteArray& );
-  void imuDataChanged( const double dT, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& );
+  void imuDataChanged( IMU_SIGNATURE_SIGNAL );
 
 private:
   std::unique_ptr< QCborStreamReader > reader;

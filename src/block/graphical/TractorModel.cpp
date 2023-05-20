@@ -310,14 +310,14 @@ TractorModel::setProportions() {
 
 void
 TractorModel::setPoseTowPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterTowPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_towPointTransform->setTranslation( toQVector3D( position ) );
   }
 }
 
 void
 TractorModel::setPoseHookPoint( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterHookPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_towHookTransform->setTranslation( toQVector3D( position ) );
   }
 }
@@ -326,7 +326,7 @@ void
 TractorModel::setPosePivotPoint( const Eigen::Vector3d&           position,
                                  const Eigen::Quaterniond&        orientation,
                                  const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterPivotPoint.expired( RateLimiter::Type::Graphical ) ) {
     m_pivotPointTransform->setTranslation( toQVector3D( position ) );
 
     m_rootEntityTransform->setTranslation( toQVector3D( position ) );
@@ -336,7 +336,7 @@ TractorModel::setPosePivotPoint( const Eigen::Vector3d&           position,
 
 void
 TractorModel::setSteeringAngleLeft( double steerAngle, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterSteeringAngleLeft.expired( RateLimiter::Type::Graphical ) ) {
     QQuaternion rotationLeft = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
     m_wheelFrontLeftTransform->setRotation( rotationLeft );
   }
@@ -344,7 +344,8 @@ TractorModel::setSteeringAngleLeft( double steerAngle, const CalculationOption::
 
 void
 TractorModel::setSteeringAngleRight( double steerAngle, const CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) &&
+      rateLimiterSteeringAngleRight.expired( RateLimiter::Type::Graphical ) ) {
     QQuaternion rotationRight = QQuaternion::fromAxisAndAngle( QVector3D( 0.0F, 0.0F, 1.0F ), steerAngle );
     m_wheelFrontRightTransform->setRotation( rotationRight );
   }

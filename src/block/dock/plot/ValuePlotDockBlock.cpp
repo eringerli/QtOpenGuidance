@@ -3,6 +3,7 @@
 
 #include "ValuePlotDockBlock.h"
 
+#include "helpers/RateLimiter.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -44,7 +45,7 @@ ValuePlotDockBlock::ValuePlotDockBlock( const QString& uniqueName, MyMainWindow*
 
 void
 ValuePlotDockBlock::addValue0( const double value, CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterValue0.expired( RateLimiter::Type::PlotDock ) ) {
     auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
     widget->getQCustomPlotWidget()->graph( 0 )->addData( currentSecsSinceEpoch, value );
@@ -55,7 +56,7 @@ ValuePlotDockBlock::addValue0( const double value, CalculationOption::Options op
 
 void
 ValuePlotDockBlock::addValue1( const double value, CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterValue1.expired( RateLimiter::Type::PlotDock ) ) {
     auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
     widget->getQCustomPlotWidget()->graph( 1 )->addData( currentSecsSinceEpoch, value );
@@ -66,7 +67,7 @@ ValuePlotDockBlock::addValue1( const double value, CalculationOption::Options op
 
 void
 ValuePlotDockBlock::addValue2( const double value, CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterValue2.expired( RateLimiter::Type::PlotDock ) ) {
     auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
     widget->getQCustomPlotWidget()->graph( 2 )->addData( currentSecsSinceEpoch, value );
@@ -77,7 +78,7 @@ ValuePlotDockBlock::addValue2( const double value, CalculationOption::Options op
 
 void
 ValuePlotDockBlock::addValue3( const double value, CalculationOption::Options options ) {
-  if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
+  if( !options.testFlag( CalculationOption::Option::NoGraphics ) && rateLimiterValue3.expired( RateLimiter::Type::PlotDock ) ) {
     auto currentSecsSinceEpoch = double( QDateTime::currentMSecsSinceEpoch() ) / 1000;
 
     widget->getQCustomPlotWidget()->graph( 3 )->addData( currentSecsSinceEpoch, value );

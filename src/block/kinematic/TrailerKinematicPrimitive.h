@@ -20,7 +20,7 @@ public:
   explicit TrailerKinematicPrimitive() : BlockBase() {}
 
 public Q_SLOTS:
-  void setOffset( const Eigen::Vector3d& offset );
+  void setOffset( VECTOR_SIGNATURE_SLOT );
   void setMaxJackknifeAngle( NUMBER_SIGNATURE_SLOT );
   void setMaxAngle( NUMBER_SIGNATURE_SLOT );
 

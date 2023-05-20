@@ -3,6 +3,7 @@
 
 #include "OrientationBlock.h"
 
+#include "kinematic/CalculationOptions.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -13,7 +14,7 @@
 
 void
 OrientationBlock::emitConfigSignals() {
-  Q_EMIT orientationChanged( orientation );
+  Q_EMIT orientationChanged( orientation, CalculationOption::Option::None );
 }
 
 QJsonObject
@@ -70,13 +71,13 @@ OrientationBlock::setAveragerEnabled( const bool enabled ) {
         orientation      = taitBryanToQuaternion( heading, getPitch( taitBryan ), getRoll( taitBryan ) );
       }
 
-      Q_EMIT orientationChanged( orientation );
+      Q_EMIT orientationChanged( orientation, CalculationOption::Option::None );
     }
   }
 }
 
 void
-OrientationBlock::setOrientation( const Eigen::Quaterniond& orientation ) {
+OrientationBlock::setOrientation( const Eigen::Quaterniond& orientation, CalculationOption::Options ) {
   if( averagerEnabled ) {
     ++numMeasurements;
     Eigen::Vector4d q( orientation.x(), orientation.y(), orientation.z(), orientation.w() );
@@ -117,9 +118,9 @@ OrientationBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( ACTION_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( const Eigen::Quaterniond ) ) ) );
+  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( Eigen::Quaterniond ) ) ) );
+  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
   b->setBrush( valueColor );
 

@@ -10,7 +10,7 @@
 #include "kinematic/Plan.h"
 
 void
-XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&, const CalculationOption::Options options ) {
+XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::NoXte ) ) {
     const Point_2 position2D = to2D( position );
 

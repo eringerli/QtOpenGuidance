@@ -3,6 +3,7 @@
 
 #include "NmeaParserHDT.h"
 
+#include "kinematic/CalculationOptions.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -86,7 +87,8 @@ NmeaParserHDT::parseData() {
           ++nmeaFileIterator;
 
           Q_EMIT orientationChanged(
-            Eigen::Quaterniond( Eigen::AngleAxisd( degreesToRadians( nmeaFileIterator->toDouble() ), Eigen::Vector3d::UnitZ() ) ) );
+            Eigen::Quaterniond( Eigen::AngleAxisd( degreesToRadians( nmeaFileIterator->toDouble() ), Eigen::Vector3d::UnitZ() ) ),
+            CalculationOption::Option::None );
         }
       }
     }
@@ -103,7 +105,7 @@ NmeaParserHDTFactory::createBlock( QGraphicsScene* scene, int id ) {
   obj->moveToThread( thread );
 
   b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( const Eigen::Quaterniond& ) ) ) );
+  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
   b->setBrush( parserColor );
 

@@ -11,6 +11,8 @@ class ValueDock;
 #include "ValueDockBlockBase.h"
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
+
 class ValueDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
@@ -40,6 +42,8 @@ public Q_SLOTS:
 
 public:
   ValueDock* widget = nullptr;
+
+  RateLimiter rateLimiter;
 };
 
 class ValueDockBlockFactory : public BlockFactory {

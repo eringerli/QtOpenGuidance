@@ -16,7 +16,7 @@ public:
   explicit NmeaParserGGA() : BlockBase() {}
 
 Q_SIGNALS:
-  void globalPositionChanged( const Eigen::Vector3d& );
+  void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
   void fixQualityChanged( NUMBER_SIGNATURE_SIGNAL );
   void hdopChanged( NUMBER_SIGNATURE_SIGNAL );
   void numSatelitesChanged( NUMBER_SIGNATURE_SIGNAL );

@@ -8,6 +8,7 @@
 #include "block/BlockBase.h"
 
 #include "helpers/eigenHelper.h"
+#include "helpers/signatures.h"
 
 // general stanley-controller:
 // http://ai.stanford.edu/~gabeh/papers/hoffmann_stanley_control07.pdf
@@ -25,16 +26,14 @@ public:
 public Q_SLOTS:
   void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
 
-  void
-  setPoseFrontWheels( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options );
-  void
-  setPoseRearWheels( const Eigen::Vector3d& position, const Eigen::Quaterniond& orientation, const CalculationOption::Options options );
+  void setPoseFrontWheels( POSE_SIGNATURE_SLOT );
+  void setPoseRearWheels( POSE_SIGNATURE_SLOT );
 
   void setHeadingOfPathFrontWheels( NUMBER_SIGNATURE_SLOT );
   void setHeadingOfPathRearWheels( NUMBER_SIGNATURE_SLOT );
 
-  void setXteFrontWheels( const double distance, const CalculationOption::Options options = CalculationOption::Option::None );
-  void setXteRearWheels( const double distance, const CalculationOption::Options options = CalculationOption::Option::None );
+  void setXteFrontWheels( NUMBER_SIGNATURE_SLOT );
+  void setXteRearWheels( NUMBER_SIGNATURE_SLOT );
 
   void setStanleyGainKForwards( NUMBER_SIGNATURE_SLOT );
   void setStanleyGainKSoftForwards( NUMBER_SIGNATURE_SLOT );

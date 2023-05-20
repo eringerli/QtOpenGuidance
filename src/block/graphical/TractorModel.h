@@ -9,6 +9,7 @@
 
 #include "block/BlockBase.h"
 
+#include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
 class TractorModel : public BlockBase {
@@ -65,6 +66,12 @@ private:
 
   float m_wheelbase  = 2.4f;
   float m_trackwidth = 2;
+
+  RateLimiter rateLimiterTowPoint;
+  RateLimiter rateLimiterHookPoint;
+  RateLimiter rateLimiterPivotPoint;
+  RateLimiter rateLimiterSteeringAngleLeft;
+  RateLimiter rateLimiterSteeringAngleRight;
 };
 
 class TractorModelFactory : public BlockFactory {

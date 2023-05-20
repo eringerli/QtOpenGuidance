@@ -66,7 +66,7 @@ ValueTransmissionImuDataFactory::createBlock( QGraphicsScene* scene, int id ) {
   b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
   b->addOutputPort(
     QStringLiteral( "Out" ),
-    QLatin1String( SIGNAL( imuDataChanged( const double dT, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ),
+    QLatin1String( SIGNAL( imuDataChanged( const double, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ),
     false );
 
   b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );

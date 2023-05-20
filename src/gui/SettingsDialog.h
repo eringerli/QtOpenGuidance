@@ -109,6 +109,8 @@ public Q_SLOTS:
   void loadDefaultConfig();
   void saveDefaultConfig();
 
+  void saveConfigAndDocks();
+
   void resetAllModels();
 
   void setSimulatorValues( const double a,
@@ -251,6 +253,13 @@ private Q_SLOTS:
   void on_dsbSimGeneralIz_valueChanged( double arg1 );
   void on_dsbSimGeneralCx_valueChanged( double arg1 );
   void on_dsbSimGeneralSlewrateAutoSteering_valueChanged( double arg1 );
+
+  void on_pbRatePlotDefault_clicked();
+  void on_pbRateValueDefault_clicked();
+  void on_pbRate3dDefault_clicked();
+  void on_sbRatePlotDocks_valueChanged( int arg1 );
+  void on_sbRateValueDocks_valueChanged( int arg1 );
+  void on_sbRate3dView_valueChanged( int arg1 );
 
 private:
   void saveGridValuesInSettings();
