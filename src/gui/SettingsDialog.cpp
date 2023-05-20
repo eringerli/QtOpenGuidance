@@ -46,6 +46,10 @@
 #include "block/comparison/ComparisonNotEqualTo.h"
 
 #include "block/valves/ValveNumber.h"
+#include "block/ratelimiter/RateLimiterImu.h"
+#include "block/ratelimiter/RateLimiterOrientation.h"
+#include "block/ratelimiter/RateLimiterPose.h"
+#include "block/ratelimiter/RateLimiterVector.h"
 
 #include "block/sectionControl/Implement.h"
 
@@ -483,6 +487,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
   factories.emplace_back( new ValveNumberFactory( calculationsThread ) );
+
+  factories.emplace_back( new RateLimiterImuFactory( calculationsThread ) );
+  factories.emplace_back( new RateLimiterOrientationFactory( calculationsThread ) );
+  factories.emplace_back( new RateLimiterPoseFactory( calculationsThread ) );
+  factories.emplace_back( new RateLimiterVectorFactory( calculationsThread ) );
 
   factories.emplace_back( new ComparisonEqualToFactory( calculationsThread ) );
   factories.emplace_back( new ComparisonNotEqualToFactory( calculationsThread ) );
