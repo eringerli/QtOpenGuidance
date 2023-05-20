@@ -1,6 +1,6 @@
 [submodule "lib/geographiclib"]
 	path = lib/geographiclib
-	url = git://git.code.sourceforge.net/p/geographiclib/code
+	url = https://github.com/geographiclib/geographiclib.git
 [submodule "lib/oxygen-icons-png"]
 	path = lib/oxygen-icons-png
 	url = https://github.com/rogovsky/oxygen-icons-png.git
@@ -16,3 +16,15 @@
 [submodule "lib/eigen"]
 	path = lib/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "lib/acado"]
+	path = lib/acado
+	url = https://github.com/acado/acado.git
+[submodule "lib/libmpc"]
+	path = lib/libmpc
+	url = https://github.com/nicolapiccinelli/libmpc.git
+[submodule "lib/attitude_estimator"]
+	path = lib/attitude_estimator
+	url = https://github.com/AIS-Bonn/attitude_estimator.git
+[submodule "lib/imu_tools"]
+	path = lib/imu_tools
+	url = https://github.com/CCNYRoboticsLab/imu_tools.git
