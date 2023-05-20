@@ -34,7 +34,7 @@ CultivatedAreaMeshGeometryView::addPointRight( const Point_3 point, const QVecto
 
 void
 CultivatedAreaMeshGeometryView::clear() {
-  qDebug() << "CultivatedAreaMeshGeometryView::clear()";
+  //  qDebug() << "CultivatedAreaMeshGeometryView::clear()";
   static_cast< CultivatedAreaMeshGeometry* >( geometry() )->clear();
 }
 

@@ -34,7 +34,7 @@ CultivatedAreaMesh::addPointRight( const Point_3 point, const QVector3D normalVe
 
 void
 CultivatedAreaMesh::clear() {
-  qDebug() << "CultivatedAreaMesh::clear()";
+  //  qDebug() << "CultivatedAreaMesh::clear()";
   static_cast< CultivatedAreaMeshGeometryView* >( view() )->clear();
 }
 
