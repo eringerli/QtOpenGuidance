@@ -8,6 +8,7 @@
 
 #include "kinematic/CgalWorker.h"
 #include "kinematic/cgal.h"
+#include <algorithm>
 
 void
 StanleyGuidance::setSteeringAngle( const double steeringAngle, CalculationOption::Options options ) {
@@ -57,7 +58,7 @@ StanleyGuidance::setHeadingOfPathRearWheels( const double headingOfPath, Calcula
 void
 StanleyGuidance::setXteFrontWheels( double distance, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::NoControl ) ) {
-    if( !qIsInf( distance ) && velocity >= 0 ) {
+    if( !std::isinf( distance ) && velocity >= 0 ) {
       auto   taitBryanFrontWheels   = quaternionToTaitBryan( orientationFrontWheels );
       double stanleyYawCompensation = normalizeAngleRadians( ( headingOfPathRadiansFrontWheels )-getYaw( taitBryanFrontWheels ) );
       double stanleyXteCompensation = atan( ( stanleyGainKForwards * -distance ) / ( velocity + stanleyGainKSoftForwards ) );
@@ -75,13 +76,7 @@ StanleyGuidance::setXteFrontWheels( double distance, const CalculationOption::Op
       //              << stanleyYawDampening << ", " << stanleySteeringDampening <<
       //              std::endl;
 
-      if( steerAngleRequested >= maxSteeringAngle ) {
-        steerAngleRequested = maxSteeringAngle;
-      }
-
-      if( steerAngleRequested <= -maxSteeringAngle ) {
-        steerAngleRequested = -maxSteeringAngle;
-      }
+      steerAngleRequested = std::clamp( steerAngleRequested, -maxSteeringAngle, maxSteeringAngle );
 
       //    qDebug() << Qt::fixed << Qt::forcesign << qSetRealNumberPrecision( 4 ) <<
       //    stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening <<
@@ -98,7 +93,7 @@ StanleyGuidance::setXteFrontWheels( double distance, const CalculationOption::Op
 void
 StanleyGuidance::setXteRearWheels( double distance, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::NoControl ) ) {
-    if( !qIsInf( distance ) && velocity < 0 ) {
+    if( !std::isinf( distance ) && velocity < 0 ) {
       auto   taitBryanRearWheels = quaternionToTaitBryan( orientationRearWheels );
       double stanleyYawCompensation =
         /*normalizeAngleRadians*/ ( ( headingOfPathRadiansRearWheels )-getYaw( taitBryanRearWheels ) );
@@ -112,13 +107,7 @@ StanleyGuidance::setXteRearWheels( double distance, const CalculationOption::Opt
       double steerAngleRequested = -radiansToDegrees(
         normalizeAngleRadians( stanleyYawCompensation + stanleyXteCompensation + stanleyYawDampening + stanleySteeringDampening ) );
 
-      if( steerAngleRequested >= maxSteeringAngle ) {
-        steerAngleRequested = maxSteeringAngle;
-      }
-
-      if( steerAngleRequested <= -maxSteeringAngle ) {
-        steerAngleRequested = -maxSteeringAngle;
-      }
+      steerAngleRequested = std::clamp( steerAngleRequested, -maxSteeringAngle, maxSteeringAngle );
 
       //        qDebug() << fixed << forcesign << qSetRealNumberPrecision( 4 ) <<
       //        stanleyYawCompensation << stanleyXteCompensation << stanleyYawDampening <<
@@ -126,8 +115,10 @@ StanleyGuidance::setXteRearWheels( double distance, const CalculationOption::Opt
       //        headingOfPathRadiansRearWheels ) << normalizeAngleRadians(
       //        degreesToRadians( orientationRearWheels.toEulerAngles().z() ) );
 
-      Q_EMIT steerAngleChanged( steerAngleRequested, CalculationOption::Option::None );
-      yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
+      if( !std::isinf( steerAngleRequested ) ) {
+        Q_EMIT steerAngleChanged( steerAngleRequested, CalculationOption::Option::None );
+        yawTrajectory1AgoRearWheels = headingOfPathRadiansRearWheels;
+      }
     }
   }
 }

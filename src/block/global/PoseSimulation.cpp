@@ -445,7 +445,7 @@ PoseSimulation::setSteerAngleFromAutosteer( double steerAngle, const Calculation
 
   static QElapsedTimer timer;
 
-  double dT                 = std::min( double( timer.restart() ) / 1000., 1. );
+  double dT                 = std::clamp( double( timer.restart() ) / 1000., 0.001, 1. );
   m_steerAngleFromAutosteer = m_steerAngleAutosteerSlewRateLimiter.set( steerAngle, dT );
 }
 

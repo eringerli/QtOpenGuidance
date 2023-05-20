@@ -25,7 +25,7 @@ XteDock::setXte( double xte ) {
     meter = 0;
   }
 
-  if( qIsInf( xte ) ) {
+  if( std::isinf( xte ) ) {
     ui->lbXte->setText( QStringLiteral( "Inf" ) );
     ui->pbXteLeft->setValue( 0 );
     ui->pbXteRight->setValue( 0 );
