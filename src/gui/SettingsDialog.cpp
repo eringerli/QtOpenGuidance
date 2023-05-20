@@ -46,6 +46,11 @@
 #include "block/comparison/ComparisonNotEqualTo.h"
 
 #include "block/valves/ValveNumber.h"
+#include "block/splitter/SplitterImu.h"
+#include "block/splitter/SplitterOrientation.h"
+#include "block/splitter/SplitterPose.h"
+#include "block/splitter/SplitterVector.h"
+
 #include "block/ratelimiter/RateLimiterImu.h"
 #include "block/ratelimiter/RateLimiterOrientation.h"
 #include "block/ratelimiter/RateLimiterPose.h"
@@ -487,6 +492,11 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
   factories.emplace_back( new ValveNumberFactory( calculationsThread ) );
+
+  factories.emplace_back( new SplitterImuFactory( calculationsThread ) );
+  factories.emplace_back( new SplitterOrientationFactory( calculationsThread ) );
+  factories.emplace_back( new SplitterPoseFactory( calculationsThread ) );
+  factories.emplace_back( new SplitterVectorFactory( calculationsThread ) );
 
   factories.emplace_back( new RateLimiterImuFactory( calculationsThread ) );
   factories.emplace_back( new RateLimiterOrientationFactory( calculationsThread ) );
