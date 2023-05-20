@@ -9,6 +9,7 @@
 #include "gui/dock/PlotDock.h"
 
 #include "qcustomplot.h"
+#include "qnamespace.h"
 
 KDDockWidgets::DockWidget* PlotDockBlockBase::firstPlotDock = nullptr;
 
@@ -108,14 +109,25 @@ PlotDockBlockBase::setWindow( const double window ) {
 }
 
 void
+PlotDockBlockBase::clearData() {
+  for( int i = 0; i < widget->getQCustomPlotWidget()->graphCount(); ++i ) {
+    widget->getQCustomPlotWidget()->graph( i )->setData( QVector< double >(), QVector< double >(), true );
+  }
+}
+
+void
 PlotDockBlockBase::setName( const QString& name ) {
   this->name = name;
   setNameHelper();
 }
 
 void
-PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick( QMouseEvent* ) {
-  setAutoscrollEnabled( !autoScrollEnabled );
+PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick( QMouseEvent* event ) {
+  if( event->button() == Qt::MouseButton::LeftButton ) {
+    setAutoscrollEnabled( !autoScrollEnabled );
+  } else {
+    clearData();
+  }
 }
 
 void

@@ -38,6 +38,8 @@ public:
   void setAutoscrollEnabled( const bool enabled );
   void setWindow( const double );
 
+  virtual void clearData();
+
 public Q_SLOTS:
   void setName( const QString& name ) override;
 
