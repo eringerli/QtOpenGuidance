@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>227</width>
-    <height>289</height>
+    <height>329</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,6 +78,22 @@
        <width>48</width>
        <height>48</height>
       </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pbSaveConfig">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Save Config</string>
+     </property>
+     <property name="icon">
+      <iconset theme="document-save"/>
      </property>
     </widget>
    </item>

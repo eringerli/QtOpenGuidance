@@ -258,9 +258,6 @@ main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( applicationControlToolbarDock->toggleAction() );
   mainWindow->addDockWidget( applicationControlToolbarDock, KDDockWidgets::Location_OnRight );
 
-  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestClose, mainWindow, &MyMainWindow::close );
-  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
-
   // Create setting Window
   auto* settingsDialog = new SettingsDialog(
     foregroundEntity, middlegroundEntity, backgroundEntity, mainWindow, view, guidanceToolbar->menu, calculationsThread, widget );
@@ -554,8 +551,11 @@ main( int argc, char** argv ) {
   QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ), settingsDialog->fieldManager, SLOT( recalculateField() ) );
   QObject::connect(
     settingsDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
+  // ApplicationControlToolbar
+  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestClose, mainWindow, &MyMainWindow::close );
+  QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
   QObject::connect(
-    settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
+    applicationControlToolbar, &ApplicationControlToolbar::requestSaveConfig, settingsDialog, &SettingsDialog::saveConfigAndDocks );
 
   // set the defaults for the simulator
   simulatorVelocity->setValue( 0 );

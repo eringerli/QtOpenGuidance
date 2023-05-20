@@ -17,3 +17,8 @@ void
 ApplicationControlToolbar::on_pbClose_clicked() {
   Q_EMIT requestClose();
 }
+
+void
+ApplicationControlToolbar::on_pbSaveConfig_clicked() {
+  Q_EMIT requestSaveConfig();
+}

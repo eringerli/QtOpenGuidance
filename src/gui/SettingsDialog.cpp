@@ -738,6 +738,12 @@ SettingsDialog::saveDefaultConfig() {
 }
 
 void
+SettingsDialog::saveConfigAndDocks() {
+  saveDefaultConfig();
+  on_pbSaveDockPositionsAsDefault_clicked();
+}
+
+void
 SettingsDialog::on_cbValues_currentIndexChanged( int /*index*/ ) {
   auto* model = qobject_cast< QAbstractTableModel* >( qvariant_cast< QAbstractTableModel* >( ui->cbValues->currentData() ) );
 

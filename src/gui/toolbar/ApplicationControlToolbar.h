@@ -18,10 +18,13 @@ public:
 signals:
   void requestFullscreen();
   void requestClose();
+  void requestSaveConfig();
 
 private slots:
   void on_pbFullscreen_clicked();
   void on_pbClose_clicked();
+
+  void on_pbSaveConfig_clicked();
 
 private:
   Ui::ApplicationControlToolbar* ui;
