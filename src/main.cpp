@@ -123,12 +123,23 @@ registerEigenTypes() {
   qRegisterMetaType< float >();
   qRegisterMetaType< double >();
   qRegisterMetaType< CalculationOption::Options >();
-
   qRegisterMetaType< Eigen::Vector2d >();
   qRegisterMetaType< Eigen::Vector3d >();
   qRegisterMetaType< Eigen::Vector4d >();
-
   qRegisterMetaType< Eigen::Quaterniond >();
+
+  qRegisterMetaType< const float >();
+  qRegisterMetaType< const double >();
+  qRegisterMetaType< const CalculationOption::Options >();
+  qRegisterMetaType< const Eigen::Vector2d >();
+  qRegisterMetaType< const Eigen::Vector3d >();
+  qRegisterMetaType< const Eigen::Vector4d >();
+  qRegisterMetaType< const Eigen::Quaterniond >();
+
+  qRegisterMetaType< const Eigen::Vector2d& >();
+  qRegisterMetaType< const Eigen::Vector3d& >();
+  qRegisterMetaType< const Eigen::Vector4d& >();
+  qRegisterMetaType< const Eigen::Quaterniond& >();
 
   qRegisterMetaType< std::shared_ptr< std::vector< double > > >();
 }

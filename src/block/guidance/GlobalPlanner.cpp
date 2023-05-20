@@ -406,6 +406,10 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
     : BlockFactory( thread, true ), mainWindow( mainWindow ), location( location ), menu( menu ), tmw( tmw ), rootEntity( rootEntity ) {
   qRegisterMetaType< Plan >();
   qRegisterMetaType< PlanGlobal >();
+  qRegisterMetaType< const Plan >();
+  qRegisterMetaType< const PlanGlobal >();
+  qRegisterMetaType< const Plan& >();
+  qRegisterMetaType< const PlanGlobal& >();
 }
 
 QNEBlock*
