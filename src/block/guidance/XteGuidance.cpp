@@ -3,6 +3,8 @@
 
 #include "XteGuidance.h"
 
+#include "helpers/anglesHelper.h"
+#include "helpers/eigenHelper.h"
 #include "qneblock.h"
 #include "qneport.h"
 
@@ -20,16 +22,24 @@ XteGuidance::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond&
     lastFoundPrimitive = nearestPrimitive;
 
     if( nearestPrimitive != plan.plan->cend() ) {
-      double offsetDistance = std::sqrt( distanceSquared ) * ( *nearestPrimitive )->offsetSign( position2D );
+      double offsetDistance  = std::sqrt( distanceSquared ) * ( *nearestPrimitive )->offsetSign( position2D );
+      auto   taitBryanAngles = quaternionToTaitBryan( orientation );
 
-      Q_EMIT headingOfPathChanged( ( *nearestPrimitive )->angleAtPointDegrees( position2D ), options );
+      double headingOfPathDegrees = ( *nearestPrimitive )->angleAtPointDegrees( position2D );
+
+      Q_EMIT headingOfPathChanged( headingOfPathDegrees, options );
+
+      Q_EMIT headingDifferenceChanged( normalizeAngleDegrees( headingOfPathDegrees - radiansToDegrees( getYaw( taitBryanAngles ) ) ),
+                                       CalculationOption::Option::None );
+
       Q_EMIT curvatureOfPathChanged( ( *nearestPrimitive )->curvature(), options );
       Q_EMIT xteChanged( offsetDistance, options );
       Q_EMIT passNumberChanged( ( *nearestPrimitive )->passNumber, options );
     } else {
       Q_EMIT headingOfPathChanged( std::numeric_limits< double >::infinity(), options );
+      Q_EMIT headingDifferenceChanged( 0, CalculationOption::Option::None );
       Q_EMIT xteChanged( std::numeric_limits< double >::infinity(), options );
-      Q_EMIT curvatureOfPathChanged( 0, options );
+      Q_EMIT curvatureOfPathChanged( std::numeric_limits< double >::infinity(), options );
       Q_EMIT passNumberChanged( std::numeric_limits< double >::infinity(), options );
     }
   }
@@ -45,6 +55,7 @@ void
 XteGuidance::emitConfigSignals() {
   Q_EMIT xteChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
   Q_EMIT headingOfPathChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
+  Q_EMIT headingDifferenceChanged( 0, CalculationOption::Option::None );
   Q_EMIT passNumberChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
 }
 
@@ -59,6 +70,8 @@ XteGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
   b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  b->addOutputPort( QStringLiteral( "Heading Difference" ),
+                    QLatin1String( SIGNAL( headingDifferenceChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
   b->addOutputPort( QStringLiteral( "Curvature of Path" ), QLatin1String( SIGNAL( curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
   b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 

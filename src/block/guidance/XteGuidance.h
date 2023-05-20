@@ -31,6 +31,7 @@ public Q_SLOTS:
 Q_SIGNALS:
   void xteChanged( NUMBER_SIGNATURE_SIGNAL );
   void headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL );
+  void headingDifferenceChanged( NUMBER_SIGNATURE_SIGNAL );
   void curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL );
   void passNumberChanged( NUMBER_SIGNATURE_SIGNAL );
 
