@@ -203,14 +203,21 @@ main( int argc, char** argv ) {
   container->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
 
   // create MainWindow and set the parameters for the docks
-  KDDockWidgets::MainWindowOptions options = KDDockWidgets::MainWindowOption_HasCentralFrame;
+  KDDockWidgets::MainWindowOptions options = KDDockWidgets::MainWindowOption_None /*KDDockWidgets::MainWindowOption_HasCentralFrame*/;
   auto                             flags   = KDDockWidgets::Config::self().flags();
   flags |= KDDockWidgets::Config::Flag_AllowReorderTabs;
-  flags |= KDDockWidgets::Config::Flag_HideTitleBarWhenTabsVisible;
+  //  flags |= KDDockWidgets::Config::Flag_HideTitleBarWhenTabsVisible;
+  //  flags |= KDDockWidgets::Config::Flag_LazyResize;
+  flags |= KDDockWidgets::Config::Flag_AutoHideSupport;
+  flags |= KDDockWidgets::Config::Flag_TitleBarHasMinimizeButton;
+  flags |= KDDockWidgets::Config::Flag_TitleBarHasMaximizeButton;
+  flags |= KDDockWidgets::Config::Flag_TitleBarNoFloatButton;
+
   qDebug() << flags;
   KDDockWidgets::Config::self().setFlags( flags );
+  //  options |= KDDockWidgets::MainWindowOption_HasCentralWidget;
 
-  KDDockWidgets::Config::self().setFrameworkWidgetFactory( new CustomWidgetFactory() ); // Sets our custom factory
+  //  KDDockWidgets::Config::self().setFrameworkWidgetFactory( new CustomWidgetFactory() ); // Sets our custom factory
   //  KDDockWidgets::Config::self().setMinimumSizeOfWidgets( 10, 10 );
 
   auto* mainWindow = new MyMainWindow( QStringLiteral( "QtOpenGuidance" ), options );
@@ -220,7 +227,7 @@ main( int argc, char** argv ) {
   auto* centralDock = new KDDockWidgets::DockWidget( QStringLiteral( "GuidanceView" ), KDDockWidgets::DockWidget::Option_NotClosable );
   centralDock->setWidget( container );
   centralDock->setTitle( QStringLiteral( "Guidance View" ) );
-  mainWindow->addDockWidgetAsTab( centralDock );
+  mainWindow->addDockWidget( centralDock, KDDockWidgets::Location_OnRight );
 
   auto* widget = new QWidget( mainWindow );
 
