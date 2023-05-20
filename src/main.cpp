@@ -262,7 +262,7 @@ main( int argc, char** argv ) {
   QObject::connect( applicationControlToolbar, &ApplicationControlToolbar::requestFullscreen, mainWindow, &MyMainWindow::toggleFullscreen );
 
   // Create setting Window
-  auto* settingDialog = new SettingsDialog(
+  auto* settingsDialog = new SettingsDialog(
     foregroundEntity, middlegroundEntity, backgroundEntity, mainWindow, view, guidanceToolbar->menu, calculationsThread, widget );
 
   // Camera
@@ -441,66 +441,66 @@ main( int argc, char** argv ) {
   // XTE dock
   BlockFactory* xteDockBlockFactory =
     new XteDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnTop, guidanceToolbar->menu );
-  xteDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  xteDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // value dock
   BlockFactory* valueDockBlockFactory =
     new ValueDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  valueDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  valueDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // orientation dock
   BlockFactory* orientationDockBlockFactory =
     new OrientationDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  orientationDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  orientationDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // position dock
   BlockFactory* positionDockBlockFactory =
     new PositionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  positionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  positionDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // value plot dock
   BlockFactory* valuePlotDockBlockFactory =
     new ValuePlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  valuePlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  valuePlotDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // orientation plot dock
   BlockFactory* orientationPlotDockBlockFactory =
     new OrientationPlotDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  orientationPlotDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  orientationPlotDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // action dock
   BlockFactory* actionDockBlockFactory =
     new ActionDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  actionDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  actionDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // slider dock
   BlockFactory* sliderDockBlockFactory =
     new SliderDockBlockFactory( guiThread, mainWindow, KDDockWidgets::Location_OnRight, guidanceToolbar->menu );
-  sliderDockBlockFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+  sliderDockBlockFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // implements
   auto* implementFactory = new ImplementFactory(
-    qt3dThread, mainWindow, KDDockWidgets::Location_OnBottom, guidanceToolbar->menu, settingDialog->implementBlockModel );
-  implementFactory->addToTreeWidget( settingDialog->getBlockTreeWidget() );
+    qt3dThread, mainWindow, KDDockWidgets::Location_OnBottom, guidanceToolbar->menu, settingsDialog->implementBlockModel );
+  implementFactory->addToTreeWidget( settingsDialog->getBlockTreeWidget() );
 
   // camera block
   BlockFactory* cameraControllerFactory = new CameraControllerFactory( qt3dThread, rootRootEntity, cameraEntity );
-  auto*         cameraControllerBlock   = cameraControllerFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
+  auto*         cameraControllerBlock   = cameraControllerFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
   auto*         cameraController        = qobject_cast< CameraController* >( cameraControllerBlock->objects.front() );
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
   view->installEventFilter( cameraControllerBlock->objects.front() );
 
   // grid block
   BlockFactory* gridModelFactory = new GridModelFactory( qt3dThread, middlegroundEntity, cameraEntity );
-  auto*         gridModelBlock   = gridModelFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
+  auto*         gridModelBlock   = gridModelFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
   auto*         gridModel        = qobject_cast< GridModel* >( gridModelBlock->objects.front() );
 
   // FPS measuremend block
   BlockFactory* fpsMeasurementFactory = new FpsMeasurementFactory( qt3dThread, middlegroundEntity );
-  fpsMeasurementFactory->createBlock( settingDialog->getSceneOfConfigGraphicsView() );
+  fpsMeasurementFactory->createBlock( settingsDialog->getSceneOfConfigGraphicsView() );
 
   // Setting Dialog
-  QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings, settingDialog, &SettingsDialog::toggleVisibility );
+  QObject::connect( guidanceToolbar, &GuidanceToolbar::toggleSettings, settingsDialog, &SettingsDialog::toggleVisibility );
 
   // camera dock -> camera controller
   QObject::connect( cameraToolbar, SIGNAL( zoomIn() ), cameraController, SLOT( zoomIn() ) );
@@ -511,11 +511,11 @@ main( int argc, char** argv ) {
   QObject::connect( cameraToolbar, SIGNAL( panRight() ), cameraController, SLOT( panRight() ) );
   QObject::connect( cameraToolbar, SIGNAL( resetCamera() ), cameraController, SLOT( resetCamera() ) );
   QObject::connect( cameraToolbar, SIGNAL( setMode( int ) ), cameraController, SLOT( setMode( int ) ) );
-  QObject::connect( settingDialog, &SettingsDialog::cameraSmoothingChanged, cameraController, &CameraController::setCameraSmoothing );
+  QObject::connect( settingsDialog, &SettingsDialog::cameraSmoothingChanged, cameraController, &CameraController::setCameraSmoothing );
 
   // settings dialog -> grid model
-  QObject::connect( settingDialog, SIGNAL( setGrid( bool ) ), gridModel, SLOT( setGrid( bool ) ) );
-  QObject::connect( settingDialog,
+  QObject::connect( settingsDialog, SIGNAL( setGrid( bool ) ), gridModel, SLOT( setGrid( bool ) ) );
+  QObject::connect( settingsDialog,
                     SIGNAL( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ),
                     gridModel,
                     SLOT( setGridValues( float, float, float, float, float, float, float, QColor, QColor ) ) );
@@ -526,32 +526,34 @@ main( int argc, char** argv ) {
   QObject::connect( guidanceToolbar, &GuidanceToolbar::simulatorChanged, simulatorFrequency, &QWidget::setEnabled );
 
   // connect the signals of the simulator
-  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ), settingDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
-  QObject::connect( simulatorVelocity, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setVelocity( double ) ) );
+  QObject::connect( guidanceToolbar, SIGNAL( simulatorChanged( bool ) ), settingsDialog->poseSimulation, SLOT( setSimulation( bool ) ) );
+  QObject::connect( simulatorVelocity, SIGNAL( valueChanged( double ) ), settingsDialog->poseSimulation, SLOT( setVelocity( double ) ) );
   QObject::connect(
-    simulatorSteeringAngle, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
-  QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ), settingDialog->poseSimulation, SLOT( setFrequency( double ) ) );
+    simulatorSteeringAngle, SIGNAL( valueChanged( double ) ), settingsDialog->poseSimulation, SLOT( setSteerAngle( double ) ) );
+  QObject::connect( simulatorFrequency, SIGNAL( valueChanged( double ) ), settingsDialog->poseSimulation, SLOT( setFrequency( double ) ) );
 
   // passes dock -> global planner block
   QObject::connect( passesToolbar,
                     SIGNAL( passSettingsChanged( int, int, bool, bool ) ),
-                    settingDialog->globalPlanner,
+                    settingsDialog->globalPlanner,
                     SLOT( setPassSettings( int, int, bool, bool ) ) );
-  QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ), settingDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
+  QObject::connect( passesToolbar, SIGNAL( passNumberChanged( int ) ), settingsDialog->globalPlanner, SLOT( setPassNumber( int ) ) );
 
   // field docks -> global planner block
   QObject::connect(
-    fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ), settingDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
-  QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ), settingDialog->fieldManager, SLOT( recordPoint() ) );
+    fieldsToolbar, SIGNAL( continousRecordToggled( bool ) ), settingsDialog->fieldManager, SLOT( setContinousRecord( bool ) ) );
+  QObject::connect( fieldsToolbar, SIGNAL( recordPoint() ), settingsDialog->fieldManager, SLOT( recordPoint() ) );
   QObject::connect( fieldsToolbar,
                     SIGNAL( recordOnEdgeOfImplementChanged( bool ) ),
-                    settingDialog->fieldManager,
+                    settingsDialog->fieldManager,
                     SLOT( recordOnEdgeOfImplementChanged( bool ) ) );
   QObject::connect( fieldsOptimitionToolbar,
                     SIGNAL( recalculateFieldSettingsChanged( FieldsOptimitionToolbar::AlphaType, double, double, double ) ),
-                    settingDialog->fieldManager,
+                    settingsDialog->fieldManager,
                     SLOT( setRecalculateFieldSettings( FieldsOptimitionToolbar::AlphaType, double, double, double ) ) );
-  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ), settingDialog->fieldManager, SLOT( recalculateField() ) );
+  QObject::connect( fieldsOptimitionToolbar, SIGNAL( recalculateField() ), settingsDialog->fieldManager, SLOT( recalculateField() ) );
+  QObject::connect(
+    settingsDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
   QObject::connect(
     settingDialog->fieldManager, SIGNAL( alphaChanged( double, double ) ), fieldsOptimitionToolbar, SLOT( setAlpha( double, double ) ) );
 
@@ -561,7 +563,7 @@ main( int argc, char** argv ) {
   simulatorFrequency->setValue( 20 );
 
   // emit all initial signals from the settings dialog
-  settingDialog->emitAllConfigSignals();
+  settingsDialog->emitAllConfigSignals();
 
   // load states of checkboxes from global config
   {
@@ -574,13 +576,13 @@ main( int argc, char** argv ) {
     simulatorFrequency->setEnabled( simulatorEnabled );
 
     if( settings.value( QStringLiteral( "OpenSettingsDialogOnStart" ), false ).toBool() ) {
-      settingDialog->show();
+      settingsDialog->show();
     }
   }
 
   // start all the tasks of settingDialog on start/exit
-  settingDialog->onStart();
-  QObject::connect( mainWindow, &MyMainWindow::closed, settingDialog, &SettingsDialog::onExit );
+  settingsDialog->onStart();
+  QObject::connect( mainWindow, &MyMainWindow::closed, settingsDialog, &SettingsDialog::onExit );
 
   mainWindow->layout()->update();
   mainWindow->layout()->activate();
