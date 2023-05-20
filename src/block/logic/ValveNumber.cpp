@@ -19,14 +19,14 @@ ValveNumber::setSwitch( const bool value ) {
 }
 
 void
-ValveNumber::setValueA( double number, const CalculationOption::Options ) {
+ValveNumber::setValueA( const double number, const CalculationOption::Options ) {
   if( switchValue == false ) {
     Q_EMIT numberChanged( number, CalculationOption::Option::None );
   }
 }
 
 void
-ValveNumber::setValueB( double number, const CalculationOption::Options ) {
+ValveNumber::setValueB( const double number, const CalculationOption::Options ) {
   if( switchValue == true ) {
     Q_EMIT numberChanged( number, CalculationOption::Option::None );
   }

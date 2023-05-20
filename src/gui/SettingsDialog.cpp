@@ -45,7 +45,8 @@
 #include "block/comparison/ComparisonLessThan.h"
 #include "block/comparison/ComparisonNotEqualTo.h"
 
-#include "block/valves/ValveNumber.h"
+#include "block/logic/SchmittTriggerBlock.h"
+#include "block/logic/ValveNumber.h"
 #include "block/splitter/SplitterImu.h"
 #include "block/splitter/SplitterOrientation.h"
 #include "block/splitter/SplitterPose.h"
@@ -492,6 +493,7 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   factories.emplace_back( new ArithmeticDivisionFactory( calculationsThread ) );
 
   factories.emplace_back( new ValveNumberFactory( calculationsThread ) );
+  factories.emplace_back( new SchmittTriggerBlockFactory( calculationsThread ) );
 
   factories.emplace_back( new SplitterImuFactory( calculationsThread ) );
   factories.emplace_back( new SplitterOrientationFactory( calculationsThread ) );

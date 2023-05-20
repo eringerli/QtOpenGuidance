@@ -37,7 +37,7 @@ public:
 
   QString getPrettyNameOfFactory() override { return QStringLiteral( "Valve for Numbers" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Valves" ); }
+  QString getCategoryOfFactory() override { return QStringLiteral( "Logic" ); }
 
   virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
 };

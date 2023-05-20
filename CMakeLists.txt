@@ -447,6 +447,15 @@ set(SOURCES_converter
 )
 addtounifygroupandsources("${SOURCES_converter}" "simpleblocks")
 
+set(SOURCES_logic
+    # cmake-format: sortable
+    src/block/logic/SchmittTriggerBlock.cpp
+    src/block/logic/SchmittTriggerBlock.h
+    src/block/logic/ValveNumber.cpp
+    src/block/logic/ValveNumber.h
+)
+addtounifygroupandsources("${SOURCES_logic}" "simpleblocks")
+
 set(SOURCES_splitter
     # cmake-format: sortable
     src/block/splitter/SplitterVector.cpp
@@ -640,6 +649,7 @@ set(SOURCES_helpers
     src/helpers/GeographicConvertionWrapper.h
     src/helpers/GeoJsonHelper.cpp
     src/helpers/GeoJsonHelper.h
+    src/helpers/SchmittTrigger.h
     src/helpers/signatures.h
     src/helpers/RateLimiter.cpp
     src/helpers/RateLimiter.h
