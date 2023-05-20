@@ -38,7 +38,7 @@ public Q_SLOTS:
   void onImageRenderedTurnOnTexture();
   void onImageRenderedTurnOffTexture();
 
-private:
+private Q_SLOTS:
   void requestRenderCaptureTurnOnTexture();
   void requestRenderCaptureTurnOffTexture();
 
@@ -66,7 +66,9 @@ private:
 
   TextureRenderTarget*        textureTargetTurnOffTexture = nullptr;
   Qt3DRender::QRenderCapture* renderCaptureTurnOffTexture = nullptr;
-  //  Qt3DRender::QRenderCaptureReply* replyTurnOffTexture         = nullptr;
+
+  Qt3DRender::QRenderCaptureReply* replyTurnOffTexture = nullptr;
+  Qt3DRender::QRenderCaptureReply* replyTurnOnTexture  = nullptr;
 
   QPointer< Implement > implement;
 

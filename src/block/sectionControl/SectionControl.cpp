@@ -41,6 +41,7 @@
 #include "3d/texturerendertarget.h"
 
 #include "helpers/eigenHelper.h"
+#include "qrgba64.h"
 
 // order is important! Crashes if a parent entity is removed first!
 SectionControl::SectionControl( const QString&               uniqueName,
@@ -48,17 +49,18 @@ SectionControl::SectionControl( const QString&               uniqueName,
                                 Qt3DCore::QEntity*           rootEntity,
                                 Qt3DRender::QFrameGraphNode* frameGraphParent )
     : frameGraphParent( frameGraphParent ) {
+  auto* widget = new QWidget( mainWindow );
+
   auto* layout = new QVBoxLayout;
 
-  labelTurnOnTexture = new QLabel();
+  labelTurnOnTexture = new QLabel( widget );
   labelTurnOnTexture->setScaledContents( true );
   layout->addWidget( labelTurnOnTexture );
 
-  labelTurnOffTexture = new QLabel();
+  labelTurnOffTexture = new QLabel( widget );
   labelTurnOffTexture->setScaledContents( true );
   layout->addWidget( labelTurnOffTexture );
 
-  auto* widget = new QWidget( mainWindow );
   widget->setLayout( layout );
 
   dock = new KDDockWidgets::DockWidget( uniqueName );
@@ -123,6 +125,7 @@ SectionControl::SectionControl( const QString&               uniqueName,
   frameGraph = viewport;
 
   requestRenderCaptureTurnOnTexture();
+  requestRenderCaptureTurnOffTexture();
 }
 
 SectionControl::~SectionControl() {
@@ -259,11 +262,11 @@ SectionControl::setLayer( Qt3DRender::QLayer* layer ) {
 
 void
 SectionControl::onImageRenderedTurnOnTexture() {
-  if( sender() ) {
+  if( replyTurnOnTexture ) {
     // Get the image from the reply and display it in the label.
-    labelTurnOnTexture->setPixmap( QPixmap::fromImage( ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image() ) );
+    labelTurnOnTexture->setPixmap( QPixmap::fromImage( replyTurnOnTexture->image() ) );
 
-    auto* rgbData = ( QRgb* )( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().constBits();
+    auto* rgbData = ( QRgb* )replyTurnOnTexture->image().constBits();
 
     constexpr uint8_t numPixelOnToTurnOn = 5;
 
@@ -274,10 +277,10 @@ SectionControl::onImageRenderedTurnOnTexture() {
         const auto sectionPixelOffset = sectionPixelOffsets.at( i );
         uint16_t   sectionPixelMax    = sectionPixelOffset + 10;
 
-        if( sectionPixelMax > ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width() ) {
+        if( sectionPixelMax > replyTurnOnTexture->image().width() ) {
           //        qDebug() << "sectionPixelOffset<(reply->image().width())" <<
           //        sectionPixelMax << ( replyTurnOnTexture->image().width() - 1 );
-          sectionPixelMax = ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width();
+          sectionPixelMax = replyTurnOnTexture->image().width();
         }
 
         uint8_t numPixelOn = 0;
@@ -306,19 +309,19 @@ SectionControl::onImageRenderedTurnOnTexture() {
       implement->emitSectionsChanged();
     }
 
-    sender()->deleteLater();
-
+    replyTurnOnTexture->deleteLater();
+    replyTurnOnTexture = nullptr;
     //  requestRenderCapture();
   }
 }
 
 void
 SectionControl::onImageRenderedTurnOffTexture() {
-  if( sender() ) {
+  if( replyTurnOffTexture ) {
     // Get the image from the reply and display it in the label.
-    labelTurnOffTexture->setPixmap( QPixmap::fromImage( ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image() ) );
+    labelTurnOffTexture->setPixmap( QPixmap::fromImage( replyTurnOffTexture->image() ) );
 
-    auto* rgbData = ( QRgb* )( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().constBits();
+    auto* rgbData = ( QRgb* )replyTurnOffTexture->image().constBits();
 
     constexpr uint8_t numPixelOnToTurnOff = 5;
 
@@ -329,10 +332,10 @@ SectionControl::onImageRenderedTurnOffTexture() {
         const auto sectionPixelOffset = sectionPixelOffsets.at( i );
         uint16_t   sectionPixelMax    = sectionPixelOffset + 10;
 
-        if( sectionPixelMax > ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width() ) {
+        if( sectionPixelMax > replyTurnOffTexture->image().width() ) {
           //        qDebug() << "sectionPixelOffset<(reply->image().width())" <<
           //        sectionPixelMax << ( replyTurnOffTexture->image().width() - 1 );
-          sectionPixelMax = ( ( Qt3DRender::QRenderCaptureReply* )sender() )->image().width();
+          sectionPixelMax = replyTurnOffTexture->image().width();
         }
 
         uint8_t numPixelOn = 0;
@@ -361,7 +364,8 @@ SectionControl::onImageRenderedTurnOffTexture() {
       implement->emitSectionsChanged();
     }
 
-    sender()->deleteLater();
+    replyTurnOffTexture->deleteLater();
+    replyTurnOffTexture = nullptr;
   }
 }
 
@@ -371,8 +375,11 @@ SectionControl::requestRenderCaptureTurnOnTexture() {
   //    replyTurnOnTexture->deleteLater();
   //  }
 
-  auto replyTurnOnTexture = renderCaptureTurnOnTexture->requestCapture();
-  QObject::connect( replyTurnOnTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOnTexture );
+  if( replyTurnOnTexture == nullptr ) {
+    replyTurnOnTexture = renderCaptureTurnOnTexture->requestCapture();
+    QObject::connect(
+      replyTurnOnTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOnTexture );
+  }
 }
 
 void
@@ -381,9 +388,11 @@ SectionControl::requestRenderCaptureTurnOffTexture() {
   //    replyTurnOffTexture->deleteLater();
   //  }
 
-  auto replyTurnOffTexture = renderCaptureTurnOffTexture->requestCapture();
-  QObject::connect(
-    replyTurnOffTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOffTexture );
+  if( replyTurnOffTexture == nullptr ) {
+    replyTurnOffTexture = renderCaptureTurnOffTexture->requestCapture();
+    QObject::connect(
+      replyTurnOffTexture, &Qt3DRender::QRenderCaptureReply::completed, this, &SectionControl::onImageRenderedTurnOffTexture );
+  }
 }
 
 QNEBlock*
