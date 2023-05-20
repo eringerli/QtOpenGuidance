@@ -132,8 +132,10 @@ LocalPlanner::setPoseLast( const Eigen::Vector3d&           position,
           const auto step = sequence->findSequencePrimitiveIndex( position2D );
 
           if( step >= ( sequence->sequence.size() - 1 ) ) {
-            turningLeft  = false;
-            turningRight = false;
+            turningLeft               = false;
+            turningRight              = false;
+            targetPrimitiveGlobalPlan = nullptr;
+
             Q_EMIT resetTurningStateOfDock();
 
             setPose( position, orientation, options );

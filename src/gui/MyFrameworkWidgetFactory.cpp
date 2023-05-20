@@ -4,7 +4,7 @@
 #include "MyFrameworkWidgetFactory.h"
 
 #include <kddockwidgets/FrameworkWidgetFactory.h>
-//#include <kddockwidgets/widgets/SeparatorWidget_p.h>
+// #include <kddockwidgets/widgets/SeparatorWidget_p.h>
 #include <QApplication>
 
 class MyTitleBar : public KDDockWidgets::TitleBar {

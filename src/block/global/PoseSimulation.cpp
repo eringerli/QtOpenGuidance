@@ -32,16 +32,16 @@
 // http://correll.cs.colorado.edu/?p=1869
 // https://github.com/correll/Introduction-to-Autonomous-Robots/releases
 
-//#include <CGAL/Constrained_triangulation_plus_2.h>
+// #include <CGAL/Constrained_triangulation_plus_2.h>
 
-//#include <CGAL/Triangulation_vertex_base_with_info_2.h>
-//#include <CGAL/Triangulation_face_base_with_info_2.h>
+// #include <CGAL/Triangulation_vertex_base_with_info_2.h>
+// #include <CGAL/Triangulation_face_base_with_info_2.h>
 
 #include <CGAL/boost/graph/graph_traits_Delaunay_triangulation_2.h>
 #include <cmath>
-//#include <CGAL/boost/graph/graph_traits_Triangulation_data_structure_2.h>
-//#include <CGAL/boost/graph/graph_traits_Constrained_triangulation_plus_2.h>
-//#include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
+// #include <CGAL/boost/graph/graph_traits_Triangulation_data_structure_2.h>
+// #include <CGAL/boost/graph/graph_traits_Constrained_triangulation_plus_2.h>
+// #include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
 
 PoseSimulation::PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : mainWindow( mainWindow ), tmw( tmw ) {
   state.setZero();
@@ -457,6 +457,10 @@ PoseSimulation::setInitialWGS84Position( const Eigen::Vector3d& position, const 
 void
 PoseSimulation::autosteerEnabled( bool enabled ) {
   m_autosteerEnabled = enabled;
+
+  //  if( enabled ) {
+  //    m_steerAngleAutosteerSlewRateLimiter.reset();
+  //  }
 }
 
 void

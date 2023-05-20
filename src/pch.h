@@ -21,10 +21,10 @@
 #ifdef __cplusplus
 
   #include <algorithm>
-//#include "helpers/cgalHelper.h"
-//#include "helpers/eigenHelper.h"
-//#include "kinematic/cgal.h"
-//#include "kinematic/cgalKernel.h"
+// #include "helpers/cgalHelper.h"
+// #include "helpers/eigenHelper.h"
+// #include "kinematic/cgal.h"
+// #include "kinematic/cgalKernel.h"
   #include <Eigen/Geometry>
   #include <GeographicLib/Ellipsoid.hpp>
   #include <GeographicLib/LocalCartesian.hpp>

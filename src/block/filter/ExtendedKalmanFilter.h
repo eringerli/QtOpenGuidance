@@ -26,14 +26,11 @@ public:
   explicit ExtendedKalmanFilter();
 
 public Q_SLOTS:
-  void setPosition( POSITION_SIGNATURE_SLOT );
+  void setPosition( VECTOR_SIGNATURE_SLOT );
 
-  void setVelocity3D( const Eigen::Vector3d& velocity3D );
+  void setVelocity3D( VECTOR_SIGNATURE_SLOT );
 
-  void setImuData( const double              dT,
-                   const Eigen::Quaterniond& orientation,
-                   const Eigen::Vector3d&    accelerometerData,
-                   const Eigen::Vector3d&    gyroData );
+  void setImuData( IMU_SIGNATURE_SLOT );
 
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
 

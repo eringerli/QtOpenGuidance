@@ -108,13 +108,13 @@ SdlInputPollingThread::run() {
           //          obj.Set( "timestamp", event.jaxis.timestamp );
           //          obj.Set( "value", event.jaxis.value );
 
-          //#if SDL_VERSION_ATLEAST( 2, 0, 12 )
-          //          gc = gamecontrollers[event.jaxis.which];
-          //          if( gc ) {
-          //            auto player = SDL_GameControllerGetPlayerIndex( gc );
-          //            obj.Set( "player", player );
-          //          }
-          //#endif
+          // #if SDL_VERSION_ATLEAST( 2, 0, 12 )
+          //           gc = gamecontrollers[event.jaxis.which];
+          //           if( gc ) {
+          //             auto player = SDL_GameControllerGetPlayerIndex( gc );
+          //             obj.Set( "player", player );
+          //           }
+          // #endif
 
           //          emit( { Napi::String::New( env, gcBtn ), obj } );
           //          emit( { Napi::String::New( env, "controller-axis-motion" ), obj } );

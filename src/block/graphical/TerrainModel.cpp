@@ -71,7 +71,7 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/graph_traits_Surface_mesh.h>
 
-//#include <CGAL/Polygon_mesh_processing/locate.h>
+// #include <CGAL/Polygon_mesh_processing/locate.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 namespace PMP           = CGAL::Polygon_mesh_processing;
 using vertex_descriptor = boost::graph_traits< SurfaceMesh_3 >::vertex_descriptor;

@@ -75,9 +75,9 @@ private:
   double steerAngleThresholdRad = degreesToRadians( 0.5 );
 
   double steerAngleRadians = 0;
-  double velocity   = 0;
+  double velocity          = 0;
 
-  double weight = 1;
+  double weight                       = 1;
   double maxSlewRateSteeringRadPerSec = degreesToRadians( 32. );
 
   Plan                         plan;

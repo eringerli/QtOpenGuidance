@@ -36,26 +36,26 @@ ExtendedKalmanFilter::setPosition( const Eigen::Vector3d&, const CalculationOpti
 }
 
 void
-ExtendedKalmanFilter::setVelocity3D( const Eigen::Vector3d& velocity3D ) {
+ExtendedKalmanFilter::setVelocity3D( const Eigen::Vector3d& velocity3D, const CalculationOption::Options ) {
   this->velocity3D = velocity3D;
 }
 
 void
-ExtendedKalmanFilter::setImuData( const double              dT,
-                                  const Eigen::Quaterniond& orientation,
-                                  const Eigen::Vector3d&    accelerometerData,
-                                  const Eigen::Vector3d&    gyroData ) {
-  predict();
+ExtendedKalmanFilter::setImuData( const double           dT,
+                                  const Eigen::Vector3d& accelerometerData,
+                                  const Eigen::Vector3d& gyroData,
+                                  const Eigen::Vector3d& magnetometerData ) {
+  //  predict();
 
-  auto taitBryan = quaternionToTaitBryan( orientation );
+  //  auto taitBryan = quaternionToTaitBryan( orientation );
 
-  KinematicModel::ImuMeasurementVector< double > measurement;
-  measurement << normalizeAngleRadians( taitBryan.x() ), normalizeAngleRadians( taitBryan.y() ), normalizeAngleRadians( taitBryan.z() ),
-    gyroData.x(), gyroData.y(), gyroData.z(), accelerometerData.x(), accelerometerData.y(), accelerometerData.z();
+  //  KinematicModel::ImuMeasurementVector< double > measurement;
+  //  measurement << normalizeAngleRadians( taitBryan.x() ), normalizeAngleRadians( taitBryan.y() ), normalizeAngleRadians( taitBryan.z() ),
+  //    gyroData.x(), gyroData.y(), gyroData.z(), accelerometerData.x(), accelerometerData.y(), accelerometerData.z();
 
-  ekf.update( imuMeasumentModel, measurement );
+  //  ekf.update( imuMeasumentModel, measurement );
 
-  emitPoseFromEKF();
+  //  emitPoseFromEKF();
 }
 
 void
@@ -98,12 +98,10 @@ ExtendedKalmanFilterFactory::createBlock( QGraphicsScene* scene, int id ) {
   auto* b   = createBaseBlock( scene, obj, id );
   obj->moveToThread( thread );
 
-  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( POSITION_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );
   b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SLOT( setVelocity3D( const Eigen::Vector3d& ) ) ) );
-  b->addInputPort(
-    QStringLiteral( "IMU Data" ),
-    QLatin1String( SLOT( setImuData( const double, const Eigen::Quaterniond&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
+  b->addInputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SLOT( setVelocity3D( VECTOR_SIGNATURE ) ) ) );
+  b->addInputPort( QStringLiteral( "IMU Data" ), QLatin1String( SLOT( setImuData( IMU_SIGNATURE ) ) ) );
 
   b->addInputPort( QStringLiteral( "Orientation Correction" ), QLatin1String( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
 

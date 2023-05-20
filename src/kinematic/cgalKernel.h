@@ -5,7 +5,7 @@
 
 #pragma once
 
-//#ifndef __clang_analyzer__
+// #ifndef __clang_analyzer__
 
 // standard includes
 #include <cassert>
@@ -50,4 +50,4 @@ using Epeck = CGAL::Exact_predicates_exact_constructions_kernel;
 
 using EpickEpeckConverter = CGAL::Cartesian_converter< Epick, Epeck >;
 
-//#endif // not __clang_analyzer__
+// #endif // not __clang_analyzer__

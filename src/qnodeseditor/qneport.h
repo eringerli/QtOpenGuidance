@@ -43,14 +43,14 @@ public:
   QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
   ~QNEPort();
 
-  void                           setNEBlock( QNEBlock* );
-  void                           setName( const QString& n ) const;
-  QString                        getName() const;
-  void                           setIsOutput( bool o );
+  void                                 setNEBlock( QNEBlock* );
+  void                                 setName( const QString& n ) const;
+  QString                              getName() const;
+  void                                 setIsOutput( bool o );
   bool                                 isOutput() const;
   std::vector< QNEConnection* >&       connections();
   const std::vector< QNEConnection* >& connections() const;
-  void                           setPortFlags( int );
+  void                                 setPortFlags( int );
 
   void contentsChanged();
 

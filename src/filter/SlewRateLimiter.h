@@ -14,6 +14,14 @@ public:
   explicit SlewRateLimiter( T slewRate ) : slewRate( slewRate ), previousValue( T( 0 ) ) {}
 
   T set( const T input, const T dT ) {
+    if( resetFlag ) {
+      previousValue = input;
+
+      resetFlag = false;
+
+      return input;
+    }
+
     if( input != std::numeric_limits< double >::infinity() ) {
       T change = std::clamp( input - previousValue, -slewRate * dT, slewRate * dT );
       previousValue += change;
@@ -23,8 +31,12 @@ public:
     return 0;
   }
 
+  void reset() { resetFlag = true; }
+
 public:
   T previousValue = 0;
   T remainder     = 0;
   T slewRate      = 100;
+
+  bool resetFlag = false;
 };

@@ -21,11 +21,11 @@ ValueTransmissionQuaternion::ValueTransmissionQuaternion( uint16_t cid ) : Value
 void
 ValueTransmissionQuaternion::setQuaternion( const Eigen::Quaterniond& quaternion, const CalculationOption::Options ) {
   QCborMap map;
-  map[QStringLiteral( "cid" )]       = cid;
-  map[QStringLiteral( "x" )]         = quaternion.x();
-  map[QStringLiteral( "y" )]         = quaternion.y();
-  map[QStringLiteral( "z" )]         = quaternion.z();
-  map[QStringLiteral( "w" )]         = quaternion.w();
+  map[QStringLiteral( "cid" )] = cid;
+  map[QStringLiteral( "x" )]   = quaternion.x();
+  map[QStringLiteral( "y" )]   = quaternion.y();
+  map[QStringLiteral( "z" )]   = quaternion.z();
+  map[QStringLiteral( "w" )]   = quaternion.w();
 
   Q_EMIT dataToSend( QCborValue( std::move( map ) ).toCbor() );
 }
