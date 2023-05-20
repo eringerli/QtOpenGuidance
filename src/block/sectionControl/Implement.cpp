@@ -54,7 +54,7 @@ Implement::emitConfigSignals() {
 }
 
 QJsonObject
-Implement::toJSON() {
+Implement::toJSON() const {
   if( sections.size() > 1 ) {
     QJsonArray array;
 

@@ -45,7 +45,7 @@ class PathPlannerModel : public BlockBase {
 public:
   explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity );
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
   void refreshColors();

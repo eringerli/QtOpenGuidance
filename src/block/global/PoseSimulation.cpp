@@ -318,7 +318,7 @@ PoseSimulation::emitConfigSignals() {
 }
 
 QJsonObject
-PoseSimulation::toJSON() {
+PoseSimulation::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "a" )]                 = this->a;

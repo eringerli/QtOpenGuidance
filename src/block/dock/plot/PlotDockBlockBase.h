@@ -22,15 +22,15 @@ public:
 
   virtual ~PlotDockBlockBase();
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
 public:
-  bool          getXAxisVisible();
-  bool          getYAxisVisible();
-  const QString getYAxisDescription();
-  bool          getAutoscrollEnabled();
-  double        getWindow();
+  bool          getXAxisVisible() const;
+  bool          getYAxisVisible() const;
+  const QString getYAxisDescription() const;
+  bool          getAutoscrollEnabled() const;
+  double        getWindow() const;
 
   void setXAxisVisible( const bool visible );
   void setYAxisVisible( const bool visible );

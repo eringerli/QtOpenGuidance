@@ -54,8 +54,8 @@ public:
 
   void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-  void toJSON( QJsonObject& json );
-  void fromJSON( QJsonObject& json ) const;
+  void toJSON( QJsonObject& json ) const;
+  void fromJSON( QJsonObject& json );
 
   int type() const override { return Type; }
 

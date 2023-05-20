@@ -27,7 +27,7 @@ public:
 
   void emitConfigSignals() override;
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
   void emitImplementChanged();

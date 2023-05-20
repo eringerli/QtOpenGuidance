@@ -22,7 +22,7 @@ class CameraController : public BlockBase {
 public:
   explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity );
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
 protected:

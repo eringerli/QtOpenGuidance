@@ -12,7 +12,7 @@ KDDockWidgets::DockWidget* ValueDockBlockBase::firstValueDock       = nullptr;
 KDDockWidgets::DockWidget* ValueDockBlockBase::firstThreeValuesDock = nullptr;
 
 QJsonObject
-ValueDockBlockBase::toJSON() {
+ValueDockBlockBase::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "Font" )]        = QJsonValue::fromVariant( QVariant( getFont() ) );

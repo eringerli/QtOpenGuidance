@@ -24,7 +24,7 @@ public:
 
   virtual void emitConfigSignals() override;
 
-  virtual QJsonObject toJSON() override;
+  virtual QJsonObject toJSON() const override;
   virtual void        fromJSON( QJsonObject& ) override;
 
 public Q_SLOTS:

@@ -21,12 +21,12 @@ public:
 
   ~XteDockBlock();
 
-  virtual const QFont&   getFont() override;
-  virtual int            getPrecision() override;
-  virtual int            getFieldWidth() override;
-  virtual double         getScale() override;
-  virtual bool           unitVisible() override;
-  virtual const QString& getUnit() override;
+  virtual const QFont&   getFont() const override;
+  virtual int            getPrecision() const override;
+  virtual int            getFieldWidth() const override;
+  virtual double         getScale() const override;
+  virtual bool           unitVisible() const override;
+  virtual const QString& getUnit() const override;
 
   virtual void setFont( const QFont& font ) override;
   virtual void setPrecision( const int precision ) override;

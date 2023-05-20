@@ -17,7 +17,7 @@ class ValueTransmissionBase : public BlockBase {
 public:
   explicit ValueTransmissionBase( const uint16_t cid );
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
 public Q_SLOTS:

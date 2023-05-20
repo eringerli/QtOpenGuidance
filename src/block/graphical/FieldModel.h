@@ -44,7 +44,7 @@ class FieldModel : public BlockBase {
 public:
   explicit FieldModel( Qt3DCore::QEntity* rootEntity );
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
   void refreshColors();

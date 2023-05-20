@@ -41,7 +41,7 @@ CameraController::CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::Q
 }
 
 QJsonObject
-CameraController::toJSON() {
+CameraController::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "lenghtToViewCenter" )]   = lenghtToViewCenter;

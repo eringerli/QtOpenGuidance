@@ -42,32 +42,32 @@ XteDockBlock::setXte( const double xte, CalculationOption::Options options ) {
 }
 
 const QFont&
-XteDockBlock::getFont() {
+XteDockBlock::getFont() const {
   return widget->fontOfLabel();
 }
 
 int
-XteDockBlock::getPrecision() {
+XteDockBlock::getPrecision()const{
   return widget->precision;
 }
 
 int
-XteDockBlock::getFieldWidth() {
+XteDockBlock::getFieldWidth() const {
   return widget->fieldWidth;
 }
 
 double
-XteDockBlock::getScale() {
+XteDockBlock::getScale() const {
   return widget->scale;
 }
 
 bool
-XteDockBlock::unitVisible() {
+XteDockBlock::unitVisible() const {
   return widget->unitEnabled;
 }
 
 const QString&
-XteDockBlock::getUnit() {
+XteDockBlock::getUnit() const {
   return widget->unit;
 }
 

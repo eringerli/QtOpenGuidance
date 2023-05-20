@@ -224,7 +224,7 @@ QNEBlock::addObject( QObject* object ) {
 }
 
 void
-QNEBlock::toJSON( QJsonObject& json ) {
+QNEBlock::toJSON( QJsonObject& json ) const {
   QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
   QJsonObject blockObject;
@@ -254,7 +254,7 @@ QNEBlock::toJSON( QJsonObject& json ) {
 }
 
 void
-QNEBlock::fromJSON( QJsonObject& json ) const {
+QNEBlock::fromJSON( QJsonObject& json ) {
   if( json[QStringLiteral( "values" )].isObject() ) {
     auto jsonValue = json[QStringLiteral( "values" )].toObject();
     qobject_cast< BlockBase* >( objects.front() )->fromJSON( jsonValue );

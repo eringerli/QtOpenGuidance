@@ -48,7 +48,7 @@ class TerrainModel : public BlockBase {
 public:
   explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
   void refreshColors();

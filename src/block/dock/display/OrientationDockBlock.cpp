@@ -28,32 +28,32 @@ OrientationDockBlock::~OrientationDockBlock() {
 }
 
 const QFont&
-OrientationDockBlock::getFont() {
+OrientationDockBlock::getFont() const {
   return widget->fontOfLabel();
 }
 
 int
-OrientationDockBlock::getPrecision() {
+OrientationDockBlock::getPrecision() const {
   return widget->precision;
 }
 
 int
-OrientationDockBlock::getFieldWidth() {
+OrientationDockBlock::getFieldWidth() const {
   return widget->fieldWidth;
 }
 
 double
-OrientationDockBlock::getScale() {
+OrientationDockBlock::getScale() const {
   return widget->scale;
 }
 
 bool
-OrientationDockBlock::unitVisible() {
+OrientationDockBlock::unitVisible() const {
   return widget->unitEnabled;
 }
 
 const QString&
-OrientationDockBlock::getUnit() {
+OrientationDockBlock::getUnit() const {
   return widget->unit;
 }
 

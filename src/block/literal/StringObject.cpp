@@ -17,7 +17,7 @@ StringObject::emitConfigSignals() {
 }
 
 QJsonObject
-StringObject::toJSON() {
+StringObject::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "String" )] = string;
   return valuesObject;

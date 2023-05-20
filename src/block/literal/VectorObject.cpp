@@ -18,7 +18,7 @@ VectorObject::emitConfigSignals() {
 }
 
 QJsonObject
-VectorObject::toJSON() {
+VectorObject::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = vector.x();
   valuesObject[QStringLiteral( "Y" )] = vector.y();

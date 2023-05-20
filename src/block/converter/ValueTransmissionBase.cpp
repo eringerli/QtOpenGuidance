@@ -14,7 +14,7 @@ ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid ) : BlockBase()
 }
 
 QJsonObject
-ValueTransmissionBase::toJSON() {
+ValueTransmissionBase::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "cid" )]           = cid;
   valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;

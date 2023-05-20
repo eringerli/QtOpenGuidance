@@ -18,7 +18,7 @@ OrientationBlock::emitConfigSignals() {
 }
 
 QJsonObject
-OrientationBlock::toJSON() {
+OrientationBlock::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "X" )] = orientation.x();
   valuesObject[QStringLiteral( "Y" )] = orientation.y();

@@ -46,7 +46,7 @@ SliderDockBlock::emitConfigSignals() {
 }
 
 QJsonObject
-SliderDockBlock::toJSON() {
+SliderDockBlock::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "Value" )]          = widget->getValue();
   valuesObject[QStringLiteral( "Decimals" )]       = widget->getDecimals();

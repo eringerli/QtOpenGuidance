@@ -29,7 +29,7 @@ PlotDockBlockBase::~PlotDockBlockBase() {
 }
 
 QJsonObject
-PlotDockBlockBase::toJSON() {
+PlotDockBlockBase::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "XAxisVisible" )]      = getXAxisVisible();
@@ -51,27 +51,27 @@ PlotDockBlockBase::fromJSON( QJsonObject& valuesObject ) {
 }
 
 bool
-PlotDockBlockBase::getXAxisVisible() {
+PlotDockBlockBase::getXAxisVisible() const {
   return widget->getQCustomPlotWidget()->xAxis->visible();
 }
 
 bool
-PlotDockBlockBase::getYAxisVisible() {
+PlotDockBlockBase::getYAxisVisible() const {
   return widget->getQCustomPlotWidget()->yAxis->visible();
 }
 
 const QString
-PlotDockBlockBase::getYAxisDescription() {
+PlotDockBlockBase::getYAxisDescription() const {
   return widget->getQCustomPlotWidget()->yAxis->label();
 }
 
 bool
-PlotDockBlockBase::getAutoscrollEnabled() {
+PlotDockBlockBase::getAutoscrollEnabled() const {
   return autoScrollEnabled;
 }
 
 double
-PlotDockBlockBase::getWindow() {
+PlotDockBlockBase::getWindow() const {
   return window;
 }
 

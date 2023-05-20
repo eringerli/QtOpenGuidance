@@ -18,16 +18,16 @@ public:
 
   virtual ~ValueDockBlockBase() { dock->deleteLater(); }
 
-  QJsonObject toJSON() override;
+  QJsonObject toJSON() const override;
   void        fromJSON( QJsonObject& ) override;
 
 public:
-  virtual const QFont&   getFont()       = 0;
-  virtual int            getPrecision()  = 0;
-  virtual int            getFieldWidth() = 0;
-  virtual double         getScale()      = 0;
-  virtual bool           unitVisible()   = 0;
-  virtual const QString& getUnit()       = 0;
+  virtual const QFont&   getFont() const       = 0;
+  virtual int            getPrecision() const  = 0;
+  virtual int            getFieldWidth() const = 0;
+  virtual double         getScale() const      = 0;
+  virtual bool           unitVisible() const   = 0;
+  virtual const QString& getUnit() const       = 0;
 
   virtual void setFont( const QFont& )   = 0;
   virtual void setPrecision( int )       = 0;

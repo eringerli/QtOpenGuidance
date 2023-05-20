@@ -30,7 +30,7 @@ public:
 
   virtual void emitConfigSignals() {}
 
-  virtual QJsonObject toJSON() { return QJsonObject(); }
+  virtual QJsonObject toJSON() const { return QJsonObject(); }
   virtual void        fromJSON( QJsonObject& ) {}
 
   virtual void setName( const QString& ) {}

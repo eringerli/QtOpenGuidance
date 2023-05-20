@@ -28,32 +28,32 @@ PositionDockBlock::~PositionDockBlock() {
 }
 
 const QFont&
-PositionDockBlock::getFont() {
+PositionDockBlock::getFont() const {
   return widget->fontOfLabel();
 }
 
 int
-PositionDockBlock::getPrecision() {
+PositionDockBlock::getPrecision()const{
   return widget->precision;
 }
 
 int
-PositionDockBlock::getFieldWidth() {
+PositionDockBlock::getFieldWidth() const {
   return widget->fieldWidth;
 }
 
 double
-PositionDockBlock::getScale() {
+PositionDockBlock::getScale() const {
   return widget->scale;
 }
 
 bool
-PositionDockBlock::unitVisible() {
+PositionDockBlock::unitVisible() const {
   return widget->unitEnabled;
 }
 
 const QString&
-PositionDockBlock::getUnit() {
+PositionDockBlock::getUnit() const {
   return widget->unit;
 }
 

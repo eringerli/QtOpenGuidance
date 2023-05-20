@@ -17,7 +17,7 @@ NumberObject::emitConfigSignals() {
 }
 
 QJsonObject
-NumberObject::toJSON() {
+NumberObject::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "Number" )] = number;
   return valuesObject;

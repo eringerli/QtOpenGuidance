@@ -119,7 +119,7 @@ TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) : usePB
 }
 
 QJsonObject
-TerrainModel::toJSON() {
+TerrainModel::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "visible" )]      = visible;

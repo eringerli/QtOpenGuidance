@@ -26,13 +26,13 @@ public:
   void setUnit( const QString& unit );
   void setSliderInverted( const bool inverted );
 
-  double        getValue();
-  int           getDecimals();
-  double        getMaximum();
-  double        getMinimum();
+  double        getValue() const;
+  int           getDecimals() const;
+  double        getMaximum() const;
+  double        getMinimum() const;
   double        getDefaultValue() const;
-  const QString getUnit();
-  bool          getSliderInverted();
+  const QString getUnit() const;
+  bool          getSliderInverted() const;
 
 private Q_SLOTS:
   void on_slValue_valueChanged( int value );

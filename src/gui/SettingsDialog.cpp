@@ -780,19 +780,19 @@ SettingsDialog::on_pbSaveSelected_clicked() {
 void
 SettingsDialog::saveConfigToFile( QFile& file ) {
   QJsonObject jsonObject;
-  QJsonArray  blocks;
-  QJsonArray  connections;
-  jsonObject[QStringLiteral( "blocks" )]      = blocks;
-  jsonObject[QStringLiteral( "connections" )] = connections;
+  jsonObject[QStringLiteral( "blocks" )]      = QJsonArray();
+  jsonObject[QStringLiteral( "connections" )] = QJsonArray();
+
+  std::vector< QNEBlock* >      blocks;
+  std::vector< QNEConnection* > connections;
 
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
-
   for( const auto& item : constRefOfList ) {
     {
       auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
       if( block != nullptr ) {
-        block->toJSON( jsonObject );
+        blocks.push_back( block );
       }
     }
 
@@ -800,9 +800,29 @@ SettingsDialog::saveConfigToFile( QFile& file ) {
       auto* connection = qgraphicsitem_cast< QNEConnection* >( item );
 
       if( connection != nullptr ) {
-        connection->toJSON( jsonObject );
+        connections.push_back( connection );
       }
     }
+  }
+
+  std::sort( blocks.begin(), blocks.end(), []( QNEBlock* first, QNEBlock* second ) { return first->id < second->id; } );
+
+  std::sort( connections.begin(), connections.end(), []( QNEConnection* first, QNEConnection* second ) {
+    if( first->port1()->block()->id == second->port1()->block()->id ) {
+      if( first->port2()->block()->id == second->port2()->block()->id ) {
+        return first->port2()->getName() < second->port2()->getName();
+      }
+      return first->port2()->block()->id < second->port2()->block()->id;
+    }
+    return first->port1()->block()->id < second->port1()->block()->id;
+  } );
+
+  for( const auto* block : blocks ) {
+    block->toJSON( jsonObject );
+  }
+
+  for( const auto* connection : connections ) {
+    connection->toJSON( jsonObject );
   }
 
   QJsonDocument jsonDocument( jsonObject );

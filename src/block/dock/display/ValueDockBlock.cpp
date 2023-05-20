@@ -41,32 +41,32 @@ ValueDockBlock::~ValueDockBlock() {
 }
 
 const QFont&
-ValueDockBlock::getFont() {
+ValueDockBlock::getFont() const {
   return widget->fontOfLabel();
 }
 
 int
-ValueDockBlock::getPrecision() {
+ValueDockBlock::getPrecision()const{
   return widget->precision;
 }
 
 int
-ValueDockBlock::getFieldWidth() {
+ValueDockBlock::getFieldWidth() const {
   return widget->fieldWidth;
 }
 
 double
-ValueDockBlock::getScale() {
+ValueDockBlock::getScale() const {
   return widget->scale;
 }
 
 bool
-ValueDockBlock::unitVisible() {
+ValueDockBlock::unitVisible() const {
   return widget->unitEnabled;
 }
 
 const QString&
-ValueDockBlock::getUnit() {
+ValueDockBlock::getUnit() const {
   return widget->unit;
 }
 

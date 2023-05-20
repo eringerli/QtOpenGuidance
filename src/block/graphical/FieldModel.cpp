@@ -85,7 +85,7 @@ FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity ) {
 }
 
 QJsonObject
-FieldModel::toJSON() {
+FieldModel::toJSON() const {
   QJsonObject valuesObject;
 
   valuesObject[QStringLiteral( "visible" )]        = visible;

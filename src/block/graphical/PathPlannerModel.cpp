@@ -108,7 +108,7 @@ PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) {
 }
 
 QJsonObject
-PathPlannerModel::toJSON() {
+PathPlannerModel::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "visible" )]                = visible;
   valuesObject[QStringLiteral( "zOffset" )]                = zOffset;

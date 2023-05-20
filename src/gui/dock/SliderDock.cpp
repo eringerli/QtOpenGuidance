@@ -71,22 +71,22 @@ SliderDock::setSliderInverted( bool inverted ) {
 }
 
 double
-SliderDock::getValue() {
+SliderDock::getValue() const {
   return ui->dsbValue->value();
 }
 
 int
-SliderDock::getDecimals() {
+SliderDock::getDecimals() const {
   return ui->dsbValue->decimals();
 }
 
 double
-SliderDock::getMaximum() {
+SliderDock::getMaximum() const {
   return ui->dsbValue->maximum();
 }
 
 double
-SliderDock::getMinimum() {
+SliderDock::getMinimum() const {
   return ui->dsbValue->minimum();
 }
 
@@ -96,12 +96,12 @@ SliderDock::getDefaultValue() const {
 }
 
 const QString
-SliderDock::getUnit() {
+SliderDock::getUnit() const {
   return ui->dsbValue->suffix();
 }
 
 bool
-SliderDock::getSliderInverted() {
+SliderDock::getSliderInverted() const {
   return ui->slValue->invertedControls();
 }
 

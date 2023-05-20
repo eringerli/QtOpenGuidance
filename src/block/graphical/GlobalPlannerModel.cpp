@@ -137,7 +137,7 @@ GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity ) {
 }
 
 QJsonObject
-GlobalPlannerModel::toJSON() {
+GlobalPlannerModel::toJSON() const {
   QJsonObject valuesObject;
   valuesObject[QStringLiteral( "visible" )]     = visible;
   valuesObject[QStringLiteral( "sizeOfPoint" )] = sizeOfPoint;
