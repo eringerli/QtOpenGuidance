@@ -46,7 +46,7 @@ public:
   // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
   QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
 
-  ~QNEBlock();
+  virtual ~QNEBlock();
 
   QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0, bool embedded = false );
   void     addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
@@ -54,8 +54,8 @@ public:
 
   void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-  void toJSON( QJsonObject& json ) const;
-  void fromJSON( QJsonObject& json );
+  QJsonObject toJSON() const;
+  void        fromJSON( QJsonObject& json );
 
   int type() const override { return Type; }
 
@@ -95,8 +95,6 @@ protected:
   void     mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
 
 private:
-  qreal   width  = 0;
-  qreal   height = 0;
   QString name;
 
 public:

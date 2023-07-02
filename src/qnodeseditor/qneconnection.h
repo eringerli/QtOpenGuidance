@@ -39,7 +39,7 @@ public:
   enum { Type = QGraphicsItem::UserType + 2 };
 
   QNEConnection( QGraphicsItem* parent = nullptr );
-  ~QNEConnection();
+  virtual ~QNEConnection();
 
   void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
@@ -55,7 +55,7 @@ public:
 
   int type() const override { return Type; }
 
-  void toJSON( QJsonObject& json ) const;
+  QJsonObject toJSON() const;
 
   void highlight( bool highlight );
 

@@ -52,19 +52,21 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
 
 QNEConnection::~QNEConnection() {
   if( m_port1 != nullptr ) {
-    for( auto it = m_port1->connections().cbegin(), end = m_port1->connections().cend(); it != end; ++it ) {
+    for( auto it = m_port1->portConnections.begin(); it != m_port1->portConnections.end(); ) {
       if( ( *it ) == this ) {
-        m_port1->connections().erase( it );
-        break;
+        it = m_port1->portConnections.erase( it );
+      } else {
+        ++it;
       }
     }
   }
 
   if( m_port2 != nullptr ) {
-    for( auto it = m_port2->connections().cbegin(), end = m_port2->connections().cend(); it != end; ++it ) {
+    for( auto it = m_port2->portConnections.begin(); it != m_port2->portConnections.end(); ) {
       if( ( *it ) == this ) {
-        m_port2->connections().erase( it );
-        break;
+        it = m_port2->portConnections.erase( it );
+      } else {
+        ++it;
       }
     }
   }
@@ -108,14 +110,14 @@ void
 QNEConnection::setPort1( QNEPort* p ) {
   m_port1 = p;
 
-  m_port1->connections().push_back( this );
+  m_port1->portConnections.push_back( this );
 }
 
 bool
 QNEConnection::setPort2( QNEPort* p ) {
   bool connectionMade = false;
-  for( auto& from : m_port1->block()->objects ) {
-    for( auto& to : p->block()->objects ) {
+  for( auto& from : m_port1->block->objects ) {
+    for( auto& to : p->block->objects ) {
       auto connection = QObject::connect( from,
                                           ( m_port1->slotSignalSignature.latin1() ),
                                           to,
@@ -124,7 +126,7 @@ QNEConnection::setPort2( QNEPort* p ) {
 
       if( connection ) {
         m_port2 = p;
-        m_port2->connections().push_back( this );
+        m_port2->portConnections.push_back( this );
 
         connections.push_back( std::move( connection ) );
         connectionMade |= true;
@@ -168,18 +170,15 @@ QNEConnection::port2() const {
   return m_port2;
 }
 
-void
-QNEConnection::toJSON( QJsonObject& json ) const {
-  QJsonArray connectionsArray = json[QStringLiteral( "connections" )].toArray();
-
+QJsonObject
+QNEConnection::toJSON() const {
   QJsonObject connectionObject;
-  connectionObject[QStringLiteral( "idFrom" )]   = port1()->block()->id;
+  connectionObject[QStringLiteral( "idFrom" )]   = port1()->block->id;
   connectionObject[QStringLiteral( "portFrom" )] = port1()->getName();
-  connectionObject[QStringLiteral( "idTo" )]     = port2()->block()->id;
+  connectionObject[QStringLiteral( "idTo" )]     = port2()->block->id;
   connectionObject[QStringLiteral( "portTo" )]   = port2()->getName();
-  connectionsArray.append( connectionObject );
 
-  json[QStringLiteral( "connections" )] = connectionsArray;
+  return connectionObject;
 }
 
 void

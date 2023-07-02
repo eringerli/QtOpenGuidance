@@ -26,6 +26,7 @@
  */
 
 #include "qneport.h"
+#include "qgraphicsitem.h"
 #include "qnamespace.h"
 #include "qneblock.h"
 
@@ -44,8 +45,11 @@
 #include "qneconnection.h"
 
 QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded ) : QGraphicsPathItem( parent ) {
+  this->block = qgraphicsitem_cast< QNEBlock* >( parent );
+
   this->slotSignalSignature = slotSignalSignature;
-  label                     = new QGraphicsTextItem( this );
+
+  label = new QGraphicsTextItem( this );
   label->setDefaultTextColor( Qt::black );
 
   QPainterPath p;
@@ -66,20 +70,13 @@ QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool
 QNEPort::~QNEPort() {
   // as m_connections is also changed by the destructor of the connection, test in each
   // iteration
-  while( !m_connections.empty() ) {
-    delete m_connections.back();
+  while( !portConnections.empty() ) {
+    delete portConnections.back();
   }
-
-  label->deleteLater();
 
   if( porthelper != nullptr ) {
     porthelper->deleteLater();
   }
-}
-
-void
-QNEPort::setNEBlock( QNEBlock* b ) {
-  m_block = b;
 }
 
 void
@@ -93,30 +90,19 @@ QNEPort::getName() const {
 }
 
 void
-QNEPort::setIsOutput( bool output ) {
-  isOutput_ = output;
-
-  if( isOutput_ ) {
-    label->setPos( -radiusOfBullet - marginOfText - label->boundingRect().width(), -label->boundingRect().height() / 2 );
-
+QNEPort::recalculateLabelPosition() {
+  if( m_isOutput ) {
+    label->setPos( -( label->boundingRect().width() + radiusOfBullet ), -label->boundingRect().height() / 2. );
   } else {
-    label->setPos( radiusOfBullet + marginOfText, -label->boundingRect().height() / 2 );
+    label->setPos( radiusOfBullet, -label->boundingRect().height() / 2. );
   }
 }
 
-bool
-QNEPort::isOutput() const {
-  return isOutput_;
-}
+void
+QNEPort::setIsOutput( bool output ) {
+  m_isOutput = output;
 
-const std::vector< QNEConnection* >&
-QNEPort::connections() const {
-  return m_connections;
-}
-
-std::vector< QNEConnection* >&
-QNEPort::connections() {
-  return m_connections;
+  recalculateLabelPosition();
 }
 
 void
@@ -138,33 +124,32 @@ QNEPort::setPortFlags( int f ) {
       porthelper = new QNEPortHelper( this );
       label->setTextInteractionFlags( Qt::TextEditorInteraction );
     }
+  } else {
+    QFont font( scene()->font() );
+    label->setFont( font );
   }
 
   if( ( m_portFlags & NoBullet ) != 0 ) {
     setPath( QPainterPath() );
   }
-}
 
-QNEBlock*
-QNEPort::block() const {
-  return m_block;
+  recalculateLabelPosition();
 }
 
 qreal
 QNEPort::getWidthOfLabelBoundingRect() {
-  return marginOfText + label->boundingRect().width();
+  return label->boundingRect().width();
 }
 
 qreal
 QNEPort::getHeightOfLabelBoundingRect() {
-  QFontMetrics fm( label->font() );
-  return fm.height() /* + marginOfText*/;
+  return label->boundingRect().height();
 }
 
 QVariant
 QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
-    for( auto* conn : qAsConst( m_connections ) ) {
+    for( auto* conn : qAsConst( portConnections ) ) {
       conn->updatePosFromPorts();
       conn->updatePath();
     }

@@ -272,6 +272,13 @@ SettingsDialog::SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
   ui->gvNodeEditor->setDragMode( QGraphicsView::RubberBandDrag );
 
   auto* scene = new QGraphicsScene();
+
+  {
+    auto font = scene->font();
+    font.setPixelSize( 12 );
+    scene->setFont( font );
+  }
+
   ui->gvNodeEditor->setScene( scene );
 
   ui->gvNodeEditor->setRenderHint( QPainter::Antialiasing, true );
@@ -780,8 +787,9 @@ SettingsDialog::on_pbSaveSelected_clicked() {
 void
 SettingsDialog::saveConfigToFile( QFile& file ) {
   QJsonObject jsonObject;
-  jsonObject[QStringLiteral( "blocks" )]      = QJsonArray();
-  jsonObject[QStringLiteral( "connections" )] = QJsonArray();
+
+  auto jsonBlocks      = QJsonArray();
+  auto jsonConnections = QJsonArray();
 
   std::vector< QNEBlock* >      blocks;
   std::vector< QNEConnection* > connections;
@@ -808,22 +816,25 @@ SettingsDialog::saveConfigToFile( QFile& file ) {
   std::sort( blocks.begin(), blocks.end(), []( QNEBlock* first, QNEBlock* second ) { return first->id < second->id; } );
 
   std::sort( connections.begin(), connections.end(), []( QNEConnection* first, QNEConnection* second ) {
-    if( first->port1()->block()->id == second->port1()->block()->id ) {
-      if( first->port2()->block()->id == second->port2()->block()->id ) {
+    if( first->port1()->block->id == second->port1()->block->id ) {
+      if( first->port2()->block->id == second->port2()->block->id ) {
         return first->port2()->getName() < second->port2()->getName();
       }
-      return first->port2()->block()->id < second->port2()->block()->id;
+      return first->port2()->block->id < second->port2()->block->id;
     }
-    return first->port1()->block()->id < second->port1()->block()->id;
+    return first->port1()->block->id < second->port1()->block->id;
   } );
 
   for( const auto* block : blocks ) {
-    block->toJSON( jsonObject );
+    jsonBlocks.append( block->toJSON() );
   }
 
   for( const auto* connection : connections ) {
-    connection->toJSON( jsonObject );
+    jsonConnections.append( connection->toJSON() );
   }
+
+  jsonObject[QStringLiteral( "blocks" )]      = jsonBlocks;
+  jsonObject[QStringLiteral( "connections" )] = jsonConnections;
 
   QJsonDocument jsonDocument( jsonObject );
   file.write( jsonDocument.toJson() );
@@ -949,15 +960,17 @@ SettingsDialog::loadConfigFromFile( QFile& file ) {
 
           if( block != nullptr ) {
             idMap.insert( id, block->id );
-            block->setX( blockObject[QStringLiteral( "positionX" )].toDouble( 0 ) );
-            block->setY( blockObject[QStringLiteral( "positionY" )].toDouble( 0 ) );
+
             block->fromJSON( blockObject );
+
+            block->setSelected( true );
           }
 
           // id is not a system-id -> create new blocks
         } else {
           BlockFactory* factory = nullptr;
 
+          // search the factory in the QTreeWidget
           {
             auto* rootItem = ui->twBlocks->invisibleRootItem();
 
@@ -979,10 +992,10 @@ SettingsDialog::loadConfigFromFile( QFile& file ) {
 
             idMap.insert( id, block->id );
 
-            block->setX( blockObject[QStringLiteral( "positionX" )].toDouble( 0 ) );
-            block->setY( blockObject[QStringLiteral( "positionY" )].toDouble( 0 ) );
             block->setName( blockObject[QStringLiteral( "name" )].toString( factory->getNameOfFactory() ) );
+
             block->fromJSON( blockObject );
+
             block->setSelected( true );
           }
         }
@@ -1055,6 +1068,7 @@ SettingsDialog::on_pbAddBlock_clicked() {
 
     if( factory != nullptr ) {
       QNEBlock* block = factory->createBlock( ui->gvNodeEditor->scene() );
+
       block->setPos( ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() ) );
     }
 

@@ -69,6 +69,34 @@ QNodesEditor::itemAt( QPointF pos ) {
   return nullptr;
 }
 
+void
+QNodesEditor::deleteSelected() {
+  {
+    const auto& constRefOfList = scene->selectedItems();
+
+    for( auto i : constRefOfList ) {
+      auto* connection = qgraphicsitem_cast< QNEConnection* >( i );
+      delete connection;
+    }
+  }
+
+  {
+    const auto& constRefOfList = scene->selectedItems();
+
+    for( auto i : constRefOfList ) {
+      const auto* block = qgraphicsitem_cast< const QNEBlock* >( i );
+
+      if( block != nullptr ) {
+        if( !block->systemBlock ) {
+          delete block;
+        }
+      }
+    }
+  }
+
+  Q_EMIT resetModels();
+}
+
 bool
 QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
   auto* const mouseEvent = dynamic_cast< QGraphicsSceneMouseEvent* >( e );
@@ -111,15 +139,7 @@ QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
 
       case QEvent::KeyRelease: {
         if( keyEvent->matches( QKeySequence::Delete ) ) {
-          {
-            const auto& constRefOfList = scene->selectedItems();
-
-            for( const auto& item : constRefOfList ) {
-              delete qgraphicsitem_cast< QNEConnection* >( item );
-            }
-          }
-
-          Q_EMIT resetModels();
+          deleteSelected();
         }
       } break;
     } break;
@@ -170,7 +190,7 @@ QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           if( currentConnection->setPort2( port ) ) {
             currentConnection->updatePosFromPorts();
             currentConnection->updatePath();
-            Q_EMIT currentConnection->port1()->block()->emitConfigSignals();
+            Q_EMIT currentConnection->port1()->block->emitConfigSignals();
 
             currentConnection = nullptr;
             return true;
@@ -182,7 +202,7 @@ QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
           if( currentConnection->setPort2( port1 ) ) {
             currentConnection->updatePosFromPorts();
             currentConnection->updatePath();
-            Q_EMIT currentConnection->port1()->block()->emitConfigSignals();
+            Q_EMIT currentConnection->port1()->block->emitConfigSignals();
 
             currentConnection = nullptr;
             return true;

@@ -41,47 +41,45 @@ public:
   enum { NamePort = 1, TypePort = 2, SystemBlock = 4, NoBullet = 8 };
 
   QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
-  ~QNEPort();
+  virtual ~QNEPort();
 
-  void                                 setNEBlock( QNEBlock* );
-  void                                 setName( const QString& n ) const;
-  QString                              getName() const;
-  void                                 setIsOutput( bool o );
-  bool                                 isOutput() const;
-  std::vector< QNEConnection* >&       connections();
-  const std::vector< QNEConnection* >& connections() const;
-  void                                 setPortFlags( int );
+  void    setName( const QString& n ) const;
+  QString getName() const;
+
+  void       setIsOutput( bool o );
+  const bool isOutput() const { return m_isOutput; };
+
+  void      setPortFlags( int );
+  const int portFlags() const { return m_portFlags; }
 
   void contentsChanged();
 
-  int portFlags() const { return m_portFlags; }
-
   int type() const override { return Type; }
-
-  QNEBlock* block() const;
 
   qreal getWidthOfLabelBoundingRect();
 
   qreal getHeightOfLabelBoundingRect();
 
 public:
+  QNEBlock* block = nullptr;
+
   QLatin1String slotSignalSignature;
+
+  QGraphicsTextItem*            label = nullptr;
+  std::vector< QNEConnection* > portConnections;
 
   static constexpr qreal radiusOfBullet = 5;
   static constexpr qreal marginOfText   = 2;
-
-  QGraphicsTextItem* label = nullptr;
 
 protected:
   QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
 
 private:
-  QNEBlock*                     m_block   = nullptr;
-  bool                          isOutput_ = false;
-  std::vector< QNEConnection* > m_connections;
-  int                           m_portFlags = 0;
+  int            m_portFlags = 0;
+  bool           m_isOutput  = false;
+  QNEPortHelper* porthelper  = nullptr;
 
-  QNEPortHelper* porthelper = nullptr;
+  void recalculateLabelPosition();
 };
 
 class QNEPortHelper : public QObject {

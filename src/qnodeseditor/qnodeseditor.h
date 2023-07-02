@@ -48,6 +48,8 @@ public:
   void save( QDataStream& ds );
   void load( QDataStream& ds );
 
+  void deleteSelected();
+
 Q_SIGNALS:
   void resetModels();
 
