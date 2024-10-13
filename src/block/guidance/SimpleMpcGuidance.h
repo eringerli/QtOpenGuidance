@@ -33,7 +33,7 @@ class SimpleMpcGuidance : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SimpleMpcGuidance() : BlockBase() {}
+  explicit SimpleMpcGuidance( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 public Q_SLOTS:
   void setWheelbase( NUMBER_SIGNATURE_SLOT );
@@ -90,7 +90,7 @@ private:
   std::shared_ptr< std::vector< double > >          recordXteForPointsTo = nullptr;
   std::shared_ptr< std::vector< Eigen::Vector3d > > recordPointsTo       = nullptr;
 
-  FixedKinematicPrimitive antennaKinematic;
+  FixedKinematicPrimitive antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
 
   double runMpc( const double           dT,
                  const double           steeringAngleToCalculateWithRadians,
@@ -120,13 +120,15 @@ class SimpleMpcGuidanceFactory : public BlockFactory {
 public:
   SimpleMpcGuidanceFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {
+    typeColor = TypeColor::Arithmetic;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Simple Model Predictive Control" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Simple Model Predictive Control" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

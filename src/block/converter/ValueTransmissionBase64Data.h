@@ -14,7 +14,7 @@ class QCborStreamReader;
 class ValueTransmissionBase64Data : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionBase64Data( uint16_t cid );
+  explicit ValueTransmissionBase64Data( uint16_t cid, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setData( const QByteArray& data );
@@ -33,11 +33,11 @@ class ValueTransmissionBase64DataFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionBase64DataFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ValueTransmissionBase64DataFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit Base64 Data" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit Base64 Data" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

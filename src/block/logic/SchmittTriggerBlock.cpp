@@ -3,13 +3,9 @@
 
 #include "SchmittTriggerBlock.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 SchmittTriggerBlock::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( 0, CalculationOption::Option::None );
 }
 
@@ -40,22 +36,18 @@ SchmittTriggerBlock::setValueUpperThreshold( const double number, const Calculat
   schmittTrigger.setUpperThreshold( number );
 }
 
-QNEBlock*
-SchmittTriggerBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SchmittTriggerBlock();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SchmittTriggerBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SchmittTriggerBlock >( idHint );
 
-  b->addInputPort( QStringLiteral( "Value" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Threshold" ), QLatin1String( SLOT( setThreshold( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Threshold" ), obj.get(), QLatin1StringView( SLOT( setThreshold( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Hysteresis" ), QLatin1String( SLOT( setValueHysteresis( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Lower Threshold" ), QLatin1String( SLOT( setLowerThreshold( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Upper Threshold" ), QLatin1String( SLOT( setUpperThreshold( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Hysteresis" ), obj.get(), QLatin1StringView( SLOT( setValueHysteresis( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Lower Threshold" ), obj.get(), QLatin1StringView( SLOT( setLowerThreshold( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Upper Threshold" ), obj.get(), QLatin1StringView( SLOT( setUpperThreshold( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

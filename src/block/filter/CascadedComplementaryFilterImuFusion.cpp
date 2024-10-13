@@ -4,8 +4,6 @@
 #include "CascadedComplementaryFilterImuFusion.h"
 
 #include "kinematic/CalculationOptions.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
@@ -23,7 +21,10 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion() { elapsedTimer.start(); }
+CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion( const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
+  elapsedTimer.start();
+}
 
 void
 CascadedComplementaryFilterImuFusion::setImuData( const double           dT,
@@ -82,19 +83,21 @@ CascadedComplementaryFilterImuFusion::emitOrientationFromCCF() {
 
 void
 CascadedComplementaryFilterImuFusion::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   //  Q_EMIT orientationChanged( this->position, this->orientation, CalculationOption::None );
 }
 
-QNEBlock*
-CascadedComplementaryFilterImuFusionFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new CascadedComplementaryFilterImuFusion();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+CascadedComplementaryFilterImuFusionFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< CascadedComplementaryFilterImuFusion >( idHint );
 
-  b->addInputPort( QStringLiteral( "IMU Data" ), QLatin1String( SLOT( setImuData( IMU_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation Correction" ), QLatin1String( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "IMU Data" ), obj.get(), QLatin1StringView( SLOT( setImuData( IMU_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Orientation Correction" ), obj.get(), QLatin1StringView( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

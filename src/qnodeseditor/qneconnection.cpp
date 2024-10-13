@@ -27,6 +27,7 @@
 
 #include "qneconnection.h"
 
+#include "block/BlockBase.h"
 #include "qnamespace.h"
 #include "qneblock.h"
 #include "qneport.h"
@@ -42,6 +43,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QJsonValueRef>
+#include <bits/ranges_util.h>
 
 QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( parent ) {
   setPen( QPen( Qt::black, 2 ) );
@@ -50,30 +52,14 @@ QNEConnection::QNEConnection( QGraphicsItem* parent ) : QGraphicsPathItem( paren
   setFlag( QGraphicsItem::ItemIsSelectable );
 }
 
-QNEConnection::~QNEConnection() {
-  if( m_port1 != nullptr ) {
-    for( auto it = m_port1->portConnections.begin(); it != m_port1->portConnections.end(); ) {
-      if( ( *it ) == this ) {
-        it = m_port1->portConnections.erase( it );
-      } else {
-        ++it;
-      }
-    }
-  }
+QNEConnection::QNEConnection( const BlockConnection* blockConnection, QNEPort* port1, QNEPort* port2, QGraphicsItem* parent )
+    : QNEConnection( parent ) {
+  _connection = blockConnection;
+  m_port1     = port1;
+  m_port2     = port2;
 
-  if( m_port2 != nullptr ) {
-    for( auto it = m_port2->portConnections.begin(); it != m_port2->portConnections.end(); ) {
-      if( ( *it ) == this ) {
-        it = m_port2->portConnections.erase( it );
-      } else {
-        ++it;
-      }
-    }
-  }
-
-  for( auto& connection : connections ) {
-    QObject::disconnect( connection );
-  }
+  updatePosFromPorts();
+  updatePath();
 }
 
 void
@@ -109,32 +95,13 @@ QNEConnection::setPos2( QPointF p ) {
 void
 QNEConnection::setPort1( QNEPort* p ) {
   m_port1 = p;
-
-  m_port1->portConnections.push_back( this );
 }
 
 bool
 QNEConnection::setPort2( QNEPort* p ) {
-  bool connectionMade = false;
-  for( auto& from : m_port1->block->objects ) {
-    for( auto& to : p->block->objects ) {
-      auto connection = QObject::connect( from,
-                                          ( m_port1->slotSignalSignature.latin1() ),
-                                          to,
-                                          ( p->slotSignalSignature.latin1() ),
-                                          Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
+  m_port2 = p;
 
-      if( connection ) {
-        m_port2 = p;
-        m_port2->portConnections.push_back( this );
-
-        connections.push_back( std::move( connection ) );
-        connectionMade |= true;
-      }
-    }
-  }
-
-  return connectionMade;
+  return true;
 }
 
 void
@@ -168,17 +135,6 @@ QNEConnection::port1() const {
 QNEPort*
 QNEConnection::port2() const {
   return m_port2;
-}
-
-QJsonObject
-QNEConnection::toJSON() const {
-  QJsonObject connectionObject;
-  connectionObject[QStringLiteral( "idFrom" )]   = port1()->block->id;
-  connectionObject[QStringLiteral( "portFrom" )] = port1()->getName();
-  connectionObject[QStringLiteral( "idTo" )]     = port2()->block->id;
-  connectionObject[QStringLiteral( "portTo" )]   = port2()->getName();
-
-  return connectionObject;
 }
 
 void

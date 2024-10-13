@@ -4,16 +4,15 @@
 #include "PositionDockBlock.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/ThreeValuesDock.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-PositionDockBlock::PositionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
+PositionDockBlock::PositionDockBlock(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new ThreeValuesDock( mainWindow );
 
   widget->setDescriptions( QStringLiteral( "X" ), QStringLiteral( "Y" ), QStringLiteral( "Z" ) );
@@ -33,7 +32,7 @@ PositionDockBlock::getFont() const {
 }
 
 int
-PositionDockBlock::getPrecision()const{
+PositionDockBlock::getPrecision() const {
   return widget->precision;
 }
 
@@ -89,6 +88,8 @@ PositionDockBlock::setUnit( const QString& unit ) {
 
 void
 PositionDockBlock::setName( const QString& name ) {
+  BlockBase::setName( name );
+
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Position: " ) + name );
 }
@@ -120,15 +121,9 @@ PositionDockBlock::setWgs84( const Eigen::Vector3d& position, const CalculationO
   }
 }
 
-QNEBlock*
-PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new PositionDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+PositionDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< PositionDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -142,11 +137,9 @@ PositionDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
   }
 
-  b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWgs84( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Vector" ), QLatin1String( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SLOT( setWgs84( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

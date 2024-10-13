@@ -27,8 +27,6 @@
 #include "block/BlockBase.h"
 
 #include "helpers/signatures.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
@@ -43,10 +41,10 @@ class PathPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity );
+  explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type );
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
   void refreshColors();
 
@@ -117,13 +115,15 @@ class PathPlannerModelFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PathPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, false ), rootEntity( rootEntity ) {}
+  PathPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, false ), rootEntity( rootEntity ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Path Planner Model" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Path Planner Model" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

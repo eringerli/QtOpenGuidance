@@ -27,9 +27,6 @@
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/eigenHelper.h"
 
 #include "helpers/cgalHelper.h"
@@ -46,10 +43,10 @@ class TerrainModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR );
+  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type );
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
   void refreshColors();
 
@@ -60,8 +57,8 @@ public Q_SLOTS:
 public:
   bool visible = true;
 
-  QColor linesColor   = QColor( Qt::darkGreen );
-  QColor terrainColor = QColor( Qt::green );
+  QColor linesColor   = QColor( Qt::yellow );
+  QColor terrainColor = QColor( Qt::gray );
 
 private:
   bool usePBR = false;

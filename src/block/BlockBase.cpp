@@ -3,82 +3,151 @@
 
 #include "BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QComboBox>
-#include <QGraphicsScene>
-#include <QTreeWidget>
+#include <algorithm>
+#include <bits/ranges_util.h>
+#include <tuple>
 
 void
-BlockFactory::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( getNameOfFactory(), QVariant::fromValue( this ) );
+BlockBase::enable( const bool enable ) {
+  qDebug() << "BlockBase::enable" << enable;
+  if( enable ) {
+    for( auto& connection : _connections ) {
+      connection.enable();
+    }
+  } else {
+    for( auto& connection : _connections ) {
+      connection.disable();
+    }
+  }
 }
 
 void
-BlockFactory::addToTreeWidget( QTreeWidget* treeWidget ) {
-  auto results = treeWidget->findItems( getCategoryOfFactory(), Qt::MatchExactly );
+BlockBase::toJSONBase( QJsonObject& valuesObject ) const {
+  valuesObject[QStringLiteral( "id" )]        = _id;
+  valuesObject[QStringLiteral( "type" )]      = type;
+  valuesObject[QStringLiteral( "name" )]      = _name;
+  valuesObject[QStringLiteral( "positionX" )] = positionX;
+  valuesObject[QStringLiteral( "positionY" )] = positionY;
 
-  QTreeWidgetItem* parentItem = nullptr;
-
-  for( auto* item : qAsConst( results ) ) {
-    // top level entry?
-    if( item->parent() == nullptr ) {
-      parentItem = item;
+  {
+    auto json = QJsonObject();
+    toJSON( json );
+    if( !json.isEmpty() ) {
+      valuesObject[QStringLiteral( "value0" )] = json;
     }
   }
 
-  if( parentItem == nullptr ) {
-    parentItem = new QTreeWidgetItem( treeWidget );
-    parentItem->setText( 0, getCategoryOfFactory() );
-  }
+  {
+    int counter = 1;
+    for( auto& obj : _additionalObjects ) {
+      auto* block = qobject_cast< BlockBase* >( obj );
+      if( block != nullptr ) {
+        auto json = QJsonObject();
+        block->toJSON( json );
 
-  auto* newItem = new QTreeWidgetItem( parentItem );
-  newItem->setText( 0, getPrettyNameOfFactory() );
-  newItem->setText( 1, getNameOfFactory() );
-  newItem->setData( 0, Qt::UserRole, QVariant::fromValue( this ) );
+        if( !json.isEmpty() ) {
+          auto key = QStringLiteral( "value" ) + QString::number( counter );
+
+          valuesObject[key] = json;
+        }
+      }
+      counter++;
+    }
+  }
 }
 
-QNEBlock*
-BlockFactory::createBaseBlock( QGraphicsScene* scene, BlockBase* obj, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = 0;
+void
+BlockBase::fromJSONBase( const QJsonObject& valuesObject ) {
+  positionX = valuesObject[QStringLiteral( "positionX" )].toDouble( 0 );
+  positionY = valuesObject[QStringLiteral( "positionY" )].toDouble( 0 );
+
+  if( valuesObject[QStringLiteral( "value0" )].isObject() ) {
+    fromJSON( valuesObject[QStringLiteral( "value0" )].toObject() );
   }
 
-  auto* b = new QNEBlock( obj, id, systemBlock );
+  {
+    int counter = 1;
+    for( auto& obj : _additionalObjects ) {
+      auto key = QStringLiteral( "value" ) + QString::number( counter );
+      if( valuesObject[key].isObject() ) {
+        auto* block = qobject_cast< BlockBase* >( obj );
+        if( block != nullptr ) {
+          block->fromJSON( valuesObject[key].toObject() );
+        }
+      }
+      counter++;
+    }
+  }
 
-  scene->addItem( b );
-
-  b->addPort( getPrettyNameOfFactory(), QLatin1String(), false, QNEPort::NamePort );
-  b->addPort( getNameOfFactory(), QLatin1String(), false, QNEPort::TypePort );
-
-  QObject::connect( b, &QNEBlock::emitConfigSignals, obj, &BlockBase::emitConfigSignals );
-
-  return b;
+  setName( valuesObject[QStringLiteral( "name" )].toString( type ) );
 }
 
-bool
-BlockFactory::isIdUnique( QGraphicsScene* scene, int id ) {
-  const auto& constRefOfList = scene->items();
+void
+BlockBase::addAdditionalObject( QObject* object ) {
+  _additionalObjects.push_back( object );
+}
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+BlockPort&
+BlockBase::addInputPort( const QString& name, QObject* obj, QLatin1StringView signature, BlockPort::Flags flags ) {
+  return addPort( name, obj, signature, flags );
+}
 
-    if( block != nullptr ) {
-      if( block->id == id ) {
-        return false;
+BlockPort&
+BlockBase::addOutputPort( const QString& name, QObject* obj, QLatin1StringView signature, BlockPort::Flags flags ) {
+  return addPort( name, obj, signature, flags | BlockPort::Flag::Output );
+}
+
+BlockPort&
+BlockBase::addPort( const QString& name, QObject* obj, QLatin1StringView signatureStringView, BlockPort::Flags flags ) {
+  auto signature = QString( signatureStringView );
+  signature.remove( 0, 1 );
+
+  if( obj != nullptr ) {
+    QByteArray  normalizedSignature = QMetaObject::normalizedSignature( signature.toLatin1() );
+    int         methodIndex         = obj->metaObject()->indexOfMethod( normalizedSignature );
+    QMetaMethod method              = obj->metaObject()->method( methodIndex );
+
+    if( method.isValid() ) {
+      return _ports.emplace_back( _id, _portPosition++, name, obj, method, flags );
+    }
+  }
+
+  return _ports.emplace_back( _id, _portPosition++, name, flags );
+}
+
+size_t
+BlockBase::connectPortToPort( const QString& portFromName, const BlockBase* blockTo, const QString& portToName ) {
+  size_t count = 0;
+  int    from = 0, to = 0;
+  for( auto& portFrom : getOutputPorts( portFromName ) ) {
+    from++;
+    for( auto& portTo : blockTo->getInputPorts( portToName ) ) {
+      to++;
+      auto connection = QObject::connect(
+        portFrom.object, portFrom.method, portTo.object, portTo.method, Qt::ConnectionType( Qt::AutoConnection | Qt::UniqueConnection ) );
+      if( connection ) {
+        // TODO
+        _connections.emplace_back( ( BlockPort* )&portFrom, ( BlockPort* )&portTo, std::move( connection ) );
+        ++count;
       }
     }
   }
 
-  return true;
+  //  qDebug() << "BlockBase::connectPortToPort" << from << to << count;
+
+  return count;
 }
 
-const QColor BlockFactory::modelColor       = QColor( QStringLiteral( "moccasin" ) );
-const QColor BlockFactory::dockColor        = QColor( QStringLiteral( "DarkSalmon" ) );
-const QColor BlockFactory::inputDockColor   = QColor( QStringLiteral( "lightsalmon" ) );
-const QColor BlockFactory::parserColor      = QColor( QStringLiteral( "mediumaquamarine" ) );
-const QColor BlockFactory::valueColor       = QColor( QStringLiteral( "gold" ) );
-const QColor BlockFactory::inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
-const QColor BlockFactory::converterColor   = QColor( QStringLiteral( "lightblue" ) );
-const QColor BlockFactory::arithmeticColor  = QColor( QStringLiteral( "DarkKhaki" ) );
+void
+BlockBase::disconnectPortToPort( const QString& portFromName, const BlockBase* blockTo, const QString& portToName ) {
+  if( blockTo != nullptr ) {
+    for( auto it = _connections.begin(); it != _connections.end(); ) {
+      if( it->portTo->idOfBlock == blockTo->id() && it->portFrom->name == portFromName && it->portTo->name == portToName ) {
+        it->disconnect();
+        it = _connections.erase( it );
+      } else {
+        ++it;
+      }
+    }
+  }
+}

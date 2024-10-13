@@ -18,7 +18,6 @@
 
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
-#include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QSphereMesh>
 #include <Qt3DExtras/QText2DEntity>
 #include <Qt3DExtras/QTextureMaterial>
@@ -29,9 +28,6 @@
 #include "CGAL/enum.h"
 #include "CGAL/number_utils_classes.h"
 #include "block/BlockBase.h"
-
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "3d/BufferMesh.h"
 #include "3d/BufferMeshWithNormals.h"
@@ -48,7 +44,6 @@
 #include "kinematic/PathPrimitiveSegment.h"
 #include "kinematic/PathPrimitiveSequence.h"
 
-#include <QBrush>
 #include <QJsonObject>
 #include <QSharedPointer>
 #include <QVector>
@@ -83,7 +78,8 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )
 
-TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) : usePBR( usePBR ) {
+TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ), usePBR( usePBR ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
@@ -118,36 +114,35 @@ TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) : usePB
   refreshColors();
 }
 
-QJsonObject
-TerrainModel::toJSON() const {
-  QJsonObject valuesObject;
-
-  valuesObject[QStringLiteral( "visible" )]      = visible;
-  valuesObject[QStringLiteral( "terrainColor" )] = terrainColor.name();
-  valuesObject[QStringLiteral( "lineColor" )]    = linesColor.name();
-
-  return valuesObject;
+void
+TerrainModel::toJSON( QJsonObject& valuesObject ) const {
+  valuesObject[QStringLiteral( "visible" )] = visible;
+  // valuesObject[QStringLiteral( "terrainColor" )] = terrainColor.name();
+  // valuesObject[QStringLiteral( "lineColor" )]    = linesColor.name();
 }
 
 void
-TerrainModel::fromJSON( QJsonObject& valuesObject ) {
-  visible      = valuesObject[QStringLiteral( "visible" )].toBool( true );
-  terrainColor = QColor( valuesObject[QStringLiteral( "terrainColor" )].toString( QStringLiteral( "#00aa00" ) ) );
-  linesColor   = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
+TerrainModel::fromJSON( const QJsonObject& valuesObject ) {
+  visible = valuesObject[QStringLiteral( "visible" )].toBool( true );
+  // terrainColor = QColor( valuesObject[QStringLiteral( "terrainColor" )].toString( QStringLiteral( "#00aa00" ) ) );
+  // linesColor   = QColor( valuesObject[QStringLiteral( "lineColor" )].toString( QStringLiteral( "#00ff00" ) ) );
 
   refreshColors();
 }
 
 void
 TerrainModel::refreshColors() {
+  constexpr float metalness = 0.2f;
+  constexpr float roughness = 0.5f;
+
   if( usePBR ) {
     linesMaterialPbr->setBaseColor( linesColor );
-    linesMaterialPbr->setMetalness( 0.0f );
-    linesMaterialPbr->setRoughness( 0.5f );
+    linesMaterialPbr->setMetalness( metalness );
+    linesMaterialPbr->setRoughness( roughness );
 
-    terrainMaterialPbr->setBaseColor( terrainColor );
-    terrainMaterialPbr->setMetalness( 0.0f );
-    terrainMaterialPbr->setRoughness( 0.5f );
+    terrainMaterialPbr->setBaseColor( QColor( Qt::red ) );
+    terrainMaterialPbr->setMetalness( metalness );
+    terrainMaterialPbr->setRoughness( roughness );
   } else {
     linesMaterial->setShininess( 0.05f );
     terrainMaterial->setShininess( 0.05f );

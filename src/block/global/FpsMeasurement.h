@@ -13,7 +13,7 @@ class FpsMeasurement : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity );
+  explicit FpsMeasurement( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type );
   ~FpsMeasurement();
 
   void emitConfigSignals() override;
@@ -32,13 +32,15 @@ class FpsMeasurementFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FpsMeasurementFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, true ), rootEntity( rootEntity ) {}
+  FpsMeasurementFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, true ), rootEntity( rootEntity ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Fps Measurement" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Fps Measurement" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

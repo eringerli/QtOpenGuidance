@@ -3,16 +3,14 @@
 
 #include "FileStream.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QByteArray>
 #include <QFile>
 #include <QTextStream>
 #include <QTimerEvent>
 
-FileStream::FileStream() { fileStream = new QTextStream(); }
+FileStream::FileStream( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+  fileStream = new QTextStream();
+}
 
 FileStream::~FileStream() {
   if( file ) {
@@ -73,19 +71,15 @@ FileStream::timerEvent( QTimerEvent* event ) {
   }
 }
 
-QNEBlock*
-FileStreamFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new FileStream();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+FileStreamFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< FileStream >( idHint );
 
-  b->addInputPort( QStringLiteral( "File" ), QLatin1String( SLOT( setFilename( const QString& ) ) ) );
-  b->addInputPort( QStringLiteral( "Linerate" ), QLatin1String( SLOT( setLinerate( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "File" ), obj.get(), QLatin1StringView( SLOT( setFilename( const QString& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Linerate" ), obj.get(), QLatin1StringView( SLOT( setLinerate( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( sendData( const QByteArray& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
-  b->setBrush( valueColor );
-
-  return b;
+  return obj;
 }

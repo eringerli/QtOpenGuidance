@@ -3,9 +3,6 @@
 
 #include "TrailerKinematicPrimitive.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/anglesHelper.h"
 #include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
@@ -101,19 +98,19 @@ TrailerKinematicPrimitive::setPoseInitialMpcPivot( const Eigen::Vector3d&       
   }
 }
 
-QNEBlock*
-TrailerKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TrailerKinematicPrimitive;
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+TrailerKinematicPrimitiveFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< TrailerKinematicPrimitive >( idHint );
 
-  b->addInputPort( QStringLiteral( "Offset In to Out" ), QLatin1String( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Initial Mpc Pose Pivot" ), QLatin1String( SLOT( setPoseInitialMpcPivot( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Offset In to Out" ), obj.get(), QLatin1StringView( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "MaxJackknifeAngle" ), obj.get(), QLatin1StringView( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "MaxAngle" ), obj.get(), QLatin1StringView( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose In" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Initial Mpc Pose Pivot" ), obj.get(), QLatin1StringView( SLOT( setPoseInitialMpcPivot( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose Out" ), obj.get(), QLatin1StringView( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

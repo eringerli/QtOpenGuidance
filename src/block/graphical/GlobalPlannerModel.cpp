@@ -29,9 +29,6 @@
 #include "CGAL/number_utils_classes.h"
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/cgalHelper.h"
 
 #include "kinematic/PathPrimitive.h"
@@ -44,7 +41,6 @@
 #include "kinematic/PathPrimitiveSegment.h"
 #include "kinematic/PathPrimitiveSequence.h"
 
-#include <QBrush>
 #include <QJsonObject>
 #include <QSharedPointer>
 #include <QVector>
@@ -52,7 +48,8 @@
 #include <functional>
 #include <utility>
 
-GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity ) {
+GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseEntity->addComponent( baseTransform );
@@ -136,20 +133,17 @@ GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-QJsonObject
-GlobalPlannerModel::toJSON() const {
-  QJsonObject valuesObject;
+void
+GlobalPlannerModel::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "visible" )]     = visible;
   valuesObject[QStringLiteral( "sizeOfPoint" )] = sizeOfPoint;
   valuesObject[QStringLiteral( "aColor" )]      = aColor.name();
   valuesObject[QStringLiteral( "bColor" )]      = bColor.name();
   valuesObject[QStringLiteral( "pointColor" )]  = pointColor.name();
-
-  return valuesObject;
 }
 
 void
-GlobalPlannerModel::fromJSON( QJsonObject& valuesObject ) {
+GlobalPlannerModel::fromJSON( const QJsonObject& valuesObject ) {
   visible     = valuesObject[QStringLiteral( "visible" )].toBool( true );
   sizeOfPoint = valuesObject[QStringLiteral( "sizeOfPoint" )].toDouble( 1 );
   aColor      = QColor( valuesObject[QStringLiteral( "aColor" )].toString( QStringLiteral( "#ffa500" ) ) );
@@ -212,7 +206,7 @@ GlobalPlannerModel::showPlanPolyline( std::shared_ptr< std::vector< Point_2 > > 
     aPointTransform->setTranslation( toQVector3D( polylinePtr->front() ) );
     bPointTransform->setTranslation( toQVector3D( polylinePtr->back() ) );
 
-    for( const auto& child : qAsConst( pointsEntity->children() ) ) {
+    for( const auto& child : std::as_const( pointsEntity->children() ) ) {
       if( auto* childPtr = qobject_cast< Qt3DCore::QEntity* >( child ) ) {
         childPtr->setEnabled( false );
         childPtr->deleteLater();

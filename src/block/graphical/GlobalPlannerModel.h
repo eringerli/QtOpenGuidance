@@ -26,9 +26,6 @@
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/RateLimiter.h"
 #include "helpers/eigenHelper.h"
 
@@ -42,10 +39,10 @@ class GlobalPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity );
+  explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type );
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
   void refreshColors();
 

@@ -7,9 +7,6 @@
 
 #include "ThreadWeaver/DebuggingAids"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QScopedPointer>
 
 #include <QFile>
@@ -29,7 +26,9 @@
 
 #include "helpers/GeoJsonHelper.h"
 
-FieldManager::FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw ) : tmw( tmw ) {
+FieldManager::FieldManager(
+  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ), tmw( tmw ) {
   ThreadWeaver::setDebugLevel( true, 0 );
 
   openSaveHelper = new OpenSaveHelper( "Open Field", "GeoJSON Files (*.geojson)", mainWindow );
@@ -334,31 +333,33 @@ FieldManager::fieldStatisticsChanged( const double pointsRecorded,
   Q_EMIT pointsInFieldBoundaryChanged( pointsInFieldBoundary, CalculationOption::Option::None );
 }
 
-QNEBlock*
-FieldManagerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new FieldManager( mainWindow, tmw );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+FieldManagerFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< FieldManager >( idHint, mainWindow, tmw );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( POSE_SIGNATURE ) ) ) );
+  auto fieldModel = new FieldModel( rootEntity, usePBR, 0, true, "FieldModel" );
+  obj->addAdditionalObject( fieldModel );
 
-  b->addOutputPort( QStringLiteral( "Field" ), QLatin1String( SIGNAL( fieldChanged( std::shared_ptr< Polygon_with_holes_2 > ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Left Edge" ), obj.get(), QLatin1StringView( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Right Edge" ), obj.get(), QLatin1StringView( SLOT( setPoseRightEdge( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Points Recorded" ), QLatin1String( SIGNAL( pointsRecordedChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Points Generated" ),
-                    QLatin1String( SIGNAL( pointsGeneratedForFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Points Boundary" ), QLatin1String( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Field" ), obj.get(), QLatin1StringView( SIGNAL( fieldChanged( std::shared_ptr< Polygon_with_holes_2 > ) ) ) );
 
-  auto fieldModel = new FieldModel( rootEntity );
-  b->addObject( fieldModel );
+  obj->addOutputPort(
+    QStringLiteral( "Points Recorded" ), obj.get(), QLatin1StringView( SIGNAL( pointsRecordedChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Points Generated" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( pointsGeneratedForFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Points Boundary" ), obj.get(), QLatin1StringView( SIGNAL( pointsInFieldBoundaryChanged( NUMBER_SIGNATURE ) ) ) );
 
-  QObject::connect( obj, &FieldManager::fieldChanged, fieldModel, &FieldModel::setField );
-  QObject::connect( obj, &FieldManager::fieldCleared, fieldModel, &FieldModel::clearField );
-  QObject::connect( obj, &FieldManager::pointAdded, fieldModel, &FieldModel::addPoint );
-  QObject::connect( obj, &FieldManager::pointsSet, fieldModel, &FieldModel::setPoints );
-  QObject::connect( obj, &FieldManager::pointsCleared, fieldModel, &FieldModel::clearPoints );
+  QObject::connect( obj.get(), &FieldManager::fieldChanged, fieldModel, &FieldModel::setField );
+  QObject::connect( obj.get(), &FieldManager::fieldCleared, fieldModel, &FieldModel::clearField );
+  QObject::connect( obj.get(), &FieldManager::pointAdded, fieldModel, &FieldModel::addPoint );
+  QObject::connect( obj.get(), &FieldManager::pointsSet, fieldModel, &FieldModel::setPoints );
+  QObject::connect( obj.get(), &FieldManager::pointsCleared, fieldModel, &FieldModel::clearPoints );
 
-  return b;
+  return obj;
 }

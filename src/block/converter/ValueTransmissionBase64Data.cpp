@@ -3,18 +3,16 @@
 
 #include "ValueTransmissionBase64Data.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QByteArray>
 
 #include <QBasicTimer>
-#include <QBrush>
+
 #include <QCborMap>
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionBase64Data::ValueTransmissionBase64Data( uint16_t cid ) : ValueTransmissionBase( cid ) {
+ValueTransmissionBase64Data::ValueTransmissionBase64Data( uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+    : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 
@@ -38,19 +36,15 @@ ValueTransmissionBase64Data::dataReceive( const QByteArray& data ) {
   }
 }
 
-QNEBlock*
-ValueTransmissionBase64DataFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ValueTransmissionBase64Data( id );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValueTransmissionBase64DataFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValueTransmissionBase64Data >( idHint, 1000 );
 
-  b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( dataChanged( const QByteArray& ) ) ), false );
+  obj->addInputPort( QStringLiteral( "CBOR In" ), obj.get(), QLatin1StringView( SLOT( dataReceive( const QByteArray& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Out" ), obj.get(), QLatin1StringView( SIGNAL( dataChanged( const QByteArray& ) ) ) );
 
-  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ), false );
-  b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
+  obj->addInputPort( QStringLiteral( "In" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "CBOR Out" ), obj.get(), QLatin1StringView( SIGNAL( dataToSend( const QByteArray& ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

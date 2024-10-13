@@ -3,9 +3,6 @@
 
 #include "PoseSynchroniser.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 PoseSynchroniser::setPosition( const Eigen::Vector3d& position, const CalculationOption::Options options ) {
   this->position = position;
@@ -22,19 +19,18 @@ PoseSynchroniser::setOrientation( const Eigen::Quaterniond& value, const Calcula
 
 void
 PoseSynchroniser::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT poseChanged( position, orientation, CalculationOption::None );
 }
 
-QNEBlock*
-PoseSynchroniserFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new PoseSynchroniser();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+PoseSynchroniserFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< PoseSynchroniser >( idHint );
 
-  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

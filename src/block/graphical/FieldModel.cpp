@@ -29,9 +29,6 @@
 #include "CGAL/number_utils_classes.h"
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "3d/BufferMesh.h"
 #include "3d/BufferMeshWithNormals.h"
 
@@ -47,7 +44,6 @@
 #include "kinematic/PathPrimitiveSegment.h"
 #include "kinematic/PathPrimitiveSequence.h"
 
-#include <QBrush>
 #include <QJsonObject>
 #include <QSharedPointer>
 #include <QVector>
@@ -55,7 +51,8 @@
 #include <functional>
 #include <utility>
 
-FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity ) {
+FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );
@@ -75,39 +72,63 @@ FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity ) {
   pointsMesh->view()->setPrimitiveType( Qt3DCore::QGeometryView::Points );
   pointsEntity->addComponent( pointsMesh );
 
-  perimeterMaterial = new Qt3DExtras::QPhongMaterial( perimeterEntity );
-  perimeterEntity->addComponent( perimeterMaterial );
+  if( usePBR ) {
+    perimeterMaterialPBR = new Qt3DExtras::QMetalRoughMaterial( perimeterEntity );
+    perimeterEntity->addComponent( perimeterMaterialPBR );
+  } else {
+    perimeterMaterialDS = new Qt3DExtras::QDiffuseSpecularMaterial( perimeterEntity );
+    perimeterEntity->addComponent( perimeterMaterialDS );
+  }
 
-  pointsMaterial = new Qt3DExtras::QPhongMaterial( pointsEntity );
-  pointsEntity->addComponent( pointsMaterial );
+  if( usePBR ) {
+    pointsMaterialPBR = new Qt3DExtras::QMetalRoughMaterial( pointsEntity );
+    pointsEntity->addComponent( pointsMaterialPBR );
+  } else {
+    pointsMaterialDS = new Qt3DExtras::QDiffuseSpecularMaterial( pointsEntity );
+    pointsEntity->addComponent( pointsMaterialDS );
+  }
 
   refreshColors();
 }
 
-QJsonObject
-FieldModel::toJSON() const {
-  QJsonObject valuesObject;
-
+void
+FieldModel::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "visible" )]        = visible;
   valuesObject[QStringLiteral( "perimeterColor" )] = perimeterColor.name();
   valuesObject[QStringLiteral( "pointsColor" )]    = pointsColor.name();
-
-  return valuesObject;
 }
 
 void
-FieldModel::fromJSON( QJsonObject& valuesObject ) {
+FieldModel::fromJSON( const QJsonObject& valuesObject ) {
   visible        = valuesObject[QStringLiteral( "visible" )].toBool( true );
-  perimeterColor = QColor( valuesObject[QStringLiteral( "perimeterColor" )].toString( QStringLiteral( "#00ff00" ) ) );
-  pointsColor    = QColor( valuesObject[QStringLiteral( "pointsColor" )].toString( QStringLiteral( "#0000ff" ) ) );
+  perimeterColor = QColor( /*valuesObject[QStringLiteral( "perimeterColor" )].toString*/ ( QStringLiteral( "#994400" ) ) );
+  pointsColor    = QColor( /*valuesObject[QStringLiteral( "pointsColor" )].toString*/ ( QStringLiteral( "#ff00ff" ) ) );
 
   refreshColors();
 }
 
 void
 FieldModel::refreshColors() {
-  perimeterMaterial->setAmbient( perimeterColor );
-  pointsMaterial->setAmbient( pointsColor );
+  constexpr float metalness = 0.0f;
+  constexpr float roughness = 0.9f;
+
+  if( perimeterMaterialPBR ) {
+    perimeterMaterialPBR->setBaseColor( perimeterColor );
+    perimeterMaterialPBR->setMetalness( metalness );
+    perimeterMaterialPBR->setRoughness( roughness );
+  }
+  if( pointsMaterialPBR ) {
+    pointsMaterialPBR->setBaseColor( perimeterColor );
+    pointsMaterialPBR->setMetalness( metalness );
+    pointsMaterialPBR->setRoughness( roughness );
+  }
+
+  if( perimeterMaterialDS ) {
+    perimeterMaterialDS->setDiffuse( pointsColor );
+  }
+  if( pointsMaterialDS ) {
+    pointsMaterialDS->setDiffuse( pointsColor );
+  }
 }
 
 void

@@ -17,7 +17,8 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit OrientationPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit OrientationPlotDockBlock(
+    MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
@@ -35,15 +36,17 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
 
 public:
   OrientationPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "OrientationPlotDockBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "OrientationPlotDockBlock" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Plots" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Plots" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Orientation Plot Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Orientation Plot Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

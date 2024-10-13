@@ -83,7 +83,7 @@ GeoJsonHelper::PointVector
 GeoJsonHelper::parseCoordinatesArray( const QJsonArray& coordinatesArray ) {
   PointVector vector;
 
-  for( const auto& blockIndex : qAsConst( coordinatesArray ) ) {
+  for( const auto& blockIndex : std::as_const( coordinatesArray ) ) {
     if( auto parsedCoordinates = parseCoodinate( blockIndex ) ) {
       vector.push_back( std::move( parsedCoordinates.value() ) );
     }
@@ -97,23 +97,23 @@ GeoJsonHelper::deduceType( const QJsonObject& object ) {
   if( auto type = getJsonQString( object, QStringLiteral( "type" ) ) ) {
     auto& typeString = type.value();
 
-    if( typeString == QLatin1String( "Point" ) ) {
+    if( typeString == QLatin1StringView( "Point" ) ) {
       return GeometryType::Point;
     }
 
-    if( typeString == QLatin1String( "MultiPoint" ) ) {
+    if( typeString == QLatin1StringView( "MultiPoint" ) ) {
       return GeometryType::MultiPoint;
     }
 
-    if( typeString == QLatin1String( "LineString" ) ) {
+    if( typeString == QLatin1StringView( "LineString" ) ) {
       return GeometryType::LineString;
     }
 
-    if( typeString == QLatin1String( "Polygon" ) ) {
+    if( typeString == QLatin1StringView( "Polygon" ) ) {
       return GeometryType::Polygon;
     }
 
-    if( typeString == QLatin1String( "MultiPolygon" ) ) {
+    if( typeString == QLatin1StringView( "MultiPolygon" ) ) {
       return GeometryType::MultiPolygon;
     }
   }
@@ -161,7 +161,7 @@ void
 GeoJsonHelper::parse( const QJsonObject& json ) {
   if( testForFieldWithValue( json, QStringLiteral( "type" ), QStringLiteral( "FeatureCollection" ) ) ) {
     if( auto featuresArray = getJsonArray( json, QStringLiteral( "features" ) ) ) {
-      for( const auto& feature : qAsConst( featuresArray.value() ) ) {
+      for( const auto& feature : std::as_const( featuresArray.value() ) ) {
         QJsonObject featuresObject = feature.toObject();
 
         if( testForFieldWithValue( featuresObject, QStringLiteral( "type" ), QStringLiteral( "Feature" ) ) ) {
@@ -189,7 +189,7 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
                   PointVectorVector polygon;
 
-                  for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
+                  for( const auto& coordinatesArray : std::as_const( coordinatesJsonArray.value() ) ) {
                     if( coordinatesArray.isArray() ) {
                       polygon.push_back( parseCoordinatesArray( coordinatesArray.toArray() ) );
                     }
@@ -201,7 +201,7 @@ GeoJsonHelper::parse( const QJsonObject& json ) {
 
               case GeometryType::MultiPolygon: {
                 if( auto coordinatesJsonArray = getJsonArray( geometryObject.value(), QStringLiteral( "coordinates" ) ) ) {
-                  for( const auto& coordinatesArray : qAsConst( coordinatesJsonArray.value() ) ) {
+                  for( const auto& coordinatesArray : std::as_const( coordinatesJsonArray.value() ) ) {
                     PointVectorVector polygon;
 
                     if( coordinatesArray.isArray() ) {

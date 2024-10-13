@@ -3,10 +3,6 @@
 
 #include "NmeaParserRMC.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QIODevice>
 
 void
@@ -132,17 +128,14 @@ NmeaParserRMC::parseData() {
   }
 }
 
-QNEBlock*
-NmeaParserRMCFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new NmeaParserRMC();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+NmeaParserRMCFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< NmeaParserRMC >( idHint );
 
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

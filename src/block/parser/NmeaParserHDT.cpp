@@ -4,10 +4,7 @@
 #include "NmeaParserHDT.h"
 
 #include "kinematic/CalculationOptions.h"
-#include "qneblock.h"
-#include "qneport.h"
 
-#include <QBrush>
 #include <QIODevice>
 
 #include "helpers/anglesHelper.h"
@@ -98,16 +95,13 @@ NmeaParserHDT::parseData() {
   }
 }
 
-QNEBlock*
-NmeaParserHDTFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new NmeaParserHDT();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+NmeaParserHDTFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< NmeaParserHDT >( idHint );
 
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

@@ -7,7 +7,7 @@
 #include <QObject>
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include <QJsonDocument>
@@ -19,14 +19,13 @@
 #include "block/BlockBase.h"
 #include "block/dock/display/ValueDockBlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
+KDDockWidgets::QtWidgets::DockWidget* SliderDockBlockFactory::firstSliderValueDock = nullptr;
 
-KDDockWidgets::DockWidget* SliderDockBlockFactory::firstSliderValueDock = nullptr;
-
-SliderDockBlock::SliderDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : BlockBase() {
+SliderDockBlock::SliderDockBlock(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   widget = new SliderDock( mainWindow );
-  dock   = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
   connect( widget, &SliderDock::valueChanged, this, &SliderDockBlock::valueChangedProxy );
 }
@@ -42,12 +41,12 @@ SliderDockBlock::~SliderDockBlock() {
 
 void
 SliderDockBlock::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT valueChanged( widget->getValue(), CalculationOption::Option::None );
 }
 
-QJsonObject
-SliderDockBlock::toJSON() const {
-  QJsonObject valuesObject;
+void
+SliderDockBlock::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "Value" )]          = widget->getValue();
   valuesObject[QStringLiteral( "Decimals" )]       = widget->getDecimals();
   valuesObject[QStringLiteral( "Maximum" )]        = widget->getMaximum();
@@ -56,12 +55,10 @@ SliderDockBlock::toJSON() const {
   valuesObject[QStringLiteral( "Unit" )]           = widget->getUnit();
   valuesObject[QStringLiteral( "ResetOnStart" )]   = widget->resetOnStart;
   valuesObject[QStringLiteral( "SliderInverted" )] = widget->getSliderInverted();
-
-  return valuesObject;
 }
 
 void
-SliderDockBlock::fromJSON( QJsonObject& valuesObject ) {
+SliderDockBlock::fromJSON( const QJsonObject& valuesObject ) {
   if( valuesObject[QStringLiteral( "ResetOnStart" )].isBool() ) {
     widget->resetOnStart = valuesObject[QStringLiteral( "ResetOnStart" )].toBool();
   }
@@ -101,6 +98,7 @@ SliderDockBlock::fromJSON( QJsonObject& valuesObject ) {
 
 void
 SliderDockBlock::setName( const QString& name ) {
+  BlockBase::setName( name );
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
 }
@@ -115,15 +113,9 @@ SliderDockBlock::valueChangedProxy( double value ) {
   Q_EMIT valueChanged( value, CalculationOption::Option::None );
 }
 
-QNEBlock*
-SliderDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new SliderDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SliderDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SliderDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -137,9 +129,7 @@ SliderDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, firstSliderValueDock );
   }
 
-  b->addOutputPort( QStringLiteral( "Number" ), QLatin1String( SIGNAL( valueChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Number" ), obj.get(), QLatin1StringView( SIGNAL( valueChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( inputDockColor );
-
-  return b;
+  return obj;
 }

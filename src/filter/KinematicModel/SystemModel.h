@@ -8,7 +8,7 @@
 
 #include <kalman/ExtendedKalmanFilter.hpp>
 
-// Formulas from here: https://github.com/cra-ros-pkg/robot_localization/blob/melodic-devel/src/ekf.cpp#L210
+// Formulas from here: https://github.com/cra-ros-pkg/robot_localization/blob/noetic-devel/src/ekf.cpp#L210
 
 namespace KinematicModel {
 

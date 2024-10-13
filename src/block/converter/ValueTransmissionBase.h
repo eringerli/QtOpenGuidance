@@ -15,10 +15,10 @@ class ValueTransmissionBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueTransmissionBase( const uint16_t cid );
+  explicit ValueTransmissionBase( const uint16_t cid, const int idHint, const bool systemBlock, const QString type );
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
 public Q_SLOTS:
   void setTimeoutTimeMs( int value );

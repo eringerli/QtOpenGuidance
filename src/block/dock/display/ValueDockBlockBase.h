@@ -14,12 +14,15 @@ class ValueDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueDockBlockBase( const QString& uniqueName ) : BlockBase() { dock = new KDDockWidgets::DockWidget( uniqueName ); }
+  explicit ValueDockBlockBase( QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ) {
+    dock = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
+  }
 
   virtual ~ValueDockBlockBase() { dock->deleteLater(); }
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
 public:
   virtual const QFont&   getFont() const       = 0;
@@ -39,8 +42,8 @@ public:
 public Q_SLOTS:
 
 public:
-  KDDockWidgets::DockWidget* dock = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock = nullptr;
 
-  static KDDockWidgets::DockWidget* firstValueDock;
-  static KDDockWidgets::DockWidget* firstThreeValuesDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstValueDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstThreeValuesDock;
 };

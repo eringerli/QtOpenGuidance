@@ -3,12 +3,7 @@
 
 #include "UbxParser.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/anglesHelper.h"
-
-#include <QBrush>
 
 void
 UBX_Parser_Helper::handle_NAV_HPPOSLLH( uint32_t iTOW, double lon, double lat, double height, double hMSL, double hAcc, double vAcc ) {
@@ -33,7 +28,7 @@ UBX_Parser_Helper::handle_NAV_PVT( uint32_t iTOW,
   Q_EMIT UbxNavPvtChanged( iTOW, rtkFix, rtkFloat, numSatelites, speed, headingOfMotion, headingOfVehicle, pDOP );
 }
 
-UbxParser::UbxParser() : BlockBase() {
+UbxParser::UbxParser( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
   connect( &ubxParser, &UBX_Parser_Helper::ubxNavHpPosLlhChanged, this, &UbxParser::ubxNavHpPosLLH );
   connect( &ubxParser, &UBX_Parser_Helper::ubxNavRelPosNedChanged, this, &UbxParser::ubxNavRelPosNed );
   connect( &ubxParser, &UBX_Parser_Helper::UbxNavPvtChanged, this, &UbxParser::UbxNavPvt );
@@ -102,34 +97,38 @@ UbxParser::setRollFactor( const double rollFactor, CalculationOption::Options ) 
   this->rollFactor = rollFactor;
 }
 
-QNEBlock*
-UbxParserFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new UbxParser();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+UbxParserFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< UbxParser >( idHint );
 
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
-  b->addInputPort( QStringLiteral( "Heading Offset" ), QLatin1String( SLOT( setHeadingOffset( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Heading Factor" ), QLatin1String( SLOT( setHeadingFactor( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Roll Offset" ), QLatin1String( SLOT( setRollOffset( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Roll Factor" ), QLatin1String( SLOT( setRollFactor( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Heading Offset" ), obj.get(), QLatin1StringView( SLOT( setHeadingOffset( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Heading Factor" ), obj.get(), QLatin1StringView( SLOT( setHeadingFactor( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Roll Offset" ), obj.get(), QLatin1StringView( SLOT( setRollOffset( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Roll Factor" ), obj.get(), QLatin1StringView( SLOT( setRollFactor( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Velocity" ), QLatin1String( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation Dual Antenna" ),
-                    QLatin1String( SIGNAL( orientationDualAntennaChanged( ORIENTATION_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ),
-                    QLatin1String( SIGNAL( orientationVehicleChanged( ORIENTATION_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ),
-                    QLatin1String( SIGNAL( orientationMotionChanged( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SIGNAL( velocityChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Orientation Dual Antenna" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( orientationDualAntennaChanged( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Orientation GNS/Vehicle" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( orientationVehicleChanged( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Orientation GNS/Motion" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( orientationMotionChanged( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Dist Antennas" ), QLatin1String( SIGNAL( distanceBetweenAntennasChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Horizontal Accuracy" ), QLatin1String( SIGNAL( horizontalAccuracyChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Vertical Accuracy" ), QLatin1String( SIGNAL( verticalAccuracyChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Dist Antennas" ), obj.get(), QLatin1StringView( SIGNAL( distanceBetweenAntennasChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Num Satelites" ), obj.get(), QLatin1StringView( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "HDOP" ), obj.get(), QLatin1StringView( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Horizontal Accuracy" ), obj.get(), QLatin1StringView( SIGNAL( horizontalAccuracyChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Vertical Accuracy" ), obj.get(), QLatin1StringView( SIGNAL( verticalAccuracyChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

@@ -19,7 +19,8 @@ class PositionDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit PositionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit PositionDockBlock(
+    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
 
   ~PositionDockBlock();
 
@@ -58,15 +59,17 @@ class PositionDockBlockFactory : public BlockFactory {
 
 public:
   PositionDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "PositionDockBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "PositionDockBlock" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Display Docks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Display Docks" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Position Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Position Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

@@ -5,13 +5,11 @@
 
 #include "block/dock/plot/PlotDockBlockBase.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = PlotDockBlockBase;
 
-PlotBlockModel::PlotBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+PlotBlockModel::PlotBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 PlotBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -34,9 +32,6 @@ PlotBlockModel::headerData( int section, Qt::Orientation orientation, int role )
 
       case 5:
         return QStringLiteral( "Window" );
-
-      default:
-        return QString();
     }
   }
 
@@ -56,81 +51,61 @@ PlotBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-bool
-PlotBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-PlotBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+PlotBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-PlotBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+PlotBlockModel::columnCount( const QModelIndex& ) const {
   return 6;
 }
 
 QVariant
 PlotBlockModel::data( const QModelIndex& index, int role ) const {
-  if( index.isValid() ) {
-    if( role == Qt::CheckStateRole ) {
-      int countRow = 0;
+  if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::CheckStateRole ) ) {
+    return QVariant();
+  }
 
-      const auto& constRefOfList = scene->items();
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-        if( block != nullptr ) {
-          if( auto* object = qobject_cast< PlotDockBlockBase* >( block->objects.front() ) ) {
-            if( countRow++ == index.row() ) {
-              switch( index.column() ) {
-                case 1:
-                  return object->getXAxisVisible() ? Qt::Checked : Qt::Unchecked;
-
-                case 2:
-                  return object->getYAxisVisible() ? Qt::Checked : Qt::Unchecked;
-
-                case 4:
-                  return object->getAutoscrollEnabled() ? Qt::Checked : Qt::Unchecked;
-              }
-            }
-          }
+    switch( index.column() ) {
+      case 0: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->name();
         }
-      }
-    }
+      } break;
 
-    if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-      int countRow = 0;
-
-      const auto& constRefOfList = scene->items();
-
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-        if( block != nullptr ) {
-          if( auto* object = qobject_cast< PlotDockBlockBase* >( block->objects.front() ) ) {
-            if( countRow++ == index.row() ) {
-              switch( index.column() ) {
-                case 0:
-                  return block->getName();
-
-                case 3:
-                  return object->getYAxisDescription();
-
-                case 5:
-                  return object->getWindow();
-              }
-            }
-          }
+      case 1: {
+        if( role == Qt::CheckStateRole ) {
+          return block->getXAxisVisible() ? Qt::Checked : Qt::Unchecked;
         }
-      }
+      } break;
+
+      case 2: {
+        if( role == Qt::CheckStateRole ) {
+          return block->getYAxisVisible() ? Qt::Checked : Qt::Unchecked;
+        }
+      } break;
+
+      case 3: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getYAxisDescription();
+        }
+      } break;
+
+      case 4: {
+        if( role == Qt::CheckStateRole ) {
+          return block->getAutoscrollEnabled() ? Qt::Checked : Qt::Unchecked;
+        }
+      } break;
+
+      case 5: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getWindow();
+        }
+      } break;
     }
   }
 
@@ -139,49 +114,39 @@ PlotBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        block->setXAxisVisible( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< PlotDockBlockBase* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 2:
+        block->setYAxisVisible( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 1:
-              object->setXAxisVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 3:
+        block->setYAxisDescription( value.toString() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 2:
-              object->setYAxisVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 4:
+        block->setAutoscrollEnabled( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 3:
-              object->setYAxisDescription( value.toString() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 4:
-              object->setAutoscrollEnabled( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 5:
-              object->setWindow( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 5:
+        block->setWindow( value.toString().toDouble() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -191,19 +156,11 @@ PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, int ro
 void
 PlotBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< PlotDockBlockBase* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
-
   endResetModel();
 }

@@ -6,16 +6,14 @@
 #include "block/dock/input/ActionDockBlock.h"
 #include "gui/dock/ActionDock.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = ActionDockBlock;
 
-ActionDockBlockModel::ActionDockBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+ActionDockBlockModel::ActionDockBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 int
-ActionDockBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+ActionDockBlockModel::columnCount( const QModelIndex& ) const {
   return 4;
 }
 
@@ -38,28 +36,14 @@ ActionDockBlockModel::headerData( int section, Qt::Orientation orientation, int 
       case 3:
         return QStringLiteral( "Icon" );
         break;
-
-      default:
-        return QString();
-        break;
     }
   }
 
   return QVariant();
 }
 
-bool
-ActionDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-ActionDockBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+ActionDockBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
@@ -69,51 +53,32 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  if( role == Qt::CheckStateRole ) {
-    int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-    const auto& constRefOfList = scene->items();
-
-    for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-      if( block != nullptr ) {
-        if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
-          if( countRow++ == index.row() ) {
-            switch( index.column() ) {
-              case 1:
-                return object->widget->state() ? Qt::Checked : Qt::Unchecked;
-
-              case 2:
-                return object->widget->isCheckable() ? Qt::Checked : Qt::Unchecked;
-            }
-          }
+    switch( index.column() ) {
+      case 0: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->name();
         }
-      }
-    }
-  }
+      } break;
 
-  if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-    int countRow = 0;
-
-    const auto& constRefOfList = scene->items();
-
-    for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-      if( block != nullptr ) {
-        if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
-          if( countRow++ == index.row() ) {
-            switch( index.column() ) {
-              case 0:
-                return block->getName();
-
-              case 3:
-                return object->widget->getTheme();
-            }
-          }
+      case 1: {
+        if( role == Qt::CheckStateRole ) {
+          return block->widget->state() ? Qt::Checked : Qt::Unchecked;
         }
-      }
+      } break;
+      case 2: {
+        if( role == Qt::CheckStateRole ) {
+          return block->widget->isCheckable() ? Qt::Checked : Qt::Unchecked;
+        }
+      } break;
+
+      case 3: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getTheme();
+        }
+      } break;
     }
   }
 
@@ -122,39 +87,29 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        block->widget->setState( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< ActionDockBlock* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 2:
+        block->widget->setCheckable( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 1:
-              object->widget->setState( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 2:
-              object->widget->setCheckable( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 3:
-              object->widget->setTheme( value.toString() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 3:
+        block->widget->setTheme( value.toString() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -175,26 +130,13 @@ ActionDockBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-ActionDockBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Action/State Dock" ), QVariant::fromValue( this ) );
-}
-
-void
 ActionDockBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< ActionDockBlock* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
-
   endResetModel();
 }

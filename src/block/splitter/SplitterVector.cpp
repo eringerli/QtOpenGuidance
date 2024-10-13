@@ -3,13 +3,10 @@
 
 #include "SplitterVector.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 SplitterVector::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT numberChangedX( 0, CalculationOption::Option::None );
   Q_EMIT numberChangedY( 0, CalculationOption::Option::None );
   Q_EMIT numberChangedZ( 0, CalculationOption::Option::None );
@@ -22,19 +19,15 @@ SplitterVector::setVector( const Eigen::Vector3d& vector, const CalculationOptio
   Q_EMIT numberChangedZ( vector.z(), CalculationOption::Option::None );
 }
 
-QNEBlock*
-SplitterVectorFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SplitterVector();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SplitterVectorFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SplitterVector >( idHint );
 
-  b->addInputPort( QStringLiteral( "Vector" ), QLatin1String( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "X" ), QLatin1String( SIGNAL( numberChangedX( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Y" ), QLatin1String( SIGNAL( numberChangedY( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Z" ), QLatin1String( SIGNAL( numberChangedZ( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "X" ), obj.get(), QLatin1StringView( SIGNAL( numberChangedX( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Y" ), obj.get(), QLatin1StringView( SIGNAL( numberChangedY( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Z" ), obj.get(), QLatin1StringView( SIGNAL( numberChangedZ( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

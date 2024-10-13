@@ -5873,10 +5873,10 @@ QCPLabelPainterPrivate::LabelData QCPLabelPainterPrivate::getTickLabelData(const
     result.basePart = text.left(ePos);
     result.suffixPart = text.mid(eLast+1); // also drawn normally but after exponent
     // in log scaling, we want to turn "1*10^n" into "10^n", else add multiplication sign and decimal base:
-    if (mAbbreviateDecimalPowers && result.basePart == QLatin1String("1"))
-      result.basePart = QLatin1String("10");
+    if (mAbbreviateDecimalPowers && result.basePart == QLatin1StringView("1"))
+      result.basePart = QLatin1StringView("10");
     else
-      result.basePart += QString(mMultiplicationSymbol) + QLatin1String("10");
+      result.basePart += QString(mMultiplicationSymbol) + QLatin1StringView("10");
     result.expPart = text.mid(ePos+1, eLast-ePos);
     // clip "+" and leading zeros off expPart:
     while (result.expPart.length() > 2 && result.expPart.at(1) == QLatin1Char('0')) // length > 2 so we leave one zero when numberFormatChar is 'e'
@@ -6051,7 +6051,7 @@ QCPLabelPainterPrivate::AnchorSide QCPLabelPainterPrivate::rotationCorrectedSide
 void QCPLabelPainterPrivate::analyzeFontMetrics()
 {
   const QFontMetrics fm(mFont);
-  mLetterCapHeight = fm.tightBoundingRect(QLatin1String("8")).height(); // this method is slow, that's why we query it only upon font change
+  mLetterCapHeight = fm.tightBoundingRect(QLatin1StringView("8")).height(); // this method is slow, that's why we query it only upon font change
   mLetterDescent = fm.descent();
 }
 /* end of 'src/axis/labelpainter.cpp' */
@@ -6525,7 +6525,7 @@ double QCPAxisTicker::cleanMantissa(double input) const
   managed by a QSharedPointer, which then can be passed to QCPAxis::setTicker.
 */
 QCPAxisTickerDateTime::QCPAxisTickerDateTime() :
-  mDateTimeFormat(QLatin1String("hh:mm:ss\ndd.MM.yy")),
+  mDateTimeFormat(QLatin1StringView("hh:mm:ss\ndd.MM.yy")),
   mDateTimeSpec(Qt::LocalTime),
   mDateStrategy(dsNone)
 {
@@ -6881,7 +6881,7 @@ double QCPAxisTickerDateTime::dateTimeToKey(const QDate &date, Qt::TimeSpec time
   managed by a QSharedPointer, which then can be passed to QCPAxis::setTicker.
 */
 QCPAxisTickerTime::QCPAxisTickerTime() :
-  mTimeFormat(QLatin1String("%h:%m:%s")),
+  mTimeFormat(QLatin1StringView("%h:%m:%s")),
   mSmallestUnit(tuSeconds),
   mBiggestUnit(tuHours)
 {
@@ -6892,11 +6892,11 @@ QCPAxisTickerTime::QCPAxisTickerTime() :
   mFieldWidth[tuHours] = 2;
   mFieldWidth[tuDays] = 1;
   
-  mFormatPattern[tuMilliseconds] = QLatin1String("%z");
-  mFormatPattern[tuSeconds] = QLatin1String("%s");
-  mFormatPattern[tuMinutes] = QLatin1String("%m");
-  mFormatPattern[tuHours] = QLatin1String("%h");
-  mFormatPattern[tuDays] = QLatin1String("%d");
+  mFormatPattern[tuMilliseconds] = QLatin1StringView("%z");
+  mFormatPattern[tuSeconds] = QLatin1StringView("%s");
+  mFormatPattern[tuMinutes] = QLatin1StringView("%m");
+  mFormatPattern[tuHours] = QLatin1StringView("%h");
+  mFormatPattern[tuDays] = QLatin1StringView("%d");
 }
 
 /*!
@@ -7429,7 +7429,7 @@ QVector<double> QCPAxisTickerText::createTickVector(double tickStep, const QCPRa
   managed by a QSharedPointer, which then can be passed to QCPAxis::setTicker.
 */
 QCPAxisTickerPi::QCPAxisTickerPi() :
-  mPiSymbol(QLatin1String(" ")+QChar(0x03C0)),
+  mPiSymbol(QLatin1StringView(" ")+QChar(0x03C0)),
   mPiValue(M_PI),
   mPeriodicity(0),
   mFractionStyle(fsUnicodeFractions),
@@ -7532,17 +7532,17 @@ QString QCPAxisTickerPi::getTickLabel(double tick, const QLocale &locale, QChar 
     int numerator = qRound(tickInPis*denominator);
     simplifyFraction(numerator, denominator);
     if (qAbs(numerator) == 1 && denominator == 1)
-      return (numerator < 0 ? QLatin1String("-") : QLatin1String("")) + mPiSymbol.trimmed();
+      return (numerator < 0 ? QLatin1StringView("-") : QLatin1StringView("")) + mPiSymbol.trimmed();
     else if (numerator == 0)
-      return QLatin1String("0");
+      return QLatin1StringView("0");
     else
       return fractionToString(numerator, denominator) + mPiSymbol;
   } else
   {
     if (qFuzzyIsNull(tickInPis))
-      return QLatin1String("0");
+      return QLatin1StringView("0");
     else if (qFuzzyCompare(qAbs(tickInPis), 1.0))
-      return (tickInPis < 0 ? QLatin1String("-") : QLatin1String("")) + mPiSymbol.trimmed();
+      return (tickInPis < 0 ? QLatin1StringView("-") : QLatin1StringView("")) + mPiSymbol.trimmed();
     else
       return QCPAxisTicker::getTickLabel(tickInPis, locale, formatChar, precision) + mPiSymbol;
   }
@@ -7611,16 +7611,16 @@ QString QCPAxisTickerPi::fractionToString(int numerator, int denominator) const
     {
       if (mFractionStyle == fsAsciiFractions)
       {
-        return QString(QLatin1String("%1%2%3/%4"))
-            .arg(sign == -1 ? QLatin1String("-") : QLatin1String(""))
-            .arg(integerPart > 0 ? QString::number(integerPart)+QLatin1String(" ") : QString(QLatin1String("")))
+        return QString(QLatin1StringView("%1%2%3/%4"))
+            .arg(sign == -1 ? QLatin1StringView("-") : QLatin1StringView(""))
+            .arg(integerPart > 0 ? QString::number(integerPart)+QLatin1StringView(" ") : QString(QLatin1StringView("")))
             .arg(remainder)
             .arg(denominator);
       } else if (mFractionStyle == fsUnicodeFractions)
       {
-        return QString(QLatin1String("%1%2%3"))
-            .arg(sign == -1 ? QLatin1String("-") : QLatin1String(""))
-            .arg(integerPart > 0 ? QString::number(integerPart) : QLatin1String(""))
+        return QString(QLatin1StringView("%1%2%3"))
+            .arg(sign == -1 ? QLatin1StringView("-") : QLatin1StringView(""))
+            .arg(integerPart > 0 ? QString::number(integerPart) : QLatin1StringView(""))
             .arg(unicodeFraction(remainder, denominator));
       }
     }
@@ -8721,7 +8721,7 @@ void QCPAxis::setNumberFormat(const QString &formatCode)
   mCachedMarginValid = false;
   
   // interpret first char as number format char:
-  QString allowedFormatChars(QLatin1String("eEfgG"));
+  QString allowedFormatChars(QLatin1StringView("eEfgG"));
   if (allowedFormatChars.contains(formatCode.at(0)))
   {
     mNumberFormatChar = QLatin1Char(formatCode.at(0).toLatin1());
@@ -10373,10 +10373,10 @@ QCPAxisPainterPrivate::TickLabelData QCPAxisPainterPrivate::getTickLabelData(con
     result.basePart = text.left(ePos);
     result.suffixPart = text.mid(eLast+1); // also drawn normally but after exponent
     // in log scaling, we want to turn "1*10^n" into "10^n", else add multiplication sign and decimal base:
-    if (abbreviateDecimalPowers && result.basePart == QLatin1String("1"))
-      result.basePart = QLatin1String("10");
+    if (abbreviateDecimalPowers && result.basePart == QLatin1StringView("1"))
+      result.basePart = QLatin1StringView("10");
     else
-      result.basePart += (numberMultiplyCross ? QString(QChar(215)) : QString(QChar(183))) + QLatin1String("10");
+      result.basePart += (numberMultiplyCross ? QString(QChar(215)) : QString(QChar(183))) + QLatin1StringView("10");
     result.expPart = text.mid(ePos+1, eLast-ePos);
     // clip "+" and leading zeros off expPart:
     while (result.expPart.length() > 2 && result.expPart.at(1) == QLatin1Char('0')) // length > 2 so we leave one zero when numberFormatChar is 'e'
@@ -13646,21 +13646,21 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   mOpenGlAntialiasedElementsBackup = mAntialiasedElements;
   mOpenGlCacheLabelsBackup = mPlottingHints.testFlag(QCP::phCacheLabels);
   // create initial layers:
-  mLayers.append(new QCPLayer(this, QLatin1String("background")));
-  mLayers.append(new QCPLayer(this, QLatin1String("grid")));
-  mLayers.append(new QCPLayer(this, QLatin1String("main")));
-  mLayers.append(new QCPLayer(this, QLatin1String("axes")));
-  mLayers.append(new QCPLayer(this, QLatin1String("legend")));
-  mLayers.append(new QCPLayer(this, QLatin1String("overlay")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("background")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("grid")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("main")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("axes")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("legend")));
+  mLayers.append(new QCPLayer(this, QLatin1StringView("overlay")));
   updateLayerIndices();
-  setCurrentLayer(QLatin1String("main"));
-  layer(QLatin1String("overlay"))->setMode(QCPLayer::lmBuffered);
+  setCurrentLayer(QLatin1StringView("main"));
+  layer(QLatin1StringView("overlay"))->setMode(QCPLayer::lmBuffered);
   
   // create initial layout, axis rect and legend:
   mPlotLayout = new QCPLayoutGrid;
   mPlotLayout->initializeParentPlot(this);
   mPlotLayout->setParent(this); // important because if parent is QWidget, QCPLayout::sizeConstraintsChanged will call QWidget::updateGeometry
-  mPlotLayout->setLayer(QLatin1String("main"));
+  mPlotLayout->setLayer(QLatin1StringView("main"));
   QCPAxisRect *defaultAxisRect = new QCPAxisRect(this, true);
   mPlotLayout->addElement(0, 0, defaultAxisRect);
   xAxis = defaultAxisRect->axis(QCPAxis::atBottom);
@@ -13672,20 +13672,20 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   defaultAxisRect->insetLayout()->addElement(legend, Qt::AlignRight|Qt::AlignTop);
   defaultAxisRect->insetLayout()->setMargins(QMargins(12, 12, 12, 12));
   
-  defaultAxisRect->setLayer(QLatin1String("background"));
-  xAxis->setLayer(QLatin1String("axes"));
-  yAxis->setLayer(QLatin1String("axes"));
-  xAxis2->setLayer(QLatin1String("axes"));
-  yAxis2->setLayer(QLatin1String("axes"));
-  xAxis->grid()->setLayer(QLatin1String("grid"));
-  yAxis->grid()->setLayer(QLatin1String("grid"));
-  xAxis2->grid()->setLayer(QLatin1String("grid"));
-  yAxis2->grid()->setLayer(QLatin1String("grid"));
-  legend->setLayer(QLatin1String("legend"));
+  defaultAxisRect->setLayer(QLatin1StringView("background"));
+  xAxis->setLayer(QLatin1StringView("axes"));
+  yAxis->setLayer(QLatin1StringView("axes"));
+  xAxis2->setLayer(QLatin1StringView("axes"));
+  yAxis2->setLayer(QLatin1StringView("axes"));
+  xAxis->grid()->setLayer(QLatin1StringView("grid"));
+  yAxis->grid()->setLayer(QLatin1StringView("grid"));
+  xAxis2->grid()->setLayer(QLatin1StringView("grid"));
+  yAxis2->grid()->setLayer(QLatin1StringView("grid"));
+  legend->setLayer(QLatin1StringView("legend"));
   
   // create selection rect instance:
   mSelectionRect = new QCPSelectionRect(this);
-  mSelectionRect->setLayer(QLatin1String("overlay"));
+  mSelectionRect->setLayer(QLatin1StringView("overlay"));
   
   setViewport(rect()); // needs to be called after mPlotLayout has been created
   
@@ -14439,7 +14439,7 @@ QCPGraph *QCustomPlot::addGraph(QCPAxis *keyAxis, QCPAxis *valueAxis)
   }
   
   QCPGraph *newGraph = new QCPGraph(keyAxis, valueAxis);
-  newGraph->setName(QLatin1String("Graph ")+QString::number(mGraphs.size()));
+  newGraph->setName(QLatin1StringView("Graph ")+QString::number(mGraphs.size()));
   return newGraph;
 }
 
@@ -18759,7 +18759,7 @@ QCPAbstractLegendItem::QCPAbstractLegendItem(QCPLegend *parent) :
   mSelectable(true),
   mSelected(false)
 {
-  setLayer(QLatin1String("legend"));
+  setLayer(QLatin1StringView("legend"));
   setMargins(QMargins(0, 0, 0, 0));
 }
 
@@ -19680,9 +19680,9 @@ QCPTextElement::QCPTextElement(QCustomPlot *parentPlot) :
   QCPLayoutElement(parentPlot),
   mText(),
   mTextFlags(Qt::AlignCenter),
-  mFont(QFont(QLatin1String("sans serif"), 12)), // will be taken from parentPlot if available, see below
+  mFont(QFont(QLatin1StringView("sans serif"), 12)), // will be taken from parentPlot if available, see below
   mTextColor(Qt::black),
-  mSelectedFont(QFont(QLatin1String("sans serif"), 12)), // will be taken from parentPlot if available, see below
+  mSelectedFont(QFont(QLatin1StringView("sans serif"), 12)), // will be taken from parentPlot if available, see below
   mSelectedTextColor(Qt::blue),
   mSelectable(false),
   mSelected(false)
@@ -19705,9 +19705,9 @@ QCPTextElement::QCPTextElement(QCustomPlot *parentPlot, const QString &text) :
   QCPLayoutElement(parentPlot),
   mText(text),
   mTextFlags(Qt::AlignCenter),
-  mFont(QFont(QLatin1String("sans serif"), 12)), // will be taken from parentPlot if available, see below
+  mFont(QFont(QLatin1StringView("sans serif"), 12)), // will be taken from parentPlot if available, see below
   mTextColor(Qt::black),
-  mSelectedFont(QFont(QLatin1String("sans serif"), 12)), // will be taken from parentPlot if available, see below
+  mSelectedFont(QFont(QLatin1StringView("sans serif"), 12)), // will be taken from parentPlot if available, see below
   mSelectedTextColor(Qt::blue),
   mSelectable(false),
   mSelected(false)
@@ -19730,9 +19730,9 @@ QCPTextElement::QCPTextElement(QCustomPlot *parentPlot, const QString &text, dou
   QCPLayoutElement(parentPlot),
   mText(text),
   mTextFlags(Qt::AlignCenter),
-  mFont(QFont(QLatin1String("sans serif"), int(pointSize))), // will be taken from parentPlot if available, see below
+  mFont(QFont(QLatin1StringView("sans serif"), int(pointSize))), // will be taken from parentPlot if available, see below
   mTextColor(Qt::black),
-  mSelectedFont(QFont(QLatin1String("sans serif"), int(pointSize))), // will be taken from parentPlot if available, see below
+  mSelectedFont(QFont(QLatin1StringView("sans serif"), int(pointSize))), // will be taken from parentPlot if available, see below
   mSelectedTextColor(Qt::blue),
   mSelectable(false),
   mSelected(false)
@@ -28872,8 +28872,8 @@ bool QCPErrorBars::rectIntersectsLine(const QRectF &pixelRect, const QLineF &lin
 */
 QCPItemStraightLine::QCPItemStraightLine(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  point1(createPosition(QLatin1String("point1"))),
-  point2(createPosition(QLatin1String("point2")))
+  point1(createPosition(QLatin1StringView("point1"))),
+  point2(createPosition(QLatin1StringView("point2")))
 {
   point1->setCoords(0, 0);
   point2->setCoords(1, 1);
@@ -29055,8 +29055,8 @@ QPen QCPItemStraightLine::mainPen() const
 */
 QCPItemLine::QCPItemLine(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  start(createPosition(QLatin1String("start"))),
-  end(createPosition(QLatin1String("end")))
+  start(createPosition(QLatin1StringView("start"))),
+  end(createPosition(QLatin1StringView("end")))
 {
   start->setCoords(0, 0);
   end->setCoords(1, 1);
@@ -29293,10 +29293,10 @@ QPen QCPItemLine::mainPen() const
 */
 QCPItemCurve::QCPItemCurve(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  start(createPosition(QLatin1String("start"))),
-  startDir(createPosition(QLatin1String("startDir"))),
-  endDir(createPosition(QLatin1String("endDir"))),
-  end(createPosition(QLatin1String("end")))
+  start(createPosition(QLatin1StringView("start"))),
+  startDir(createPosition(QLatin1StringView("startDir"))),
+  endDir(createPosition(QLatin1StringView("endDir"))),
+  end(createPosition(QLatin1StringView("end")))
 {
   start->setCoords(0, 0);
   startDir->setCoords(0.5, 0);
@@ -29453,14 +29453,14 @@ QPen QCPItemCurve::mainPen() const
 */
 QCPItemRect::QCPItemRect(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  topLeft(createPosition(QLatin1String("topLeft"))),
-  bottomRight(createPosition(QLatin1String("bottomRight"))),
-  top(createAnchor(QLatin1String("top"), aiTop)),
-  topRight(createAnchor(QLatin1String("topRight"), aiTopRight)),
-  right(createAnchor(QLatin1String("right"), aiRight)),
-  bottom(createAnchor(QLatin1String("bottom"), aiBottom)),
-  bottomLeft(createAnchor(QLatin1String("bottomLeft"), aiBottomLeft)),
-  left(createAnchor(QLatin1String("left"), aiLeft))
+  topLeft(createPosition(QLatin1StringView("topLeft"))),
+  bottomRight(createPosition(QLatin1StringView("bottomRight"))),
+  top(createAnchor(QLatin1StringView("top"), aiTop)),
+  topRight(createAnchor(QLatin1StringView("topRight"), aiTopRight)),
+  right(createAnchor(QLatin1StringView("right"), aiRight)),
+  bottom(createAnchor(QLatin1StringView("bottom"), aiBottom)),
+  bottomLeft(createAnchor(QLatin1StringView("bottomLeft"), aiBottomLeft)),
+  left(createAnchor(QLatin1StringView("left"), aiLeft))
 {
   topLeft->setCoords(0, 1);
   bottomRight->setCoords(1, 0);
@@ -29616,16 +29616,16 @@ QBrush QCPItemRect::mainBrush() const
 */
 QCPItemText::QCPItemText(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  position(createPosition(QLatin1String("position"))),
-  topLeft(createAnchor(QLatin1String("topLeft"), aiTopLeft)),
-  top(createAnchor(QLatin1String("top"), aiTop)),
-  topRight(createAnchor(QLatin1String("topRight"), aiTopRight)),
-  right(createAnchor(QLatin1String("right"), aiRight)),
-  bottomRight(createAnchor(QLatin1String("bottomRight"), aiBottomRight)),
-  bottom(createAnchor(QLatin1String("bottom"), aiBottom)),
-  bottomLeft(createAnchor(QLatin1String("bottomLeft"), aiBottomLeft)),
-  left(createAnchor(QLatin1String("left"), aiLeft)),
-  mText(QLatin1String("text")),
+  position(createPosition(QLatin1StringView("position"))),
+  topLeft(createAnchor(QLatin1StringView("topLeft"), aiTopLeft)),
+  top(createAnchor(QLatin1StringView("top"), aiTop)),
+  topRight(createAnchor(QLatin1StringView("topRight"), aiTopRight)),
+  right(createAnchor(QLatin1StringView("right"), aiRight)),
+  bottomRight(createAnchor(QLatin1StringView("bottomRight"), aiBottomRight)),
+  bottom(createAnchor(QLatin1StringView("bottom"), aiBottom)),
+  bottomLeft(createAnchor(QLatin1StringView("bottomLeft"), aiBottomLeft)),
+  left(createAnchor(QLatin1StringView("left"), aiLeft)),
+  mText(QLatin1StringView("text")),
   mPositionAlignment(Qt::AlignCenter),
   mTextAlignment(Qt::AlignTop|Qt::AlignHCenter),
   mRotation(0)
@@ -29958,17 +29958,17 @@ QBrush QCPItemText::mainBrush() const
 */
 QCPItemEllipse::QCPItemEllipse(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  topLeft(createPosition(QLatin1String("topLeft"))),
-  bottomRight(createPosition(QLatin1String("bottomRight"))),
-  topLeftRim(createAnchor(QLatin1String("topLeftRim"), aiTopLeftRim)),
-  top(createAnchor(QLatin1String("top"), aiTop)),
-  topRightRim(createAnchor(QLatin1String("topRightRim"), aiTopRightRim)),
-  right(createAnchor(QLatin1String("right"), aiRight)),
-  bottomRightRim(createAnchor(QLatin1String("bottomRightRim"), aiBottomRightRim)),
-  bottom(createAnchor(QLatin1String("bottom"), aiBottom)),
-  bottomLeftRim(createAnchor(QLatin1String("bottomLeftRim"), aiBottomLeftRim)),
-  left(createAnchor(QLatin1String("left"), aiLeft)),
-  center(createAnchor(QLatin1String("center"), aiCenter))
+  topLeft(createPosition(QLatin1StringView("topLeft"))),
+  bottomRight(createPosition(QLatin1StringView("bottomRight"))),
+  topLeftRim(createAnchor(QLatin1StringView("topLeftRim"), aiTopLeftRim)),
+  top(createAnchor(QLatin1StringView("top"), aiTop)),
+  topRightRim(createAnchor(QLatin1StringView("topRightRim"), aiTopRightRim)),
+  right(createAnchor(QLatin1StringView("right"), aiRight)),
+  bottomRightRim(createAnchor(QLatin1StringView("bottomRightRim"), aiBottomRightRim)),
+  bottom(createAnchor(QLatin1StringView("bottom"), aiBottom)),
+  bottomLeftRim(createAnchor(QLatin1StringView("bottomLeftRim"), aiBottomLeftRim)),
+  left(createAnchor(QLatin1StringView("left"), aiLeft)),
+  center(createAnchor(QLatin1StringView("center"), aiCenter))
 {
   topLeft->setCoords(0, 1);
   bottomRight->setCoords(1, 0);
@@ -30153,14 +30153,14 @@ QBrush QCPItemEllipse::mainBrush() const
 */
 QCPItemPixmap::QCPItemPixmap(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  topLeft(createPosition(QLatin1String("topLeft"))),
-  bottomRight(createPosition(QLatin1String("bottomRight"))),
-  top(createAnchor(QLatin1String("top"), aiTop)),
-  topRight(createAnchor(QLatin1String("topRight"), aiTopRight)),
-  right(createAnchor(QLatin1String("right"), aiRight)),
-  bottom(createAnchor(QLatin1String("bottom"), aiBottom)),
-  bottomLeft(createAnchor(QLatin1String("bottomLeft"), aiBottomLeft)),
-  left(createAnchor(QLatin1String("left"), aiLeft)),
+  topLeft(createPosition(QLatin1StringView("topLeft"))),
+  bottomRight(createPosition(QLatin1StringView("bottomRight"))),
+  top(createAnchor(QLatin1StringView("top"), aiTop)),
+  topRight(createAnchor(QLatin1StringView("topRight"), aiTopRight)),
+  right(createAnchor(QLatin1StringView("right"), aiRight)),
+  bottom(createAnchor(QLatin1StringView("bottom"), aiBottom)),
+  bottomLeft(createAnchor(QLatin1StringView("bottomLeft"), aiBottomLeft)),
+  left(createAnchor(QLatin1StringView("left"), aiLeft)),
   mScaled(false),
   mScaledPixmapInvalidated(true),
   mAspectRatioMode(Qt::KeepAspectRatio),
@@ -30439,7 +30439,7 @@ QPen QCPItemPixmap::mainPen() const
 */
 QCPItemTracer::QCPItemTracer(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  position(createPosition(QLatin1String("position"))),
+  position(createPosition(QLatin1StringView("position"))),
   mSize(6),
   mStyle(tsCrosshair),
   mGraph(nullptr),
@@ -30799,9 +30799,9 @@ QBrush QCPItemTracer::mainBrush() const
 */
 QCPItemBracket::QCPItemBracket(QCustomPlot *parentPlot) :
   QCPAbstractItem(parentPlot),
-  left(createPosition(QLatin1String("left"))),
-  right(createPosition(QLatin1String("right"))),
-  center(createAnchor(QLatin1String("center"), aiCenter)),
+  left(createPosition(QLatin1StringView("left"))),
+  right(createPosition(QLatin1StringView("right"))),
+  center(createAnchor(QLatin1StringView("center"), aiCenter)),
   mLength(8),
   mStyle(bsCalligraphic)
 {
@@ -31592,7 +31592,7 @@ void QCPPolarAxisRadial::setNumberFormat(const QString &formatCode)
   //mCachedMarginValid = false;
   
   // interpret first char as number format char:
-  QString allowedFormatChars(QLatin1String("eEfgG"));
+  QString allowedFormatChars(QLatin1StringView("eEfgG"));
   if (allowedFormatChars.contains(formatCode.at(0)))
   {
     mNumberFormatChar = QLatin1Char(formatCode.at(0).toLatin1());
@@ -33506,7 +33506,7 @@ void QCPPolarAxisAngular::setNumberFormat(const QString &formatCode)
   //mCachedMarginValid = false;
   
   // interpret first char as number format char:
-  QString allowedFormatChars(QLatin1String("eEfgG"));
+  QString allowedFormatChars(QLatin1StringView("eEfgG"));
   if (allowedFormatChars.contains(formatCode.at(0)))
   {
     mNumberFormatChar = QLatin1Char(formatCode.at(0).toLatin1());

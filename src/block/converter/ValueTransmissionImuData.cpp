@@ -4,18 +4,17 @@
 #include "ValueTransmissionImuData.h"
 
 #include "qcborarray.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include <QByteArray>
 
 #include <QBasicTimer>
-#include <QBrush>
+
 #include <QCborMap>
 #include <QCborValue>
 #include <iostream>
 
-ValueTransmissionImuData::ValueTransmissionImuData( uint16_t cid ) : ValueTransmissionBase( cid ) {
+ValueTransmissionImuData::ValueTransmissionImuData( uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+    : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 
@@ -31,7 +30,7 @@ ValueTransmissionImuData::dataReceive( const QByteArray& data ) {
   if( cbor.isMap() && ( cbor[QStringLiteral( "cid" )] == cid ) ) {
     auto imuData = cbor[QStringLiteral( "imu" )].toArray();
 
-    for( const auto& item : qAsConst( imuData ) ) {
+    for( const auto& item : std::as_const( imuData ) ) {
       if( item.isMap() ) {
         uint32_t ts   = item[QStringLiteral( "ts" )].toInteger();
         double   dT   = ( double )( ts - lastTimestamp ) / 1e6;
@@ -57,21 +56,17 @@ ValueTransmissionImuData::dataReceive( const QByteArray& data ) {
   }
 }
 
-QNEBlock*
-ValueTransmissionImuDataFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ValueTransmissionImuData( id );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValueTransmissionImuDataFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValueTransmissionImuData >( idHint, 1000 );
 
-  b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-  b->addOutputPort(
+  obj->addInputPort( QStringLiteral( "CBOR In" ), obj.get(), QLatin1StringView( SLOT( dataReceive( const QByteArray& ) ) ) );
+  obj->addOutputPort(
     QStringLiteral( "Out" ),
-    QLatin1String( SIGNAL( imuDataChanged( const double, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ),
-    false );
+    obj.get(),
+    QLatin1StringView( SIGNAL( imuDataChanged( const double, const Eigen::Vector3d&, const Eigen::Vector3d&, const Eigen::Vector3d& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
+  obj->addOutputPort( QStringLiteral( "CBOR Out" ), obj.get(), QLatin1StringView( SIGNAL( dataToSend( const QByteArray& ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

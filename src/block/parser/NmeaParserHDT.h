@@ -12,7 +12,7 @@ class NmeaParserHDT : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserHDT() : BlockBase() {}
+  explicit NmeaParserHDT( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 Q_SIGNALS:
   void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
@@ -32,13 +32,13 @@ class NmeaParserHDTFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser HDT" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "NMEA Parser HDT" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Parsers" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for HDT sentences" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "NMEA Parser for HDT sentences" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

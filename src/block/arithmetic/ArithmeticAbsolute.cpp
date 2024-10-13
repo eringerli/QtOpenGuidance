@@ -3,13 +3,9 @@
 
 #include "ArithmeticAbsolute.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ArithmeticAbsolute::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
@@ -25,17 +21,13 @@ ArithmeticAbsolute::operation() {
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-QNEBlock*
-ArithmeticAbsoluteFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticAbsolute();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ArithmeticAbsoluteFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ArithmeticAbsolute >( idHint );
 
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

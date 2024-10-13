@@ -11,7 +11,7 @@ class AckermannSteering : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit AckermannSteering() = default;
+  explicit AckermannSteering( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {};
 
 public Q_SLOTS:
   void setWheelbase( NUMBER_SIGNATURE_SLOT );
@@ -38,13 +38,13 @@ class AckermannSteeringFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  AckermannSteeringFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  AckermannSteeringFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Ackermann Steering" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Ackermann Steering" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
 };

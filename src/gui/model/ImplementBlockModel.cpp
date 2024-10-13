@@ -5,13 +5,11 @@
 
 #include "block/sectionControl/Implement.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = Implement;
 
-ImplementBlockModel::ImplementBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+ImplementBlockModel::ImplementBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 ImplementBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -20,7 +18,7 @@ ImplementBlockModel::headerData( int section, Qt::Orientation orientation, int r
       case 0:
         return QStringLiteral( "Name" );
 
-      default:
+      case 1:
         return QString();
     }
   }
@@ -28,24 +26,13 @@ ImplementBlockModel::headerData( int section, Qt::Orientation orientation, int r
   return QVariant();
 }
 
-bool
-ImplementBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    // FIXME: Implement me!
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-ImplementBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+ImplementBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-ImplementBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+ImplementBlockModel::columnCount( const QModelIndex& ) const {
   return 2;
 }
 
@@ -55,25 +42,15 @@ ImplementBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        return block->name();
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              return block->getName();
-
-            case 1:
-              return QVariant::fromValue( block );
-          }
-        }
-      }
+      case 1:
+        return QVariant::fromValue( block );
     }
   }
 
@@ -82,24 +59,14 @@ ImplementBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 ImplementBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( /*auto* object = */ qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -116,25 +83,13 @@ ImplementBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-ImplementBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Implement" ), QVariant::fromValue( this ) );
-}
-
-void
 ImplementBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< Implement* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

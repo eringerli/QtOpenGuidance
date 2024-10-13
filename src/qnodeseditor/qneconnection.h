@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "block/BlockBase.h"
 #include <QGraphicsPathItem>
 #include <QObject>
 
@@ -38,8 +39,8 @@ class QNEConnection : public QGraphicsPathItem {
 public:
   enum { Type = QGraphicsItem::UserType + 2 };
 
-  QNEConnection( QGraphicsItem* parent = nullptr );
-  virtual ~QNEConnection();
+  explicit QNEConnection( QGraphicsItem* parent = nullptr );
+  explicit QNEConnection( const BlockConnection* blockConnection, QNEPort* port1, QNEPort* port2, QGraphicsItem* parent = nullptr );
 
   void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
@@ -55,9 +56,9 @@ public:
 
   int type() const override { return Type; }
 
-  QJsonObject toJSON() const;
-
   void highlight( bool highlight );
+
+  const BlockConnection* connection() const { return _connection; }
 
 private:
   QPointF  pos1;
@@ -65,7 +66,7 @@ private:
   QNEPort* m_port1 = nullptr;
   QNEPort* m_port2 = nullptr;
 
-  std::vector< QMetaObject::Connection > connections;
+  const BlockConnection* _connection = nullptr;
 
   bool highlighted = false;
 };

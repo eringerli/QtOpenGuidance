@@ -10,13 +10,11 @@
 #include "block/converter/ValueTransmissionQuaternion.h"
 #include "block/converter/ValueTransmissionState.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = ValueTransmissionBase;
 
-TransmissionBlockModel::TransmissionBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+TransmissionBlockModel::TransmissionBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 TransmissionBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -36,9 +34,6 @@ TransmissionBlockModel::headerData( int section, Qt::Orientation orientation, in
 
       case 4:
         return QStringLiteral( "Repetition ms" );
-
-      default:
-        return QString();
     }
   }
 
@@ -58,81 +53,61 @@ TransmissionBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-bool
-TransmissionBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-TransmissionBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+TransmissionBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-TransmissionBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+TransmissionBlockModel::columnCount( const QModelIndex& ) const {
   return 5;
 }
 
 QVariant
 TransmissionBlockModel::data( const QModelIndex& index, int role ) const {
-  if( index.isValid() ) {
-    if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-      int countRow = 0;
+  if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole ) ) {
+    return QVariant();
+  }
 
-      const auto& constRefOfList = scene->items();
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+    switch( index.column() ) {
+      case 0:
+        return block->name();
 
-        if( block != nullptr ) {
-          if( auto* object = qobject_cast< ValueTransmissionBase* >( block->objects.front() ) ) {
-            if( countRow++ == index.row() ) {
-              switch( index.column() ) {
-                case 0:
-                  return block->getName();
-
-                case 1: {
-                  if( qobject_cast< ValueTransmissionBase64Data* >( object ) != nullptr ) {
-                    return QStringLiteral( "Data" );
-                  }
-
-                  if( qobject_cast< ValueTransmissionNumber* >( object ) != nullptr ) {
-                    return QStringLiteral( "Number" );
-                  }
-
-                  if( qobject_cast< ValueTransmissionQuaternion* >( object ) != nullptr ) {
-                    return QStringLiteral( "Quaternion" );
-                  }
-
-                  if( qobject_cast< ValueTransmissionState* >( object ) != nullptr ) {
-                    return QStringLiteral( "State" );
-                  }
-
-                  if( qobject_cast< ValueTransmissionImuData* >( object ) != nullptr ) {
-                    return QStringLiteral( "IMU Data" );
-                  }
-
-                  return QStringLiteral( "Unknown" );
-                }
-
-                case 2:
-                  return object->cid;
-
-                case 3:
-                  return object->timeoutTimeMs;
-
-                case 4:
-                  return object->repeatTimeMs;
-              }
-            }
-          }
+      case 1: {
+        if( qobject_cast< ValueTransmissionBase64Data* >( block ) != nullptr ) {
+          return QStringLiteral( "Data" );
         }
+
+        if( qobject_cast< ValueTransmissionNumber* >( block ) != nullptr ) {
+          return QStringLiteral( "Number" );
+        }
+
+        if( qobject_cast< ValueTransmissionQuaternion* >( block ) != nullptr ) {
+          return QStringLiteral( "Quaternion" );
+        }
+
+        if( qobject_cast< ValueTransmissionState* >( block ) != nullptr ) {
+          return QStringLiteral( "State" );
+        }
+
+        if( qobject_cast< ValueTransmissionImuData* >( block ) != nullptr ) {
+          return QStringLiteral( "IMU Data" );
+        }
+
+        return QStringLiteral( "Unknown" );
       }
+
+      case 2:
+        return block->cid;
+
+      case 3:
+        return block->timeoutTimeMs;
+
+      case 4:
+        return block->repeatTimeMs;
     }
   }
 
@@ -141,42 +116,32 @@ TransmissionBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 TransmissionBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 2:
+        block->cid = value.toString().toInt();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< ValueTransmissionBase* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 3:
+        block->timeoutTimeMs = value.toString().toInt();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 2:
-              object->cid = value.toString().toInt();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 4:
+        block->repeatTimeMs = value.toString().toInt();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 3:
-              object->timeoutTimeMs = value.toString().toInt();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 4:
-              object->repeatTimeMs = value.toString().toInt();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            default:
-              break;
-          }
-        }
-      }
+      default:
+        break;
     }
   }
 
@@ -186,18 +151,11 @@ TransmissionBlockModel::setData( const QModelIndex& index, const QVariant& value
 void
 TransmissionBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< ValueTransmissionBase* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

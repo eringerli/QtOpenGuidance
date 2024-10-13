@@ -9,9 +9,6 @@
 
 #include "GlobalPlanner.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QScopedPointer>
 
 #include "gui/MyMainWindow.h"
@@ -43,10 +40,15 @@
 #include <CGAL/Aff_transformation_3.h>
 using Aff_transformation_3 = CGAL::Aff_transformation_3< Epick >;
 
-GlobalPlanner::GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw )
-    : mainWindow( mainWindow ), tmw( tmw ) {
+GlobalPlanner::GlobalPlanner( const QString&               uniqueName,
+                              MyMainWindow*                mainWindow,
+                              GeographicConvertionWrapper* tmw,
+                              const int                    idHint,
+                              const bool                   systemBlock,
+                              const QString                type )
+    : BlockBase( idHint, systemBlock, type ), mainWindow( mainWindow ), tmw( tmw ) {
   widget = new GlobalPlannerToolbar( mainWindow );
-  dock   = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
   abPolyline = std::make_shared< std::vector< Point_2 > >();
 
@@ -410,19 +412,19 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
   qRegisterMetaType< const PlanGlobal >();
   qRegisterMetaType< const Plan& >();
   qRegisterMetaType< const PlanGlobal& >();
+
+  typeColor = TypeColor::Arithmetic;
 }
 
-QNEBlock*
-GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new GlobalPlanner( getNameOfFactory() + QString::number( id ), mainWindow, tmw );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+GlobalPlannerFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< GlobalPlanner >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, tmw );
 
-  auto obj2 = new PathPlannerModel( rootEntity );
-  b->addObject( obj2 );
-  obj->pathPlannerModel = obj2;
+  auto* pathPlannerModel = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );
+  obj->addAdditionalObject( pathPlannerModel );
+  obj->pathPlannerModel = pathPlannerModel;
 
-  QObject::connect( obj, &GlobalPlanner::planChangedForModel, obj2, &PathPlannerModel::setPlan );
+  QObject::connect( obj.get(), &GlobalPlanner::planChanged, pathPlannerModel, &PathPlannerModel::setPlan );
 
   obj->dock->setTitle( QStringLiteral( "Global Planner" ) );
   obj->dock->setWidget( obj->widget );
@@ -431,19 +433,26 @@ GlobalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   mainWindow->addDockWidget( obj->dock, location );
 
-  auto* globalPlannerModel = new GlobalPlannerModel( rootEntity );
+  auto* globalPlannerModel = new GlobalPlannerModel( rootEntity, 0, true, "GlobalPlannerModel" );
+  obj->addAdditionalObject( globalPlannerModel );
 
-  b->addObject( globalPlannerModel );
-  QObject::connect( obj, &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );
+  QObject::connect( obj.get(), &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Left Edge" ), QLatin1String( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Right Edge" ), QLatin1String( SLOT( setPoseRightEdge( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Pose" ), pathPlannerModel, QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ), BlockPort::Flag::None );
+  obj->addInputPort(
+    QStringLiteral( "Pose" ), globalPlannerModel, QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ), BlockPort::Flag::None );
+  obj->addInputPort( QStringLiteral( "Pose Left Edge" ), obj.get(), QLatin1StringView( SLOT( setPoseLeftEdge( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Right Edge" ), obj.get(), QLatin1StringView( SLOT( setPoseRightEdge( POSE_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Field" ), QLatin1String( SLOT( setField( std::shared_ptr< Polygon_with_holes_2 > ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Field" ), obj.get(), QLatin1StringView( SLOT( setField( std::shared_ptr< Polygon_with_holes_2 > ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Plan Polyline" ),
-                    QLatin1String( SIGNAL( planPolylineChanged( std::shared_ptr< std::vector< Point_2 > > ) ) ) );
-  return b;
+  obj->addOutputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SIGNAL( planChanged( const Plan& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Plan Polyline" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( planPolylineChanged( std::shared_ptr< std::vector< Point_2 > > ) ) ) );
+
+  return obj;
 }

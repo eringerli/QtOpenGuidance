@@ -10,7 +10,7 @@ class ArithmeticClamp : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticClamp() : BlockBase() {}
+  explicit ArithmeticClamp( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -36,13 +36,13 @@ class ArithmeticClampFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticClampFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ArithmeticClampFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ArithmeticClamp" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticClamp" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Arithmetic Clamp" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Arithmetic Clamp" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Arithmetic" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Arithmetic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

@@ -18,12 +18,12 @@ class PlotDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PlotDockBlockBase( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit PlotDockBlockBase( MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
 
   virtual ~PlotDockBlockBase();
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
 public:
   bool          getXAxisVisible() const;
@@ -49,14 +49,12 @@ private:
   void setNameHelper();
 
 public:
-  KDDockWidgets::DockWidget* dock   = nullptr;
-  PlotDock*                  widget = nullptr;
-
-  QString name;
+  KDDockWidgets::QtWidgets::DockWidget* dock   = nullptr;
+  PlotDock*                             widget = nullptr;
 
   bool   autoScrollEnabled = true;
   double window            = 20;
   bool   interactable      = false;
 
-  static KDDockWidgets::DockWidget* firstPlotDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstPlotDock;
 };

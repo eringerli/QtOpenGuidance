@@ -4,11 +4,8 @@
 #include "TrailerModel.h"
 
 #include <QAction>
-#include <QBrush>
-#include <QMenu>
 
-#include "qneblock.h"
-#include "qneport.h"
+#include <QMenu>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
@@ -22,7 +19,8 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
+TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   // add an etry, so all coordinates are local
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
@@ -301,19 +299,16 @@ TrailerModel::setPosePivotPoint( const Eigen::Vector3d&           position,
   }
 }
 
-QNEBlock*
-TrailerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TrailerModel( rootEntity, usePBR );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+TrailerModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< TrailerModel >( idHint, rootEntity, usePBR );
 
-  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Offset Hook Point" ), QLatin1String( SLOT( setOffsetHookPointPosition( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Track Width" ), obj.get(), QLatin1StringView( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Offset Hook Point" ), obj.get(), QLatin1StringView( SLOT( setOffsetHookPointPosition( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Hook Point" ), obj.get(), QLatin1StringView( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Pivot Point" ), obj.get(), QLatin1StringView( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Tow Point" ), obj.get(), QLatin1StringView( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
 
-  b->setBrush( modelColor );
-
-  return b;
+  return obj;
 }

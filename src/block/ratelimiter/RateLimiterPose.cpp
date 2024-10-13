@@ -3,25 +3,16 @@
 
 #include "RateLimiterPose.h"
 
-#include <QBrush>
+std::unique_ptr< BlockBase >
+RateLimiterPoseFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< RateLimiterPose >( idHint );
 
-#include "qneblock.h"
-#include "qneport.h"
+  obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-QNEBlock*
-RateLimiterPoseFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new RateLimiterPose();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+  obj->addOutputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Rate" ), QLatin1String( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-
-  b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
-
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }
 
 void

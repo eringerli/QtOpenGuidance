@@ -14,15 +14,17 @@
 #include "gui/model/ImplementBlockModel.h"
 #include "gui/toolbar/ImplementToolbar.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "gui/MyMainWindow.h"
 
-Implement::Implement( const QString& uniqueName, MyMainWindow* mainWindow, KDDockWidgets::DockWidget** firstDock )
-    : BlockBase(), firstDock( firstDock ) {
+Implement::Implement( const QString&                         uniqueName,
+                      MyMainWindow*                          mainWindow,
+                      KDDockWidgets::QtWidgets::DockWidget** firstDock,
+                      const int                              idHint,
+                      const bool                             systemBlock,
+                      const QString                          type )
+    : BlockBase( idHint, systemBlock, type ), firstDock( firstDock ) {
   widget = new ImplementToolbar( this, mainWindow );
-  dock   = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
   // add section 0: the section to control them all
   sections.push_back( new ImplementSection( 0, 0, 0 ) );
@@ -39,9 +41,11 @@ Implement::~Implement() {
 
 void
 Implement::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   double width = 0;
 
-  for( const auto& section : qAsConst( sections ) ) {
+  for( const auto& section : std::as_const( sections ) ) {
     width += section->widthOfSection - ( section->overlapLeft + section->overlapRight );
   }
 
@@ -53,8 +57,8 @@ Implement::emitConfigSignals() {
   Q_EMIT implementChanged( this );
 }
 
-QJsonObject
-Implement::toJSON() const {
+void
+Implement::toJSON( QJsonObject& valuesObject ) const {
   if( sections.size() > 1 ) {
     QJsonArray array;
 
@@ -66,20 +70,16 @@ Implement::toJSON() const {
       array.append( sectionObject );
     }
 
-    QJsonObject valuesObject;
     valuesObject[QStringLiteral( "Sections" )] = array;
-    return valuesObject;
   }
-
-  return QJsonObject();
 }
 
 void
-Implement::fromJSON( QJsonObject& valuesObject ) {
+Implement::fromJSON( const QJsonObject& valuesObject ) {
   if( valuesObject[QStringLiteral( "Sections" )].isArray() ) {
     QJsonArray sectionArray = valuesObject[QStringLiteral( "Sections" )].toArray();
 
-    for( const auto& sectionIndex : qAsConst( sectionArray ) ) {
+    for( const auto& sectionIndex : std::as_const( sectionArray ) ) {
       QJsonObject sectionObject = sectionIndex.toObject();
       sections.push_back( new ImplementSection( sectionObject[QStringLiteral( "overlapLeft" )].toDouble( 0 ),
                                                 sectionObject[QStringLiteral( "widthOfSection" )].toDouble( 0 ),
@@ -112,19 +112,14 @@ Implement::isSectionOn( const size_t sectionNr ) {
 
 void
 Implement::setName( const QString& name ) {
+  BlockBase::setName( name );
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "SC: " ) + name );
 }
 
-QNEBlock*
-ImplementFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new Implement( getNameOfFactory() + QString::number( id ), mainWindow, &firstDock );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ImplementFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< Implement >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, &firstDock );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -138,13 +133,17 @@ ImplementFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, firstDock );
   }
 
-  b->addOutputPort( QStringLiteral( "Trigger Calculation of Local Pose" ), QLatin1String( SIGNAL( triggerLocalPose( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Implement Data" ), QLatin1String( SIGNAL( implementChanged( const QPointer< Implement > ) ) ) );
-  b->addOutputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SIGNAL( sectionsChanged() ) ) );
-  b->addOutputPort( QStringLiteral( "Position Left Edge" ), QLatin1String( SIGNAL( leftEdgeChanged( VECTOR_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Position Right Edge" ), QLatin1String( SIGNAL( rightEdgeChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Trigger Calculation of Local Pose" ), obj.get(), QLatin1StringView( SIGNAL( triggerLocalPose( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Implement Data" ), obj.get(), QLatin1StringView( SIGNAL( implementChanged( const QPointer< Implement > ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Section Control Data" ), obj.get(), QLatin1StringView( SIGNAL( sectionsChanged() ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Position Left Edge" ), obj.get(), QLatin1StringView( SIGNAL( leftEdgeChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Position Right Edge" ), obj.get(), QLatin1StringView( SIGNAL( rightEdgeChanged( VECTOR_SIGNATURE ) ) ) );
 
   model->resetModel();
 
-  return b;
+  return obj;
 }

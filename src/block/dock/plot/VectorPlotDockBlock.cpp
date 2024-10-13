@@ -4,8 +4,6 @@
 #include "VectorPlotDockBlock.h"
 
 #include "helpers/RateLimiter.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/PlotDock.h"
@@ -13,15 +11,16 @@
 #include "qcustomplot.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include "gui/dock/ActionDock.h"
 
 #include "helpers/anglesHelper.h"
 
-VectorPlotDockBlock::VectorPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow )
-    : PlotDockBlockBase( uniqueName, mainWindow ) {
+VectorPlotDockBlock::VectorPlotDockBlock(
+  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
   {
     auto graph = widget->getQCustomPlotWidget()->addGraph();
     graph->setPen( QPen( QColor( 40, 110, 255 ) ) );
@@ -76,15 +75,9 @@ VectorPlotDockBlock::rescale() {
   widget->getQCustomPlotWidget()->replot();
 }
 
-QNEBlock*
-VectorPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new VectorPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+VectorPlotDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< VectorPlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -99,11 +92,9 @@ VectorPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   QObject::connect(
-    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
+    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj.get(), &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  b->addInputPort( QStringLiteral( "Vector" ), QLatin1String( SLOT( addVector( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SLOT( addVector( VECTOR_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

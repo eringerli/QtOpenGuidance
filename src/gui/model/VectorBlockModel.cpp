@@ -3,15 +3,13 @@
 
 #include "VectorBlockModel.h"
 
-#include "block/literal/VectorObject.h"
+#include "block/literal/VectorBlock.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = VectorBlock;
 
-VectorBlockModel::VectorBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+VectorBlockModel::VectorBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 VectorBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -37,24 +35,13 @@ VectorBlockModel::headerData( int section, Qt::Orientation orientation, int role
   return QVariant();
 }
 
-bool
-VectorBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    // FIXME: Implement me!
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-VectorBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+VectorBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-VectorBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+VectorBlockModel::columnCount( const QModelIndex& ) const {
   return 4;
 }
 
@@ -64,31 +51,21 @@ VectorBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        return block->name();
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        return block->vector.x();
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< VectorObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              return block->getName();
+      case 2:
+        return block->vector.y();
 
-            case 1:
-              return object->vector.x();
-
-            case 2:
-              return object->vector.y();
-
-            case 3:
-              return object->vector.z();
-          }
-        }
-      }
+      case 3:
+        return block->vector.z();
     }
   }
 
@@ -97,42 +74,32 @@ VectorBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 VectorBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        block->vector.x() = value.toString().toDouble();
+        block->emitConfigSignals();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< VectorObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 2:
+        block->vector.y() = value.toString().toDouble();
+        block->emitConfigSignals();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 1:
-              object->vector.x() = value.toString().toDouble();
-              object->emitConfigSignals();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 2:
-              object->vector.y() = value.toString().toDouble();
-              object->emitConfigSignals();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 3:
-              object->vector.z() = value.toString().toDouble();
-              object->emitConfigSignals();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 3:
+        block->vector.z() = value.toString().toDouble();
+        block->emitConfigSignals();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -149,25 +116,13 @@ VectorBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-VectorBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Vector3D" ), QVariant::fromValue( this ) );
-}
-
-void
 VectorBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< VectorObject* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

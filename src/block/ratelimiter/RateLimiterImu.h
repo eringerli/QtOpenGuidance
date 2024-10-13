@@ -15,7 +15,7 @@ class RateLimiterImu : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit RateLimiterImu() : BlockBase() {}
+  explicit RateLimiterImu( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 public Q_SLOTS:
   void setRate( NUMBER_SIGNATURE_SLOT );
   void setImu( IMU_SIGNATURE_SLOT );
@@ -32,13 +32,13 @@ class RateLimiterImuFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  RateLimiterImuFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  RateLimiterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "RateLimiterImu" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "RateLimiterImu" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "RateLimiter for Imu" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "RateLimiter for Imu" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Rate Limiter" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Rate Limiter" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

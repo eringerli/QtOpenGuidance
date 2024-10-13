@@ -3,25 +3,16 @@
 
 #include "RateLimiterImu.h"
 
-#include <QBrush>
+std::unique_ptr< BlockBase >
+RateLimiterImuFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< RateLimiterImu >( idHint );
 
-#include "qneblock.h"
-#include "qneport.h"
+  obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Imu" ), obj.get(), QLatin1StringView( SLOT( setImu( IMU_SIGNATURE ) ) ) );
 
-QNEBlock*
-RateLimiterImuFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new RateLimiterImu();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+  obj->addOutputPort( QStringLiteral( "Imu" ), obj.get(), QLatin1StringView( SIGNAL( imuChanged( IMU_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Rate" ), QLatin1String( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Imu" ), QLatin1String( SLOT( setImu( IMU_SIGNATURE ) ) ) );
-
-  b->addOutputPort( QStringLiteral( "Imu" ), QLatin1String( SIGNAL( imuChanged( IMU_SIGNATURE ) ) ) );
-
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }
 
 void

@@ -33,7 +33,8 @@ class FieldManager : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FieldManager( QWidget* mainWindow, GeographicConvertionWrapper* tmw );
+  explicit FieldManager(
+    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type );
 
   ~FieldManager();
 
@@ -124,17 +125,21 @@ class FieldManagerFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FieldManagerFactory( QThread* thread, QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, GeographicConvertionWrapper* tmw )
-      : BlockFactory( thread, true ), mainWindow( mainWindow ), rootEntity( rootEntity ), tmw( tmw ) {}
+  FieldManagerFactory(
+    QThread* thread, QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, const bool usePBR, GeographicConvertionWrapper* tmw )
+      : BlockFactory( thread, true ), mainWindow( mainWindow ), rootEntity( rootEntity ), usePBR( usePBR ), tmw( tmw ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Field Manager" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Field Manager" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   QWidget*                     mainWindow = nullptr;
   Qt3DCore::QEntity*           rootEntity = nullptr;
+  bool                         usePBR     = false;
   GeographicConvertionWrapper* tmw        = nullptr;
 };

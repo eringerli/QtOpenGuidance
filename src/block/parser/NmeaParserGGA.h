@@ -13,7 +13,7 @@ class NmeaParserGGA : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserGGA() : BlockBase() {}
+  explicit NmeaParserGGA( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
@@ -36,13 +36,13 @@ class NmeaParserGGAFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "NMEA Parser GGA/GNS" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "NMEA Parser GGA/GNS" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Parsers" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Parsers" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "NMEA Parser for GGA/GNS sentences" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "NMEA Parser for GGA/GNS sentences" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

@@ -23,7 +23,7 @@ class ExtendedKalmanFilter : public BlockBase {
   using State = KinematicModel::State< T >;
 
 public:
-  explicit ExtendedKalmanFilter();
+  explicit ExtendedKalmanFilter( const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setPosition( VECTOR_SIGNATURE_SLOT );
@@ -68,13 +68,13 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ExtendedKalmanFilter" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ExtendedKalmanFilter" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Extended Kalman Filter" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Extended Kalman Filter" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Filter" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Filter" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

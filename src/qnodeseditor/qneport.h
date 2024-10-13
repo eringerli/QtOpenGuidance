@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "block/BlockBase.h"
 #include <QGraphicsPathItem>
 
 class QNEBlock;
@@ -38,19 +39,35 @@ class QNEPortHelper;
 class QNEPort : public QGraphicsPathItem {
 public:
   enum { Type = QGraphicsItem::UserType + 1 };
-  enum { NamePort = 1, TypePort = 2, SystemBlock = 4, NoBullet = 8 };
+  enum Flag {
+    None         = 0,
+    NamePort     = 0x01,
+    TypePort     = 0x02,
+    SystemBlock  = 0x04,
+    NoBullet     = 0x08,
+    SquareBullet = 0x10,
+    Embedded     = 0x20,
+    Output       = 0x40
+  };
+  Q_DECLARE_FLAGS( Flags, Flag )
 
-  QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent = nullptr, bool embedded = false );
+  QNEPort( const BlockPort* blockPort, QGraphicsItem* parent = nullptr );
+  QNEPort( const QString& name, QGraphicsItem* parent = nullptr );
   virtual ~QNEPort();
 
   void    setName( const QString& n ) const;
   QString getName() const;
 
-  void       setIsOutput( bool o );
-  const bool isOutput() const { return m_isOutput; };
+  // void       setIsOutput( bool o );
+  const bool isNamePort() const { return flags.testFlag( Flag::NamePort ); };
+  const bool isTypePort() const { return flags.testFlag( Flag::TypePort ); };
+  const bool isSystemBlock() const { return flags.testFlag( Flag::SystemBlock ); };
+  const bool isNoBullet() const { return flags.testFlag( Flag::NoBullet ); };
+  const bool isSquareBullet() const { return flags.testFlag( Flag::SquareBullet ); };
+  const bool isEmbedded() const { return flags.testFlag( Flag::Embedded ); };
+  const bool isOutput() const { return flags.testFlag( Flag::Output ); };
 
-  void      setPortFlags( int );
-  const int portFlags() const { return m_portFlags; }
+  void setPortFlags( Flags flags );
 
   void contentsChanged();
 
@@ -61,23 +78,23 @@ public:
   qreal getHeightOfLabelBoundingRect();
 
 public:
-  QNEBlock* block = nullptr;
-
-  QLatin1String slotSignalSignature;
-
   QGraphicsTextItem*            label = nullptr;
   std::vector< QNEConnection* > portConnections;
 
+  const BlockPort* blockPort = nullptr;
+
+  Flags flags = Flag::None;
+
   static constexpr qreal radiusOfBullet = 5;
   static constexpr qreal marginOfText   = 2;
+
+  void applyPortFlags();
 
 protected:
   QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
 
 private:
-  int            m_portFlags = 0;
-  bool           m_isOutput  = false;
-  QNEPortHelper* porthelper  = nullptr;
+  QNEPortHelper* porthelper = nullptr;
 
   void recalculateLabelPosition();
 };
@@ -94,3 +111,5 @@ public Q_SLOTS:
 private:
   QNEPort* port = nullptr;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( QNEPort::Flags )

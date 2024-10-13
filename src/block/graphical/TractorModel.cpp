@@ -4,11 +4,8 @@
 #include "TractorModel.h"
 
 #include <QAction>
-#include <QBrush>
-#include <QMenu>
 
-#include "qneblock.h"
-#include "qneport.h"
+#include <QMenu>
 
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
@@ -23,7 +20,8 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
+TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );
@@ -351,23 +349,21 @@ TractorModel::setSteeringAngleRight( double steerAngle, const CalculationOption:
   }
 }
 
-QNEBlock*
-TractorModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TractorModel( rootEntity, usePBR );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+TractorModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< TractorModel >( idHint, rootEntity, usePBR );
 
-  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Length Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Track Width" ), obj.get(), QLatin1StringView( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Hook Point" ), obj.get(), QLatin1StringView( SLOT( setPoseHookPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Pivot Point" ), obj.get(), QLatin1StringView( SLOT( setPosePivotPoint( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Tow Point" ), obj.get(), QLatin1StringView( SLOT( setPoseTowPoint( POSE_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering Angle Left" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering Angle Right" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( modelColor );
-
-  return b;
+  return obj;
 }

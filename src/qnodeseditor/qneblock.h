@@ -27,12 +27,14 @@
 
 #pragma once
 
+#include "block/BlockBase.h"
+#include "qneport.h"
+
 #include <QGraphicsPathItem>
 
 #include <vector>
 
 class QNEPort;
-
 class QNEBlock
     : public QObject
     , public QGraphicsPathItem {
@@ -41,66 +43,45 @@ class QNEBlock
 public:
   enum { Type = QGraphicsItem::UserType + 3 };
 
-  enum class IdRange { SystemIdStart = 1, UserIdStart = 1000 };
+  QNEBlock( BlockBase* block, QGraphicsItem* parent = nullptr );
 
-  // QNEBlock takes ownership of the given QObject -> it deletes it in its destructor
-  QNEBlock( QObject* object, int id, bool systemBlock = false, QGraphicsItem* parent = nullptr );
-
-  virtual ~QNEBlock();
-
-  QNEPort* addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags = 0, bool embedded = false );
-  void     addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
-  void     addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded = false );
+  void depictBlock();
+  void depictConnections();
 
   void paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget ) override;
 
-  QJsonObject toJSON() const;
-  void        fromJSON( QJsonObject& json );
-
   int type() const override { return Type; }
-
-  void setName( const QString& name, bool setFromLabel = false );
-  void setType( const QString str );
-
-  QNEPort* getPortWithName( const QString& name, bool output );
-
-  void addObject( QObject* object );
-
-  bool systemBlock = false;
-
-Q_SIGNALS:
-  void emitConfigSignals();
-
-public:
-  static int getNextSystemId() { return m_nextSystemId++; }
-  static int getNextUserId() { return m_nextUserId++; }
 
 public Q_SLOTS:
   void resizeBlockWidth();
 
 public:
-  int id = 0;
+  BlockBase* block = nullptr;
 
-  static constexpr qreal horizontalMargin = 20;
-  static constexpr qreal verticalMargin   = 5;
-  static constexpr qreal cornerRadius     = 5;
-  static constexpr qreal gradientHeight   = 10;
-
-private:
-  static int m_nextSystemId;
-  static int m_nextUserId;
+  void snapToGrid();
 
 protected:
   QVariant itemChange( GraphicsItemChange change, const QVariant& value ) override;
   void     mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) override;
 
 private:
-  QString name;
+  QNEPort*  addPort( const QString& name, const QNEPort::Flags& flags );
+  QNEPort*  addPort( const BlockPort* blockPort );
+  QNEBlock* getBlockWithId( uint16_t id );
+  QNEPort*  getPortWithName( const QString& name, bool output );
 
-public:
-  const QString getName() { return name; }
+protected:
+  static constexpr qreal horizontalMargin = 20;
+  static constexpr qreal verticalMargin   = 5;
+  static constexpr qreal cornerRadius     = 5;
+  static constexpr qreal gradientHeight   = 10;
 
-public:
-  std::vector< QObject* > objects;
-  QString                 typeString;
+  static const QColor modelColor;
+  static const QColor dockColor;
+  static const QColor inputDockColor;
+  static const QColor parserColor;
+  static const QColor valueColor;
+  static const QColor inputOutputColor;
+  static const QColor converterColor;
+  static const QColor arithmeticColor;
 };

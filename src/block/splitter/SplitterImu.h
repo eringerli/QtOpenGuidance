@@ -14,7 +14,7 @@ class SplitterImu : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterImu() : BlockBase() {}
+  explicit SplitterImu( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -32,13 +32,13 @@ class SplitterImuFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterImuFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  SplitterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "SplitterImu" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "SplitterImu" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Splitter for Imu" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Splitter for Imu" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Splitter" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Splitter" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

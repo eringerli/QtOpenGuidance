@@ -4,18 +4,17 @@
 #include "XteDockBlock.h"
 
 #include <QAction>
-#include <QBrush>
-#include <QMenu>
 
-#include "qneblock.h"
-#include "qneport.h"
+#include <QMenu>
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/XteDock.h"
 
-KDDockWidgets::DockWidget* XteDockBlockFactory::firstDock = nullptr;
+KDDockWidgets::QtWidgets::DockWidget* XteDockBlockFactory::firstDock = nullptr;
 
-XteDockBlock::XteDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
+XteDockBlock::XteDockBlock(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new XteDock( mainWindow );
 }
 
@@ -29,6 +28,7 @@ XteDockBlock::~XteDockBlock() {
 
 void
 XteDockBlock::setName( const QString& name ) {
+  BlockBase::setName( name );
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "XTE: " ) + name );
   widget->setName( name );
@@ -47,7 +47,7 @@ XteDockBlock::getFont() const {
 }
 
 int
-XteDockBlock::getPrecision()const{
+XteDockBlock::getPrecision() const {
   return widget->precision;
 }
 
@@ -101,15 +101,9 @@ XteDockBlock::setUnit( const QString& unit ) {
   widget->unit = unit;
 }
 
-QNEBlock*
-XteDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new XteDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+XteDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< XteDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -123,9 +117,7 @@ XteDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnRight, firstDock );
   }
 
-  b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "XTE" ), obj.get(), QLatin1StringView( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

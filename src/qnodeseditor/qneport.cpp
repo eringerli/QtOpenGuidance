@@ -26,6 +26,7 @@
  */
 
 #include "qneport.h"
+#include "block/BlockBase.h"
 #include "qgraphicsitem.h"
 #include "qnamespace.h"
 #include "qneblock.h"
@@ -44,36 +45,44 @@
 
 #include "qneconnection.h"
 
-QNEPort::QNEPort( QLatin1String slotSignalSignature, QGraphicsItem* parent, bool embedded ) : QGraphicsPathItem( parent ) {
-  this->block = qgraphicsitem_cast< QNEBlock* >( parent );
-
-  this->slotSignalSignature = slotSignalSignature;
-
+QNEPort::QNEPort( const BlockPort* blockPort, QGraphicsItem* parent ) : QGraphicsPathItem( parent ), blockPort( blockPort ) {
   label = new QGraphicsTextItem( this );
   label->setDefaultTextColor( Qt::black );
+  setName( blockPort->name );
 
-  QPainterPath p;
-  p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
-  setPath( p );
+  flags.setFlag( Flag::Output, blockPort->isOutput() );
+  flags.setFlag( Flag::SquareBullet, blockPort->isSquareBullet() );
 
-  if( embedded ) {
-    setBrush( QColor( "plum" ) );
-    setPen( QPen( QColor( "purple" ) ) );
-  } else {
-    setBrush( Qt::red );
-    setPen( QPen( Qt::darkRed ) );
-  }
+  // QPainterPath p;
+  // p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
+  // setPath( p );
+
+  // if( embedded ) {
+  //   setBrush( QColor( "plum" ) );
+  //   setPen( QPen( QColor( "purple" ) ) );
+  // } else {
+  setBrush( Qt::red );
+  setPen( QPen( Qt::darkRed ) );
+  // }
 
   setFlag( QGraphicsItem::ItemSendsScenePositionChanges );
+
+  applyPortFlags();
+}
+
+QNEPort::QNEPort( const QString& name, QGraphicsItem* parent ) : QGraphicsPathItem( parent ) {
+  label = new QGraphicsTextItem( this );
+  label->setDefaultTextColor( Qt::black );
+  setName( name );
+
+  flags.setFlag( Flag::Output, false );
+
+  setFlag( QGraphicsItem::ItemSendsScenePositionChanges );
+
+  applyPortFlags();
 }
 
 QNEPort::~QNEPort() {
-  // as m_connections is also changed by the destructor of the connection, test in each
-  // iteration
-  while( !portConnections.empty() ) {
-    delete portConnections.back();
-  }
-
   if( porthelper != nullptr ) {
     porthelper->deleteLater();
   }
@@ -91,7 +100,7 @@ QNEPort::getName() const {
 
 void
 QNEPort::recalculateLabelPosition() {
-  if( m_isOutput ) {
+  if( isOutput() ) {
     label->setPos( -( label->boundingRect().width() + radiusOfBullet ), -label->boundingRect().height() / 2. );
   } else {
     label->setPos( radiusOfBullet, -label->boundingRect().height() / 2. );
@@ -99,41 +108,66 @@ QNEPort::recalculateLabelPosition() {
 }
 
 void
-QNEPort::setIsOutput( bool output ) {
-  m_isOutput = output;
+QNEPort::applyPortFlags() {
+  if( isEmbedded() ) {
+    setBrush( QColor( "plum" ) );
+    setPen( QPen( QColor( "purple" ) ) );
+  } else {
+    setBrush( Qt::red );
+    setPen( QPen( Qt::darkRed ) );
+  }
+
+  if( isTypePort() ) {
+    QFont font( scene()->font() );
+    font.setItalic( true );
+    label->setFont( font );
+  } else {
+    if( isNamePort() ) {
+      QFont font( scene()->font() );
+      font.setBold( true );
+      label->setFont( font );
+
+      if( isSystemBlock() ) {
+        porthelper = new QNEPortHelper( this );
+        label->setTextInteractionFlags( Qt::TextEditorInteraction );
+      }
+    } else {
+      QFont font( scene()->font() );
+      label->setFont( font );
+    }
+  }
+
+  if( !isNoBullet() ) {
+    if( isSquareBullet() ) {
+      QPainterPath p;
+      QPolygonF    polygon;
+
+      polygon << QPointF( -radiusOfBullet, 0 ) << QPointF( 0, radiusOfBullet ) << QPointF( radiusOfBullet, 0 )
+              << QPointF( 0, -radiusOfBullet );
+
+      p.addPolygon( polygon );
+      p.closeSubpath();
+      setPath( p );
+
+      setBrush( QColor( "yellow" ) );
+      setPen( QPen( QColor( "purple" ) ) );
+    } else {
+      QPainterPath p;
+      p.addEllipse( -radiusOfBullet, -radiusOfBullet, 2 * radiusOfBullet, 2 * radiusOfBullet );
+      setPath( p );
+    }
+  } else {
+    setPath( QPainterPath() );
+  }
 
   recalculateLabelPosition();
 }
 
 void
-QNEPort::setPortFlags( int f ) {
-  m_portFlags = f;
+QNEPort::setPortFlags( Flags flags ) {
+  this->flags = flags;
 
-  if( ( m_portFlags & TypePort ) != 0 ) {
-    QFont font( scene()->font() );
-    font.setItalic( true );
-    label->setFont( font );
-    m_portFlags |= NoBullet;
-  } else if( ( m_portFlags & NamePort ) != 0 ) {
-    QFont font( scene()->font() );
-    font.setBold( true );
-    label->setFont( font );
-    m_portFlags |= NoBullet;
-
-    if( ( m_portFlags & QNEPort::SystemBlock ) == 0 ) {
-      porthelper = new QNEPortHelper( this );
-      label->setTextInteractionFlags( Qt::TextEditorInteraction );
-    }
-  } else {
-    QFont font( scene()->font() );
-    label->setFont( font );
-  }
-
-  if( ( m_portFlags & NoBullet ) != 0 ) {
-    setPath( QPainterPath() );
-  }
-
-  recalculateLabelPosition();
+  applyPortFlags();
 }
 
 qreal
@@ -149,7 +183,7 @@ QNEPort::getHeightOfLabelBoundingRect() {
 QVariant
 QNEPort::itemChange( GraphicsItemChange change, const QVariant& value ) {
   if( change == ItemScenePositionHasChanged ) {
-    for( auto* conn : qAsConst( portConnections ) ) {
+    for( auto* conn : std::as_const( portConnections ) ) {
       conn->updatePosFromPorts();
       conn->updatePath();
     }
@@ -163,7 +197,7 @@ QNEPort::contentsChanged() {
   auto* block = qgraphicsitem_cast< QNEBlock* >( parentItem() );
 
   if( block != nullptr ) {
-    block->setName( label->toPlainText(), true );
+    block->block->setName( label->toPlainText() );
     block->resizeBlockWidth();
   }
 }

@@ -3,9 +3,6 @@
 
 #include "SectionControl.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QAction>
 #include <QLabel>
 #include <QMenu>
@@ -47,8 +44,11 @@
 SectionControl::SectionControl( const QString&               uniqueName,
                                 MyMainWindow*                mainWindow,
                                 Qt3DCore::QEntity*           rootEntity,
-                                Qt3DRender::QFrameGraphNode* frameGraphParent )
-    : frameGraphParent( frameGraphParent ) {
+                                Qt3DRender::QFrameGraphNode* frameGraphParent,
+                                const int                    idHint,
+                                const bool                   systemBlock,
+                                const QString                type )
+    : BlockBase( idHint, systemBlock, type ), frameGraphParent( frameGraphParent ) {
   auto* widget = new QWidget( mainWindow );
 
   auto* layout = new QVBoxLayout;
@@ -63,7 +63,7 @@ SectionControl::SectionControl( const QString&               uniqueName,
 
   widget->setLayout( layout );
 
-  dock = new KDDockWidgets::DockWidget( uniqueName );
+  dock = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
   dock->setWidget( widget );
 
   // Create a viewport node. The viewport here covers the entire render area.
@@ -395,15 +395,10 @@ SectionControl::requestRenderCaptureTurnOffTexture() {
   }
 }
 
-QNEBlock*
-SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new SectionControl( getNameOfFactory() + QString::number( id ), mainWindow, rootEntity, frameGraphParent );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SectionControlFactory::createBlock( int idHint ) {
+  auto obj =
+    createBaseBlock< SectionControl >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, rootEntity, frameGraphParent );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->labelTurnOnTexture );
@@ -412,10 +407,11 @@ SectionControlFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   mainWindow->addDockWidget( obj->dock, location );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
-  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
-  b->addInputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Implement Data" ), obj.get(), QLatin1StringView( SLOT( setImplement( const QPointer< Implement > ) ) ) );
+  obj->addInputPort( QStringLiteral( "Section Control Data" ), obj.get(), QLatin1StringView( SLOT( setSections() ) ) );
+  obj->addInputPort( QStringLiteral( "Cultivated Area" ), obj.get(), QLatin1StringView( SLOT( setLayer( Qt3DRender::QLayer* ) ) ) );
 
-  return b;
+  return obj;
 }

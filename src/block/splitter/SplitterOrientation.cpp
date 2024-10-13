@@ -3,15 +3,13 @@
 
 #include "SplitterOrientation.h"
 
-#include <QBrush>
-
 #include "Eigen/src/Core/Matrix.h"
 #include "Eigen/src/Geometry/Quaternion.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 void
 SplitterOrientation::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT orientationChangedX( 0, CalculationOption::Option::None );
   Q_EMIT orientationChangedY( 0, CalculationOption::Option::None );
   Q_EMIT orientationChangedZ( 0, CalculationOption::Option::None );
@@ -26,20 +24,16 @@ SplitterOrientation::setOrientation( const Eigen::Quaterniond& orientation, cons
   Q_EMIT orientationChangedW( orientation.w(), CalculationOption::Option::None );
 }
 
-QNEBlock*
-SplitterOrientationFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SplitterOrientation();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SplitterOrientationFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SplitterOrientation >( idHint );
 
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "X" ), QLatin1String( SIGNAL( orientationChangedX( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Y" ), QLatin1String( SIGNAL( orientationChangedY( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Z" ), QLatin1String( SIGNAL( orientationChangedZ( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "W" ), QLatin1String( SIGNAL( orientationChangedW( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "X" ), obj.get(), QLatin1StringView( SIGNAL( orientationChangedX( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Y" ), obj.get(), QLatin1StringView( SIGNAL( orientationChangedY( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Z" ), obj.get(), QLatin1StringView( SIGNAL( orientationChangedZ( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "W" ), obj.get(), QLatin1StringView( SIGNAL( orientationChangedW( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

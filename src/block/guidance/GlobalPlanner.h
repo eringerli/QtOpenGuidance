@@ -39,7 +39,12 @@ class GlobalPlanner : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GlobalPlanner( const QString& uniqueName, MyMainWindow* mainWindow, GeographicConvertionWrapper* tmw );
+  explicit GlobalPlanner( const QString&               uniqueName,
+                          MyMainWindow*                mainWindow,
+                          GeographicConvertionWrapper* tmw,
+                          const int                    idHint,
+                          const bool                   systemBlock,
+                          const QString                type );
 
   ~GlobalPlanner();
 
@@ -115,10 +120,10 @@ public:
 
   PlanGlobal plan = PlanGlobal();
 
-  MyMainWindow*              mainWindow       = nullptr;
-  GlobalPlannerToolbar*      widget           = nullptr;
-  KDDockWidgets::DockWidget* dock             = nullptr;
-  PathPlannerModel*          pathPlannerModel = nullptr;
+  MyMainWindow*                         mainWindow       = nullptr;
+  GlobalPlannerToolbar*                 widget           = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock             = nullptr;
+  PathPlannerModel*                     pathPlannerModel = nullptr;
 
   GeographicConvertionWrapper* tmw = nullptr;
 
@@ -141,11 +146,11 @@ public:
                         GeographicConvertionWrapper* tmw,
                         Qt3DCore::QEntity*           rootEntity );
 
-  QString getNameOfFactory() override { return QStringLiteral( "Global Planner Lines" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Global Planner Lines" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*                mainWindow = nullptr;

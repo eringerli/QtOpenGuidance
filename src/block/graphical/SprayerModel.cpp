@@ -3,9 +3,6 @@
 
 #include "SprayerModel.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QColor>
 #include <QPointer>
 
@@ -29,7 +26,8 @@
 
 #include "helpers/eigenHelper.h"
 
-SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR ) {
+SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   // add an entry, so all coordinates are local
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
@@ -325,18 +323,15 @@ SprayerModel::updateProprotions() {
   }
 }
 
-QNEBlock*
-SprayerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SprayerModel( rootEntity, usePBR );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SprayerModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SprayerModel >( idHint, rootEntity, usePBR );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Height" ), QLatin1String( SLOT( setHeight( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
-  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Height" ), obj.get(), QLatin1StringView( SLOT( setHeight( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Implement Data" ), obj.get(), QLatin1StringView( SLOT( setImplement( const QPointer< Implement > ) ) ) );
+  obj->addInputPort( QStringLiteral( "Section Control Data" ), obj.get(), QLatin1StringView( SLOT( setSections() ) ) );
 
-  b->setBrush( modelColor );
-
-  return b;
+  return obj;
 }

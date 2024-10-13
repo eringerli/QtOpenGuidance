@@ -4,8 +4,6 @@
 #include "ValuePlotDockBlock.h"
 
 #include "helpers/RateLimiter.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/PlotDock.h"
@@ -13,15 +11,16 @@
 #include "qcustomplot.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include "gui/dock/ActionDock.h"
 
 #include "helpers/anglesHelper.h"
 
-ValuePlotDockBlock::ValuePlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow )
-    : PlotDockBlockBase( uniqueName, mainWindow ) {
+ValuePlotDockBlock::ValuePlotDockBlock(
+  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
   widget->getQCustomPlotWidget()->addGraph();
   widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 40, 110, 255 ) ) );
   widget->getQCustomPlotWidget()->graph()->setLineStyle( QCPGraph::LineStyle::lsLine );
@@ -99,15 +98,9 @@ ValuePlotDockBlock::rescale() {
   widget->getQCustomPlotWidget()->replot();
 }
 
-QNEBlock*
-ValuePlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new ValuePlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValuePlotDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValuePlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -122,14 +115,12 @@ ValuePlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   QObject::connect(
-    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
+    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj.get(), &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  b->addInputPort( QStringLiteral( "Number 0" ), QLatin1String( SLOT( addValue0( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Number 1" ), QLatin1String( SLOT( addValue1( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Number 2" ), QLatin1String( SLOT( addValue2( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Number 3" ), QLatin1String( SLOT( addValue3( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Number 0" ), obj.get(), QLatin1StringView( SLOT( addValue0( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Number 1" ), obj.get(), QLatin1StringView( SLOT( addValue1( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Number 2" ), obj.get(), QLatin1StringView( SLOT( addValue2( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Number 3" ), obj.get(), QLatin1StringView( SLOT( addValue3( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

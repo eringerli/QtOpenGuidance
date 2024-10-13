@@ -12,7 +12,7 @@ class SchmittTriggerBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SchmittTriggerBlock() : BlockBase() {}
+  explicit SchmittTriggerBlock( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -34,13 +34,13 @@ class SchmittTriggerBlockFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SchmittTriggerBlockFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  SchmittTriggerBlockFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "SchmittTriggerBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "SchmittTriggerBlock" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Schmitt Trigger" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Schmitt Trigger" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Logic" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Logic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

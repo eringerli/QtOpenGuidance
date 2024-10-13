@@ -3,9 +3,6 @@
 
 #include "FixedKinematic.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 FixedKinematic::setOffsetHookToPivot( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
   hookToPivot.setOffset( offset );
@@ -28,19 +25,21 @@ FixedKinematic::setPose( const Eigen::Vector3d&           position,
   Q_EMIT poseTowPointChanged( pivotToTow.positionCalculated, pivotToTow.orientationCalculated, options );
 }
 
-QNEBlock*
-FixedKinematicFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new FixedKinematic;
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+FixedKinematicFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< FixedKinematic >( idHint );
 
-  b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Offset Hook to Pivot" ), obj.get(), QLatin1StringView( SLOT( setOffsetHookToPivot( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Offset Pivot To Tow" ), obj.get(), QLatin1StringView( SLOT( setOffsetPivotToTow( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Pose Hook Point" ), obj.get(), QLatin1StringView( SIGNAL( poseHookPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Pose Pivot Point" ), obj.get(), QLatin1StringView( SIGNAL( posePivotPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose Tow Point" ), obj.get(), QLatin1StringView( SIGNAL( poseTowPointChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

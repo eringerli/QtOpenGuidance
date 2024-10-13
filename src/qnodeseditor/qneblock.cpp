@@ -45,92 +45,101 @@
 #include <QJsonValue>
 #include <QJsonValueRef>
 
+#include <QMetaMethod>
+
 #include "qneconnection.h"
 #include "qneport.h"
 
 #include "block/BlockBase.h"
+#include "helpers/BlocksManager.h"
 
-int QNEBlock::m_nextSystemId = int( IdRange::SystemIdStart );
-int QNEBlock::m_nextUserId   = int( IdRange::UserIdStart );
-
-QNEBlock::QNEBlock( QObject* object, int id, bool systemBlock, QGraphicsItem* parent )
-    : QGraphicsPathItem( parent ), systemBlock( systemBlock ) {
-  addObject( object );
-
+QNEBlock::QNEBlock( BlockBase* block, QGraphicsItem* parent ) : QGraphicsPathItem( parent ), block( block ) {
   QPainterPath p;
   p.addRoundedRect( -60, -30, 60, 30, cornerRadius, cornerRadius );
   setPath( p );
   setPen( QPen( Qt::darkGreen ) );
 
-  if( systemBlock ) {
+  if( block->systemBlock ) {
     setBrush( Qt::lightGray );
   } else {
     setBrush( QColor( "palegreen" ) );
   }
 
+  setX( block->positionX );
+  setY( block->positionY );
+
   setFlag( QGraphicsItem::ItemIsMovable );
   setFlag( QGraphicsItem::ItemIsSelectable );
-
-  if( id == 0 ) {
-    if( systemBlock ) {
-      this->id = getNextSystemId();
-    } else {
-      this->id = getNextUserId();
-    }
-  } else {
-    this->id = id;
-
-    if( systemBlock ) {
-      if( m_nextSystemId < id ) {
-        m_nextSystemId = id + 1;
-      }
-    } else {
-      if( m_nextUserId < id ) {
-        m_nextUserId = id + 1;
-      }
-    }
-  }
+  setFlag( QGraphicsItem::ItemSendsGeometryChanges );
 }
 
-QNEBlock::~QNEBlock() {
-  for( auto& object : objects ) {
-    object->deleteLater();
+void
+QNEBlock::depictBlock() {
+  QNEPort::Flags flags;
+
+  flags.setFlag( QNEPort::Flag::SystemBlock, block->systemBlock );
+
+  auto sortedPorts = block->ports();
+
+  addPort( block->name(), flags | QNEPort::NamePort | QNEPort::NoBullet );
+  addPort( block->type, flags | QNEPort::TypePort | QNEPort::NoBullet );
+
+  for( const auto& port : block->ports() ) {
+    if( port.isVisible() ) {
+      addPort( &port );
+    }
+  }
+
+  resizeBlockWidth();
+}
+
+void
+QNEBlock::depictConnections() {
+  for( const auto& connection : block->connections() ) {
+    if( connection.portFrom->isVisible() && connection.portTo->isVisible() ) {
+      auto* portFrom = getPortWithName( connection.portFrom->name, true );
+
+      if( portFrom != nullptr ) {
+        auto* blockTo = getBlockWithId( connection.portTo->idOfBlock );
+
+        if( blockTo != nullptr ) {
+          auto* portTo = blockTo->getPortWithName( connection.portTo->name, false );
+
+          if( portTo != nullptr ) {
+            auto* qneConnection = new QNEConnection( &connection, portFrom, portTo );
+            portFrom->portConnections.push_back( qneConnection );
+            portTo->portConnections.push_back( qneConnection );
+
+            scene()->addItem( qneConnection );
+          } else {
+            qDebug() << "portTo != nullptr";
+          }
+        } else {
+          qDebug() << "blockTo != nullptr" << connection.portTo->idOfBlock;
+        }
+      } else {
+        qDebug() << "portFrom != nullptr";
+      }
+    } else {
+      qDebug() << "connection.from->visible && connection.to->visible";
+    }
   }
 }
 
 QNEPort*
-QNEBlock::addPort( const QString& name, QLatin1String signalSlotSignature, bool isOutput, int flags, bool embedded ) {
-  auto* port = new QNEPort( signalSlotSignature, this, embedded );
-  port->setName( name );
-  port->setIsOutput( isOutput );
-
-  if( systemBlock ) {
-    flags |= QNEPort::SystemBlock;
-  }
-
-  if( ( flags & QNEPort::NamePort ) != 0 ) {
-    this->name = name;
-  }
-
-  if( ( flags & QNEPort::TypePort ) != 0 ) {
-    this->typeString = name;
-  }
+QNEBlock::addPort( const QString& name, const QNEPort::Flags& flags ) {
+  auto* port = new QNEPort( name, this );
 
   port->setPortFlags( flags );
-
-  resizeBlockWidth();
 
   return port;
 }
 
-void
-QNEBlock::addInputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded ) {
-  addPort( name, signalSlotSignature, false, 0, embedded );
-}
+QNEPort*
+QNEBlock::addPort( const BlockPort* blockPort ) {
+  auto* port = new QNEPort( blockPort, this );
 
-void
-QNEBlock::addOutputPort( const QString& name, QLatin1String signalSlotSignature, bool embedded ) {
-  addPort( name, signalSlotSignature, true, 0, embedded );
+  return port;
 }
 
 QVariant
@@ -144,6 +153,21 @@ QNEBlock::itemChange( QGraphicsItem::GraphicsItemChange change, const QVariant& 
       }
     }
   }
+
+  if( change == ItemPositionChange && scene() ) {
+    QFontMetrics fm( scene()->font() );
+    double       gridSpacing = double( fm.height() );
+
+    QPointF newPos = value.toPointF();
+    double  xx     = newPos.x();
+    double  yy     = newPos.y();
+
+    xx = gridSpacing * std::round( xx / gridSpacing );
+    yy = gridSpacing * std::round( yy / gridSpacing );
+
+    return QPointF( xx, yy );
+  }
+
   return QGraphicsItem::itemChange( change, value );
 }
 
@@ -155,7 +179,7 @@ QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
   if( isSelected() ) {
     painter->setPen( QPen( Qt::darkYellow ) );
 
-    if( systemBlock ) {
+    if( block->systemBlock ) {
       painter->setBrush( Qt::darkGray );
     } else {
       painter->setBrush( Qt::yellow );
@@ -172,33 +196,6 @@ QNEBlock::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
   painter->drawPath( path() );
 }
 
-void
-QNEBlock::setName( const QString& name, bool setFromLabel ) {
-  if( !setFromLabel ) {
-    const auto& constRefOfList = childItems();
-
-    for( const auto& item : constRefOfList ) {
-      auto* port = qgraphicsitem_cast< QNEPort* >( item );
-
-      if( ( port != nullptr ) && ( ( port->portFlags() & QNEPort::NamePort ) != 0 ) ) {
-        port->setName( name );
-      }
-    }
-  }
-
-  this->name = name;
-
-  for( auto& object : objects ) {
-    auto* obj = qobject_cast< BlockBase* >( object );
-
-    if( obj != nullptr ) {
-      obj->setName( name );
-    }
-  }
-
-  resizeBlockWidth();
-}
-
 QNEPort*
 QNEBlock::getPortWithName( const QString& name, bool output ) {
   const auto& constRefOfList = childItems();
@@ -206,8 +203,8 @@ QNEBlock::getPortWithName( const QString& name, bool output ) {
   for( const auto& item : constRefOfList ) {
     auto* port = qgraphicsitem_cast< QNEPort* >( item );
 
-    if( ( port != nullptr ) && ( ( port->portFlags() & ( QNEPort::NamePort | QNEPort::TypePort ) ) == 0 ) && port->isOutput() == output &&
-        port->getName() == name ) {
+    if( ( port != nullptr ) &&
+        ( !port->isNamePort() && !port->isTypePort() && ( port->isOutput() == output ) && ( port->getName() == name ) ) ) {
       return port;
     }
   }
@@ -215,55 +212,21 @@ QNEBlock::getPortWithName( const QString& name, bool output ) {
   return nullptr;
 }
 
-void
-QNEBlock::addObject( QObject* object ) {
-  objects.push_back( object );
-}
+QNEBlock*
+QNEBlock::getBlockWithId( uint16_t id ) {
+  const auto& constRefOfList = scene()->items();
 
-QJsonObject
-QNEBlock::toJSON() const {
-  QJsonObject blockObject;
-  blockObject[QStringLiteral( "id" )]        = id;
-  blockObject[QStringLiteral( "name" )]      = name;
-  blockObject[QStringLiteral( "type" )]      = typeString;
-  blockObject[QStringLiteral( "positionX" )] = x();
-  blockObject[QStringLiteral( "positionY" )] = y();
+  for( const auto& item : constRefOfList ) {
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
-  {
-    int i = 0;
-    for( auto& object : objects ) {
-      auto obj = qobject_cast< BlockBase* >( object );
-      if( obj ) {
-        auto json = obj->toJSON();
-        if( !json.empty() ) {
-          blockObject[QStringLiteral( "value" ) + QString::number( i )] = json;
-        }
+    if( block != nullptr ) {
+      if( block->block->id() == id ) {
+        return block;
       }
-      ++i;
     }
   }
 
-  return blockObject;
-}
-
-void
-QNEBlock::fromJSON( QJsonObject& json ) {
-  setX( json[QStringLiteral( "positionX" )].toDouble( 0 ) );
-  setY( json[QStringLiteral( "positionY" )].toDouble( 0 ) );
-
-  if( json[QStringLiteral( "values" )].isObject() ) {
-    auto jsonValue = json[QStringLiteral( "values" )].toObject();
-    qobject_cast< BlockBase* >( objects.front() )->fromJSON( jsonValue );
-  }
-
-  int i = 0;
-  for( auto& object : objects ) {
-    if( json[QStringLiteral( "value" ) + QString::number( i )].isObject() ) {
-      auto jsonValue = json[QStringLiteral( "value" ) + QString::number( i )].toObject();
-      qobject_cast< BlockBase* >( object )->fromJSON( jsonValue );
-    }
-    ++i;
-  }
+  return nullptr;
 }
 
 void
@@ -316,7 +279,7 @@ QNEBlock::resizeBlockWidth() {
 }
 
 void
-QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
+QNEBlock::snapToGrid() {
   QFontMetrics fm( scene()->font() );
   double       gridSpacing = double( fm.height() );
 
@@ -328,5 +291,30 @@ QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
 
   setPos( xx, yy );
 
+  block->positionX = xx;
+  block->positionY = yy;
+}
+
+void
+QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
+  for( auto& item : scene()->items() ) {
+    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+
+    if( block != nullptr ) {
+      if( block->isSelected() ) {
+        block->snapToGrid();
+      }
+    }
+  }
+
   QGraphicsItem::mouseReleaseEvent( event );
 }
+
+const QColor QNEBlock::modelColor       = QColor( QStringLiteral( "moccasin" ) );
+const QColor QNEBlock::dockColor        = QColor( QStringLiteral( "DarkSalmon" ) );
+const QColor QNEBlock::inputDockColor   = QColor( QStringLiteral( "lightsalmon" ) );
+const QColor QNEBlock::parserColor      = QColor( QStringLiteral( "mediumaquamarine" ) );
+const QColor QNEBlock::valueColor       = QColor( QStringLiteral( "gold" ) );
+const QColor QNEBlock::inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
+const QColor QNEBlock::converterColor   = QColor( QStringLiteral( "lightblue" ) );
+const QColor QNEBlock::arithmeticColor  = QColor( QStringLiteral( "DarkKhaki" ) );

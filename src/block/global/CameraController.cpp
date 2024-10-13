@@ -3,9 +3,6 @@
 
 #include "CameraController.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <Qt3DCore/QTransform>
 
 #include <Qt3DExtras/QFirstPersonCameraController>
@@ -19,8 +16,9 @@
 #include <QStandardPaths>
 #include <QWheelEvent>
 
-CameraController::CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-    : m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
+CameraController::CameraController(
+  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
   m_cameraEntity->setPosition( m_offset );
   m_cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
   m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );
@@ -40,21 +38,17 @@ CameraController::CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::Q
   QObject::connect( m_cameraEntity, SIGNAL( positionChanged( QVector3D ) ), m_lightTransform, SLOT( setTranslation( QVector3D ) ) );
 }
 
-QJsonObject
-CameraController::toJSON() const {
-  QJsonObject valuesObject;
-
+void
+CameraController::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "lenghtToViewCenter" )]   = lenghtToViewCenter;
   valuesObject[QStringLiteral( "panAngle" )]             = panAngle;
   valuesObject[QStringLiteral( "tiltAngle" )]            = tiltAngle;
   valuesObject[QStringLiteral( "orientationSmoothing" )] = orientationSmoothing;
   valuesObject[QStringLiteral( "positionSmoothing" )]    = positionSmoothing;
-
-  return valuesObject;
 }
 
 void
-CameraController::fromJSON( QJsonObject& valuesObject ) {
+CameraController::fromJSON( const QJsonObject& valuesObject ) {
   lenghtToViewCenter   = valuesObject[QStringLiteral( "lenghtToViewCenter" )].toDouble( 20 );
   panAngle             = valuesObject[QStringLiteral( "panAngle" )].toDouble( 0 );
   tiltAngle            = valuesObject[QStringLiteral( "tiltAngle" )].toDouble( 39 );
@@ -205,13 +199,11 @@ CameraController::calculateOffset() {
              QQuaternion::fromAxisAndAngle( QVector3D( 0, 1, 0 ), tiltAngle ) * QVector3D( -lenghtToViewCenter, 0, 0 );
 }
 
-QNEBlock*
-CameraControllerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new CameraController( m_rootEntity, m_cameraEntity );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+CameraControllerFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< CameraController >( idHint, m_rootEntity, m_cameraEntity );
 
-  b->addInputPort( QStringLiteral( "View Center Position" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "View Center Position" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

@@ -22,13 +22,12 @@
 #include "gui/dock/ValueDock.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
-#include "qneblock.h"
-#include "qneport.h"
-
-ValueDockBlock::ValueDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
+ValueDockBlock::ValueDockBlock(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new ValueDock( mainWindow );
 }
 
@@ -46,7 +45,7 @@ ValueDockBlock::getFont() const {
 }
 
 int
-ValueDockBlock::getPrecision()const{
+ValueDockBlock::getPrecision() const {
   return widget->precision;
 }
 
@@ -102,6 +101,7 @@ ValueDockBlock::setUnit( const QString& unit ) {
 
 void
 ValueDockBlock::setName( const QString& name ) {
+  BlockBase::setName( name );
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Value: " ) + name );
 }
@@ -113,15 +113,9 @@ ValueDockBlock::setValue( const double value, const CalculationOption::Options o
   }
 }
 
-QNEBlock*
-ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new ValueDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValueDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValueDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -135,9 +129,7 @@ ValueDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstValueDock );
   }
 
-  b->addInputPort( QStringLiteral( "Number" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Number" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

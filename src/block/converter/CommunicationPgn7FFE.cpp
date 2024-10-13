@@ -3,10 +3,6 @@
 
 #include "CommunicationPgn7FFE.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QByteArray>
 
 void
@@ -45,18 +41,14 @@ CommunicationPgn7ffe::setVelocity( double velocity, const CalculationOption::Opt
   this->velocity = velocity;
 }
 
-QNEBlock*
-CommunicationPgn7ffeFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new CommunicationPgn7ffe();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+CommunicationPgn7ffeFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< CommunicationPgn7ffe >( idHint );
 
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "XTE" ), obj.get(), QLatin1StringView( SLOT( setXte( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

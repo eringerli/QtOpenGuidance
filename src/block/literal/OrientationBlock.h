@@ -16,12 +16,12 @@ class OrientationBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit OrientationBlock() {}
+  explicit OrientationBlock( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
 public Q_SLOTS:
   void setAveragerEnabled( ACTION_SIGNATURE_SLOT );
@@ -50,13 +50,15 @@ class OrientationBlockFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  OrientationBlockFactory( QThread* thread, OrientationBlockModel* model ) : BlockFactory( thread, false ), model( model ) {}
+  OrientationBlockFactory( QThread* thread, OrientationBlockModel* model ) : BlockFactory( thread, false ), model( model ) {
+    typeColor = TypeColor::Value;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Orientation" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Orientation" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Literals" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Literals" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   OrientationBlockModel* model = nullptr;

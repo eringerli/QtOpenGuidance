@@ -21,14 +21,19 @@ class Implement : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit Implement( const QString& uniqueName, MyMainWindow* mainWindow, KDDockWidgets::DockWidget** firstDock );
+  explicit Implement( const QString&                         uniqueName,
+                      MyMainWindow*                          mainWindow,
+                      KDDockWidgets::QtWidgets::DockWidget** firstDock,
+                      const int                              idHint,
+                      const bool                             systemBlock,
+                      const QString                          type );
 
   ~Implement() override;
 
   void emitConfigSignals() override;
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& json ) override;
 
   void emitImplementChanged();
   void emitSectionsChanged();
@@ -46,13 +51,13 @@ public Q_SLOTS:
   void setName( const QString& name ) override;
 
 public:
-  KDDockWidgets::DockWidget* dock   = nullptr;
-  ImplementToolbar*          widget = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock   = nullptr;
+  ImplementToolbar*                     widget = nullptr;
 
   std::vector< ImplementSection* > sections;
 
 private:
-  KDDockWidgets::DockWidget** firstDock = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget** firstDock = nullptr;
 };
 
 class ImplementFactory : public BlockFactory {
@@ -60,18 +65,20 @@ class ImplementFactory : public BlockFactory {
 
 public:
   ImplementFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, ImplementBlockModel* model )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {
+    typeColor = TypeColor::Arithmetic;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Implement" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Implement" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Section Control" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Section Control" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
-  MyMainWindow*              mainWindow = nullptr;
-  KDDockWidgets::Location    location;
-  QMenu*                     menu      = nullptr;
-  ImplementBlockModel*       model     = nullptr;
-  KDDockWidgets::DockWidget* firstDock = nullptr;
+  MyMainWindow*                         mainWindow = nullptr;
+  KDDockWidgets::Location               location;
+  QMenu*                                menu      = nullptr;
+  ImplementBlockModel*                  model     = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* firstDock = nullptr;
 };

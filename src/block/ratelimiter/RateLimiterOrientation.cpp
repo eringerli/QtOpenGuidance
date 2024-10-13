@@ -3,25 +3,17 @@
 
 #include "RateLimiterOrientation.h"
 
-#include <QBrush>
+std::unique_ptr< BlockBase >
+RateLimiterOrientationFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< RateLimiterOrientation >( idHint );
 
-#include "qneblock.h"
-#include "qneport.h"
+  obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
 
-QNEBlock*
-RateLimiterOrientationFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new RateLimiterOrientation();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+  obj->addOutputPort(
+    QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Rate" ), QLatin1String( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
-
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
-
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }
 
 void

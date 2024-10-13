@@ -18,8 +18,8 @@ PlanOptimitionController::run() {
   std::cout << "PlanOptimitionController::run  " << this << std::endl;
 
   if( pointsPointer->size() > 2 ) {
-    job = ThreadWeaver::make_job( [=] {
-      std::cout << "job " << this << std::endl;
+    job = ThreadWeaver::make_job( [=, this] {
+      //      std::cout << "job " << this << std::endl;
       PS::Squared_distance_cost cost;
 
       auto polylineOut = std::make_shared< std::vector< Point_2 > >();

@@ -3,23 +3,22 @@
 
 #include "XyPlotDockBlock.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "gui/MyMainWindow.h"
 #include "gui/dock/PlotDock.h"
 
 #include "qcustomplot.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include "gui/dock/ActionDock.h"
 
 #include "helpers/anglesHelper.h"
 
-XyPlotDockBlock::XyPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : PlotDockBlockBase( uniqueName, mainWindow ) {
+XyPlotDockBlock::XyPlotDockBlock(
+  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString types )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, types ) {
   widget->getQCustomPlotWidget()->addGraph();
   widget->getQCustomPlotWidget()->graph( 0 )->setPen( QPen( QColor( 40, 110, 255 ) ) );
   widget->getQCustomPlotWidget()->graph( 0 )->setLineStyle( QCPGraph::LineStyle::lsLine /*lsImpulse*/ );
@@ -110,15 +109,9 @@ XyPlotDockBlock::rescale() {
   widget->getQCustomPlotWidget()->replot();
 }
 
-QNEBlock*
-MpcPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new XyPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+MpcPlotDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< XyPlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -133,9 +126,7 @@ MpcPlotDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
   }
 
   QObject::connect(
-    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
+    obj->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj.get(), &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

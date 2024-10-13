@@ -4,8 +4,6 @@
 #include "FixedKinematicPrimitive.h"
 
 #include "kinematic/CalculationOptions.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 void
 FixedKinematicPrimitive::setOffset( const Eigen::Vector3d& offset, const CalculationOption::Options ) {
@@ -39,16 +37,14 @@ FixedKinematicPrimitive::setPose( const Eigen::Vector3d&           position,
   Q_EMIT poseChanged( positionCalculated, orientationCalculated, options );
 }
 
-QNEBlock*
-FixedKinematicPrimitiveFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new FixedKinematicPrimitive;
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+FixedKinematicPrimitiveFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< FixedKinematicPrimitive >( idHint );
 
-  b->addInputPort( QStringLiteral( "Offset" ), QLatin1String( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose In" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Offset" ), obj.get(), QLatin1StringView( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose In" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Out" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose Out" ), obj.get(), QLatin1StringView( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

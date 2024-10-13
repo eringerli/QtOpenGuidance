@@ -54,7 +54,8 @@ class PoseSimulation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PoseSimulation( QWidget* mainWindow, GeographicConvertionWrapper* tmw );
+  explicit PoseSimulation(
+    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setInterval( const int interval );
@@ -133,9 +134,9 @@ Q_SIGNALS:
 public:
   virtual void emitConfigSignals() override;
 
-  virtual QJsonObject toJSON() const override;
+  virtual void toJSON( QJsonObject& json ) const override;
 
-  virtual void fromJSON( QJsonObject& ) override;
+  virtual void fromJSON( const QJsonObject& ) override;
 
 protected:
   void timerEvent( QTimerEvent* event ) override;
@@ -177,12 +178,12 @@ private:
 
   Eigen::Quaterniond m_orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
 
-  double                       x           = 0;
-  double                       y           = 0;
-  double                       height      = 0;
-  double                       lastHeading = 0;
-  GeographicConvertionWrapper* tmw         = nullptr;
-  FixedKinematicPrimitive      antennaKinematic;
+  double                       x                = 0;
+  double                       y                = 0;
+  double                       height           = 0;
+  double                       lastHeading      = 0;
+  GeographicConvertionWrapper* tmw              = nullptr;
+  FixedKinematicPrimitive      antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
 
   std::unique_ptr< VehicleDynamics::VehicleNonLinear3DOF > vehicleDynamics;
   std::unique_ptr< VehicleDynamics::TireLinear >           frontLeftTire;
@@ -226,13 +227,15 @@ public:
       , mainWindow( mainWindow )
       , geographicConvertionWrapper( geographicConvertionWrapper )
       , rootEntity( rootEntity )
-      , usePBR( usePBR ) {}
+      , usePBR( usePBR ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Pose Simulation" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Pose Simulation" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Base Blocks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   QWidget*                     mainWindow                  = nullptr;

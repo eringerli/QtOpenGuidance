@@ -15,7 +15,8 @@ class RateLimiterOrientation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit RateLimiterOrientation() : BlockBase() {}
+  explicit RateLimiterOrientation( const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ) {}
 public Q_SLOTS:
   void setRate( NUMBER_SIGNATURE_SLOT );
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
@@ -32,13 +33,13 @@ class RateLimiterOrientationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  RateLimiterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  RateLimiterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "RateLimiterOrientation" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "RateLimiterOrientation" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "RateLimiter for Orientation" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "RateLimiter for Orientation" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Rate Limiter" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Rate Limiter" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

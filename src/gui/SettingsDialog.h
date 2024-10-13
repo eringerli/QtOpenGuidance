@@ -46,6 +46,9 @@ class SpaceNavigatorPollingThread;
 class SdlInputPollingThread;
 class GeographicConvertionWrapper;
 
+class FactoriesManager;
+class BlocksManager;
+
 namespace Ui {
   class SettingsDialog;
 }
@@ -54,13 +57,10 @@ class SettingsDialog : public QDialog {
   Q_OBJECT
 
 public:
-  explicit SettingsDialog( Qt3DCore::QEntity*      foregroundEntity,
-                           Qt3DCore::QEntity*      middlegroundEntity,
-                           Qt3DCore::QEntity*      backgroundEntity,
-                           MyMainWindow*           mainWindow,
+  explicit SettingsDialog( MyMainWindow*           mainWindow,
                            Qt3DExtras::Qt3DWindow* qt3dWindow,
-                           QMenu*                  guidanceToolbarMenu,
-                           QThread*                calculationsThread,
+                           FactoriesManager*       factoriesManager,
+                           BlocksManager*          blocksManager,
                            QWidget*                parent = nullptr );
   ~SettingsDialog();
 
@@ -112,6 +112,7 @@ public Q_SLOTS:
   void saveConfigAndDocks();
 
   void resetAllModels();
+  void resetBlockViewScene();
 
   void setSimulatorValues( const double a,
                            const double b,
@@ -237,8 +238,6 @@ private Q_SLOTS:
   void on_slCameraSmoothingOrientation_valueChanged( int value );
   void on_slCameraSmoothingPosition_valueChanged( int value );
 
-  void on_twBlocks_itemDoubleClicked( QTreeWidgetItem* item, int column );
-
   void on_dsbSimGeneralSlipX_valueChanged( double arg1 );
   void on_dsbSimGeneralA_valueChanged( double arg1 );
   void on_dsbSimGeneralB_valueChanged( double arg1 );
@@ -261,6 +260,8 @@ private Q_SLOTS:
   void on_sbRateValueDocks_valueChanged( int arg1 );
   void on_sbRate3dView_valueChanged( int arg1 );
 
+  void on_twBlocks_doubleClicked( const QModelIndex& index );
+
 private:
   void saveGridValuesInSettings();
   void savePathPlannerValuesInSettings();
@@ -276,36 +277,13 @@ private:
   void emitNoiseStandartDeviations();
 
 private:
-  QMainWindow*            mainWindow = nullptr;
-  Qt3DExtras::Qt3DWindow* qt3dWindow = nullptr;
-
-public:
-  QTreeWidget* getBlockTreeWidget();
-
-public:
-  NewOpenSaveToolbar* newOpenSaveToolbar = nullptr;
-
-  BlockBase* poseSimulation = nullptr;
-
-  BlockBase* fieldManager  = nullptr;
-  BlockBase* globalPlanner = nullptr;
+  QMainWindow*            mainWindow       = nullptr;
+  Qt3DExtras::Qt3DWindow* qt3dWindow       = nullptr;
+  FactoriesManager*       factoriesManager = nullptr;
+  BlocksManager*          blocksManager    = nullptr;
 
 private:
   Ui::SettingsDialog* ui = nullptr;
-
-  GeographicConvertionWrapper* geographicConvertionWrapper = nullptr;
-
-  BlockFactory* poseSimulationFactory = nullptr;
-
-#ifdef SPNAV_ENABLED
-  SpaceNavigatorPollingThread* spaceNavigatorPollingThread = nullptr;
-#endif
-
-#ifdef SDL2_ENABLED
-  SdlInputPollingThread* sdlInputPollingThread = nullptr;
-#endif
-
-  std::vector< std::unique_ptr< BlockFactory > > factories;
 
   QSortFilterProxyModel* filterModelValues     = nullptr;
   VectorBlockModel*      vectorBlockModel      = nullptr;
@@ -322,6 +300,11 @@ public:
   ImplementBlockModel*        implementBlockModel        = nullptr;
   PathPlannerModelBlockModel* pathPlannerModelBlockModel = nullptr;
 
+  VectorBlockModel*      getVectorBlockModel() const { return vectorBlockModel; }
+  NumberBlockModel*      getNumberBlockModel() const { return numberBlockModel; }
+  StringBlockModel*      getStringBlockModel() const { return stringBlockModel; }
+  OrientationBlockModel* getOrientationBlockModel() const { return orientationBlockModel; }
+
 private:
   ImplementSectionModel* implementSectionModel = nullptr;
 
@@ -336,9 +319,6 @@ private:
   QSortFilterProxyModel*  filterTtransmissionBlockModel = nullptr;
 
 private:
-  QNEBlock* getBlockWithId( int id );
-  QNEBlock* getBlockWithName( const QString& name );
-
   bool blockSettingsSaving = false;
 
   QColor gridColor       = QColor( 0x6b, 0x96, 0xa8 );

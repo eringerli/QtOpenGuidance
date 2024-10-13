@@ -19,7 +19,7 @@ class XteGuidance : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit XteGuidance() : BlockBase() {}
+  explicit XteGuidance( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 public Q_SLOTS:
   void setPose( POSE_SIGNATURE_SLOT );
@@ -44,11 +44,11 @@ class XteGuidanceFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Cross Track Error" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Cross Track Error" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

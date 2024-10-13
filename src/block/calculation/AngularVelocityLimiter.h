@@ -12,7 +12,8 @@ class AngularVelocityLimiter : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit AngularVelocityLimiter() = default;
+  explicit AngularVelocityLimiter( const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ) {};
 
 public Q_SLOTS:
   void setMaxAngularVelocity( NUMBER_SIGNATURE_SLOT );
@@ -34,11 +35,11 @@ class AngularVelocityLimiterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  AngularVelocityLimiterFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  AngularVelocityLimiterFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Angular Velocity Limiter" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Angular Velocity Limiter" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

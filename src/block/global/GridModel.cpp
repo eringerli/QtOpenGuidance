@@ -3,12 +3,11 @@
 
 #include "GridModel.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/eigenHelper.h"
 
-GridModel::GridModel( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity ) {
+GridModel::GridModel(
+  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   m_distanceMeasurementEntity    = new Qt3DCore::QEntity( rootEntity );
   m_distanceMeasurementTransform = new Qt3DCore::QTransform( m_distanceMeasurementEntity );
   m_distanceMeasurementEntity->addComponent( m_distanceMeasurementTransform );
@@ -221,13 +220,11 @@ GridModel::currentIndexChanged( const int currentIndex ) {
   }
 }
 
-QNEBlock*
-GridModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new GridModel( rootEntity, m_cameraEntity );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+GridModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< GridModel >( idHint, rootEntity, m_cameraEntity );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

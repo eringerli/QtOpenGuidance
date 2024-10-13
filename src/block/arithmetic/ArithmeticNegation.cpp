@@ -3,13 +3,9 @@
 
 #include "ArithmeticNegation.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ArithmeticNegation::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
@@ -25,17 +21,13 @@ ArithmeticNegation::operation() {
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-QNEBlock*
-ArithmeticNegationFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticNegation();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ArithmeticNegationFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ArithmeticNegation >( idHint );
 
-  b->addInputPort( QStringLiteral( "Value" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

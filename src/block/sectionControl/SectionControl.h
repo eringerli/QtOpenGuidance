@@ -26,7 +26,10 @@ public:
   explicit SectionControl( const QString&               uniqueName,
                            MyMainWindow*                mainWindow,
                            Qt3DCore::QEntity*           rootEntity,
-                           Qt3DRender::QFrameGraphNode* frameGraphParent );
+                           Qt3DRender::QFrameGraphNode* frameGraphParent,
+                           const int                    idHint,
+                           const bool                   systemBlock,
+                           const QString                type );
   ~SectionControl();
 
 public Q_SLOTS:
@@ -45,9 +48,9 @@ private Q_SLOTS:
 Q_SIGNALS:
 
 public:
-  KDDockWidgets::DockWidget* dock                = nullptr;
-  QLabel*                    labelTurnOnTexture  = nullptr;
-  QLabel*                    labelTurnOffTexture = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock                = nullptr;
+  QLabel*                               labelTurnOnTexture  = nullptr;
+  QLabel*                               labelTurnOffTexture = nullptr;
 
 private:
   Qt3DRender::QFrameGraphNode* frameGraphParent = nullptr;
@@ -91,13 +94,15 @@ public:
       , location( location )
       , menu( menu )
       , rootEntity( rootEntity )
-      , frameGraphParent( frameGraphParent ) {}
+      , frameGraphParent( frameGraphParent ) {
+    typeColor = TypeColor::Arithmetic;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Section Control" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Section Control" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Section Control" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Section Control" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*                mainWindow = nullptr;

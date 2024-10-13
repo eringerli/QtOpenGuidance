@@ -4,31 +4,27 @@
 #include "OrientationBlock.h"
 
 #include "kinematic/CalculationOptions.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "gui/model/OrientationBlockModel.h"
 
-#include <QBrush>
 #include <QJsonObject>
 
 void
 OrientationBlock::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT orientationChanged( orientation, CalculationOption::Option::None );
 }
 
-QJsonObject
-OrientationBlock::toJSON() const {
-  QJsonObject valuesObject;
+void
+OrientationBlock::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "X" )] = orientation.x();
   valuesObject[QStringLiteral( "Y" )] = orientation.y();
   valuesObject[QStringLiteral( "Z" )] = orientation.z();
   valuesObject[QStringLiteral( "W" )] = orientation.w();
-  return valuesObject;
 }
 
 void
-OrientationBlock::fromJSON( QJsonObject& valuesObject ) {
+OrientationBlock::fromJSON( const QJsonObject& valuesObject ) {
   if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
     orientation.x() = valuesObject[QStringLiteral( "X" )].toDouble();
   }
@@ -110,21 +106,18 @@ OrientationBlock::setPose( const Eigen::Vector3d&           position,
   }
 }
 
-QNEBlock*
-OrientationBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new OrientationBlock();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+OrientationBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< OrientationBlock >( idHint );
 
-  b->addInputPort( QStringLiteral( "Averager Enabled" ), QLatin1String( SLOT( setAveragerEnabled( ACTION_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Averager Enabled" ), obj.get(), QLatin1StringView( SLOT( setAveragerEnabled( ACTION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
-
-  b->setBrush( valueColor );
+  obj->addOutputPort(
+    QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE ) ) ) );
 
   model->resetModel();
 
-  return b;
+  return obj;
 }

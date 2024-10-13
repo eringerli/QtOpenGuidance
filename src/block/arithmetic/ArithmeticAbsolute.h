@@ -9,7 +9,7 @@ class ArithmeticAbsolute : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticAbsolute() : BlockBase() {}
+  explicit ArithmeticAbsolute( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -31,13 +31,13 @@ class ArithmeticAbsoluteFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticAbsoluteFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ArithmeticAbsoluteFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ArithmeticAbsolute" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticAbsolute" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Arithmetic Absolute" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Arithmetic Absolute" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Arithmetic" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Arithmetic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

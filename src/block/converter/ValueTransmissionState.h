@@ -14,7 +14,7 @@
 class ValueTransmissionState : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionState( uint16_t cid );
+  explicit ValueTransmissionState( uint16_t cid, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setState( ACTION_SIGNATURE_SLOT );
@@ -33,11 +33,11 @@ class ValueTransmissionStateFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionStateFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ValueTransmissionStateFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit State" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit State" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

@@ -48,14 +48,13 @@
       </font>
      </property>
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="text">
       <string>N</string>
      </property>
      <property name="icon">
-      <iconset theme="go-previous">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="go-previous"/>
      </property>
      <property name="iconSize">
       <size>
@@ -80,8 +79,7 @@
       </sizepolicy>
      </property>
      <property name="icon">
-      <iconset theme="list-add">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="QIcon::ThemeIcon::GoUp"/>
      </property>
      <property name="autoRepeat">
       <bool>true</bool>
@@ -103,8 +101,7 @@
       </sizepolicy>
      </property>
      <property name="icon">
-      <iconset theme="list-add">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="QIcon::ThemeIcon::GoUp"/>
      </property>
      <property name="autoRepeat">
       <bool>true</bool>
@@ -133,10 +130,10 @@
       </font>
      </property>
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="layoutDirection">
-      <enum>Qt::RightToLeft</enum>
+      <enum>Qt::LayoutDirection::RightToLeft</enum>
      </property>
      <property name="styleSheet">
       <string notr="true">image: url(:/themes/oxygen/48x48/actions/edit-redo.png);</string>
@@ -145,8 +142,7 @@
       <string>N</string>
      </property>
      <property name="icon">
-      <iconset theme="go-next">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="go-next"/>
      </property>
      <property name="iconSize">
       <size>
@@ -168,8 +164,7 @@
       </sizepolicy>
      </property>
      <property name="icon">
-      <iconset theme="list-remove">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="QIcon::ThemeIcon::GoDown"/>
      </property>
      <property name="autoRepeat">
       <bool>true</bool>
@@ -191,8 +186,7 @@
       </sizepolicy>
      </property>
      <property name="icon">
-      <iconset theme="list-remove">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="QIcon::ThemeIcon::GoDown"/>
      </property>
      <property name="autoRepeat">
       <bool>true</bool>

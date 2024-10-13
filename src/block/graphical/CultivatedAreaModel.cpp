@@ -3,9 +3,6 @@
 
 #include "CultivatedAreaModel.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QtCore/QDebug>
 #include <QtMath>
 
@@ -52,8 +49,9 @@ CultivatedAreaModel::createEntities() {
   m_baseEntity->addComponent( m_layer );
 }
 
-CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar )
-    : m_rootEntity( rootEntity ) {
+CultivatedAreaModel::CultivatedAreaModel(
+  Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ) {
   // plug into new/open/save toolbar
   newCultivatedAreaAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Cultivated Area" ) );
   QObject::connect( newCultivatedAreaAction, &QAction::triggered, this, &CultivatedAreaModel::newCultivatedArea );
@@ -74,6 +72,7 @@ CultivatedAreaModel::~CultivatedAreaModel() {
 
 void
 CultivatedAreaModel::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT layerChanged( m_layer );
 }
 
@@ -238,21 +237,18 @@ CultivatedAreaModel::saveCultivatedAreaToFile( QFile& file ) {
   qDebug() << "CultivatedAreaModel::saveCultivatedAreaToFile()";
 }
 
-QNEBlock*
-CultivatedAreaModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new CultivatedAreaModel( rootEntity, newOpenSaveToolbar );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+CultivatedAreaModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< CultivatedAreaModel >( idHint, rootEntity, newOpenSaveToolbar );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Implement Data" ), QLatin1String( SLOT( setImplement( const QPointer< Implement > ) ) ) );
-  b->addInputPort( QStringLiteral( "Section Control Data" ), QLatin1String( SLOT( setSections() ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Implement Data" ), obj.get(), QLatin1StringView( SLOT( setImplement( const QPointer< Implement > ) ) ) );
+  obj->addInputPort( QStringLiteral( "Section Control Data" ), obj.get(), QLatin1StringView( SLOT( setSections() ) ) );
 
-  b->addOutputPort( QStringLiteral( "Cultivated Area" ), QLatin1String( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Cultivated Area" ), obj.get(), QLatin1StringView( SIGNAL( layerChanged( Qt3DRender::QLayer* ) ) ) );
 
-  b->setBrush( modelColor );
-
-  return b;
+  return obj;
 }
 
 #include "moc_CultivatedAreaModel.cpp"

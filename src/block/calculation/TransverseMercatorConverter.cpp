@@ -3,9 +3,6 @@
 
 #include "TransverseMercatorConverter.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 TransverseMercatorConverter::setWGS84Position( const Eigen::Vector3d& position, const CalculationOption::Options ) {
   double x = 0;
@@ -18,18 +15,18 @@ TransverseMercatorConverter::setWGS84Position( const Eigen::Vector3d& position, 
 
 void
 TransverseMercatorConverter::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT positionChanged( Eigen::Vector3d( 0, 0, 0 ), CalculationOption::Option::None );
 }
 
-QNEBlock*
-TransverseMercatorConverterFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TransverseMercatorConverter( tmw );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+TransverseMercatorConverterFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< TransverseMercatorConverter >( idHint, tmw );
 
-  b->addInputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SLOT( setWGS84Position( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SLOT( setWGS84Position( VECTOR_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SIGNAL( positionChanged( VECTOR_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

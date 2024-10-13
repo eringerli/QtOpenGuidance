@@ -4,16 +4,15 @@
 #include "OrientationDockBlock.h"
 
 #include <QAction>
-#include <QBrush>
+
 #include <QMenu>
 
 #include "gui/MyMainWindow.h"
 #include "gui/dock/ThreeValuesDock.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-OrientationDockBlock::OrientationDockBlock( const QString& uniqueName, MyMainWindow* mainWindow ) : ValueDockBlockBase( uniqueName ) {
+OrientationDockBlock::OrientationDockBlock(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new ThreeValuesDock( mainWindow );
 
   widget->setDescriptions( QStringLiteral( "Y" ), QStringLiteral( "P" ), QStringLiteral( "R" ) );
@@ -89,6 +88,8 @@ OrientationDockBlock::setUnit( const QString& unit ) {
 
 void
 OrientationDockBlock::setName( const QString& name ) {
+  BlockBase::setName( name );
+
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Orientation: " ) + name );
 }
@@ -108,15 +109,9 @@ OrientationDockBlock::setPose( const Eigen::Vector3d&, const Eigen::Quaterniond&
   }
 }
 
-QNEBlock*
-OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
-  if( id != 0 && !isIdUnique( scene, id ) ) {
-    id = QNEBlock::getNextUserId();
-  }
-
-  auto* obj = new OrientationDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+OrientationDockBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< OrientationDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -130,10 +125,8 @@ OrientationDockBlockFactory::createBlock( QGraphicsScene* scene, int id ) {
     mainWindow->addDockWidget( obj->dock, KDDockWidgets::Location_OnBottom, ValueDockBlockBase::firstThreeValuesDock );
   }
 
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->setBrush( dockColor );
-
-  return b;
+  return obj;
 }

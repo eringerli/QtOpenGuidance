@@ -3,13 +3,9 @@
 
 #include "ComparisonEqualTo.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ComparisonEqualTo::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT stateChanged( result );
 }
 
@@ -31,19 +27,15 @@ ComparisonEqualTo::operation() {
   Q_EMIT stateChanged( result );
 }
 
-QNEBlock*
-ComparisonEqualToFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ComparisonEqualTo();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ComparisonEqualToFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ComparisonEqualTo >( idHint );
+  // obj->addPort\( QStringLiteral\( "(.*)" \), QLatin1StringView\(\), false, QNEPort::NoBullet \);
+  obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "==" ) );
+  obj->addInputPort( QStringLiteral( "B" ), obj.get(), QLatin1StringView( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
-  b->addPort( QStringLiteral( "==" ), QLatin1String(), false, QNEPort::NoBullet );
-  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( stateChanged( ACTION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( stateChanged( ACTION_SIGNATURE ) ) ) );
-
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

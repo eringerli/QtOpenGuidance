@@ -14,7 +14,7 @@ class SplitterOrientation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterOrientation() : BlockBase() {}
+  explicit SplitterOrientation( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -32,13 +32,13 @@ class SplitterOrientationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  SplitterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "SplitterOrientation" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "SplitterOrientation" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Splitter for Orientation" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Splitter for Orientation" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Splitter" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Splitter" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

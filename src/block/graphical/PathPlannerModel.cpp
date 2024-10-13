@@ -29,9 +29,6 @@
 #include "CGAL/number_utils_classes.h"
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "3d/BufferMesh.h"
 
 #include "helpers/cgalHelper.h"
@@ -46,7 +43,6 @@
 #include "kinematic/PathPrimitiveSegment.h"
 #include "kinematic/PathPrimitiveSequence.h"
 
-#include <QBrush>
 #include <QJsonObject>
 #include <QSharedPointer>
 #include <QVector>
@@ -54,7 +50,8 @@
 #include <functional>
 #include <utility>
 
-PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) {
+PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   baseEntity          = new Qt3DCore::QEntity( rootEntity );
   baseEntityTransform = new Qt3DCore::QTransform( baseEntity );
   baseEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );
@@ -107,9 +104,8 @@ PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity ) {
   refreshColors();
 }
 
-QJsonObject
-PathPlannerModel::toJSON() const {
-  QJsonObject valuesObject;
+void
+PathPlannerModel::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "visible" )]                = visible;
   valuesObject[QStringLiteral( "zOffset" )]                = zOffset;
   valuesObject[QStringLiteral( "viewBox" )]                = viewBox;
@@ -122,12 +118,10 @@ PathPlannerModel::toJSON() const {
   valuesObject[QStringLiteral( "segmentColor" )]           = segmentsColor.name();
   valuesObject[QStringLiteral( "rayColor" )]               = raysColor.name();
   valuesObject[QStringLiteral( "bisectorsColor" )]         = bisectorsColor.name();
-
-  return valuesObject;
 }
 
 void
-PathPlannerModel::fromJSON( QJsonObject& valuesObject ) {
+PathPlannerModel::fromJSON( const QJsonObject& valuesObject ) {
   visible                = valuesObject[QStringLiteral( "visible" )].toBool( true );
   zOffset                = valuesObject[QStringLiteral( "zOffset" )].toDouble( 0.1 );
   viewBox                = valuesObject[QStringLiteral( "viewBox" )].toDouble( 50 );
@@ -413,16 +407,12 @@ PathPlannerModel::setPose( const Eigen::Vector3d&           position,
   }
 }
 
-QNEBlock*
-PathPlannerModelFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new PathPlannerModel( rootEntity );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+PathPlannerModelFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< PathPlannerModel >( idHint, rootEntity );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SLOT( setPlan( const Plan& ) ) ) );
 
-  b->setBrush( modelColor );
-
-  return b;
+  return obj;
 }

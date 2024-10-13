@@ -3,9 +3,6 @@
 
 #include "ExtendedKalmanFilter.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/cgalHelper.h"
 #include "helpers/eigenHelper.h"
 
@@ -15,7 +12,8 @@
 
 #include "kalman/ExtendedKalmanFilter.hpp"
 
-ExtendedKalmanFilter::ExtendedKalmanFilter() {
+ExtendedKalmanFilter::ExtendedKalmanFilter( const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   x.setZero();
   ekf.init( x );
   elapsedTimer.start();
@@ -89,23 +87,23 @@ ExtendedKalmanFilter::emitPoseFromEKF() {
 
 void
 ExtendedKalmanFilter::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT poseChanged( position, orientation, CalculationOption::None );
 }
 
-QNEBlock*
-ExtendedKalmanFilterFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ExtendedKalmanFilter();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ExtendedKalmanFilterFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ExtendedKalmanFilter >( idHint );
 
-  b->addInputPort( QStringLiteral( "Position" ), QLatin1String( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Orientation" ), QLatin1String( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity 3D" ), QLatin1String( SLOT( setVelocity3D( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "IMU Data" ), QLatin1String( SLOT( setImuData( IMU_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Velocity 3D" ), obj.get(), QLatin1StringView( SLOT( setVelocity3D( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "IMU Data" ), obj.get(), QLatin1StringView( SLOT( setImuData( IMU_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Orientation Correction" ), QLatin1String( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Orientation Correction" ), obj.get(), QLatin1StringView( SLOT( setOrientationCorrection( ORIENTATION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose" ), QLatin1String( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SIGNAL( poseChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

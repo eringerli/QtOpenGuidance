@@ -3,18 +3,16 @@
 
 #include "ValueTransmissionState.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QByteArray>
 
 #include <QBasicTimer>
-#include <QBrush>
+
 #include <QCborMap>
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionState::ValueTransmissionState( uint16_t cid ) : ValueTransmissionBase( cid ) {
+ValueTransmissionState::ValueTransmissionState( uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+    : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 
@@ -38,19 +36,15 @@ ValueTransmissionState::dataReceive( const QByteArray& data ) {
   }
 }
 
-QNEBlock*
-ValueTransmissionStateFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ValueTransmissionState( id );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValueTransmissionStateFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValueTransmissionState >( idHint, 0 );
 
-  b->addInputPort( QStringLiteral( "CBOR In" ), QLatin1String( SLOT( dataReceive( const QByteArray& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Out" ), QLatin1String( SIGNAL( stateChanged( ACTION_SIGNATURE ) ) ), false );
+  obj->addInputPort( QStringLiteral( "CBOR In" ), obj.get(), QLatin1StringView( SLOT( dataReceive( const QByteArray& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Out" ), obj.get(), QLatin1StringView( SIGNAL( stateChanged( ACTION_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "In" ), QLatin1String( SLOT( setState( ACTION_SIGNATURE ) ) ), false );
-  b->addOutputPort( QStringLiteral( "CBOR Out" ), QLatin1String( SIGNAL( dataToSend( const QByteArray& ) ) ), false );
+  obj->addInputPort( QStringLiteral( "In" ), obj.get(), QLatin1StringView( SLOT( setState( ACTION_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "CBOR Out" ), obj.get(), QLatin1StringView( SIGNAL( dataToSend( const QByteArray& ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

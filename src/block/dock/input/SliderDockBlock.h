@@ -18,14 +18,15 @@ class SliderDockBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SliderDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit SliderDockBlock(
+    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
 
   ~SliderDockBlock();
 
   virtual void emitConfigSignals() override;
 
-  virtual QJsonObject toJSON() const override;
-  virtual void        fromJSON( QJsonObject& ) override;
+  virtual void toJSON( QJsonObject& json ) const override;
+  virtual void fromJSON( const QJsonObject& ) override;
 
 public Q_SLOTS:
   void setName( const QString& name ) override;
@@ -40,7 +41,7 @@ Q_SIGNALS:
 public:
   SliderDock* widget = nullptr;
 
-  KDDockWidgets::DockWidget* dock = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock = nullptr;
 };
 
 class SliderDockBlockFactory : public BlockFactory {
@@ -48,15 +49,17 @@ class SliderDockBlockFactory : public BlockFactory {
 
 public:
   SliderDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "SliderDockBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "SliderDockBlock" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Input Docks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Input Docks" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Slider Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Slider Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;
@@ -64,5 +67,5 @@ private:
   QMenu*                  menu = nullptr;
 
 public:
-  static KDDockWidgets::DockWidget* firstSliderValueDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstSliderValueDock;
 };

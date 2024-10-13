@@ -5,13 +5,11 @@
 
 #include "block/dock/display/ValueDockBlockBase.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = ValueDockBlockBase;
 
-ValueBlockModel::ValueBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+ValueBlockModel::ValueBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 ValueBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -43,9 +41,6 @@ ValueBlockModel::headerData( int section, Qt::Orientation orientation, int role 
 
       case 8:
         return QStringLiteral( "Bold Font" );
-
-      default:
-        return QString();
     }
   }
 
@@ -65,90 +60,79 @@ ValueBlockModel::flags( const QModelIndex& index ) const {
   return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
 }
 
-bool
-ValueBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-ValueBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+ValueBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-ValueBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+ValueBlockModel::columnCount( const QModelIndex& ) const {
   return 9;
 }
 
 QVariant
 ValueBlockModel::data( const QModelIndex& index, int role ) const {
-  if( index.isValid() ) {
-    if( role == Qt::CheckStateRole ) {
-      int countRow = 0;
+  if( !index.isValid() || ( role != Qt::DisplayRole && role != Qt::EditRole ) ) {
+    return QVariant();
+  }
 
-      const auto& constRefOfList = scene->items();
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-        if( block != nullptr ) {
-          if( auto* object = qobject_cast< ValueDockBlockBase* >( block->objects.front() ) ) {
-            if( countRow++ == index.row() ) {
-              switch( index.column() ) {
-                case 1:
-                  return object->unitVisible() ? Qt::Checked : Qt::Unchecked;
-
-                case 8:
-                  return object->getFont().bold() ? Qt::Checked : Qt::Unchecked;
-              }
-            }
-          }
+    switch( index.column() ) {
+      case 0: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->name();
         }
-      }
-    }
+      } break;
 
-    if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-      int countRow = 0;
-
-      const auto& constRefOfList = scene->items();
-
-      for( const auto& item : constRefOfList ) {
-        auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-        if( block != nullptr ) {
-          if( auto* object = qobject_cast< ValueDockBlockBase* >( block->objects.front() ) ) {
-            if( countRow++ == index.row() ) {
-              switch( index.column() ) {
-                case 0:
-                  return block->getName();
-
-                case 2:
-                  return object->getUnit();
-
-                case 3:
-                  return object->getPrecision();
-
-                case 4:
-                  return object->getScale();
-
-                case 5:
-                  return object->getFieldWidth();
-
-                case 6:
-                  return object->getFont();
-
-                case 7:
-                  return object->getFont().pointSize();
-              }
-            }
-          }
+      case 1: {
+        if( role == Qt::CheckStateRole ) {
+          return block->unitVisible() ? Qt::Checked : Qt::Unchecked;
         }
-      }
+      } break;
+
+      case 2: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getUnit();
+        }
+      } break;
+
+      case 3: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getPrecision();
+        }
+      } break;
+
+      case 4: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getScale();
+        }
+      } break;
+
+      case 5: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getFieldWidth();
+        }
+      } break;
+
+      case 6: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getFont();
+        }
+      } break;
+
+      case 7: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->getFont().pointSize();
+        }
+      } break;
+
+      case 8: {
+        if( role == Qt::CheckStateRole ) {
+          return block->getFont().bold() ? Qt::Checked : Qt::Unchecked;
+        }
+      } break;
     }
   }
 
@@ -157,74 +141,64 @@ ValueBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        block->setUnitVisible( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< ValueDockBlockBase* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 2:
+        block->setUnit( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 1:
-              object->setUnitVisible( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 3:
+        block->setPrecision( value.toString().toInt() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 2:
-              object->setUnit( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 4:
+        block->setScale( value.toString().toFloat() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 3:
-              object->setPrecision( value.toString().toInt() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 5:
+        block->setFieldWidth( value.toString().toInt() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 4:
-              object->setScale( value.toString().toFloat() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 6: {
+        auto  font    = value.value< QFont >();
+        QFont oldFont = block->getFont();
+        font.setBold( oldFont.bold() );
+        font.setPointSize( oldFont.pointSize() );
+        block->setFont( font );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
+      }
 
-            case 5:
-              object->setFieldWidth( value.toString().toInt() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 7: {
+        QFont font = block->getFont();
+        font.setPointSize( value.toInt() );
+        block->setFont( font );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
+      }
 
-            case 6: {
-              auto  font    = value.value< QFont >();
-              QFont oldFont = object->getFont();
-              font.setBold( oldFont.bold() );
-              font.setPointSize( oldFont.pointSize() );
-              object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-            }
-
-            case 7: {
-              QFont font = object->getFont();
-              font.setPointSize( value.toInt() );
-              object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-            }
-
-            case 8: {
-              QFont font = object->getFont();
-              font.setBold( value.toBool() );
-              object->setFont( font );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-            }
-          }
-        }
+      case 8: {
+        QFont font = block->getFont();
+        font.setBold( value.toBool() );
+        block->setFont( font );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
       }
     }
   }
@@ -235,19 +209,11 @@ ValueBlockModel::setData( const QModelIndex& index, const QVariant& value, int r
 void
 ValueBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< ValueDockBlockBase* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
-
   endResetModel();
 }

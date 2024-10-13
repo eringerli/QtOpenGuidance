@@ -15,8 +15,6 @@
 #include "3d/BufferMesh.h"
 
 #include "qentity.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
@@ -390,16 +388,17 @@ SimpleMpcGuidance::setPoseResult( const Eigen::Vector3d&           position,
 
 void
 SimpleMpcGuidance::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT steerAngleChanged( 0, CalculationOption::Option::None );
 }
 
-QNEBlock*
-SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SimpleMpcGuidance();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SimpleMpcGuidanceFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SimpleMpcGuidance >( idHint );
 
-  auto* obj2 = new XyPlotDockBlock( getNameOfFactory() + QString::number( id ), mainWindow );
+  auto* obj2 = new XyPlotDockBlock( mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock" );
+  obj->addAdditionalObject( obj2 );
+
   obj2->dock->setTitle( getNameOfFactory() );
   obj2->dock->setWidget( obj2->widget );
 
@@ -415,7 +414,7 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
   QObject::connect(
     obj2->widget->getQCustomPlotWidget(), &QCustomPlot::mouseDoubleClick, obj2, &PlotDockBlockBase::qCustomPlotWidgetMouseDoubleClick );
 
-  QObject::connect( obj, &SimpleMpcGuidance::dockValuesChanged, obj2, &XyPlotDockBlock::setAngleCost );
+  QObject::connect( obj.get(), &SimpleMpcGuidance::dockValuesChanged, obj2, &XyPlotDockBlock::setAngleCost );
 
   {
     auto entity = new Qt3DCore::QEntity( rootEntity );
@@ -426,7 +425,7 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
     material->setAmbient( Qt::green );
     material->setDiffuse( Qt::green );
     entity->addComponent( material );
-    QObject::connect( obj, &SimpleMpcGuidance::bufferChanged, mesh, &BufferMesh::bufferUpdate );
+    QObject::connect( obj.get(), &SimpleMpcGuidance::bufferChanged, mesh, &BufferMesh::bufferUpdate );
   }
   {
     auto entity = new Qt3DCore::QEntity( rootEntity );
@@ -437,29 +436,32 @@ SimpleMpcGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
     material->setAmbient( Qt::red );
     material->setDiffuse( Qt::red );
     entity->addComponent( material );
-    QObject::connect( obj, &SimpleMpcGuidance::buffer2Changed, mesh, &BufferMesh::bufferUpdate );
+    QObject::connect( obj.get(), &SimpleMpcGuidance::buffer2Changed, mesh, &BufferMesh::bufferUpdate );
   }
 
-  b->addInputPort( QStringLiteral( "Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Trackwidth" ), QLatin1String( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Antenna Position" ), QLatin1String( SLOT( setAntennaPosition( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Window" ), QLatin1String( SLOT( setWindow( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steps" ), QLatin1String( SLOT( setSteps( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Weight" ), QLatin1String( SLOT( setWeight( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Max Slew Rate" ), QLatin1String( SLOT( setMaxSlewRateSteering( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steer Angle Threshold" ), QLatin1String( SLOT( setSteerAngleThreshold( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
-  b->addInputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SLOT( setSteerAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Trackwidth" ), obj.get(), QLatin1StringView( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Antenna Position" ), obj.get(), QLatin1StringView( SLOT( setAntennaPosition( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Window" ), obj.get(), QLatin1StringView( SLOT( setWindow( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steps" ), obj.get(), QLatin1StringView( SLOT( setSteps( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Weight" ), obj.get(), QLatin1StringView( SLOT( setWeight( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering Max Slew Rate" ), obj.get(), QLatin1StringView( SLOT( setMaxSlewRateSteering( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steer Angle Threshold" ), obj.get(), QLatin1StringView( SLOT( setSteerAngleThreshold( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SLOT( setPlan( const Plan& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steer Angle" ), obj.get(), QLatin1StringView( SLOT( setSteerAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Trigger Pose" ), QLatin1String( SIGNAL( triggerPose( POSE_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Trigger Pose" ), obj.get(), QLatin1StringView( SIGNAL( triggerPose( POSE_SIGNATURE_SIGNAL ) ) ) );
 
-  b->addInputPort( QStringLiteral( "XTE" ), QLatin1String( SLOT( setXTE( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Heading Of Path" ), QLatin1String( SLOT( setHeadingOfPath( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Result" ), QLatin1String( SLOT( setPoseResult( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "XTE" ), obj.get(), QLatin1StringView( SLOT( setXTE( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Heading Of Path" ), obj.get(), QLatin1StringView( SLOT( setHeadingOfPath( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Result" ), obj.get(), QLatin1StringView( SLOT( setPoseResult( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Steer Angle" ), obj.get(), QLatin1StringView( SIGNAL( steerAngleChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  return b;
+  return obj;
 }

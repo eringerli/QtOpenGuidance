@@ -17,7 +17,8 @@ class XteDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit XteDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit XteDockBlock(
+    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
 
   ~XteDockBlock();
 
@@ -51,15 +52,17 @@ class XteDockBlockFactory : public BlockFactory {
 
 public:
   XteDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "XteDockBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "XteDockBlock" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Display Docks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Display Docks" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "XTE Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "XTE Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;
@@ -67,5 +70,5 @@ private:
   QMenu*                  menu = nullptr;
 
 public:
-  static KDDockWidgets::DockWidget* firstDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstDock;
 };

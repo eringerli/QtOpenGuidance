@@ -33,7 +33,8 @@ class CultivatedAreaModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CultivatedAreaModel( Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar );
+  explicit CultivatedAreaModel(
+    Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const int idHint, const bool systemBlock, const QString type );
   ~CultivatedAreaModel();
 
   virtual void emitConfigSignals() override;
@@ -87,13 +88,15 @@ class CultivatedAreaModelFactory : public BlockFactory {
 
 public:
   CultivatedAreaModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, bool usePBR, NewOpenSaveToolbar* newOpenSaveToolbar )
-      : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ), newOpenSaveToolbar( newOpenSaveToolbar ) {}
+      : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ), newOpenSaveToolbar( newOpenSaveToolbar ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Cultivated Area Model" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Cultivated Area Model" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity*  rootEntity = nullptr;

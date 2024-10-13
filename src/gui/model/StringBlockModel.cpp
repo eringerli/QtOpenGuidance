@@ -3,15 +3,13 @@
 
 #include "StringBlockModel.h"
 
-#include "block/literal/StringObject.h"
+#include "block/literal/StringBlock.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = StringBlock;
 
-StringBlockModel::StringBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+StringBlockModel::StringBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 StringBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -24,34 +22,19 @@ StringBlockModel::headerData( int section, Qt::Orientation orientation, int role
       case 1:
         return QStringLiteral( "String" );
         break;
-
-      default:
-        return QString();
-        break;
     }
   }
 
   return QVariant();
 }
 
-bool
-StringBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    // FIXME: Implement me!
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-StringBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+StringBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-StringBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+StringBlockModel::columnCount( const QModelIndex& ) const {
   return 2;
 }
 
@@ -61,25 +44,15 @@ StringBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        return block->name();
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< StringObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              return block->getName();
-
-            case 1:
-              return object->string;
-          }
-        }
-      }
+      case 1:
+        return block->string;
     }
   }
 
@@ -88,30 +61,20 @@ StringBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 StringBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< StringObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 1:
-              object->string = value.toString();
-              object->emitConfigSignals();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 1:
+        block->string = value.toString();
+        block->emitConfigSignals();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -128,25 +91,13 @@ StringBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-StringBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "String" ), QVariant::fromValue( this ) );
-}
-
-void
 StringBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< StringObject* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

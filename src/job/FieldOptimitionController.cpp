@@ -37,24 +37,24 @@ FieldOptimitionController::run( const FieldsOptimitionToolbar::AlphaType alphaTy
 
   *seqPointer << ThreadWeaver::make_job( new ConnectPointsJob( pointsPointer, distanceBetweenConnectPoints ) );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
-    std::cout << "FieldOptimitionController::job 3 " << this << ", " << counter << std::endl;
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
+    //    std::cout << "FieldOptimitionController::job 3 " << this << ", " << counter << std::endl;
     alphaShape =
       std::make_shared< Alpha_shape_2 >( pointsPointer->begin(), pointsPointer->end(), Epick::FT( 0 ), Alpha_shape_2::REGULARIZED );
   } );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
     //    sleep(2);
 
-    std::cout << "FieldOptimitionController::job 4 " << this << ", " << counter << std::endl;
+    //    std::cout << "FieldOptimitionController::job 4 " << this << ", " << counter << std::endl;
     optimalAlpha = CGAL::to_double( *( alphaShape->find_optimal_alpha( 1 ) ) );
     solidAlpha   = CGAL::to_double( alphaShape->find_alpha_solid() );
 
     Q_EMIT alphaChanged( optimalAlpha, solidAlpha );
   } );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
-    std::cout << "FieldOptimitionController::job 5 " << this << ", " << counter << std::endl;
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
+    //    std::cout << "FieldOptimitionController::job 5 " << this << ", " << counter << std::endl;
 
     switch( alphaType ) {
       default:
@@ -72,21 +72,21 @@ FieldOptimitionController::run( const FieldsOptimitionToolbar::AlphaType alphaTy
     }
   } );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
-    std::cout << "FieldOptimitionController::job 6 " << this << ", " << counter << std::endl;
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
+    //    std::cout << "FieldOptimitionController::job 6 " << this << ", " << counter << std::endl;
     alphaToPolygon();
   } );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
-    std::cout << "FieldOptimitionController::job 7 " << this << ", " << counter << std::endl;
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
+    //    std::cout << "FieldOptimitionController::job 7 " << this << ", " << counter << std::endl;
     PS::Squared_distance_cost cost;
 
     *out_poly = PS::simplify( *out_poly, cost, PS::Stop_above_cost_threshold( maxDeviation * maxDeviation ) );
   } );
 
-  *seqPointer << ThreadWeaver::make_job( [=] {
-    std::cout << "FieldOptimitionController::job 8 " << this << ", " << counter << ", " << numPointsRecorded + counter << ", "
-              << double( pointsPointer->size() ) << ", " << double( out_poly->outer_boundary().size() ) << std::endl;
+  *seqPointer << ThreadWeaver::make_job( [=, this] {
+    //    std::cout << "FieldOptimitionController::job 8 " << this << ", " << counter << ", " << numPointsRecorded + counter << ", "
+    //              << double( pointsPointer->size() ) << ", " << double( out_poly->outer_boundary().size() ) << std::endl;
     Q_EMIT fieldStatisticsChanged(
       numPointsRecorded + counter, double( pointsPointer->size() ), double( out_poly->outer_boundary().size() ) );
 
@@ -105,7 +105,7 @@ FieldOptimitionController::stop() {
   auto seqPointer = sequence.dynamicCast< ThreadWeaver::Sequence >();
 
   if( seqPointer ) {
-    seqPointer->stop( nullptr );
+    seqPointer->stop();
   }
 }
 
@@ -113,7 +113,7 @@ FieldOptimitionController::~FieldOptimitionController() {
   auto seqPointer = sequence.dynamicCast< ThreadWeaver::Sequence >();
 
   if( seqPointer ) {
-    seqPointer->stop( nullptr );
+    seqPointer->stop();
   }
 
   std::cout << "FieldOptimitionController::~FieldOptimitionController " << this << std::endl;

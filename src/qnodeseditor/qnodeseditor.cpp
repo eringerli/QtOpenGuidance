@@ -36,6 +36,7 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 
+#include "block/BlockBase.h"
 #include "qneblock.h"
 #include "qneconnection.h"
 #include "qnegestures.h"
@@ -60,7 +61,7 @@ QGraphicsItem*
 QNodesEditor::itemAt( QPointF pos ) {
   QList< QGraphicsItem* > items = scene->items( QRectF( pos - QPointF( 1, 1 ), QSize( 3, 3 ) ) );
 
-  for( auto* item : qAsConst( items ) ) {
+  for( auto* item : std::as_const( items ) ) {
     if( item->type() > QGraphicsItem::UserType ) {
       return item;
     }
@@ -71,30 +72,28 @@ QNodesEditor::itemAt( QPointF pos ) {
 
 void
 QNodesEditor::deleteSelected() {
-  {
-    const auto& constRefOfList = scene->selectedItems();
+  std::vector< int >                       blocks;
+  std::vector< BlockConnectionDefinition > connections;
 
-    for( auto i : constRefOfList ) {
-      auto* connection = qgraphicsitem_cast< QNEConnection* >( i );
-      delete connection;
+  const auto& constRefOfList = scene->selectedItems();
+
+  for( auto i : constRefOfList ) {
+    auto* connection = qgraphicsitem_cast< QNEConnection* >( i );
+    if( connection != nullptr ) {
+      connections.emplace_back( connection->port1()->blockPort->idOfBlock,
+                                connection->port1()->blockPort->name,
+                                connection->port2()->blockPort->idOfBlock,
+                                connection->port2()->blockPort->name );
+    }
+
+    const auto* block = qgraphicsitem_cast< const QNEBlock* >( i );
+    if( block != nullptr ) {
+      blocks.emplace_back( block->block->id() );
     }
   }
 
-  {
-    const auto& constRefOfList = scene->selectedItems();
-
-    for( auto i : constRefOfList ) {
-      const auto* block = qgraphicsitem_cast< const QNEBlock* >( i );
-
-      if( block != nullptr ) {
-        if( !block->systemBlock ) {
-          delete block;
-        }
-      }
-    }
-  }
-
-  Q_EMIT resetModels();
+  Q_EMIT deleteConnections( connections );
+  Q_EMIT deleteBlocks( blocks );
 }
 
 bool
@@ -187,29 +186,15 @@ QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
         auto* port = qgraphicsitem_cast< QNEPort* >( itemAt( mouseEvent->scenePos() ) );
 
         if( ( port != nullptr ) && port != currentConnection->port1() ) {
-          if( currentConnection->setPort2( port ) ) {
-            currentConnection->updatePosFromPorts();
-            currentConnection->updatePath();
-            Q_EMIT currentConnection->port1()->block->emitConfigSignals();
-
-            currentConnection = nullptr;
-            return true;
-          }
-
-          QNEPort* port1 = currentConnection->port1();
-          currentConnection->setPort1( port );
-
-          if( currentConnection->setPort2( port1 ) ) {
-            currentConnection->updatePosFromPorts();
-            currentConnection->updatePath();
-            Q_EMIT currentConnection->port1()->block->emitConfigSignals();
-
-            currentConnection = nullptr;
-            return true;
-          }
+          Q_EMIT createConnection( BlockConnectionDefinition( currentConnection->port1()->blockPort->idOfBlock,
+                                                              currentConnection->port1()->blockPort->name,
+                                                              port->blockPort->idOfBlock,
+                                                              port->blockPort->name ) );
+        } else {
+          delete currentConnection;
         }
 
-        delete currentConnection;
+        // BlockManager::createConnection clears the scene, no deletion nessessary
         currentConnection = nullptr;
         return true;
       }
@@ -230,13 +215,21 @@ QNodesEditor::eventFilter( QObject* o, QEvent* e ) {
             auto* block = qgraphicsitem_cast< QNEBlock* >( item );
 
             if( block != nullptr ) {
-              if( !block->systemBlock ) {
-                delete block;
-
-                Q_EMIT resetModels();
+              if( !block->block->systemBlock ) {
+                Q_EMIT deleteBlock( block->block->id() );
               }
             } else {
-              delete qgraphicsitem_cast< QNEConnection* >( item );
+              auto* connection = qgraphicsitem_cast< QNEConnection* >( item );
+
+              if( connection ) {
+                auto blockConnection = connection->connection();
+                if( blockConnection ) {
+                  Q_EMIT deleteConnection( BlockConnectionDefinition( blockConnection->portFrom->idOfBlock,
+                                                                      blockConnection->portFrom->name,
+                                                                      blockConnection->portTo->idOfBlock,
+                                                                      blockConnection->portTo->name ) );
+                }
+              }
             }
           }
         }

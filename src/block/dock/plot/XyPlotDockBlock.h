@@ -14,7 +14,7 @@ class XyPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit XyPlotDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit XyPlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString types );
 
 public Q_SLOTS:
   void setAngleCost( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
@@ -32,15 +32,17 @@ class MpcPlotDockBlockFactory : public BlockFactory {
 
 public:
   MpcPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "MpcPlotDockBlock" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "MpcPlotDockBlock" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Plots" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Plots" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Value Plot Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Value Plot Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

@@ -4,36 +4,35 @@
 #include "ValueTransmissionBase.h"
 
 #include <QBasicTimer>
-#include <QBrush>
+
 #include <QJsonObject>
 #include <QTimerEvent>
 
-ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid ) : BlockBase(), cid( cid ) {
+ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ), cid( cid ) {
   timeoutTimer = std::make_unique< QBasicTimer >();
   repeatTimer  = std::make_unique< QBasicTimer >();
 }
 
-QJsonObject
-ValueTransmissionBase::toJSON() const {
-  QJsonObject valuesObject;
+void
+ValueTransmissionBase::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "cid" )]           = cid;
   valuesObject[QStringLiteral( "timeoutTimeMs" )] = timeoutTimeMs;
   valuesObject[QStringLiteral( "repeatTimeMs" )]  = repeatTimeMs;
-  return valuesObject;
 }
 
 void
-ValueTransmissionBase::fromJSON( QJsonObject& json ) {
-  if( json[QStringLiteral( "cid" )].isDouble() ) {
-    cid = json[QStringLiteral( "cid" )].toInt();
+ValueTransmissionBase::fromJSON( const QJsonObject& valuesObject ) {
+  if( valuesObject[QStringLiteral( "cid" )].isDouble() ) {
+    cid = valuesObject[QStringLiteral( "cid" )].toInt();
   }
 
-  if( json[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
-    timeoutTimeMs = json[QStringLiteral( "timeoutTimeMs" )].toInt();
+  if( valuesObject[QStringLiteral( "timeoutTimeMs" )].isDouble() ) {
+    timeoutTimeMs = valuesObject[QStringLiteral( "timeoutTimeMs" )].toInt();
   }
 
-  if( json[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
-    repeatTimeMs = json[QStringLiteral( "repeatTimeMs" )].toInt();
+  if( valuesObject[QStringLiteral( "repeatTimeMs" )].isDouble() ) {
+    repeatTimeMs = valuesObject[QStringLiteral( "repeatTimeMs" )].toInt();
   }
 }
 

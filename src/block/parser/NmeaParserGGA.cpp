@@ -3,10 +3,6 @@
 
 #include "NmeaParserGGA.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QIODevice>
 
 void
@@ -148,23 +144,22 @@ NmeaParserGGA::parseData() {
   }
 }
 
-QNEBlock*
-NmeaParserGGAFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new NmeaParserGGA();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+NmeaParserGGAFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< NmeaParserGGA >( idHint );
 
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( setData( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "WGS84 Position" ), QLatin1String( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "TOW" ), QLatin1String( SIGNAL( towChanched( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Fix Quality" ), QLatin1String( SIGNAL( fixQualityChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "HDOP" ), QLatin1String( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Num Satelites" ), QLatin1String( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Age of Differential Data" ),
-                    QLatin1String( SIGNAL( ageOfDifferentialDataChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SIGNAL( globalPositionChanged( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "TOW" ), obj.get(), QLatin1StringView( SIGNAL( towChanched( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Fix Quality" ), obj.get(), QLatin1StringView( SIGNAL( fixQualityChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "HDOP" ), obj.get(), QLatin1StringView( SIGNAL( hdopChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Num Satelites" ), obj.get(), QLatin1StringView( SIGNAL( numSatelitesChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Age of Differential Data" ),
+                      obj.get(),
+                      QLatin1StringView( SIGNAL( ageOfDifferentialDataChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

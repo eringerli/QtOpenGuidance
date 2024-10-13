@@ -3,9 +3,6 @@
 
 #include "AckermannSteering.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/anglesHelper.h"
 
 void
@@ -75,22 +72,25 @@ AckermannSteering::setSteeringAngleRight( double steerAngle, const CalculationOp
   }
 }
 
-QNEBlock*
-AckermannSteeringFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new AckermannSteering();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+AckermannSteeringFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< AckermannSteering >( idHint );
 
-  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Track Width" ), QLatin1String( SLOT( setTrackWidth( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Length Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Track Width" ), obj.get(), QLatin1StringView( SLOT( setTrackWidth( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering Angle Left" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngleLeft( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering Angle Right" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngleRight( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SIGNAL( steeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Steering Angle Left" ), QLatin1String( SIGNAL( steeringAngleChangedLeft( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Steering Angle Right" ), QLatin1String( SIGNAL( steeringAngleChangedRight( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SIGNAL( steeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Steering Angle Left" ), obj.get(), QLatin1StringView( SIGNAL( steeringAngleChangedLeft( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Steering Angle Right" ), obj.get(), QLatin1StringView( SIGNAL( steeringAngleChangedRight( NUMBER_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

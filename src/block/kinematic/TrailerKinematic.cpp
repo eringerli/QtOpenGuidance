@@ -3,9 +3,6 @@
 
 #include "TrailerKinematic.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/anglesHelper.h"
 
 void
@@ -47,22 +44,26 @@ TrailerKinematic::setPoseInitialMpcPivot( const Eigen::Vector3d&           posit
   hookToPivot.setPoseInitialMpcPivot( position, orientation, options );
 }
 
-QNEBlock*
-TrailerKinematicFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new TrailerKinematic();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+TrailerKinematicFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< TrailerKinematic >( idHint );
 
-  b->addInputPort( QStringLiteral( "Offset Hook to Pivot" ), QLatin1String( SLOT( setOffsetHookToPivot( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Offset Pivot To Tow" ), QLatin1String( SLOT( setOffsetPivotToTow( VECTOR_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxJackknifeAngle" ), QLatin1String( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "MaxAngle" ), QLatin1String( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Initial Mpc Pose Pivot" ), QLatin1String( SLOT( setPoseInitialMpcPivot( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Offset Hook to Pivot" ), obj.get(), QLatin1StringView( SLOT( setOffsetHookToPivot( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Offset Pivot To Tow" ), obj.get(), QLatin1StringView( SLOT( setOffsetPivotToTow( VECTOR_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "MaxJackknifeAngle" ), obj.get(), QLatin1StringView( SLOT( setMaxJackknifeAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "MaxAngle" ), obj.get(), QLatin1StringView( SLOT( setMaxAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Initial Mpc Pose Pivot" ), obj.get(), QLatin1StringView( SLOT( setPoseInitialMpcPivot( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Pose Hook Point" ), QLatin1String( SIGNAL( poseHookPointChanged( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Pivot Point" ), QLatin1String( SIGNAL( posePivotPointChanged( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pose Tow Point" ), QLatin1String( SIGNAL( poseTowPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Pose Hook Point" ), obj.get(), QLatin1StringView( SIGNAL( poseHookPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Pose Pivot Point" ), obj.get(), QLatin1StringView( SIGNAL( posePivotPointChanged( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pose Tow Point" ), obj.get(), QLatin1StringView( SIGNAL( poseTowPointChanged( POSE_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

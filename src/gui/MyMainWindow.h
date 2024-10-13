@@ -8,9 +8,10 @@
 class QWindow;
 class QCloseEvent;
 
+#include <kddockwidgets/DockWidget.h>
 #include <kddockwidgets/MainWindow.h>
 
-class MyMainWindow : public KDDockWidgets::MainWindow {
+class MyMainWindow : public KDDockWidgets::QtWidgets::MainWindow {
   Q_OBJECT
 
 public:

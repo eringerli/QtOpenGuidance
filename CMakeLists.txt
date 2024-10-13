@@ -1,13 +1,12 @@
-# cmake-format --max-pargs-hwrap 2 --max-subgroups-hwrap 2 --tab-size 2
-# --dangle-parens -i CMakeLists.txt
+# cmake - format-- max - pargs - hwrap 2 --max - subgroups - hwrap 2 --tab -
+# size 2 -- dangle - parens - i CMakeLists.txt
 
 cmake_minimum_required(VERSION 3.16)
 
 project(
   QtOpenGuidance
   VERSION 0.9.0
-  LANGUAGES CXX C
-)
+  LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,11 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOGEN_PARALLEL "16")
 
-if(CMAKE_VERSION
-   VERSION_LESS
-   "3.7.0"
-)
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
@@ -27,13 +24,11 @@ include(cmake/modules/UNIFY.cmake)
 
 set(USE_CCACHE
     true
-    CACHE BOOL "use ccache for speeding up repeated builds"
-)
+    CACHE BOOL "use ccache for speeding up repeated builds")
 
 set(USE_DISTCC
-    true
-    CACHE BOOL "use distcc for speeding up builds"
-)
+    false
+    CACHE BOOL "use distcc for speeding up builds")
 
 set(USE_PCH
     false
@@ -48,6 +43,8 @@ set(USE_UNITY
       BOOL
       "use unity/jumbo build; speeds up one-time compilation by combining multiple targets into groups"
 )
+
+# set(USE_IWYU false CACHE BOOL "build with include-what-you-use" )
 
 if(USE_CCACHE)
   find_program(CCACHE_PROGRAM ccache)
@@ -66,7 +63,7 @@ endif()
 if(USE_DISTCC)
   find_program(DISTCC_PROGRAM distcc)
   if(DISTCC_PROGRAM)
-    # set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${DISTCC_PROGRAM}")
+    # set_property( GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${DISTCC_PROGRAM}" )
     message(STATUS "Using distcc")
   else()
     set(DISTCC_PROGRAM "")
@@ -77,9 +74,10 @@ else()
   set(DISTCC_PROGRAM "")
 endif()
 
-set_property(
-  GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM} ${DISTCC_PROGRAM}"
-)
+# if(USE_IWYU) set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE include-what-you-use) endif()
+
+set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE
+                             "${CCACHE_PROGRAM} ${DISTCC_PROGRAM}")
 
 if(USE_UNITY)
   message(STATUS "Using Unity/Jumbo build")
@@ -95,8 +93,7 @@ else()
   message(STATUS "Not using pre-compiled headers")
 endif()
 
-set(CGAL_DIR lib/CGAL-5.5.2/)
-set(Eigen3_DIR lib/eigen)
+# set(CGAL_DIR lib/CGAL-5.5.2/) set(Eigen3_DIR lib/eigen)
 
 find_package(
   Qt6 REQUIRED
@@ -108,14 +105,13 @@ find_package(
              3DExtras
              3DRender
              3DInput
-             PrintSupport
-)
+             PrintSupport)
 find_package(Qt6 COMPONENTS SerialPort)
-# find_package(Qt6Core COMPONENTS PRIVATE_HEADERS)
+# find_package( Qt6Core COMPONENTS PRIVATE_HEADERS )
 
-# find_package (Eigen3 3.4 REQUIRED NO_MODULE)
+# find_package( Eigen3 3.4 REQUIRED NO_MODULE )
 find_package(KDDockWidgets-qt6 REQUIRED)
-find_package(KF5ThreadWeaver REQUIRED)
+find_package(KF6ThreadWeaver REQUIRED)
 find_package(CGAL REQUIRED)
 
 find_package(SDL2)
@@ -124,7 +120,7 @@ find_package(GeographicLib REQUIRED)
 
 include_directories(${GeographicLib_INCLUDE_DIRS})
 
-# find_package(CGAL COMPONENTS Core)
+# find_package( CGAL COMPONENTS Core )
 
 # ##############################################################################
 # Find Space Navigator header and library
@@ -150,20 +146,17 @@ add_subdirectory(lib/dubins_curves/ EXCLUDE_FROM_ALL)
 add_subdirectory(lib/libmpc/ EXCLUDE_FROM_ALL)
 
 # QCustomPlot
-add_library(
-  QCustomPlot lib/QCustomPlot/qcustomplot.cpp lib/QCustomPlot/qcustomplot.h
-)
-target_link_libraries(
-  QCustomPlot
-  Qt::Core
-  Qt::Gui
-  Qt::Widgets
-  Qt::PrintSupport
-)
-target_compile_options(QCustomPlot PRIVATE -Wno-deprecated-declarations)
+set(SOURCES_qcustomplot # cmake - format : sortable
+    lib/QCustomPlot/qcustomplot.cpp lib/QCustomPlot/qcustomplot.h)
+addtounifygroupandsources("${SOURCES_qcustomplot}" "qcustomplot")
+
+# add_library( QCustomPlot lib / QCustomPlot / qcustomplot.cpp lib / QCustomPlot
+# / qcustomplot.h ) target_link_libraries( QCustomPlot Qt6::Core Qt6::Gui
+# Qt6::Widgets Qt6::PrintSupport ) target_compile_options( QCustomPlot PRIVATE -
+# Wno - deprecated - declarations )
 
 set(SOURCES_qnodeseditor
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/qnodeseditor/qneblock.cpp
     src/qnodeseditor/qneblock.h
     src/qnodeseditor/qneconnection.cpp
@@ -173,33 +166,23 @@ set(SOURCES_qnodeseditor
     src/qnodeseditor/qneport.cpp
     src/qnodeseditor/qneport.h
     src/qnodeseditor/qnodeseditor.cpp
-    src/qnodeseditor/qnodeseditor.h
-)
-set_source_files_properties(
-  SOURCES_qnodeseditor PROPERTIES UNITY_GROUP "qnodeseditor"
-)
+    src/qnodeseditor/qnodeseditor.h)
+addtounifygroupandsources("${SOURCES_qnodeseditor}" "qnodeseditor")
 
-# qnodeseditor
-add_library(qnodeseditor "${SOURCES_qnodeseditor}")
-target_link_libraries(
-  qnodeseditor
-  Qt::Core
-  Qt::CorePrivate
-  Qt::Gui
-  Qt::Widgets
-)
-target_include_directories(qnodeseditor PRIVATE src/)
-target_include_directories(qnodeseditor PRIVATE src/qnodeseditor/)
-set(SOURCES_simple
-    src/block/base/DebugSink.cpp
-    src/block/base/DebugSink.h
-    src/block/BlockBase.cpp
-    src/block/BlockBase.h
-)
+# set_source_files_properties( SOURCES_qnodeseditor PROPERTIES UNITY_GROUP
+# "qnodeseditor" )
+
+# qnodeseditor add_library( qnodeseditor "${SOURCES_qnodeseditor}" )
+# target_link_libraries( qnodeseditor Qt6::Core Qt6::CorePrivate Qt6::Gui
+# Qt6::Widgets ) target_include_directories( qnodeseditor PRIVATE src / )
+# target_include_directories( qnodeseditor PRIVATE src / qnodeseditor / )
+
+set(SOURCES_simple src/block/base/DebugSink.cpp src/block/base/DebugSink.h
+                   src/block/BlockBase.cpp src/block/BlockBase.h)
 addtounifygroupandsources("${SOURCES_simple}" "simpleblocks")
 
 set(SOURCES_filter
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/filter/CascadedComplementaryFilterImuFusion.cpp
     src/block/filter/CascadedComplementaryFilterImuFusion.h
     src/block/filter/ComplementaryFilterImuFusion.cpp
@@ -227,12 +210,11 @@ set(SOURCES_filter
     src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.cpp
     src/kinematic/VehicleDynamics/VehicleNonLinear3DOF.h
     src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.cpp
-    src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.h
-)
+    src/kinematic/VehicleDynamics/VehicleNonLinear4DOF.h)
 addtounifygroupandsources("${SOURCES_filter}" "filter")
 
 set(SOURCES_gui_toolbar
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/gui/toolbar/ApplicationControlToolbar.cpp
     src/gui/toolbar/ApplicationControlToolbar.h
     src/gui/toolbar/ApplicationControlToolbar.ui
@@ -261,16 +243,15 @@ set(SOURCES_gui_toolbar
     src/gui/toolbar/NewOpenSaveToolbar.ui
     src/gui/toolbar/PassToolbar.cpp
     src/gui/toolbar/PassToolbar.h
-    src/gui/toolbar/PassToolbar.ui
-)
+    src/gui/toolbar/PassToolbar.ui)
 addtounifygroupandsources("${SOURCES_gui_toolbar}" "gui")
 
 set(SOURCES_gui_windows
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/gui/FontComboboxDelegate.cpp
     src/gui/FontComboboxDelegate.h
-    src/gui/MyFrameworkWidgetFactory.cpp
-    src/gui/MyFrameworkWidgetFactory.h
+    src/gui/MyViewFactory.cpp
+    src/gui/MyViewFactory.h
     src/gui/MyMainWindow.cpp
     src/gui/MyMainWindow.h
     src/gui/OpenSaveHelper.cpp
@@ -278,12 +259,11 @@ set(SOURCES_gui_windows
     src/gui/SettingsDialog.cpp
     src/gui/SettingsDialog.h
     src/gui/SettingsDialog.ui
-    src/main.cpp
-)
+    src/main.cpp)
 addtounifygroupandsources("${SOURCES_gui_windows}" "gui_windows")
 
 set(SOURCES_gui_dock
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/gui/dock/ActionDock.cpp
     src/gui/dock/ActionDock.h
     src/gui/dock/ActionDock.ui
@@ -301,15 +281,16 @@ set(SOURCES_gui_dock
     src/gui/dock/ValueDock.ui
     src/gui/dock/XteDock.cpp
     src/gui/dock/XteDock.h
-    src/gui/dock/XteDock.ui
-)
+    src/gui/dock/XteDock.ui)
 addtounifygroupandsources("${SOURCES_gui_dock}" "gui")
 
 set(SOURCES_model
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/graphical/TerrainModel.cpp
     src/block/graphical/TerrainModel.h
     src/gui/model/ActionDockBlockModel.cpp
+    src/gui/model/FactoriesModel.h
+    src/gui/model/FactoriesModel.cpp
     src/gui/model/ActionDockBlockModel.h
     src/gui/model/ImplementBlockModel.cpp
     src/gui/model/ImplementBlockModel.h
@@ -319,10 +300,10 @@ set(SOURCES_model
     src/gui/model/NumberBlockModel.h
     src/gui/model/OrientationBlockModel.cpp
     src/gui/model/OrientationBlockModel.h
-    src/gui/model/PathPlannerModelBlockModel.cpp
-    src/gui/model/PathPlannerModelBlockModel.h
     src/gui/model/PlotBlockModel.cpp
     src/gui/model/PlotBlockModel.h
+    src/gui/model/PathPlannerModelBlockModel.cpp
+    src/gui/model/PathPlannerModelBlockModel.h
     src/gui/model/SliderDockBlockModel.cpp
     src/gui/model/SliderDockBlockModel.h
     src/gui/model/StringBlockModel.cpp
@@ -332,12 +313,11 @@ set(SOURCES_model
     src/gui/model/ValueBlockModel.cpp
     src/gui/model/ValueBlockModel.h
     src/gui/model/VectorBlockModel.cpp
-    src/gui/model/VectorBlockModel.h
-)
+    src/gui/model/VectorBlockModel.h)
 addtounifygroupandsources("${SOURCES_model}" "gui_model")
 
 set(SOURCES_cgal
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/3d/CultivatedAreaMeshGeometry.cpp
     src/3d/CultivatedAreaMeshGeometry.h
     src/block/global/FieldManager.cpp
@@ -347,12 +327,11 @@ set(SOURCES_cgal
     src/kinematic/cgal.h
     src/kinematic/cgalKernel.h
     src/kinematic/CgalWorker.cpp
-    src/kinematic/CgalWorker.h
-)
+    src/kinematic/CgalWorker.h)
 addtounifygroupandsources("${SOURCES_cgal}" "cgal")
 
 set(SOURCES_3d
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/3d/ArrowTexture.cpp
     src/3d/ArrowTexture.h
     src/3d/BufferMesh.cpp
@@ -375,12 +354,11 @@ set(SOURCES_3d
     src/3d/CultivatedAreaMeshGeometryView.h
     src/3d/qt3dForwards.h
     src/3d/texturerendertarget.cpp
-    src/3d/texturerendertarget.h
-)
+    src/3d/texturerendertarget.h)
 addtounifygroupandsources("${SOURCES_3d}" "3d")
 
 set(SOURCES_arithmetic
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/arithmetic/ArithmeticAbsolute.cpp
     src/block/arithmetic/ArithmeticAbsolute.h
     src/block/arithmetic/ArithmeticAddition.cpp
@@ -394,23 +372,21 @@ set(SOURCES_arithmetic
     src/block/arithmetic/ArithmeticNegation.cpp
     src/block/arithmetic/ArithmeticNegation.h
     src/block/arithmetic/ArithmeticSubtraction.cpp
-    src/block/arithmetic/ArithmeticSubtraction.h
-)
+    src/block/arithmetic/ArithmeticSubtraction.h)
 addtounifygroupandsources("${SOURCES_arithmetic}" "simpleblocks")
 
 set(SOURCES_calculation
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/calculation/AckermannSteering.cpp
     src/block/calculation/AckermannSteering.h
     src/block/calculation/AngularVelocityLimiter.cpp
     src/block/calculation/AngularVelocityLimiter.h
     src/block/calculation/TransverseMercatorConverter.cpp
-    src/block/calculation/TransverseMercatorConverter.h
-)
+    src/block/calculation/TransverseMercatorConverter.h)
 addtounifygroupandsources("${SOURCES_calculation}" "simpleblocks")
 
 set(SOURCES_comparison
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/comparison/ComparisonEqualTo.cpp
     src/block/comparison/ComparisonEqualTo.h
     src/block/comparison/ComparisonGreaterOrEqualTo.cpp
@@ -422,12 +398,11 @@ set(SOURCES_comparison
     src/block/comparison/ComparisonLessThan.cpp
     src/block/comparison/ComparisonLessThan.h
     src/block/comparison/ComparisonNotEqualTo.cpp
-    src/block/comparison/ComparisonNotEqualTo.h
-)
+    src/block/comparison/ComparisonNotEqualTo.h)
 addtounifygroupandsources("${SOURCES_comparison}" "simpleblocks")
 
 set(SOURCES_converter
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/converter/CommunicationJrk.cpp
     src/block/converter/CommunicationJrk.h
     src/block/converter/CommunicationPgn7FFE.cpp
@@ -443,21 +418,21 @@ set(SOURCES_converter
     src/block/converter/ValueTransmissionQuaternion.cpp
     src/block/converter/ValueTransmissionQuaternion.h
     src/block/converter/ValueTransmissionState.cpp
-    src/block/converter/ValueTransmissionState.h
-)
+    src/block/converter/ValueTransmissionState.h)
 addtounifygroupandsources("${SOURCES_converter}" "simpleblocks")
 
 set(SOURCES_logic
-    # cmake-format: sortable
+    # cmake - format : sortable
+    src/block/logic/LogicDivider.cpp
+    src/block/logic/LogicDivider.h
     src/block/logic/SchmittTriggerBlock.cpp
     src/block/logic/SchmittTriggerBlock.h
     src/block/logic/ValveNumber.cpp
-    src/block/logic/ValveNumber.h
-)
+    src/block/logic/ValveNumber.h)
 addtounifygroupandsources("${SOURCES_logic}" "simpleblocks")
 
 set(SOURCES_splitter
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/splitter/SplitterVector.cpp
     src/block/splitter/SplitterVector.h
     src/block/splitter/SplitterPose.cpp
@@ -465,12 +440,11 @@ set(SOURCES_splitter
     src/block/splitter/SplitterOrientation.cpp
     src/block/splitter/SplitterOrientation.h
     src/block/splitter/SplitterImu.cpp
-    src/block/splitter/SplitterImu.h
-)
+    src/block/splitter/SplitterImu.h)
 addtounifygroupandsources("${SOURCES_splitter}" "simpleblocks")
 
 set(SOURCES_ratelimiter
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/ratelimiter/RateLimiterVector.cpp
     src/block/ratelimiter/RateLimiterVector.h
     src/block/ratelimiter/RateLimiterPose.cpp
@@ -478,12 +452,11 @@ set(SOURCES_ratelimiter
     src/block/ratelimiter/RateLimiterOrientation.cpp
     src/block/ratelimiter/RateLimiterOrientation.h
     src/block/ratelimiter/RateLimiterImu.cpp
-    src/block/ratelimiter/RateLimiterImu.h
-)
+    src/block/ratelimiter/RateLimiterImu.h)
 addtounifygroupandsources("${SOURCES_ratelimiter}" "simpleblocks")
 
 set(SOURCES_dock_display
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/dock/display/OrientationDockBlock.cpp
     src/block/dock/display/OrientationDockBlock.h
     src/block/dock/display/PositionDockBlock.cpp
@@ -493,21 +466,19 @@ set(SOURCES_dock_display
     src/block/dock/display/ValueDockBlockBase.cpp
     src/block/dock/display/ValueDockBlockBase.h
     src/block/dock/display/XteDockBlock.cpp
-    src/block/dock/display/XteDockBlock.h
-)
+    src/block/dock/display/XteDockBlock.h)
 addtounifygroupandsources("${SOURCES_dock_display}" "dock")
 
 set(SOURCES_dock_input
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/dock/input/ActionDockBlock.cpp
     src/block/dock/input/ActionDockBlock.h
     src/block/dock/input/SliderDockBlock.cpp
-    src/block/dock/input/SliderDockBlock.h
-)
+    src/block/dock/input/SliderDockBlock.h)
 addtounifygroupandsources("${SOURCES_dock_input}" "dock")
 
 set(SOURCES_dock_plot
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/dock/plot/OrientationPlotDockBlock.cpp
     src/block/dock/plot/OrientationPlotDockBlock.h
     src/block/dock/plot/PlotDockBlockBase.cpp
@@ -517,23 +488,18 @@ set(SOURCES_dock_plot
     src/block/dock/plot/VectorPlotDockBlock.cpp
     src/block/dock/plot/VectorPlotDockBlock.h
     src/block/dock/plot/XyPlotDockBlock.cpp
-    src/block/dock/plot/XyPlotDockBlock.h
-)
+    src/block/dock/plot/XyPlotDockBlock.h)
 addtounifygroupandsources("${SOURCES_dock_plot}" "dock")
 
 set(SOURCES_global
-    # cmake-format: sortable
-    src/block/global/CameraController.cpp
-    src/block/global/CameraController.h
-    src/block/global/FpsMeasurement.cpp
-    src/block/global/FpsMeasurement.h
-    src/block/global/GridModel.cpp
-    src/block/global/GridModel.h
-)
+    # cmake - format : sortable
+    src/block/global/CameraController.cpp src/block/global/CameraController.h
+    src/block/global/FpsMeasurement.cpp src/block/global/FpsMeasurement.h
+    src/block/global/GridModel.cpp src/block/global/GridModel.h)
 addtounifygroupandsources("${SOURCES_global}" "global")
 
 set(SOURCES_graphical
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/graphical/CultivatedAreaModel.cpp
     src/block/graphical/CultivatedAreaModel.h
     src/block/graphical/FieldModel.cpp
@@ -547,12 +513,11 @@ set(SOURCES_graphical
     src/block/graphical/TractorModel.cpp
     src/block/graphical/TractorModel.h
     src/block/graphical/TrailerModel.cpp
-    src/block/graphical/TrailerModel.h
-)
+    src/block/graphical/TrailerModel.h)
 addtounifygroupandsources("${SOURCES_graphical}" "graphical")
 
 set(SOURCES_guidance
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/guidance/GlobalPlanner.cpp
     src/block/guidance/GlobalPlanner.h
     src/block/guidance/LocalPlanner.cpp
@@ -568,12 +533,11 @@ set(SOURCES_guidance
     src/block/guidance/StanleyGuidance.cpp
     src/block/guidance/StanleyGuidance.h
     src/block/guidance/XteGuidance.cpp
-    src/block/guidance/XteGuidance.h
-)
+    src/block/guidance/XteGuidance.h)
 addtounifygroupandsources("${SOURCES_guidance}" "guidance")
 
 set(SOURCES_kinematic
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/kinematic/FixedKinematic.cpp
     src/block/kinematic/FixedKinematic.h
     src/block/kinematic/FixedKinematicPrimitive.cpp
@@ -581,25 +545,23 @@ set(SOURCES_kinematic
     src/block/kinematic/TrailerKinematic.cpp
     src/block/kinematic/TrailerKinematic.h
     src/block/kinematic/TrailerKinematicPrimitive.cpp
-    src/block/kinematic/TrailerKinematicPrimitive.h
-)
+    src/block/kinematic/TrailerKinematicPrimitive.h)
 addtounifygroupandsources("${SOURCES_kinematic}" "simpleblocks2")
 
 set(SOURCES_literal
-    # cmake-format: sortable
-    src/block/literal/NumberObject.cpp
-    src/block/literal/NumberObject.h
+    # cmake - format : sortable
+    src/block/literal/NumberBlock.cpp
+    src/block/literal/NumberBlock.h
     src/block/literal/OrientationBlock.cpp
     src/block/literal/OrientationBlock.h
-    src/block/literal/StringObject.cpp
-    src/block/literal/StringObject.h
-    src/block/literal/VectorObject.cpp
-    src/block/literal/VectorObject.h
-)
+    src/block/literal/StringBlock.cpp
+    src/block/literal/StringBlock.h
+    src/block/literal/VectorBlock.cpp
+    src/block/literal/VectorBlock.h)
 addtounifygroupandsources("${SOURCES_literal}" "simpleblocks2")
 
 set(SOURCES_parser
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/parser/NmeaParserGGA.cpp
     src/block/parser/NmeaParserGGA.h
     src/block/parser/NmeaParserHDT.cpp
@@ -607,41 +569,33 @@ set(SOURCES_parser
     src/block/parser/NmeaParserRMC.cpp
     src/block/parser/NmeaParserRMC.h
     src/block/parser/UbxParser.cpp
-    src/block/parser/UbxParser.h
-)
+    src/block/parser/UbxParser.h)
 addtounifygroupandsources("${SOURCES_parser}" "simpleblocks2")
 
 set(SOURCES_sectionControl
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/block/sectionControl/Implement.cpp
     src/block/sectionControl/Implement.h
     src/block/sectionControl/ImplementSection.h
     src/block/sectionControl/SectionControl.cpp
-    src/block/sectionControl/SectionControl.h
-)
+    src/block/sectionControl/SectionControl.h)
 addtounifygroupandsources("${SOURCES_sectionControl}" "simpleblocks2")
 
-set(SOURCES_stream
-    # cmake-format: sortable
-    src/block/stream/FileStream.cpp
-    src/block/stream/FileStream.h
-    src/block/stream/UdpSocket.cpp
-    src/block/stream/UdpSocket.h
-)
+set(SOURCES_stream # cmake - format : sortable
+    src/block/stream/FileStream.cpp src/block/stream/FileStream.h
+    src/block/stream/UdpSocket.cpp src/block/stream/UdpSocket.h)
 addtounifygroupandsources("${SOURCES_stream}" "stream")
 
 if(Qt6SerialPort_DIR)
-  set(SOURCES_serialport
-      # cmake-format: sortable
-      src/block/stream/SerialPort.cpp src/block/stream/SerialPort.h
-  )
+  set(SOURCES_serialport # cmake - format : sortable
+      src/block/stream/SerialPort.cpp src/block/stream/SerialPort.h)
   addtounifygroupandsources("${SOURCES_serialport}" "stream")
 
-  set(QTSERIAL_LIBRARY "Qt::SerialPort")
+  set(QTSERIAL_LIBRARY "Qt6::SerialPort")
 endif()
 
 set(SOURCES_helpers
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/helpers/anglesHelper.h
     src/helpers/eigenHelper.cpp
     src/helpers/eigenHelper.h
@@ -653,16 +607,21 @@ set(SOURCES_helpers
     src/helpers/signatures.h
     src/helpers/RateLimiter.cpp
     src/helpers/RateLimiter.h
-)
+    src/helpers/FactoriesManager.cpp
+    src/helpers/FactoriesManager.h
+    src/helpers/BlocksManager.cpp
+    src/helpers/BlocksManager.h)
 addtounifygroupandsources("${SOURCES_helpers}" "helpers")
 
 set(SOURCES_kinematic
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/kinematic/CalculationOptions.h
     src/kinematic/PathPrimitive.cpp
     src/kinematic/PathPrimitive.h
     src/kinematic/PathPrimitiveArc.cpp
     src/kinematic/PathPrimitiveArc.h
+    src/kinematic/PathPrimitiveCircle.cpp
+    src/kinematic/PathPrimitiveCircle.h
     src/kinematic/PathPrimitiveLine.cpp
     src/kinematic/PathPrimitiveLine.h
     src/kinematic/PathPrimitiveRay.cpp
@@ -674,12 +633,11 @@ set(SOURCES_kinematic
     src/kinematic/Plan.cpp
     src/kinematic/Plan.h
     src/kinematic/PlanGlobal.cpp
-    src/kinematic/PlanGlobal.h
-)
+    src/kinematic/PlanGlobal.h)
 addtounifygroupandsources("${SOURCES_kinematic}" "kinematic")
 
 set(SOURCES_job
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/job/ConnectPointsJob.cpp
     src/job/ConnectPointsJob.h
     src/job/CultivatedAreaOptimitionController.cpp
@@ -689,12 +647,11 @@ set(SOURCES_job
     src/job/PlanOptimitionController.cpp
     src/job/PlanOptimitionController.h
     src/job/TestCollinearityJob.cpp
-    src/job/TestCollinearityJob.h
-)
+    src/job/TestCollinearityJob.h)
 addtounifygroupandsources("${SOURCES_job}" "job")
 
 set(SOURCES_qnodeseditor
-    # cmake-format: sortable
+    # cmake - format : sortable
     src/qnodeseditor/qneblock.cpp
     src/qnodeseditor/qneblock.h
     src/qnodeseditor/qneconnection.cpp
@@ -706,30 +663,34 @@ set(SOURCES_qnodeseditor
     src/qnodeseditor/qneport.cpp
     src/qnodeseditor/qneport.h
     src/qnodeseditor/qnodeseditor.cpp
-    src/qnodeseditor/qnodeseditor.h
-)
+    src/qnodeseditor/qnodeseditor.h)
 addtounifygroupandsources("${SOURCES_qnodeseditor}" "qnodeseditor")
 
 set(SOURCES ${SOURCES} # cmake-format: sortable
-            lib/UBX_Parser/src/UBX_Parser.h
-)
+            lib/UBX_Parser/src/UBX_Parser.h)
 
+set(SOURCES_attitude_estimator # cmake - format : sortable
+    lib/attitude_estimator/src/attitude_estimator.cpp
+    lib/attitude_estimator/src/attitude_estimator.h)
+addtounifygroupandsources("${SOURCES_attitude_estimator}" "filter")
+
+set(SOURCES_imu_tools
+    # cmake - format : sortable
+    lib/imu_tools/imu_complementary_filter/include/imu_complementary_filter/complementary_filter.h
+    lib/imu_tools/imu_complementary_filter/src/complementary_filter.cpp)
+addtounifygroupandsources("${SOURCES_imu_tools}" "filter")
 
 if(HAVE_SPNAV)
-  set(SOURCES_spnav
-      # cmake-format: sortable
+  set(SOURCES_spnav # cmake - format : sortable
       src/gui/thread/SpaceNavigatorPollingThread.cpp
-      src/gui/thread/SpaceNavigatorPollingThread.h
-  )
+      src/gui/thread/SpaceNavigatorPollingThread.h)
   addtounifygroupandsources("${SOURCES_spnav}" "gui_windows")
 endif()
 
 if(SDL2_FOUND)
-  set(SOURCES_sdl2
-      # cmake-format: sortable
+  set(SOURCES_sdl2 # cmake - format : sortable
       src/gui/thread/SdlInputPollingThread.cpp
-      src/gui/thread/SdlInputPollingThread.h
-  )
+      src/gui/thread/SdlInputPollingThread.h)
   addtounifygroupandsources("${SOURCES_sdl2}" "gui_windows")
 endif()
 
@@ -755,55 +716,49 @@ target_include_directories(QtOpenGuidance PRIVATE lib/QCustomPlot)
 target_include_directories(QtOpenGuidance PRIVATE lib/kalman/include)
 target_include_directories(QtOpenGuidance PRIVATE lib/geographiclib/include/)
 target_include_directories(QtOpenGuidance PRIVATE lib/UBX_Parser/src/)
+target_include_directories(QtOpenGuidance PRIVATE lib/attitude_estimator/src/)
+target_include_directories(
+  QtOpenGuidance PRIVATE lib/imu_tools/imu_complementary_filter/include/)
 
 target_include_directories(QtOpenGuidance PRIVATE lib/eigen)
 
+target_include_directories(QtOpenGuidance PRIVATE lib/libmpc/include)
+
 target_link_libraries(
   QtOpenGuidance
-  Qt::Core
-  Qt::CorePrivate
-  Qt::Gui
-  Qt::Widgets
-  Qt::3DCore
-  Qt::3DExtras
-  Qt::3DRender
-  Qt::3DInput
+  Qt6::Core
+  Qt6::CorePrivate
+  Qt6::Gui
+  Qt6::Widgets
+  Qt6::3DCore
+  Qt6::3DExtras
+  Qt6::3DRender
+  Qt6::3DInput
+  Qt6::PrintSupport
   ${QTSERIAL_LIBRARY}
-  KF5::ThreadWeaver
+  KF6::ThreadWeaver
+  mpc++
   # Eigen3::Eigen
   KDAB::kddockwidgets
   ${GeographicLib_LIBRARIES}
   dubins
   CGAL::CGAL
-  QCustomPlot
-  qnodeseditor
+  # QCustomPlot qnodeseditor
   ${SPNAV_LIBRARY}
-  ${SDL2_LIBRARIES}
-)
+  ${SDL2_LIBRARIES})
 
 if(USE_PCH)
-  target_precompile_headers(
-    QtOpenGuidance
-    PRIVATE
-    src/pch.h
-  )
+  target_precompile_headers(QtOpenGuidance PRIVATE src/pch.h)
 endif()
 
 install(TARGETS QtOpenGuidance)
 
-file(
-  GLOB
-  CONFIG_FILES
-  ${PROJECT_SOURCE_DIR}/config/*.json
-)
+file(GLOB CONFIG_FILES ${PROJECT_SOURCE_DIR}/config/*.json)
 install(FILES ${CONFIG_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/QtOpenGuidance/config
-)
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/QtOpenGuidance/config)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/icons/
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/
-)
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/)
 
 install(FILES QtOpenGuidance.desktop
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/
-)
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications/)

@@ -14,7 +14,7 @@ class FixedKinematic : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FixedKinematic() : BlockBase() {}
+  explicit FixedKinematic( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 public Q_SLOTS:
   void setOffsetHookToPivot( VECTOR_SIGNATURE_SLOT );
@@ -28,19 +28,19 @@ Q_SIGNALS:
   void poseTowPointChanged( POSE_SIGNATURE_SIGNAL );
 
 private:
-  FixedKinematicPrimitive hookToPivot;
-  FixedKinematicPrimitive pivotToTow;
+  FixedKinematicPrimitive hookToPivot = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
+  FixedKinematicPrimitive pivotToTow  = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
 };
 
 class FixedKinematicFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FixedKinematicFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  FixedKinematicFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Fixed Kinematic" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Fixed Kinematic" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

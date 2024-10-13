@@ -9,7 +9,7 @@ class ArithmeticAddition : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticAddition() : BlockBase() {}
+  explicit ArithmeticAddition( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -33,13 +33,13 @@ class ArithmeticAdditionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ArithmeticAddition" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticAddition" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Arithmetic Addition" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Arithmetic Addition" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Arithmetic" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Arithmetic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

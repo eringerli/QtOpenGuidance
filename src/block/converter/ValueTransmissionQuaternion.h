@@ -16,7 +16,7 @@ class QCborStreamReader;
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionQuaternion( uint16_t cid );
+  explicit ValueTransmissionQuaternion( uint16_t cid, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setQuaternion( ORIENTATION_SIGNATURE_SLOT );
@@ -35,11 +35,11 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit Quaternion" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit Quaternion" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

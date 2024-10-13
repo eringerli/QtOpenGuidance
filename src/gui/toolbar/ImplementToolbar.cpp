@@ -81,7 +81,7 @@ ImplementToolbar::implementChanged( const QPointer< Implement >& ) {
         gridLayout->removeWidget( lbOff );
         gridLayout->removeWidget( pbAuto );
 
-        for( auto* button : qAsConst( buttons ) ) {
+        for( auto* button : std::as_const( buttons ) ) {
           gridLayout->removeWidget( button );
           button->setParent( this );
           button->deleteLater();
@@ -118,7 +118,7 @@ ImplementToolbar::implementChanged( const QPointer< Implement >& ) {
           addSection( QString::number( i ) );
         }
 
-        for( const auto& button : qAsConst( buttons ) ) {
+        for( const auto& button : std::as_const( buttons ) ) {
           button->setCheckable( true );
           button->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
           button->setFocusPolicy( Qt::NoFocus );

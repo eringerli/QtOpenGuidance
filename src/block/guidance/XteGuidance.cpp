@@ -5,8 +5,6 @@
 
 #include "helpers/anglesHelper.h"
 #include "helpers/eigenHelper.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
@@ -53,27 +51,29 @@ XteGuidance::setPlan( const Plan& plan ) {
 
 void
 XteGuidance::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT xteChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
   Q_EMIT headingOfPathChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
   Q_EMIT headingDifferenceChanged( 0, CalculationOption::Option::None );
   Q_EMIT passNumberChanged( std::numeric_limits< double >::infinity(), CalculationOption::Option::None );
 }
 
-QNEBlock*
-XteGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new XteGuidance();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+XteGuidanceFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< XteGuidance >( idHint );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SLOT( setPlan( const Plan& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "XTE" ), QLatin1String( SIGNAL( xteChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Heading of Path" ), QLatin1String( SIGNAL( headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Heading Difference" ),
-                    QLatin1String( SIGNAL( headingDifferenceChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Curvature of Path" ), QLatin1String( SIGNAL( curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pass #" ), QLatin1String( SIGNAL( passNumberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "XTE" ), obj.get(), QLatin1StringView( SIGNAL( xteChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Heading of Path" ), obj.get(), QLatin1StringView( SIGNAL( headingOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Heading Difference" ), obj.get(), QLatin1StringView( SIGNAL( headingDifferenceChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Curvature of Path" ), obj.get(), QLatin1StringView( SIGNAL( curvatureOfPathChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pass #" ), obj.get(), QLatin1StringView( SIGNAL( passNumberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  return b;
+  return obj;
 }

@@ -11,7 +11,7 @@ class ValveNumber : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValveNumber() : BlockBase() {}
+  explicit ValveNumber( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -31,13 +31,13 @@ class ValveNumberFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValveNumberFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ValveNumberFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ValveNumber" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ValveNumber" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Valve for Numbers" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Valve for Numbers" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Logic" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Logic" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

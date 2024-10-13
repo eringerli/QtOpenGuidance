@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1066</width>
-    <height>747</height>
+    <width>1394</width>
+    <height>862</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -200,21 +200,19 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QTreeWidget" name="twBlocks">
+              <widget class="QTreeView" name="twBlocks">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                  <horstretch>0</horstretch>
                  <verstretch>1</verstretch>
                 </sizepolicy>
                </property>
-               <attribute name="headerVisible">
-                <bool>false</bool>
+               <property name="headerHidden">
+                <bool>true</bool>
+               </property>
+               <attribute name="headerDefaultSectionSize">
+                <number>64</number>
                </attribute>
-               <column>
-                <property name="text">
-                 <string>Name</string>
-                </property>
-               </column>
               </widget>
              </item>
              <item>

@@ -3,15 +3,13 @@
 
 #include "NumberBlockModel.h"
 
-#include "block/literal/NumberObject.h"
+#include "block/literal/NumberBlock.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = NumberBlock;
 
-NumberBlockModel::NumberBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+NumberBlockModel::NumberBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 QVariant
 NumberBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
@@ -24,34 +22,19 @@ NumberBlockModel::headerData( int section, Qt::Orientation orientation, int role
       case 1:
         return QStringLiteral( "Number" );
         break;
-
-      default:
-        return QString();
-        break;
     }
   }
 
   return QVariant();
 }
 
-bool
-NumberBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    // FIXME: Implement me!
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-NumberBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+NumberBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
 int
-NumberBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+NumberBlockModel::columnCount( const QModelIndex& ) const {
   return 2;
 }
 
@@ -61,25 +44,15 @@ NumberBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        return block->name();
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< NumberObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              return block->getName();
-
-            case 1:
-              return object->number;
-          }
-        }
-      }
+      case 1:
+        return block->number;
     }
   }
 
@@ -88,30 +61,20 @@ NumberBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 NumberBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< NumberObject* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 1:
-              object->number = value.toString().toFloat();
-              object->emitConfigSignals();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 1:
+        block->number = value.toString().toFloat();
+        block->emitConfigSignals();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -128,25 +91,13 @@ NumberBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-NumberBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Number" ), QVariant::fromValue( this ) );
-}
-
-void
 NumberBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< NumberObject* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

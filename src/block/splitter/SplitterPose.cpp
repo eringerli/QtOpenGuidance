@@ -3,15 +3,13 @@
 
 #include "SplitterPose.h"
 
-#include <QBrush>
-
 #include "Eigen/src/Core/Matrix.h"
 #include "Eigen/src/Geometry/Quaternion.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 void
 SplitterPose::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT positionChanged( Eigen::Vector3d( 0, 0, 0 ), CalculationOption::Option::None );
   Q_EMIT orientationChanged( Eigen::Quaterniond( 0, 0, 0, 0 ), CalculationOption::Option::None );
 }
@@ -22,18 +20,15 @@ SplitterPose::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
   Q_EMIT orientationChanged( orientation, CalculationOption::Option::None );
 }
 
-QNEBlock*
-SplitterPoseFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SplitterPose();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SplitterPoseFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SplitterPose >( idHint );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( positionChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Orientation" ), QLatin1String( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SIGNAL( positionChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SIGNAL( orientationChanged( ORIENTATION_SIGNATURE_SIGNAL ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

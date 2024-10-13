@@ -3,13 +3,9 @@
 
 #include "ArithmeticClamp.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ArithmeticClamp::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
@@ -37,19 +33,15 @@ ArithmeticClamp::operation() {
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-QNEBlock*
-ArithmeticClampFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticClamp();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ArithmeticClampFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ArithmeticClamp >( idHint );
 
-  b->addInputPort( QStringLiteral( "Value" ), QLatin1String( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Minimum" ), QLatin1String( SLOT( setValueMin( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Maximum" ), QLatin1String( SLOT( setValueMax( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Minimum" ), obj.get(), QLatin1StringView( SLOT( setValueMin( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Maximum" ), obj.get(), QLatin1StringView( SLOT( setValueMax( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

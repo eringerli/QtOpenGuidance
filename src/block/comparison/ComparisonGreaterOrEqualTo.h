@@ -11,7 +11,8 @@ class ComparisonGreaterOrEqualTo : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComparisonGreaterOrEqualTo() : BlockBase() {}
+  explicit ComparisonGreaterOrEqualTo( const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -35,13 +36,13 @@ class ComparisonGreaterOrEqualToFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComparisonGreaterOrEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ComparisonGreaterOrEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "ComparisonGreaterOrEqualTo" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "ComparisonGreaterOrEqualTo" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Comparison A >= B" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Comparison A >= B" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Comparison" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Comparison" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

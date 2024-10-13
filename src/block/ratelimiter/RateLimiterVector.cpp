@@ -3,26 +3,18 @@
 
 #include "RateLimiterVector.h"
 
-#include <QBrush>
 #include <iostream>
 
-#include "qneblock.h"
-#include "qneport.h"
+std::unique_ptr< BlockBase >
+RateLimiterVectorFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< RateLimiterVector >( idHint );
 
-QNEBlock*
-RateLimiterVectorFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new RateLimiterVector();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+  obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Rate" ), QLatin1String( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Vector" ), QLatin1String( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Vector" ), QLatin1String( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );
-
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }
 
 void

@@ -3,10 +3,6 @@
 
 #include "CommunicationJrk.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QByteArray>
 
 void
@@ -31,18 +27,15 @@ CommunicationJrk::setSteerCountPerDegree( double countsPerDegree, const Calculat
   this->countsPerDegree = countsPerDegree;
 }
 
-QNEBlock*
-CommunicationJrkFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new CommunicationJrk();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+CommunicationJrkFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< CommunicationJrk >( idHint );
 
-  b->addInputPort( QStringLiteral( "Steerzero" ), QLatin1String( SLOT( setSteerZero( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering count/°" ), QLatin1String( SLOT( setSteerCountPerDegree( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steerzero" ), obj.get(), QLatin1StringView( SLOT( setSteerZero( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Steering count/°" ), obj.get(), QLatin1StringView( SLOT( setSteerCountPerDegree( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
-  b->setBrush( parserColor );
-
-  return b;
+  return obj;
 }

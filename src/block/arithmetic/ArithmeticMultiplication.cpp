@@ -3,13 +3,9 @@
 
 #include "ArithmeticMultiplication.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ArithmeticMultiplication::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
@@ -31,19 +27,15 @@ ArithmeticMultiplication::operation() {
   Q_EMIT numberChanged( result, CalculationOption::Option::None );
 }
 
-QNEBlock*
-ArithmeticMultiplicationFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ArithmeticMultiplication();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ArithmeticMultiplicationFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ArithmeticMultiplication >( idHint );
 
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
-  b->addPort( QStringLiteral( "*" ), QLatin1String(), false, QNEPort::NoBullet );
-  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "*" ) );
+  obj->addInputPort( QStringLiteral( "B" ), obj.get(), QLatin1StringView( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

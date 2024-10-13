@@ -17,7 +17,8 @@ class ActionDockBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ActionDockBlock( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit ActionDockBlock(
+    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
   ~ActionDockBlock();
 
 public Q_SLOTS:
@@ -31,8 +32,8 @@ Q_SIGNALS:
   void action( ACTION_SIGNATURE_SIGNAL );
 
 public:
-  ActionDock*                widget = nullptr;
-  KDDockWidgets::DockWidget* dock   = nullptr;
+  ActionDock*                           widget = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock   = nullptr;
 };
 
 class ActionDockBlockFactory : public BlockFactory {
@@ -40,15 +41,17 @@ class ActionDockBlockFactory : public BlockFactory {
 
 public:
   ActionDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
+    typeColor = TypeColor::Dock;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Action Dock Block" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Action Dock Block" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Input Docks" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Input Docks" ); }
 
-  QString getPrettyNameOfFactory() override { return QStringLiteral( "Action Dock" ); }
+  QString getPrettyNameOfFactory() const override { return QStringLiteral( "Action Dock" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;
@@ -56,5 +59,5 @@ private:
   QMenu*                  menu = nullptr;
 
 public:
-  static KDDockWidgets::DockWidget* firstActionDock;
+  static KDDockWidgets::QtWidgets::DockWidget* firstActionDock;
 };

@@ -20,10 +20,11 @@ class CameraController : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CameraController( Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity );
+  explicit CameraController(
+    Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type );
 
-  QJsonObject toJSON() const override;
-  void        fromJSON( QJsonObject& ) override;
+  void toJSON( QJsonObject& json ) const override;
+  void fromJSON( const QJsonObject& ) override;
 
 protected:
   // CameraController also acts an EventFilter to receive the wheel-events of the mouse
@@ -89,13 +90,15 @@ class CameraControllerFactory : public BlockFactory {
 
 public:
   CameraControllerFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
-      : BlockFactory( thread, true ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {}
+      : BlockFactory( thread, true ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
+    typeColor = TypeColor::Model;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Camera Controller" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Camera Controller" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Graphical" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity*   m_rootEntity   = nullptr;

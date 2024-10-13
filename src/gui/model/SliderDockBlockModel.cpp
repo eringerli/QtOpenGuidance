@@ -6,16 +6,14 @@
 #include "block/dock/input/SliderDockBlock.h"
 #include "gui/dock/SliderDock.h"
 
-#include <QComboBox>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
+#include "helpers/BlocksManager.h"
 
-#include "qneblock.h"
+using Type = SliderDockBlock;
 
-SliderDockBlockModel::SliderDockBlockModel( QGraphicsScene* scene ) : scene( scene ) {}
+SliderDockBlockModel::SliderDockBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
 
 int
-SliderDockBlockModel::columnCount( const QModelIndex& /*parent*/ ) const {
+SliderDockBlockModel::columnCount( const QModelIndex& ) const {
   return 9;
 }
 
@@ -58,28 +56,14 @@ SliderDockBlockModel::headerData( int section, Qt::Orientation orientation, int 
       case 8:
         return QStringLiteral( "Inverted?" );
         break;
-
-      default:
-        return QString();
-        break;
     }
   }
 
   return QVariant();
 }
 
-bool
-SliderDockBlockModel::setHeaderData( int section, Qt::Orientation orientation, const QVariant& value, int role ) {
-  if( value != headerData( section, orientation, role ) ) {
-    Q_EMIT headerDataChanged( orientation, section, section );
-    return true;
-  }
-
-  return false;
-}
-
 int
-SliderDockBlockModel::rowCount( const QModelIndex& /*parent*/ ) const {
+SliderDockBlockModel::rowCount( const QModelIndex& ) const {
   return countBuffer;
 }
 
@@ -89,64 +73,61 @@ SliderDockBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  if( role == Qt::CheckStateRole ) {
-    int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-    const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->name();
+        }
+      } break;
 
-    for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getValue();
+        }
+      } break;
 
-      if( block != nullptr ) {
-        if( auto* object = qobject_cast< SliderDockBlock* >( block->objects.front() ) ) {
-          if( countRow++ == index.row() ) {
-            switch( index.column() ) {
-              case 7:
-                return object->widget->resetOnStart ? Qt::Checked : Qt::Unchecked;
+      case 2: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getDecimals();
+        }
+      } break;
 
-              case 8:
-                return object->widget->getSliderInverted();
-            }
-          }
+      case 3: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getMaximum();
+        }
+      } break;
+
+      case 4: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getMinimum();
+        }
+      } break;
+
+      case 5: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getDefaultValue();
+        }
+      } break;
+
+      case 6: {
+        if( role == Qt::DisplayRole || role == Qt::EditRole ) {
+          return block->widget->getUnit();
+        }
+      } break;
+
+      case 7: {
+        if( role == Qt::CheckStateRole ) {
+          return block->widget->resetOnStart ? Qt::Checked : Qt::Unchecked;
         }
       }
-    }
-  }
 
-  if( role == Qt::DisplayRole || role == Qt::EditRole ) {
-    int countRow = 0;
-
-    const auto& constRefOfList = scene->items();
-
-    for( const auto& item : constRefOfList ) {
-      auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-      if( block != nullptr ) {
-        if( auto* object = qobject_cast< SliderDockBlock* >( block->objects.front() ) ) {
-          if( countRow++ == index.row() ) {
-            switch( index.column() ) {
-              case 0:
-                return block->getName();
-
-              case 1:
-                return object->widget->getValue();
-
-              case 2:
-                return object->widget->getDecimals();
-
-              case 3:
-                return object->widget->getMaximum();
-
-              case 4:
-                return object->widget->getMinimum();
-
-              case 5:
-                return object->widget->getDefaultValue();
-
-              case 6:
-                return object->widget->getUnit();
-            }
-          }
+      case 8: {
+        if( role == Qt::CheckStateRole ) {
+          return block->widget->getSliderInverted();
         }
       }
     }
@@ -157,64 +138,54 @@ SliderDockBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 SliderDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  int countRow = 0;
+  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+    auto* block = static_cast< Type* >( blockRef.second.get() );
 
-  const auto& constRefOfList = scene->items();
+    switch( index.column() ) {
+      case 0:
+        block->setName( qvariant_cast< QString >( value ) );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
+      case 1:
+        block->widget->setValue( value.toString().toDouble() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-    if( block != nullptr ) {
-      if( auto* object = qobject_cast< SliderDockBlock* >( block->objects.front() ) ) {
-        if( countRow++ == index.row() ) {
-          switch( index.column() ) {
-            case 0:
-              block->setName( qvariant_cast< QString >( value ) );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 2:
+        block->widget->setDecimals( value.toString().toInt() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 1:
-              object->widget->setValue( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 3:
+        block->widget->setMaximum( value.toString().toDouble() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 2:
-              object->widget->setDecimals( value.toString().toInt() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 4:
+        block->widget->setMinimum( value.toString().toDouble() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 3:
-              object->widget->setMaximum( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 5:
+        block->widget->setDefaultValue( value.toString().toDouble() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 4:
-              object->widget->setMinimum( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 6:
+        block->widget->setUnit( value.toString() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 5:
-              object->widget->setDefaultValue( value.toString().toDouble() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
+      case 7:
+        block->widget->resetOnStart = value.toBool();
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
 
-            case 6:
-              object->widget->setUnit( value.toString() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 7:
-              object->widget->resetOnStart = value.toBool();
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-
-            case 8:
-              object->widget->setSliderInverted( value.toBool() );
-              Q_EMIT dataChanged( index, index, QVector< int >() << role );
-              return true;
-          }
-        }
-      }
+      case 8:
+        block->widget->setSliderInverted( value.toBool() );
+        Q_EMIT dataChanged( index, index, QVector< int >() << role );
+        return true;
     }
   }
 
@@ -235,25 +206,13 @@ SliderDockBlockModel::flags( const QModelIndex& index ) const {
 }
 
 void
-SliderDockBlockModel::addToCombobox( QComboBox* combobox ) {
-  combobox->addItem( QStringLiteral( "Slider Dock" ), QVariant::fromValue( this ) );
-}
-
-void
 SliderDockBlockModel::resetModel() {
   beginResetModel();
+
   countBuffer = 0;
 
-  const auto& constRefOfList = scene->items();
-
-  for( const auto& item : constRefOfList ) {
-    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-    if( block != nullptr ) {
-      if( qobject_cast< SliderDockBlock* >( block->objects.front() ) != nullptr ) {
-        ++countBuffer;
-      }
-    }
+  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+    ++countBuffer;
   }
 
   endResetModel();

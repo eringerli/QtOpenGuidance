@@ -3,13 +3,10 @@
 
 #include "SplitterImu.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 SplitterImu::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
+
   Q_EMIT dtChanged( 0, CalculationOption::Option::None );
   Q_EMIT accelerometerChanged( Eigen::Vector3d( 0, 0, 0 ), CalculationOption::Option::None );
   Q_EMIT gyroChanged( Eigen::Vector3d( 0, 0, 0 ), CalculationOption::Option::None );
@@ -24,20 +21,18 @@ SplitterImu::setImu( const double dT, const Eigen::Vector3d& acc, const Eigen::V
   Q_EMIT magnetormeterChanged( mag, CalculationOption::Option::None );
 }
 
-QNEBlock*
-SplitterImuFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new SplitterImu();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+SplitterImuFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< SplitterImu >( idHint );
 
-  b->addInputPort( QStringLiteral( "Imu" ), QLatin1String( SLOT( setImu( IMU_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Imu" ), obj.get(), QLatin1StringView( SLOT( setImu( IMU_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "dT" ), QLatin1String( SIGNAL( dtChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Accelerometer" ), QLatin1String( SIGNAL( accelerometerChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Gyroscope" ), QLatin1String( SIGNAL( gyroChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
-  b->addOutputPort( QStringLiteral( "Magnetometer" ), QLatin1String( SIGNAL( magnetormeterChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "dT" ), obj.get(), QLatin1StringView( SIGNAL( dtChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Accelerometer" ), obj.get(), QLatin1StringView( SIGNAL( accelerometerChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Gyroscope" ), obj.get(), QLatin1StringView( SIGNAL( gyroChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Magnetometer" ), obj.get(), QLatin1StringView( SIGNAL( magnetormeterChanged( VECTOR_SIGNATURE_SIGNAL ) ) ) );
 
-  b->setBrush( converterColor );
-
-  return b;
+  return obj;
 }

@@ -3,13 +3,9 @@
 
 #include "UdpSocket.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
-#include <QBrush>
 #include <QtNetwork>
 
-UdpSocket::UdpSocket() {
+UdpSocket::UdpSocket( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
   udpSocket = new QUdpSocket( this );
   connect( udpSocket, &QIODevice::readyRead, this, &UdpSocket::processPendingDatagrams );
 }
@@ -42,18 +38,14 @@ UdpSocket::processPendingDatagrams() {
   }
 }
 
-QNEBlock*
-UdpSocketFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new UdpSocket();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+UdpSocketFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< UdpSocket >( idHint );
 
-  b->addInputPort( QStringLiteral( "Port" ), QLatin1String( SLOT( setPort( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Data" ), QLatin1String( SLOT( sendData( const QByteArray& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Port" ), obj.get(), QLatin1StringView( SLOT( setPort( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( sendData( const QByteArray& ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Data" ), QLatin1String( SIGNAL( dataReceived( const QByteArray& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SIGNAL( dataReceived( const QByteArray& ) ) ) );
 
-  b->setBrush( inputOutputColor );
-
-  return b;
+  return obj;
 }

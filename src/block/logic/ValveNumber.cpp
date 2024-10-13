@@ -3,13 +3,9 @@
 
 #include "ValveNumber.h"
 
-#include <QBrush>
-
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 ValveNumber::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT numberChanged( 0, CalculationOption::Option::None );
 }
 
@@ -32,19 +28,15 @@ ValveNumber::setValueB( const double number, const CalculationOption::Options ) 
   }
 }
 
-QNEBlock*
-ValveNumberFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new ValveNumber();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+ValveNumberFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< ValveNumber >( idHint );
 
-  b->addInputPort( QStringLiteral( "Switch" ), QLatin1String( SLOT( setSwitch( ACTION_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "A" ), QLatin1String( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "B" ), QLatin1String( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Switch" ), obj.get(), QLatin1StringView( SLOT( setSwitch( ACTION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "B" ), obj.get(), QLatin1StringView( SLOT( setValueB( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Result" ), QLatin1String( SIGNAL( numberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Result" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE_SIGNAL ) ) ) );
 
-  b->setBrush( arithmeticColor );
-
-  return b;
+  return obj;
 }

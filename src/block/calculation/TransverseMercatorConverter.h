@@ -7,9 +7,6 @@
 
 #include "block/BlockBase.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "helpers/GeographicConvertionWrapper.h"
 #include "helpers/eigenHelper.h"
 
@@ -19,7 +16,8 @@ class TransverseMercatorConverter : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw ) : BlockBase(), tmw( tmw ) {}
+  explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ), tmw( tmw ) {}
 
 public Q_SLOTS:
   void setWGS84Position( VECTOR_SIGNATURE_SLOT );
@@ -38,13 +36,15 @@ class TransverseMercatorConverterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread, false ), tmw( tmw ) {}
+  TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread, false ), tmw( tmw ) {
+    typeColor = TypeColor::Arithmetic;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Transverse Mercator" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Transverse Mercator" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   GeographicConvertionWrapper* tmw = nullptr;

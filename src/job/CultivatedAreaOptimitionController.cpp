@@ -52,8 +52,8 @@ CultivatedAreaOptimitionController::run( const double maxDeviation ) {
   if( pointsPointer->size() > 2 ) {
     auto collectionPointer = new ThreadWeaver::Collection();
 
-    auto optimizeXYJob = ThreadWeaver::make_job( [=] {
-      std::cout << "optimizeXYJob " << this << std::endl;
+    auto optimizeXYJob = ThreadWeaver::make_job( [=, this] {
+      //      std::cout << "optimizeXYJob " << this << std::endl;
 
       PS::Squared_distance_cost cost;
 
@@ -82,8 +82,8 @@ CultivatedAreaOptimitionController::run( const double maxDeviation ) {
     } );
     *collectionPointer << optimizeXYJob;
 
-    auto optimizeXZJob = ThreadWeaver::make_job( [=] {
-      std::cout << "optimizeXZJob " << this << std::endl;
+    auto optimizeXZJob = ThreadWeaver::make_job( [=, this] {
+      //      std::cout << "optimizeXZJob " << this << std::endl;
 
       PS::Squared_distance_cost cost;
 
@@ -112,8 +112,8 @@ CultivatedAreaOptimitionController::run( const double maxDeviation ) {
     } );
     *collectionPointer << optimizeXZJob;
 
-    auto unionJob = ThreadWeaver::make_job( [=] {
-      std::cout << "unionJob " << this << std::endl;
+    auto unionJob = ThreadWeaver::make_job( [=, this] {
+      //      std::cout << "unionJob " << this << std::endl;
 
       std::cout << "polyline_XY " << polyline_XY->size() << std::endl;
       //    for(const auto& p : *polyline_XY){
@@ -194,7 +194,7 @@ CultivatedAreaOptimitionController::stop() {
   auto colPointer = collection.dynamicCast< ThreadWeaver::Collection >();
 
   if( colPointer ) {
-    colPointer->stop( nullptr );
+    colPointer->stop();
   }
 }
 
@@ -202,7 +202,7 @@ CultivatedAreaOptimitionController::~CultivatedAreaOptimitionController() {
   auto colPointer = collection.dynamicCast< ThreadWeaver::Collection >();
 
   if( colPointer ) {
-    colPointer->stop( nullptr );
+    colPointer->stop();
   }
 
   std::cout << "CultivatedAreaOptimitionController::~~~CultivatedAreaOptimitionController " << this << std::endl;

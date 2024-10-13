@@ -3,9 +3,6 @@
 
 #include "LocalPlanner.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include <QAction>
 #include <QMenu>
 
@@ -32,9 +29,11 @@
 
 #include <dubins/dubins.h>
 
-LocalPlanner::LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow ) {
+LocalPlanner::LocalPlanner(
+  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+    : BlockBase( idHint, systemBlock, type ) {
   widget = new GuidanceTurningToolbar( mainWindow );
-  dock   = new KDDockWidgets::DockWidget( uniqueName );
+  dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
   QObject::connect( widget, &GuidanceTurningToolbar::turnLeftToggled, this, &LocalPlanner::turnLeftToggled );
   QObject::connect( widget, &GuidanceTurningToolbar::turnRightToggled, this, &LocalPlanner::turnRightToggled );
@@ -49,6 +48,8 @@ LocalPlanner::~LocalPlanner() {
 
 void
 LocalPlanner::setName( const QString& name ) {
+  BlockBase::setName( name );
+
   dock->setTitle( name );
   dock->toggleAction()->setText( QStringLiteral( "Turning Dock: " ) + name );
 
@@ -403,17 +404,15 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
   }
 }
 
-QNEBlock*
-LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new LocalPlanner( getNameOfFactory() + QString::number( id ), mainWindow );
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+LocalPlannerFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< LocalPlanner >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
-  auto obj2 = new PathPlannerModel( rootEntity );
-  b->addObject( obj2 );
+  auto* obj2 = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );
+  obj->addAdditionalObject( obj2 );
   obj->pathPlannerModel = obj2;
 
-  QObject::connect( obj, &LocalPlanner::planChanged, obj2, &PathPlannerModel::setPlan );
+  QObject::connect( obj.get(), &LocalPlanner::planChanged, obj2, &PathPlannerModel::setPlan );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -422,17 +421,19 @@ LocalPlannerFactory::createBlock( QGraphicsScene* scene, int id ) {
 
   mainWindow->addDockWidget( obj->dock, location );
 
-  b->addInputPort( QStringLiteral( "Pose" ), QLatin1String( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Last" ), QLatin1String( SLOT( setPoseLast( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Plan" ), QLatin1String( SLOT( setPlan( const Plan& ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Path Hysteresis" ), QLatin1String( SLOT( setPathHysteresis( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Minimum Radius" ), QLatin1String( SLOT( setMinRadius( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Force Current Path" ), QLatin1String( SLOT( setForceCurrentPath( ACTION_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose" ), obj2, QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ), BlockPort::Flag::None );
+  obj->addInputPort( QStringLiteral( "Pose Last" ), obj.get(), QLatin1StringView( SLOT( setPoseLast( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SLOT( setPlan( const Plan& ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Path Hysteresis" ), obj.get(), QLatin1StringView( SLOT( setPathHysteresis( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Minimum Radius" ), obj.get(), QLatin1StringView( SLOT( setMinRadius( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Force Current Path" ), obj.get(), QLatin1StringView( SLOT( setForceCurrentPath( ACTION_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), QLatin1String( SIGNAL( triggerPlanPose( POSE_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Plan" ), QLatin1String( SIGNAL( planChanged( const Plan& ) ) ) );
-  b->addOutputPort( QStringLiteral( "Pass Number" ), QLatin1String( SIGNAL( passNumberChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Trigger Plan Pose" ), obj.get(), QLatin1StringView( SIGNAL( triggerPlanPose( POSE_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SIGNAL( planChanged( const Plan& ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Pass Number" ), obj.get(), QLatin1StringView( SIGNAL( passNumberChanged( NUMBER_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

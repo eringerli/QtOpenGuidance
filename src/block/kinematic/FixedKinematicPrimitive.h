@@ -13,7 +13,8 @@ class FixedKinematicPrimitive : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FixedKinematicPrimitive() : BlockBase() {}
+  explicit FixedKinematicPrimitive( const int idHint, const bool systemBlock, const QString type )
+      : BlockBase( idHint, systemBlock, type ) {}
 
 public Q_SLOTS:
   void setOffset( VECTOR_SIGNATURE_SLOT );
@@ -36,11 +37,11 @@ class FixedKinematicPrimitiveFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Fixed Kinematic Primitive" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Fixed Kinematic Primitive" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Calculations" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

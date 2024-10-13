@@ -17,7 +17,7 @@ class QCborStreamReader;
 class ValueTransmissionImuData : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionImuData( uint16_t cid );
+  explicit ValueTransmissionImuData( uint16_t cid, const int idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setImuData( IMU_SIGNATURE_SLOT );
@@ -38,11 +38,11 @@ class ValueTransmissionImuDataFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionImuDataFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  ValueTransmissionImuDataFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Value Transmit IMU Data" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit IMU Data" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Value Converters" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Value Converters" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

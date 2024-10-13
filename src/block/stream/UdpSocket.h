@@ -13,7 +13,7 @@ class UdpSocket : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit UdpSocket();
+  explicit UdpSocket( const int idHint, const bool systemBlock, const QString type );
 
   ~UdpSocket();
 
@@ -39,11 +39,11 @@ class UdpSocketFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  UdpSocketFactory( QThread* thread ) : BlockFactory( thread, false ) {}
+  UdpSocketFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
 
-  QString getNameOfFactory() override { return QStringLiteral( "UDP Socket" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "UDP Socket" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Streams" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Streams" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 };

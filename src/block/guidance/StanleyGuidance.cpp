@@ -3,9 +3,6 @@
 
 #include "StanleyGuidance.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 #include "kinematic/CgalWorker.h"
 #include "kinematic/cgal.h"
 #include <algorithm>
@@ -195,47 +192,57 @@ StanleyGuidance::setMaxSteeringAngle( const double maxSteeringAngle, Calculation
 
 void
 StanleyGuidance::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT steerAngleChanged( 0, CalculationOption::Option::None );
 }
 
-QNEBlock*
-StanleyGuidanceFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new StanleyGuidance();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+StanleyGuidanceFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< StanleyGuidance >( idHint );
 
-  b->addInputPort( QStringLiteral( "Pose Front Wheels" ), QLatin1String( SLOT( setPoseFrontWheels( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Pose Rear Wheels" ), QLatin1String( SLOT( setPoseRearWheels( POSE_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Steering Angle" ), QLatin1String( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Front Wheels" ), obj.get(), QLatin1StringView( SLOT( setPoseFrontWheels( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Pose Rear Wheels" ), obj.get(), QLatin1StringView( SLOT( setPoseRearWheels( POSE_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "XTE Front Wheels" ), QLatin1String( SLOT( setXteFrontWheels( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Heading of Path Front Wheels" ),
-                   QLatin1String( SLOT( setHeadingOfPathFrontWheels( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "XTE Rear Wheels" ), QLatin1String( SLOT( setXteRearWheels( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Heading of Path Rear Wheels" ),
-                   QLatin1String( SLOT( setHeadingOfPathRearWheels( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "XTE Front Wheels" ), obj.get(), QLatin1StringView( SLOT( setXteFrontWheels( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Heading of Path Front Wheels" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setHeadingOfPathFrontWheels( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "XTE Rear Wheels" ), obj.get(), QLatin1StringView( SLOT( setXteRearWheels( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Heading of Path Rear Wheels" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setHeadingOfPathRearWheels( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Stanley Gain K Forwards" ), QLatin1String( SLOT( setStanleyGainKForwards( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain K Softening Forwards" ),
-                   QLatin1String( SLOT( setStanleyGainKSoftForwards( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Forwards" ),
-                   QLatin1String( SLOT( setStanleyGainDampeningYawForwards( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Forwards" ),
-                   QLatin1String( SLOT( setStanleyGainDampeningSteeringForwards( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Stanley Gain K Forwards" ), obj.get(), QLatin1StringView( SLOT( setStanleyGainKForwards( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain K Softening Forwards" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainKSoftForwards( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Forwards" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainDampeningYawForwards( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Forwards" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainDampeningSteeringForwards( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Stanley Gain K Reverse" ), QLatin1String( SLOT( setStanleyGainKReverse( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain K Softening Reverse" ),
-                   QLatin1String( SLOT( setStanleyGainKSoftReverse( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Reverse" ),
-                   QLatin1String( SLOT( setStanleyGainDampeningYawReverse( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Reverse" ),
-                   QLatin1String( SLOT( setStanleyGainDampeningSteeringReverse( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Stanley Gain K Reverse" ), obj.get(), QLatin1StringView( SLOT( setStanleyGainKReverse( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain K Softening Reverse" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainKSoftReverse( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain Yaw Dampening Reverse" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainDampeningYawReverse( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Stanley Gain Steering Dampening Reverse" ),
+                     obj.get(),
+                     QLatin1StringView( SLOT( setStanleyGainDampeningSteeringReverse( NUMBER_SIGNATURE ) ) ) );
 
-  b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Max Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setMaxSteeringAngle( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Steer Angle" ), QLatin1String( SIGNAL( steerAngleChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Steer Angle" ), obj.get(), QLatin1StringView( SIGNAL( steerAngleChanged( NUMBER_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

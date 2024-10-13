@@ -3,9 +3,6 @@
 
 #include "AngularVelocityLimiter.h"
 
-#include "qneblock.h"
-#include "qneport.h"
-
 void
 AngularVelocityLimiter::setMaxAngularVelocity( double maxAngularVelocity, const CalculationOption::Options ) {
   this->maxAngularVelocity = degreesToRadians( maxAngularVelocity );
@@ -34,19 +31,20 @@ AngularVelocityLimiter::setVelocity( double velocity, const CalculationOption::O
                            CalculationOption::Option::None );
 }
 
-QNEBlock*
-AngularVelocityLimiterFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new AngularVelocityLimiter();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+AngularVelocityLimiterFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< AngularVelocityLimiter >( idHint );
 
-  b->addInputPort( QStringLiteral( "Max Angular Velocity" ), QLatin1String( SLOT( setMaxAngularVelocity( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SLOT( setMaxSteeringAngle( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Length Wheelbase" ), QLatin1String( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
-  b->addInputPort( QStringLiteral( "Velocity" ), QLatin1String( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Max Angular Velocity" ), obj.get(), QLatin1StringView( SLOT( setMaxAngularVelocity( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort(
+    QStringLiteral( "Max Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setMaxSteeringAngle( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Length Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );
+  obj->addInputPort( QStringLiteral( "Velocity" ), obj.get(), QLatin1StringView( SLOT( setVelocity( NUMBER_SIGNATURE ) ) ) );
 
-  b->addOutputPort( QStringLiteral( "Max Steering Angle" ), QLatin1String( SIGNAL( maxSteeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
-  b->addOutputPort( QStringLiteral( "Min Radius" ), QLatin1String( SIGNAL( minRadiusChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort(
+    QStringLiteral( "Max Steering Angle" ), obj.get(), QLatin1StringView( SIGNAL( maxSteeringAngleChanged( NUMBER_SIGNATURE ) ) ) );
+  obj->addOutputPort( QStringLiteral( "Min Radius" ), obj.get(), QLatin1StringView( SIGNAL( minRadiusChanged( NUMBER_SIGNATURE ) ) ) );
 
-  return b;
+  return obj;
 }

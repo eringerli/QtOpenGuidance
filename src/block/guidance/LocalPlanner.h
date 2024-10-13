@@ -29,7 +29,8 @@ class LocalPlanner : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit LocalPlanner( const QString& uniqueName, MyMainWindow* mainWindow );
+  explicit LocalPlanner(
+    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
 
   ~LocalPlanner();
 
@@ -69,9 +70,9 @@ public:
   double             minRadius            = 10;
   bool               forceCurrentPath     = false;
 
-  GuidanceTurningToolbar*    widget           = nullptr;
-  KDDockWidgets::DockWidget* dock             = nullptr;
-  PathPlannerModel*          pathPlannerModel = nullptr;
+  GuidanceTurningToolbar*               widget           = nullptr;
+  KDDockWidgets::QtWidgets::DockWidget* dock             = nullptr;
+  PathPlannerModel*                     pathPlannerModel = nullptr;
 
 private:
   void calculateTurning( bool changeExistingTurn );
@@ -100,13 +101,15 @@ class LocalPlannerFactory : public BlockFactory {
 public:
   LocalPlannerFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
-      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {}
+      : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {
+    typeColor = TypeColor::Arithmetic;
+  }
 
-  QString getNameOfFactory() override { return QStringLiteral( "Local Planner" ); }
+  QString getNameOfFactory() const override { return QStringLiteral( "Local Planner" ); }
 
-  QString getCategoryOfFactory() override { return QStringLiteral( "Guidance" ); }
+  QString getCategoryOfFactory() const override { return QStringLiteral( "Guidance" ); }
 
-  virtual QNEBlock* createBlock( QGraphicsScene* scene, int id = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

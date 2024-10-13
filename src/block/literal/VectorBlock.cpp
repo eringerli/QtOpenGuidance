@@ -1,33 +1,29 @@
 // Copyright( C ) Christian Riggenbach
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "VectorObject.h"
+#include "VectorBlock.h"
 
 #include "kinematic/CalculationOptions.h"
-#include "qneblock.h"
-#include "qneport.h"
 
 #include "gui/model/OrientationBlockModel.h"
 
-#include <QBrush>
 #include <QJsonObject>
 
 void
-VectorObject::emitConfigSignals() {
+VectorBlock::emitConfigSignals() {
+  BlockBase::emitConfigSignals();
   Q_EMIT vectorChanged( vector, CalculationOption::Option::None );
 }
 
-QJsonObject
-VectorObject::toJSON() const {
-  QJsonObject valuesObject;
+void
+VectorBlock::toJSON( QJsonObject& valuesObject ) const {
   valuesObject[QStringLiteral( "X" )] = vector.x();
   valuesObject[QStringLiteral( "Y" )] = vector.y();
   valuesObject[QStringLiteral( "Z" )] = vector.z();
-  return valuesObject;
 }
 
 void
-VectorObject::fromJSON( QJsonObject& valuesObject ) {
+VectorBlock::fromJSON( const QJsonObject& valuesObject ) {
   if( valuesObject[QStringLiteral( "X" )].isDouble() ) {
     vector.x() = valuesObject[QStringLiteral( "X" )].toDouble();
   }
@@ -41,17 +37,13 @@ VectorObject::fromJSON( QJsonObject& valuesObject ) {
   }
 }
 
-QNEBlock*
-VectorFactory::createBlock( QGraphicsScene* scene, int id ) {
-  auto* obj = new VectorObject();
-  auto* b   = createBaseBlock( scene, obj, id );
-  obj->moveToThread( thread );
+std::unique_ptr< BlockBase >
+VectorBlockFactory::createBlock( int idHint ) {
+  auto obj = createBaseBlock< VectorBlock >( idHint );
 
-  b->addOutputPort( QStringLiteral( "Position" ), QLatin1String( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );
-
-  b->setBrush( valueColor );
+  obj->addOutputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );
 
   model->resetModel();
 
-  return b;
+  return obj;
 }

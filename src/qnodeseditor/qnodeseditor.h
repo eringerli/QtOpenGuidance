@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "block/BlockBase.h"
 #include <QObject>
 
 class QGraphicsScene;
@@ -45,13 +46,18 @@ public:
 
   bool eventFilter( QObject*, QEvent* ) override;
 
-  void save( QDataStream& ds );
-  void load( QDataStream& ds );
-
   void deleteSelected();
 
 Q_SIGNALS:
   void resetModels();
+
+  void deleteBlock( int blockId, const bool emitObjectsChanged = true );
+  void deleteBlocks( std::vector< int >& blocks );
+
+  void deleteConnection( const BlockConnectionDefinition& connection, const bool emitObjectsChanged = true );
+  void deleteConnections( const std::vector< BlockConnectionDefinition >& connections );
+
+  void createConnection( const BlockConnectionDefinition& connection, const bool emitObjectsChanged = true );
 
 private:
   QGraphicsItem* itemAt( QPointF );
