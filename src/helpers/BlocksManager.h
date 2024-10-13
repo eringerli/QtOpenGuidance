@@ -16,6 +16,7 @@
 
 class BlocksManager : public QObject {
   Q_OBJECT
+
 public:
   explicit BlocksManager( QObject* parent = nullptr ) : QObject{ parent } {}
 
@@ -40,8 +41,11 @@ public:
 
   template< class QObjectDerivedClass >
   auto getBlocksWithClass() const {
-    return _blocks | std::ranges::views::filter(
-                       []( const auto& block ) { return qobject_cast< QObjectDerivedClass* >( block.second.get() ) != nullptr; } );
+    return _blocks | std::ranges::views::filter( []( const auto& block ) {
+             // qDebug() << "getBlocksWithClass" << block.first
+             //          << bool( qobject_cast< QObjectDerivedClass* >( block.second.get() ) != nullptr );
+             return qobject_cast< QObjectDerivedClass* >( block.second.get() ) != nullptr;
+           } );
   }
 
   void loadConfigFromFile( QFile& file );
@@ -73,6 +77,7 @@ private:
 
   BlockBaseId       _nextSystemId = 0;
   BlockBaseId       _nextUserId   = 1000;
+  // FactoriesManager& factoriesManager;
 
 private:
   BlockBaseId getNextSystemId() {
@@ -93,3 +98,5 @@ private:
 
   void callTypeCallbacks( const QString& type );
 };
+
+extern BlocksManager blocksManager;

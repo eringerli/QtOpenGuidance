@@ -457,11 +457,8 @@ main( int argc, char** argv ) {
   guidanceToolbar->menu->addAction( applicationControlToolbarDock->toggleAction() );
   mainWindow->addDockWidget( applicationControlToolbarDock, KDDockWidgets::Location_OnRight );
 
-  FactoriesManager factoriesManager;
-  BlocksManager    blocksManager( factoriesManager );
-
   // Create setting Window
-  auto* settingsDialog = new SettingsDialog( mainWindow, view, &factoriesManager, &blocksManager, widgetOfMainWindow );
+  auto* settingsDialog = new SettingsDialog( mainWindow, view, widgetOfMainWindow );
 
   // Camera
   Qt3DRender::QCamera* cameraEntity = view->camera();

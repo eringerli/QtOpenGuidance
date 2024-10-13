@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QMenu>
 
+#include "helpers/BlocksManager.h"
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 
@@ -408,11 +409,14 @@ std::unique_ptr< BlockBase >
 LocalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanner >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
-  auto* obj2 = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );
-  obj->addAdditionalObject( obj2 );
-  obj->pathPlannerModel = obj2;
+  auto pathPlannerModelId = blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan" ) );
 
-  QObject::connect( obj.get(), &LocalPlanner::planChanged, obj2, &PathPlannerModel::setPlan );
+  auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
+
+  obj->addAdditionalObject( pathPlannerModel );
+  obj->pathPlannerModel = pathPlannerModel;
+
+  QObject::connect( obj.get(), &LocalPlanner::planChanged, pathPlannerModel, &PathPlannerModel::setPlan );
 
   obj->dock->setTitle( getNameOfFactory() );
   obj->dock->setWidget( obj->widget );
@@ -422,7 +426,8 @@ LocalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   mainWindow->addDockWidget( obj->dock, location );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
-  obj->addInputPort( QStringLiteral( "Pose" ), obj2, QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ), BlockPort::Flag::None );
+  obj->addInputPort(
+    QStringLiteral( "Pose" ), pathPlannerModel, QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ), BlockPort::Flag::None );
   obj->addInputPort( QStringLiteral( "Pose Last" ), obj.get(), QLatin1StringView( SLOT( setPoseLast( POSE_SIGNATURE ) ) ) );
   obj->addInputPort( QStringLiteral( "Plan" ), obj.get(), QLatin1StringView( SLOT( setPlan( const Plan& ) ) ) );
   obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );

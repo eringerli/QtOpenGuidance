@@ -52,13 +52,15 @@ public:
 
 public Q_SLOTS:
   void setVisible( const bool );
+  virtual void enable( ACTION_SIGNATURE ) override;
+
   void setSurface( std::shared_ptr< SurfaceMesh_3 > );
 
 public:
   bool visible = true;
 
   QColor linesColor   = QColor( Qt::yellow );
-  QColor terrainColor = QColor( Qt::gray );
+  QColor terrainColor = QColor( Qt::darkMagenta );
 
 private:
   bool usePBR = false;

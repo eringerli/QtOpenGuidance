@@ -48,6 +48,8 @@ public:
 
 public Q_SLOTS:
   void setVisible( const bool visible );
+  virtual void enable( ACTION_SIGNATURE ) override;
+
   void setSizeOfPoint( const float sizeOfPoint );
 
   void setPose( POSE_SIGNATURE_SLOT );

@@ -10,8 +10,6 @@
 
 using Type = ActionDockBlock;
 
-ActionDockBlockModel::ActionDockBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 int
 ActionDockBlockModel::columnCount( const QModelIndex& ) const {
   return 4;
@@ -53,7 +51,7 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -87,7 +85,7 @@ ActionDockBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 ActionDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -135,7 +133,7 @@ ActionDockBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
   endResetModel();

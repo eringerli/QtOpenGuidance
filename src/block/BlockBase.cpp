@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "BlockBase.h"
+#include "helpers/BlocksManager.h"
 
 #include <algorithm>
 #include <bits/ranges_util.h>

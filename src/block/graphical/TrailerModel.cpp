@@ -232,6 +232,13 @@ TrailerModel::~TrailerModel() {
 }
 
 void
+TrailerModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  m_rootEntity->setEnabled( enable );
+}
+
+void
 TrailerModel::setProportions() {
   // wheels
   {

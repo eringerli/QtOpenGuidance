@@ -14,9 +14,6 @@
 #include <ranges>
 #include <utility>
 
-BlocksManager::BlocksManager( FactoriesManager& factoriesManager, QObject* parent )
-    : factoriesManager( factoriesManager ), QObject{ parent } {}
-
 BlockBaseId
 BlocksManager::createBlockFromFactory( const QString factoryName, BlockBaseId idHint ) {
   auto* factory = factoriesManager.getFactoryByName( factoryName );
@@ -294,3 +291,31 @@ BlocksManager::callTypeCallbacks( const QString& type ) {
     callback.second();
   }
 }
+
+void
+BlocksManager::disableConnectionOfBlock( const BlockBaseId blockId ) {
+  auto blocks = std::views::values( _blocks );
+  for( auto& block : blocks ) {
+    for( auto& connection : block->connections() ) {
+      if( ( ( connection.portFrom->idOfBlock == blockId ) && ( !connection.portFrom->flags.testFlags( BlockPort::Flag::SquareBullet ) ) ) ||
+          ( ( connection.portTo->idOfBlock == blockId ) && ( !connection.portTo->flags.testFlags( BlockPort::Flag::SquareBullet ) ) ) ) {
+        connection.disable();
+      }
+    }
+  }
+}
+
+void
+BlocksManager::enableConnectionOfBlock( const BlockBaseId blockId ) {
+  auto blocks = std::views::values( _blocks );
+  for( auto& block : blocks ) {
+    for( auto& connection : block->connections() ) {
+      if( ( ( connection.portFrom->idOfBlock == blockId ) && ( !connection.portFrom->flags.testFlags( BlockPort::Flag::SquareBullet ) ) ) ||
+          ( ( connection.portTo->idOfBlock == blockId ) && ( !connection.portTo->flags.testFlags( BlockPort::Flag::SquareBullet ) ) ) ) {
+        connection.enable();
+      }
+    }
+  }
+}
+
+BlocksManager blocksManager;

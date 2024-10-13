@@ -34,6 +34,7 @@
 
 #include "block/graphical/PathPlannerModel.h"
 
+#include "helpers/BlocksManager.h"
 #include "helpers/GeoJsonHelper.h"
 #include "helpers/GeographicConvertionWrapper.h"
 
@@ -420,7 +421,10 @@ std::unique_ptr< BlockBase >
 GlobalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< GlobalPlanner >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, tmw );
 
-  auto* pathPlannerModel = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );
+  auto pathPlannerModelId =
+    blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Global Plan" ) );
+
+  auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
   obj->addAdditionalObject( pathPlannerModel );
   obj->pathPlannerModel = pathPlannerModel;
 

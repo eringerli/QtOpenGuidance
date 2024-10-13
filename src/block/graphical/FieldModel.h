@@ -48,6 +48,7 @@ public:
 
 public Q_SLOTS:
   void setVisible( const bool );
+  virtual void enable( ACTION_SIGNATURE ) override;
 
   void setPoints( const std::vector< Epick::Point_3 >& );
   void addPoint( const Eigen::Vector3d& );

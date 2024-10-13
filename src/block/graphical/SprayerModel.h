@@ -24,6 +24,8 @@ public:
   ~SprayerModel();
 
 public Q_SLOTS:
+  virtual void enable( ACTION_SIGNATURE ) override;
+
   void setPose( POSE_SIGNATURE_SLOT );
   void setImplement( const QPointer< Implement >& );
   void setSections();

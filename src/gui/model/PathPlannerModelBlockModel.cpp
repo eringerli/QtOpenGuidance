@@ -9,10 +9,9 @@
 
 using Type = PathPlannerModel;
 
-PathPlannerModelBlockModel::PathPlannerModelBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 QVariant
 PathPlannerModelBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
+  qDebug() << "PathPlannerModelBlockModel::headerData";
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
     switch( section ) {
       case 0:
@@ -42,7 +41,7 @@ PathPlannerModelBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -59,7 +58,7 @@ PathPlannerModelBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 PathPlannerModelBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -88,7 +87,7 @@ PathPlannerModelBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
 

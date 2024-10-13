@@ -168,6 +168,13 @@ GlobalPlannerModel::setVisible( const bool visible ) {
 }
 
 void
+GlobalPlannerModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  setVisible( enable );
+}
+
+void
 GlobalPlannerModel::setSizeOfPoint( const float sizeOfPoint ) {
   aPointMesh->setRadius( sizeOfPoint );
   bPointMesh->setRadius( sizeOfPoint );

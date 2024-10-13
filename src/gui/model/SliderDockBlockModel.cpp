@@ -10,8 +10,6 @@
 
 using Type = SliderDockBlock;
 
-SliderDockBlockModel::SliderDockBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 int
 SliderDockBlockModel::columnCount( const QModelIndex& ) const {
   return 9;
@@ -73,7 +71,7 @@ SliderDockBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -138,7 +136,7 @@ SliderDockBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 SliderDockBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -211,7 +209,7 @@ SliderDockBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
 

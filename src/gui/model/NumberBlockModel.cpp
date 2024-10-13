@@ -9,8 +9,6 @@
 
 using Type = NumberBlock;
 
-NumberBlockModel::NumberBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 QVariant
 NumberBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
@@ -44,7 +42,7 @@ NumberBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -61,7 +59,7 @@ NumberBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 NumberBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -96,7 +94,7 @@ NumberBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
 

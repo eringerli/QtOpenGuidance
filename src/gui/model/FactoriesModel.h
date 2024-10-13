@@ -13,11 +13,8 @@ class FactoriesModel : public QStandardItemModel {
   Q_OBJECT
 
 public:
-  explicit FactoriesModel( FactoriesManager* factoriesManager, QObject* parent = nullptr );
+  explicit FactoriesModel( QObject* parent = nullptr );
 
 public Q_SLOTS:
   void resetModel();
-
-private:
-  FactoriesManager* factoriesManager = nullptr;
 };

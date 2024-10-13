@@ -9,8 +9,6 @@
 
 using Type = Implement;
 
-ImplementBlockModel::ImplementBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 QVariant
 ImplementBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
@@ -42,7 +40,7 @@ ImplementBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -59,7 +57,7 @@ ImplementBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 ImplementBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -88,7 +86,7 @@ ImplementBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
 

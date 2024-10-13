@@ -12,6 +12,7 @@
 #include <QDebug>
 
 #include "block/BlockBase.h"
+#include "block/graphical/PathPlannerModel.h"
 #include "gui/OpenSaveHelper.h"
 #include "gui/model/FactoriesModel.h"
 #include "qjsonobject.h"
@@ -76,17 +77,8 @@
   #include <QSerialPortInfo>
 #endif
 
-SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
-                                Qt3DExtras::Qt3DWindow* qt3dWindow,
-                                FactoriesManager*       factoriesManager,
-                                BlocksManager*          blocksManager,
-                                QWidget*                parent )
-    : QDialog( parent )
-    , mainWindow( mainWindow )
-    , qt3dWindow( qt3dWindow )
-    , factoriesManager( factoriesManager )
-    , blocksManager( blocksManager )
-    , ui( new Ui::SettingsDialog ) {
+SettingsDialog::SettingsDialog( MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QWidget* parent )
+    : QDialog( parent ), mainWindow( mainWindow ), qt3dWindow( qt3dWindow ), ui( new Ui::SettingsDialog ) {
   ui->setupUi( this );
 
   // load states of checkboxes from global config
@@ -192,18 +184,18 @@ SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
   auto* nodesEditor = new QNodesEditor( this );
   nodesEditor->install( scene );
   QObject::connect( nodesEditor, &QNodesEditor::resetModels, this, &SettingsDialog::resetAllModels );
-  QObject::connect( nodesEditor, &QNodesEditor::deleteBlock, blocksManager, &BlocksManager::deleteBlock );
-  QObject::connect( nodesEditor, &QNodesEditor::deleteConnection, blocksManager, &BlocksManager::deleteConnection );
-  QObject::connect( nodesEditor, &QNodesEditor::createConnection, blocksManager, &BlocksManager::createConnection );
+  QObject::connect( nodesEditor, &QNodesEditor::deleteBlock, &blocksManager, &BlocksManager::deleteBlock );
+  QObject::connect( nodesEditor, &QNodesEditor::deleteConnection, &blocksManager, &BlocksManager::deleteConnection );
+  QObject::connect( nodesEditor, &QNodesEditor::createConnection, &blocksManager, &BlocksManager::createConnection );
 
   // Models for the tableview
-  filterModelValues     = new QSortFilterProxyModel( blocksManager );
-  vectorBlockModel      = new VectorBlockModel( blocksManager );
-  orientationBlockModel = new OrientationBlockModel( blocksManager );
-  numberBlockModel      = new NumberBlockModel( blocksManager );
-  actionBlockModel      = new ActionDockBlockModel( blocksManager );
-  sliderBlockModel      = new SliderDockBlockModel( blocksManager );
-  stringBlockModel      = new StringBlockModel( blocksManager );
+  filterModelValues     = new QSortFilterProxyModel();
+  vectorBlockModel      = new VectorBlockModel();
+  orientationBlockModel = new OrientationBlockModel();
+  numberBlockModel      = new NumberBlockModel();
+  actionBlockModel      = new ActionDockBlockModel();
+  sliderBlockModel      = new SliderDockBlockModel();
+  stringBlockModel      = new StringBlockModel();
 
   ui->cbValues->addItem( QStringLiteral( "Number Literals" ), QVariant::fromValue( numberBlockModel ) );
   ui->cbValues->addItem( QStringLiteral( "3D-Vector Literals" ), QVariant::fromValue( vectorBlockModel ) );
@@ -216,8 +208,8 @@ SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
   filterModelValues->sort( 0, Qt::AscendingOrder );
   ui->twValues->setModel( filterModelValues );
 
-  implementBlockModel   = new ImplementBlockModel( blocksManager );
-  filterModelImplements = new QSortFilterProxyModel( blocksManager );
+  implementBlockModel   = new ImplementBlockModel();
+  filterModelImplements = new QSortFilterProxyModel();
   filterModelImplements->setDynamicSortFilter( true );
   filterModelImplements->setSourceModel( implementBlockModel );
   filterModelImplements->sort( 0, Qt::AscendingOrder );
@@ -228,8 +220,8 @@ SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
   implementSectionModel = new ImplementSectionModel();
   ui->twSections->setModel( implementSectionModel );
 
-  meterModel       = new ValueBlockModel( blocksManager );
-  filterModelMeter = new QSortFilterProxyModel( blocksManager );
+  meterModel       = new ValueBlockModel();
+  filterModelMeter = new QSortFilterProxyModel();
   filterModelMeter->setDynamicSortFilter( true );
   filterModelMeter->setSourceModel( meterModel );
   filterModelMeter->sort( 0, Qt::AscendingOrder );
@@ -237,22 +229,22 @@ SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
   meterModelFontDelegate = new FontComboboxDelegate( ui->tvMeter );
   ui->tvMeter->setItemDelegateForColumn( 6, meterModelFontDelegate );
 
-  plotBlockModel  = new PlotBlockModel( blocksManager );
-  filterModelPlot = new QSortFilterProxyModel( blocksManager );
+  plotBlockModel  = new PlotBlockModel();
+  filterModelPlot = new QSortFilterProxyModel();
   filterModelPlot->setDynamicSortFilter( true );
   filterModelPlot->setSourceModel( plotBlockModel );
   filterModelPlot->sort( 0, Qt::AscendingOrder );
   ui->tvPlots->setModel( filterModelPlot );
 
-  transmissionBlockModel        = new TransmissionBlockModel( blocksManager );
-  filterTtransmissionBlockModel = new QSortFilterProxyModel( blocksManager );
+  transmissionBlockModel        = new TransmissionBlockModel();
+  filterTtransmissionBlockModel = new QSortFilterProxyModel();
   filterTtransmissionBlockModel->setDynamicSortFilter( true );
   filterTtransmissionBlockModel->setSourceModel( transmissionBlockModel );
   filterTtransmissionBlockModel->sort( 0, Qt::AscendingOrder );
   ui->tvTransmission->setModel( filterTtransmissionBlockModel );
 
-  pathPlannerModelBlockModel  = new PathPlannerModelBlockModel( blocksManager );
-  filterModelPathPlannerModel = new QSortFilterProxyModel( blocksManager );
+  pathPlannerModelBlockModel  = new PathPlannerModelBlockModel();
+  filterModelPathPlannerModel = new QSortFilterProxyModel();
   filterModelPathPlannerModel->setDynamicSortFilter( true );
   filterModelPathPlannerModel->setSourceModel( pathPlannerModelBlockModel );
   filterModelPathPlannerModel->sort( 0, Qt::AscendingOrder );
@@ -260,11 +252,11 @@ SettingsDialog::SettingsDialog( MyMainWindow*           mainWindow,
   ui->cbPathPlanner->setCurrentIndex( 0 );
   QObject::connect( pathPlannerModelBlockModel, &QAbstractItemModel::modelReset, this, &SettingsDialog::pathPlannerModelReset );
 
-  ui->twBlocks->setModel( new FactoriesModel( factoriesManager ) );
+  ui->twBlocks->setModel( new FactoriesModel() );
 
-  QObject::connect( factoriesManager, &FactoriesManager::factoriesChanged, this, &SettingsDialog::resetAllModels );
-  QObject::connect( blocksManager, &BlocksManager::objectsChanged, this, &SettingsDialog::resetBlockViewScene );
-  QObject::connect( blocksManager, &BlocksManager::objectsChanged, this, &SettingsDialog::resetAllModels );
+  QObject::connect( &factoriesManager, &FactoriesManager::factoriesChanged, this, &SettingsDialog::resetAllModels );
+  QObject::connect( &blocksManager, &BlocksManager::objectsChanged, this, &SettingsDialog::resetBlockViewScene );
+  QObject::connect( &blocksManager, &BlocksManager::objectsChanged, this, &SettingsDialog::resetAllModels );
 
   // grid color picker
   ui->lbColor->setText( gridColor.name() );
@@ -417,12 +409,7 @@ SettingsDialog::on_pbSaveSelected_clicked() {
 // TODO
 void
 SettingsDialog::saveConfigToFile( QFile& file ) {
-  //  QJsonObject jsonObject;
-
-  //  auto jsonBlocks      = QJsonArray();
-  //  auto jsonConnections = QJsonArray();
-
-  std::vector< int >                       blocks;
+  std::vector< BlockBaseId >               blocks;
   std::vector< BlockConnectionDefinition > connections;
 
   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
@@ -444,71 +431,8 @@ SettingsDialog::saveConfigToFile( QFile& file ) {
     }
   }
 
-  blocksManager->saveConfigToFile( blocks, connections, file );
-
-  //  std::sort( blocks.begin(), blocks.end(), []( QNEBlock* first, QNEBlock* second ) { return first->block->id() < second->block->id(); }
-  //  );
-
-  //  std::sort( connections.begin(), connections.end(), []( QNEConnection* first, QNEConnection* second ) {
-  //    if( first->port1()->block->block->id() == second->port1()->block->block->id() ) {
-  //      if( first->port2()->block->block->id() == second->port2()->block->block->id() ) {
-  //        return first->port2()->getName() < second->port2()->getName();
-  //      }
-  //      return first->port2()->block->block->id() < second->port2()->block->block->id();
-  //    }
-  //    return first->port1()->block->block->id() < second->port1()->block->block->id();
-  //  } );
-
-  //  //  for( const auto* block : blocks ) {
-  //  //    QJsonObject json;
-  //  //    block->toJSON( json );
-  //  //    jsonBlocks.append( json );
-  //  //  }
-
-  //  //  for( const auto* connection : connections ) {
-  //  //    QJsonObject json;
-  //  //    connection->toJSON( json );
-  //  //    jsonConnections.append( json );
-  //  //  }
-
-  //  jsonObject[QStringLiteral( "blocks" )]      = jsonBlocks;
-  //  jsonObject[QStringLiteral( "connections" )] = jsonConnections;
-
-  //  QJsonDocument jsonDocument( jsonObject );
-  //  file.write( jsonDocument.toJson() );
+  blocksManager.saveConfigToFile( blocks, connections, file );
 }
-
-// QNEBlock* SettingsDialog::getBlockWithId( int id ) {
-//   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
-
-//  for( const auto& item : constRefOfList ) {
-//    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-//    if( block != nullptr ) {
-//      if( block->block->id() == id ) {
-//        return block;
-//      }
-//    }
-//  }
-
-//  return nullptr;
-//}
-
-// QNEBlock* SettingsDialog::getBlockWithName( const QString& name ) {
-//   const auto& constRefOfList = ui->gvNodeEditor->scene()->items();
-
-//  for( const auto& item : constRefOfList ) {
-//    auto* block = qgraphicsitem_cast< QNEBlock* >( item );
-
-//    if( block != nullptr ) {
-//      if( block->block->name() == name ) {
-//        return block;
-//      }
-//    }
-//  }
-
-//  return nullptr;
-//}
 
 void
 SettingsDialog::on_pbLoad_clicked() {
@@ -572,7 +496,7 @@ SettingsDialog::on_pbLoad_clicked() {
 
 void
 SettingsDialog::loadConfigFromFile( QFile& file ) {
-  blocksManager->loadConfigFromFile( file );
+  blocksManager.loadConfigFromFile( file );
 }
 
 void
@@ -580,9 +504,9 @@ SettingsDialog::on_pbAddBlock_clicked() {
   auto results = ui->twBlocks->selectionModel()->selectedIndexes();
 
   if( !results.empty() ) {
-    auto id = blocksManager->createBlockFromFactory( results.first().data( Qt::UserRole + 1 ).toString(), 0 );
+    auto id = blocksManager.createBlockFromFactory( results.first().data( Qt::UserRole + 1 ).toString(), 0 );
 
-    auto* block = blocksManager->getBlock( id );
+    auto* block = blocksManager.getBlock( id );
     if( block != nullptr ) {
       auto center = ui->gvNodeEditor->mapToScene( ui->gvNodeEditor->viewport()->rect().center() );
 
@@ -606,7 +530,7 @@ SettingsDialog::on_pbZoomIn_clicked() {
 
 void
 SettingsDialog::on_pbDeleteSelected_clicked() {
-  std::vector< int >                       blocks;
+  std::vector< BlockBaseId >               blocks;
   std::vector< BlockConnectionDefinition > connections;
 
   const auto& constRefOfList = ui->gvNodeEditor->scene()->selectedItems();
@@ -626,8 +550,8 @@ SettingsDialog::on_pbDeleteSelected_clicked() {
     }
   }
 
-  blocksManager->deleteConnections( connections );
-  blocksManager->deleteBlocks( blocks );
+  blocksManager.deleteConnections( connections );
+  blocksManager.deleteBlocks( blocks );
 
   resetAllModels();
 }
@@ -734,25 +658,23 @@ SettingsDialog::savePathPlannerValuesInSettings() {
 
 void
 SettingsDialog::setPathPlannerSettings() {
-  //  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
-  //  QVariant    data = ui->cbPathPlanner->model()->data( idx );
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( ui->cbPathPlanner->currentIndex(), 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  //  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-  //    for( auto& object : block->objects ) {
-  //      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
-  //        pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
-  //        block->block->setName( ui->lePathPlannerName->text() );
-  //        pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
-  //        pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
+  if( auto* block = qvariant_cast< BlockBase* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block ) ) {
+      pathPlannerModel->visible = ui->gbPathPlanner->isChecked();
+      pathPlannerModel->setName( ui->lePathPlannerName->text() );
+      pathPlannerModel->zOffset = ui->dsbPathlPlannerZOffset->value();
+      pathPlannerModel->viewBox = ui->dsbPathlPlannerViewbox->value();
 
-  //        pathPlannerModel->individualRayColor     = ui->cbPathPlannerRayColor->isChecked();
-  //        pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
-  //        pathPlannerModel->bisectorsVisible       = ui->cbPathPlannerBisectors->isChecked();
+      pathPlannerModel->individualRayColor     = ui->cbPathPlannerRayColor->isChecked();
+      pathPlannerModel->individualSegmentColor = ui->cbPathPlannerSegmentColor->isChecked();
+      pathPlannerModel->bisectorsVisible       = ui->cbPathPlannerBisectors->isChecked();
 
-  //        pathPlannerModel->refreshColors();
-  //      }
-  //    }
-  //  }
+      pathPlannerModel->refreshColors();
+    }
+  }
 }
 
 void
@@ -941,7 +863,7 @@ SettingsDialog::resetAllModels() {
 
 void
 SettingsDialog::resetBlockViewScene() {
-  for( const auto& block : blocksManager->blocks() ) {
+  for( const auto& block : blocksManager.blocks() ) {
     bool id0 = false;
     for( const auto& port : block.second->ports() ) {
       if( port.idOfBlock == 0 ) {
@@ -956,7 +878,7 @@ SettingsDialog::resetBlockViewScene() {
 
   getSceneOfConfigGraphicsView()->clear();
 
-  for( const auto& block : blocksManager->blocks() ) {
+  for( const auto& block : blocksManager.blocks() ) {
     auto* qneBlock = new QNEBlock( block.second.get() );
     getSceneOfConfigGraphicsView()->addItem( qneBlock );
     qneBlock->depictBlock();
@@ -1389,55 +1311,53 @@ SettingsDialog::on_rbMaterialPhong_clicked() {
 }
 
 void SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
-  //  QModelIndex idx  = ui->cbPathPlanner->model()->index( index, 1 );
-  //  QVariant    data = ui->cbPathPlanner->model()->data( idx );
+  QModelIndex idx  = ui->cbPathPlanner->model()->index( index, 1 );
+  QVariant    data = ui->cbPathPlanner->model()->data( idx );
 
-  //  if( auto* block = qvariant_cast< QNEBlock* >( data ) ) {
-  //    for( auto& object : block->objects ) {
-  //      if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( object ) ) {
-  //        ui->gbPathPlanner->blockSignals( true );
-  //        ui->lePathPlannerName->blockSignals( true );
-  //        ui->dsbPathlPlannerZOffset->blockSignals( true );
-  //        ui->dsbPathlPlannerViewbox->blockSignals( true );
-  //        ui->cbPathPlannerRayColor->blockSignals( true );
-  //        ui->cbPathPlannerSegmentColor->blockSignals( true );
-  //        ui->cbPathPlannerBisectors->blockSignals( true );
+  if( auto* block = qvariant_cast< BlockBase* >( data ) ) {
+    if( auto* pathPlannerModel = qobject_cast< PathPlannerModel* >( block ) ) {
+      ui->gbPathPlanner->blockSignals( true );
+      ui->lePathPlannerName->blockSignals( true );
+      ui->dsbPathlPlannerZOffset->blockSignals( true );
+      ui->dsbPathlPlannerViewbox->blockSignals( true );
+      ui->cbPathPlannerRayColor->blockSignals( true );
+      ui->cbPathPlannerSegmentColor->blockSignals( true );
+      ui->cbPathPlannerBisectors->blockSignals( true );
 
-  //        ui->gbPathPlanner->setChecked( pathPlannerModel->visible );
-  //        ui->lePathPlannerName->setText( block->block->name() );
-  //        ui->dsbPathlPlannerZOffset->setValue( pathPlannerModel->zOffset );
-  //        ui->dsbPathlPlannerViewbox->setValue( pathPlannerModel->viewBox );
+      ui->gbPathPlanner->setChecked( pathPlannerModel->visible );
+      ui->lePathPlannerName->setText( pathPlannerModel->name() );
+      ui->dsbPathlPlannerZOffset->setValue( pathPlannerModel->zOffset );
+      ui->dsbPathlPlannerViewbox->setValue( pathPlannerModel->viewBox );
 
-  //        ui->lbPathPlannerLineColor->setText( pathPlannerModel->linesColor.name() );
-  //        ui->lbPathPlannerLineColor->setPalette( pathPlannerModel->linesColor );
-  //        ui->lbPathPlannerLineColor->setAutoFillBackground( true );
+      ui->lbPathPlannerLineColor->setText( pathPlannerModel->linesColor.name() );
+      ui->lbPathPlannerLineColor->setPalette( pathPlannerModel->linesColor );
+      ui->lbPathPlannerLineColor->setAutoFillBackground( true );
 
-  //        ui->lbPathPlannerRayColor->setText( pathPlannerModel->raysColor.name() );
-  //        ui->lbPathPlannerRayColor->setPalette( pathPlannerModel->raysColor );
-  //        ui->lbPathPlannerRayColor->setAutoFillBackground( true );
+      ui->lbPathPlannerRayColor->setText( pathPlannerModel->raysColor.name() );
+      ui->lbPathPlannerRayColor->setPalette( pathPlannerModel->raysColor );
+      ui->lbPathPlannerRayColor->setAutoFillBackground( true );
 
-  //        ui->lbPathPlannerSegmentColor->setText( pathPlannerModel->segmentsColor.name() );
-  //        ui->lbPathPlannerSegmentColor->setPalette( pathPlannerModel->segmentsColor );
-  //        ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
+      ui->lbPathPlannerSegmentColor->setText( pathPlannerModel->segmentsColor.name() );
+      ui->lbPathPlannerSegmentColor->setPalette( pathPlannerModel->segmentsColor );
+      ui->lbPathPlannerSegmentColor->setAutoFillBackground( true );
 
-  //        ui->lbPathPlannerBisectorsColor->setText( pathPlannerModel->bisectorsColor.name() );
-  //        ui->lbPathPlannerBisectorsColor->setPalette( pathPlannerModel->bisectorsColor );
-  //        ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
+      ui->lbPathPlannerBisectorsColor->setText( pathPlannerModel->bisectorsColor.name() );
+      ui->lbPathPlannerBisectorsColor->setPalette( pathPlannerModel->bisectorsColor );
+      ui->lbPathPlannerBisectorsColor->setAutoFillBackground( true );
 
-  //        ui->cbPathPlannerRayColor->setChecked( pathPlannerModel->individualRayColor );
-  //        ui->cbPathPlannerSegmentColor->setChecked( pathPlannerModel->individualSegmentColor );
-  //        ui->cbPathPlannerBisectors->setChecked( pathPlannerModel->bisectorsVisible );
+      ui->cbPathPlannerRayColor->setChecked( pathPlannerModel->individualRayColor );
+      ui->cbPathPlannerSegmentColor->setChecked( pathPlannerModel->individualSegmentColor );
+      ui->cbPathPlannerBisectors->setChecked( pathPlannerModel->bisectorsVisible );
 
-  //        ui->gbPathPlanner->blockSignals( false );
-  //        ui->lePathPlannerName->blockSignals( false );
-  //        ui->dsbPathlPlannerZOffset->blockSignals( false );
-  //        ui->dsbPathlPlannerViewbox->blockSignals( false );
-  //        ui->cbPathPlannerRayColor->blockSignals( false );
-  //        ui->cbPathPlannerSegmentColor->blockSignals( false );
-  //        ui->cbPathPlannerBisectors->blockSignals( false );
-  //      }
-  //    }
-  //  }
+      ui->gbPathPlanner->blockSignals( false );
+      ui->lePathPlannerName->blockSignals( false );
+      ui->dsbPathlPlannerZOffset->blockSignals( false );
+      ui->dsbPathlPlannerViewbox->blockSignals( false );
+      ui->cbPathPlannerRayColor->blockSignals( false );
+      ui->cbPathPlannerSegmentColor->blockSignals( false );
+      ui->cbPathPlannerBisectors->blockSignals( false );
+    }
+  }
 };
 
 void

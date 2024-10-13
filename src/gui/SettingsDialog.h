@@ -57,11 +57,7 @@ class SettingsDialog : public QDialog {
   Q_OBJECT
 
 public:
-  explicit SettingsDialog( MyMainWindow*           mainWindow,
-                           Qt3DExtras::Qt3DWindow* qt3dWindow,
-                           FactoriesManager*       factoriesManager,
-                           BlocksManager*          blocksManager,
-                           QWidget*                parent = nullptr );
+  explicit SettingsDialog( MyMainWindow* mainWindow, Qt3DExtras::Qt3DWindow* qt3dWindow, QWidget* parent = nullptr );
   ~SettingsDialog();
 
   QGraphicsScene* getSceneOfConfigGraphicsView();
@@ -279,8 +275,6 @@ private:
 private:
   QMainWindow*            mainWindow       = nullptr;
   Qt3DExtras::Qt3DWindow* qt3dWindow       = nullptr;
-  FactoriesManager*       factoriesManager = nullptr;
-  BlocksManager*          blocksManager    = nullptr;
 
 private:
   Ui::SettingsDialog* ui = nullptr;

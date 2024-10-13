@@ -8,11 +8,10 @@
 #include "QStandardItemModel"
 #include "helpers/FactoriesManager.h"
 
-FactoriesModel::FactoriesModel( FactoriesManager* factoriesManager, QObject* parent )
-    : QStandardItemModel( parent ), factoriesManager( factoriesManager ) {
+FactoriesModel::FactoriesModel( QObject* parent ) : QStandardItemModel( parent ) {
   resetModel();
 
-  QObject::connect( factoriesManager, &FactoriesManager::factoriesChanged, this, &FactoriesModel::resetModel );
+  QObject::connect( &factoriesManager, &FactoriesManager::factoriesChanged, this, &FactoriesModel::resetModel );
 }
 
 void
@@ -25,7 +24,7 @@ FactoriesModel::resetModel() {
 
   auto* rootItem = invisibleRootItem();
 
-  for( const auto& category : factoriesManager->categories() ) {
+  for( const auto& category : factoriesManager.categories() ) {
     if( !category.empty() ) {
       auto categoryItem = new QStandardItem( category.front()->getCategoryOfFactory() );
       categoryItem->setFlags( Qt::ItemIsEnabled );

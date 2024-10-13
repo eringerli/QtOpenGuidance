@@ -52,3 +52,5 @@ signals:
 private:
   std::vector< FactoryCategory > _categories;
 };
+
+extern FactoriesManager factoriesManager;

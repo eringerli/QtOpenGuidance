@@ -16,3 +16,5 @@ FactoriesManager::getFactoryByName( const QString name ) const {
 
   return nullptr;
 }
+
+FactoriesManager factoriesManager;

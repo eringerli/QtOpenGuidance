@@ -140,7 +140,7 @@ TerrainModel::refreshColors() {
     linesMaterialPbr->setMetalness( metalness );
     linesMaterialPbr->setRoughness( roughness );
 
-    terrainMaterialPbr->setBaseColor( QColor( Qt::red ) );
+    terrainMaterialPbr->setBaseColor( terrainColor );
     terrainMaterialPbr->setMetalness( metalness );
     terrainMaterialPbr->setRoughness( roughness );
   } else {
@@ -155,6 +155,13 @@ void
 TerrainModel::setVisible( const bool visible ) {
   this->visible = visible;
   baseEntity->setEnabled( visible );
+}
+
+void
+TerrainModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  setVisible( enable );
 }
 
 void

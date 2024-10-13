@@ -20,6 +20,8 @@ public:
   ~TractorModel();
 
 public Q_SLOTS:
+  virtual void enable( ACTION_SIGNATURE ) override;
+
   void setPoseHookPoint( POSE_SIGNATURE_SLOT );
   void setPoseTowPoint( POSE_SIGNATURE_SLOT );
   void setPosePivotPoint( POSE_SIGNATURE_SLOT );

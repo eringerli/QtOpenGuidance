@@ -9,8 +9,6 @@
 
 using Type = PlotDockBlockBase;
 
-PlotBlockModel::PlotBlockModel( BlocksManager* blocksManager ) : blocksManager( blocksManager ) {}
-
 QVariant
 PlotBlockModel::headerData( int section, Qt::Orientation orientation, int role ) const {
   if( role == Qt::DisplayRole && orientation == Qt::Orientation::Horizontal ) {
@@ -67,7 +65,7 @@ PlotBlockModel::data( const QModelIndex& index, int role ) const {
     return QVariant();
   }
 
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -114,7 +112,7 @@ PlotBlockModel::data( const QModelIndex& index, int role ) const {
 
 bool
 PlotBlockModel::setData( const QModelIndex& index, const QVariant& value, int role ) {
-  for( const auto& blockRef : blocksManager->getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
+  for( const auto& blockRef : blocksManager.getBlocksWithClass< Type >() | std::ranges::views::drop( index.row() ) ) {
     auto* block = static_cast< Type* >( blockRef.second.get() );
 
     switch( index.column() ) {
@@ -159,7 +157,7 @@ PlotBlockModel::resetModel() {
 
   countBuffer = 0;
 
-  for( const auto& block : blocksManager->getBlocksWithClass< Type >() ) {
+  for( const auto& block : blocksManager.getBlocksWithClass< Type >() ) {
     ++countBuffer;
   }
   endResetModel();

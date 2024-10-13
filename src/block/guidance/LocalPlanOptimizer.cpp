@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QMenu>
 
+#include "helpers/BlocksManager.h"
 #include "kinematic/PathPrimitive.h"
 #include "kinematic/Plan.h"
 
@@ -118,11 +119,15 @@ std::unique_ptr< BlockBase >
 LocalPlanOptimizerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanOptimizer >( idHint, getNameOfFactory() + QString::number( idHint ) );
 
-  auto* obj2 = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );
-  obj->addAdditionalObject( obj2 );
-  obj->pathPlannerModel = obj2;
+  auto pathPlannerModelId =
+    blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan Optimized" ) );
 
-  QObject::connect( obj.get(), &LocalPlanOptimizer::planChanged, obj2, &PathPlannerModel::setPlan );
+  auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
+
+  obj->addAdditionalObject( pathPlannerModel );
+  obj->pathPlannerModel = pathPlannerModel;
+
+  QObject::connect( obj.get(), &LocalPlanOptimizer::planChanged, pathPlannerModel, &PathPlannerModel::setPlan );
 
   obj->addInputPort( QStringLiteral( "Pose Tractor" ), obj.get(), QLatin1StringView( SLOT( setPoseTractor( POSE_SIGNATURE ) ) ) );
   obj->addInputPort( QStringLiteral( "Pose Trailer" ), obj.get(), QLatin1StringView( SLOT( setPoseTrailer( POSE_SIGNATURE ) ) ) );

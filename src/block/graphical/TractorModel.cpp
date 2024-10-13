@@ -254,6 +254,13 @@ TractorModel::~TractorModel() {
 }
 
 void
+TractorModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  m_rootEntity->setEnabled( enable );
+}
+
+void
 TractorModel::setWheelbase( double wheelbase, const CalculationOption::Options options ) {
   if( !options.testFlag( CalculationOption::Option::NoGraphics ) ) {
     if( !qFuzzyIsNull( wheelbase ) ) {

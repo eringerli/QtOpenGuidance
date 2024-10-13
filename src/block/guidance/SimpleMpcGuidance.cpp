@@ -7,6 +7,7 @@
 #include "filter/SlewRateLimiter.h"
 #include "gui/MyMainWindow.h"
 #include "gui/dock/PlotDock.h"
+#include "helpers/BlocksManager.h"
 #include "helpers/anglesHelper.h"
 #include "qcustomplot.h"
 #include <QMenu>
@@ -396,7 +397,11 @@ std::unique_ptr< BlockBase >
 SimpleMpcGuidanceFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SimpleMpcGuidance >( idHint );
 
-  auto* obj2 = new XyPlotDockBlock( mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock" );
+  auto obj2Id = blocksManager.moveObjectToManager( std::make_unique< XyPlotDockBlock >(
+    mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock" ) );
+
+  auto* obj2 = static_cast< XyPlotDockBlock* >( blocksManager.getBlock( obj2Id ) );
+
   obj->addAdditionalObject( obj2 );
 
   obj2->dock->setTitle( getNameOfFactory() );

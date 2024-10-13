@@ -13,8 +13,6 @@ class NumberBlockModel : public QAbstractTableModel {
   Q_OBJECT
 
 public:
-  explicit NumberBlockModel( BlocksManager* blocksManager );
-
   QVariant headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const override;
 
   int rowCount( const QModelIndex& parent = QModelIndex() ) const override;
@@ -30,7 +28,5 @@ public Q_SLOTS:
   void resetModel();
 
 private:
-  BlocksManager* blocksManager = nullptr;
-
   int countBuffer = 0;
 };

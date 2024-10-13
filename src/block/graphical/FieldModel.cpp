@@ -138,6 +138,13 @@ FieldModel::setVisible( const bool visible ) {
 }
 
 void
+FieldModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  setVisible( enable );
+}
+
+void
 FieldModel::setPoints( const std::vector< Epick::Point_3 >& pointsVector ) {
   points.clear();
 
