@@ -19,7 +19,7 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-ComplementaryFilterImuFusion::ComplementaryFilterImuFusion( const int idHint, const bool systemBlock, const QString type )
+ComplementaryFilterImuFusion::ComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   est = std::make_unique< imu_tools::ComplementaryFilter >();
 }
@@ -98,7 +98,7 @@ ComplementaryFilterImuFusion::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-ComplementaryFilterImuFusionFactory::createBlock( int idHint ) {
+ComplementaryFilterImuFusionFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ComplementaryFilterImuFusion >( idHint );
 
   obj->addInputPort( QStringLiteral( "IMU Data" ), obj.get(), QLatin1StringView( SLOT( setImuData( IMU_SIGNATURE ) ) ) );

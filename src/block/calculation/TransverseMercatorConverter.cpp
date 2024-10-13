@@ -21,7 +21,7 @@ TransverseMercatorConverter::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-TransverseMercatorConverterFactory::createBlock( int idHint ) {
+TransverseMercatorConverterFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< TransverseMercatorConverter >( idHint, tmw );
 
   obj->addInputPort( QStringLiteral( "WGS84 Position" ), obj.get(), QLatin1StringView( SLOT( setWGS84Position( VECTOR_SIGNATURE ) ) ) );

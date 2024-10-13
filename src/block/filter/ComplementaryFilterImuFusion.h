@@ -17,7 +17,7 @@ class ComplementaryFilterImuFusion : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComplementaryFilterImuFusion( const int idHint, const bool systemBlock, const QString type );
+  explicit ComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setImuData( IMU_SIGNATURE_SLOT );
@@ -63,5 +63,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Filter" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

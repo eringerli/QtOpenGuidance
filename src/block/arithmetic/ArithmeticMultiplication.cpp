@@ -28,7 +28,7 @@ ArithmeticMultiplication::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ArithmeticMultiplicationFactory::createBlock( int idHint ) {
+ArithmeticMultiplicationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ArithmeticMultiplication >( idHint );
 
   obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );

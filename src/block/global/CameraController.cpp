@@ -17,7 +17,7 @@
 #include <QWheelEvent>
 
 CameraController::CameraController(
-  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type )
+  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
   m_cameraEntity->setPosition( m_offset );
   m_cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
@@ -200,7 +200,7 @@ CameraController::calculateOffset() {
 }
 
 std::unique_ptr< BlockBase >
-CameraControllerFactory::createBlock( int idHint ) {
+CameraControllerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< CameraController >( idHint, m_rootEntity, m_cameraEntity );
 
   obj->addInputPort( QStringLiteral( "View Center Position" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

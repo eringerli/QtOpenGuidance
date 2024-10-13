@@ -27,7 +27,7 @@ public:
                            MyMainWindow*                mainWindow,
                            Qt3DCore::QEntity*           rootEntity,
                            Qt3DRender::QFrameGraphNode* frameGraphParent,
-                           const int                    idHint,
+                           const BlockBaseId                    idHint,
                            const bool                   systemBlock,
                            const QString                type );
   ~SectionControl();
@@ -102,7 +102,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Section Control" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*                mainWindow = nullptr;

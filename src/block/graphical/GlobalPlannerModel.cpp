@@ -48,7 +48,7 @@
 #include <functional>
 #include <utility>
 
-GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type )
+GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );

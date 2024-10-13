@@ -42,7 +42,7 @@
 // #include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
 
 PoseSimulation::PoseSimulation(
-  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type )
+  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), mainWindow( mainWindow ), tmw( tmw ) {
   state.setZero();
 
@@ -599,7 +599,7 @@ PoseSimulation::setAntennaOffset( const Eigen::Vector3d& offset, const Calculati
 }
 
 std::unique_ptr< BlockBase >
-PoseSimulationFactory::createBlock( int idHint ) {
+PoseSimulationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< PoseSimulation >( idHint, mainWindow, geographicConvertionWrapper );
 
   auto* terrainModel = new TerrainModel( rootEntity, usePBR, 0, true, "TerrainModel" );

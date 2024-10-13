@@ -15,7 +15,7 @@ class ValueTransmissionBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueTransmissionBase( const uint16_t cid, const int idHint, const bool systemBlock, const QString type );
+  explicit ValueTransmissionBase( const uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;

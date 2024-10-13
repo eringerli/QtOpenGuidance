@@ -4,7 +4,7 @@
 #include "RateLimiterImu.h"
 
 std::unique_ptr< BlockBase >
-RateLimiterImuFactory::createBlock( int idHint ) {
+RateLimiterImuFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< RateLimiterImu >( idHint );
 
   obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );

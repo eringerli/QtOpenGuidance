@@ -26,7 +26,7 @@ FixedKinematic::setPose( const Eigen::Vector3d&           position,
 }
 
 std::unique_ptr< BlockBase >
-FixedKinematicFactory::createBlock( int idHint ) {
+FixedKinematicFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FixedKinematic >( idHint );
 
   obj->addInputPort(

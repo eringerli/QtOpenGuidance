@@ -45,7 +45,7 @@ TrailerKinematic::setPoseInitialMpcPivot( const Eigen::Vector3d&           posit
 }
 
 std::unique_ptr< BlockBase >
-TrailerKinematicFactory::createBlock( int idHint ) {
+TrailerKinematicFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< TrailerKinematic >( idHint );
 
   obj->addInputPort(

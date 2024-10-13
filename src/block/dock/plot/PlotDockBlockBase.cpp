@@ -12,7 +12,7 @@
 KDDockWidgets::QtWidgets::DockWidget* PlotDockBlockBase::firstPlotDock = nullptr;
 
 PlotDockBlockBase::PlotDockBlockBase(
-  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
   widget = new PlotDock( mainWindow );

@@ -31,7 +31,7 @@ ArithmeticDivision::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ArithmeticDivisionFactory::createBlock( int idHint ) {
+ArithmeticDivisionFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ArithmeticDivision >( idHint );
 
   obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );

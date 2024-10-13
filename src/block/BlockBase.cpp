@@ -9,16 +9,39 @@
 
 void
 BlockBase::enable( const bool enable ) {
-  qDebug() << "BlockBase::enable" << enable;
   if( enable ) {
-    for( auto& connection : _connections ) {
-      connection.enable();
-    }
+    blocksManager.enableConnectionOfBlock( id() );
   } else {
-    for( auto& connection : _connections ) {
-      connection.disable();
+    blocksManager.disableConnectionOfBlock( id() );
+  }
+}
+
+const BlockConnection*
+BlockBase::getConnection( const BlockConnectionDefinition connectionDefinition ) {
+  for( const auto& connection : _connections ) {
+    if( connection == connectionDefinition ) {
+      return &connection;
     }
   }
+
+  return nullptr;
+}
+
+void
+BlockBase::setId( BlockBaseId newId ) {
+  _id = newId;
+  for( auto& port : _ports ) {
+    port.idOfBlock = newId;
+  }
+  for( auto& connection : _connections ) {
+    connection.portFrom->idOfBlock = newId;
+  }
+}
+
+void
+BlockBase::setName( const QString& name ) {
+  _name = name;
+  Q_EMIT nameChanged( name );
 }
 
 void
@@ -118,7 +141,7 @@ BlockBase::addPort( const QString& name, QObject* obj, QLatin1StringView signatu
 size_t
 BlockBase::connectPortToPort( const QString& portFromName, const BlockBase* blockTo, const QString& portToName ) {
   size_t count = 0;
-  int    from = 0, to = 0;
+  BlockBaseId from = 0, to = 0;
   for( auto& portFrom : getOutputPorts( portFromName ) ) {
     from++;
     for( auto& portTo : blockTo->getInputPorts( portToName ) ) {
@@ -132,8 +155,6 @@ BlockBase::connectPortToPort( const QString& portFromName, const BlockBase* bloc
       }
     }
   }
-
-  //  qDebug() << "BlockBase::connectPortToPort" << from << to << count;
 
   return count;
 }
@@ -150,4 +171,22 @@ BlockBase::disconnectPortToPort( const QString& portFromName, const BlockBase* b
       }
     }
   }
+}
+
+const BlockConnectionDefinition
+BlockConnection::getDefinition() const {
+  if( portFrom != nullptr && portTo != nullptr ) {
+    return BlockConnectionDefinition( portFrom->idOfBlock, portFrom->name, portTo->idOfBlock, portTo->name );
+  } else {
+    qDebug() << "BlockConnectionDefinition( 0, \"\", 0, \"\" )" << portFrom << portTo;
+    return BlockConnectionDefinition( 0, "", 0, "" );
+  }
+}
+
+void
+BlockConnection::toJSON( QJsonObject& valuesObject ) const {
+  valuesObject[QStringLiteral( "idFrom" )]   = portFrom->idOfBlock;
+  valuesObject[QStringLiteral( "portFrom" )] = portFrom->name;
+  valuesObject[QStringLiteral( "idTo" )]     = portTo->idOfBlock;
+  valuesObject[QStringLiteral( "portTo" )]   = portTo->name;
 }

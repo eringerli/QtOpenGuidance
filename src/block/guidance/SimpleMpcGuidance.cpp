@@ -393,7 +393,7 @@ SimpleMpcGuidance::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-SimpleMpcGuidanceFactory::createBlock( int idHint ) {
+SimpleMpcGuidanceFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SimpleMpcGuidance >( idHint );
 
   auto* obj2 = new XyPlotDockBlock( mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock" );

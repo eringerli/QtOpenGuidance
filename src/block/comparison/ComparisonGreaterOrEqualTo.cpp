@@ -28,7 +28,7 @@ ComparisonGreaterOrEqualTo::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ComparisonGreaterOrEqualToFactory::createBlock( int idHint ) {
+ComparisonGreaterOrEqualToFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ComparisonGreaterOrEqualTo >( idHint );
 
   obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );

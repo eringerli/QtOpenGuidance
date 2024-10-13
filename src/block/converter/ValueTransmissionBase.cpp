@@ -8,7 +8,7 @@
 #include <QJsonObject>
 #include <QTimerEvent>
 
-ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), cid( cid ) {
   timeoutTimer = std::make_unique< QBasicTimer >();
   repeatTimer  = std::make_unique< QBasicTimer >();

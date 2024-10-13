@@ -18,7 +18,7 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
 
 public:
   explicit OrientationPlotDockBlock(
-    MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
+    MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
@@ -46,7 +46,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "Orientation Plot Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

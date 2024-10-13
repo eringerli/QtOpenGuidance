@@ -27,7 +27,7 @@
 #include "helpers/GeoJsonHelper.h"
 
 FieldManager::FieldManager(
-  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type )
+  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), tmw( tmw ) {
   ThreadWeaver::setDebugLevel( true, 0 );
 
@@ -334,7 +334,7 @@ FieldManager::fieldStatisticsChanged( const double pointsRecorded,
 }
 
 std::unique_ptr< BlockBase >
-FieldManagerFactory::createBlock( int idHint ) {
+FieldManagerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FieldManager >( idHint, mainWindow, tmw );
 
   auto fieldModel = new FieldModel( rootEntity, usePBR, 0, true, "FieldModel" );

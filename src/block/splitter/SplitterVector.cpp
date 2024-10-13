@@ -20,7 +20,7 @@ SplitterVector::setVector( const Eigen::Vector3d& vector, const CalculationOptio
 }
 
 std::unique_ptr< BlockBase >
-SplitterVectorFactory::createBlock( int idHint ) {
+SplitterVectorFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SplitterVector >( idHint );
 
   obj->addInputPort( QStringLiteral( "Vector" ), obj.get(), QLatin1StringView( SLOT( setVector( VECTOR_SIGNATURE ) ) ) );

@@ -29,7 +29,7 @@ ValveNumber::setValueB( const double number, const CalculationOption::Options ) 
 }
 
 std::unique_ptr< BlockBase >
-ValveNumberFactory::createBlock( int idHint ) {
+ValveNumberFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ValveNumber >( idHint );
 
   obj->addInputPort( QStringLiteral( "Switch" ), obj.get(), QLatin1StringView( SLOT( setSwitch( ACTION_SIGNATURE ) ) ) );

@@ -21,7 +21,7 @@ class CameraController : public BlockBase {
 
 public:
   explicit CameraController(
-    Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type );
+    Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -98,7 +98,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity*   m_rootEntity   = nullptr;

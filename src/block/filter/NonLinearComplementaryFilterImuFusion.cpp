@@ -29,7 +29,7 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-NonLinearComplementaryFilterImuFusion::NonLinearComplementaryFilterImuFusion( const int idHint, const bool systemBlock, const QString type )
+NonLinearComplementaryFilterImuFusion::NonLinearComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   est = std::make_unique< stateestimation::AttitudeEstimator >();
 
@@ -154,7 +154,7 @@ NonLinearComplementaryFilterImuFusion::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-NonLinearComplementaryFilterImuFusionFactory::createBlock( int idHint ) {
+NonLinearComplementaryFilterImuFusionFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< NonLinearComplementaryFilterImuFusion >( idHint );
 
   obj->addInputPort( QStringLiteral( "IMU Data" ), obj.get(), QLatin1StringView( SLOT( setImuData( IMU_SIGNATURE ) ) ) );

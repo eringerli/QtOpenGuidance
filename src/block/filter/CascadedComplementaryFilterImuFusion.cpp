@@ -21,7 +21,7 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion( const int idHint, const bool systemBlock, const QString type )
+CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   elapsedTimer.start();
 }
@@ -89,7 +89,7 @@ CascadedComplementaryFilterImuFusion::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-CascadedComplementaryFilterImuFusionFactory::createBlock( int idHint ) {
+CascadedComplementaryFilterImuFusionFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< CascadedComplementaryFilterImuFusion >( idHint );
 
   obj->addInputPort( QStringLiteral( "IMU Data" ), obj.get(), QLatin1StringView( SLOT( setImuData( IMU_SIGNATURE ) ) ) );

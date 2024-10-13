@@ -14,7 +14,7 @@ class FixedKinematic : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FixedKinematic( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit FixedKinematic( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 public Q_SLOTS:
   void setOffsetHookToPivot( VECTOR_SIGNATURE_SLOT );
@@ -42,5 +42,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Calculations" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

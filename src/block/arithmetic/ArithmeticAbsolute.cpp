@@ -22,7 +22,7 @@ ArithmeticAbsolute::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ArithmeticAbsoluteFactory::createBlock( int idHint ) {
+ArithmeticAbsoluteFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ArithmeticAbsolute >( idHint );
 
   obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );

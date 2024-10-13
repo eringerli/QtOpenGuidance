@@ -21,7 +21,7 @@
 KDDockWidgets::QtWidgets::DockWidget* ActionDockBlockFactory::firstActionDock = nullptr;
 
 ActionDockBlock::ActionDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   widget = new ActionDock( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
@@ -56,7 +56,7 @@ ActionDockBlock::setTheme( const QString& theme ) {
 }
 
 std::unique_ptr< BlockBase >
-ActionDockBlockFactory::createBlock( int idHint ) {
+ActionDockBlockFactory::createBlock( BlockBaseId idHint ) {
   auto obj = createBaseBlock< ActionDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

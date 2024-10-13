@@ -26,7 +26,7 @@ StringBlock::fromJSON( const QJsonObject& valuesObject ) {
 }
 
 std::unique_ptr< BlockBase >
-StringBlockFactory::createBlock( int idHint ) {
+StringBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< StringBlock >( idHint );
 
   obj->addOutputPort( QStringLiteral( "String" ), obj.get(), QLatin1StringView( SIGNAL( stringChanged( const QString& ) ) ) );

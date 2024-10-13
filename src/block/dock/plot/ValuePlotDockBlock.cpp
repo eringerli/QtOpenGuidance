@@ -19,7 +19,7 @@
 #include "helpers/anglesHelper.h"
 
 ValuePlotDockBlock::ValuePlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
   widget->getQCustomPlotWidget()->addGraph();
   widget->getQCustomPlotWidget()->graph()->setPen( QPen( QColor( 40, 110, 255 ) ) );
@@ -99,7 +99,7 @@ ValuePlotDockBlock::rescale() {
 }
 
 std::unique_ptr< BlockBase >
-ValuePlotDockBlockFactory::createBlock( int idHint ) {
+ValuePlotDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ValuePlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

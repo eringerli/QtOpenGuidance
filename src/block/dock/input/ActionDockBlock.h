@@ -18,7 +18,7 @@ class ActionDockBlock : public BlockBase {
 
 public:
   explicit ActionDockBlock(
-    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
+    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
   ~ActionDockBlock();
 
 public Q_SLOTS:
@@ -51,7 +51,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "Action Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

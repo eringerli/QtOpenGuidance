@@ -22,7 +22,7 @@
 KDDockWidgets::QtWidgets::DockWidget* SliderDockBlockFactory::firstSliderValueDock = nullptr;
 
 SliderDockBlock::SliderDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   widget = new SliderDock( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
@@ -114,7 +114,7 @@ SliderDockBlock::valueChangedProxy( double value ) {
 }
 
 std::unique_ptr< BlockBase >
-SliderDockBlockFactory::createBlock( int idHint ) {
+SliderDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SliderDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

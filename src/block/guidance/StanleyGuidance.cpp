@@ -197,7 +197,7 @@ StanleyGuidance::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-StanleyGuidanceFactory::createBlock( int idHint ) {
+StanleyGuidanceFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< StanleyGuidance >( idHint );
 
   obj->addInputPort( QStringLiteral( "Pose Front Wheels" ), obj.get(), QLatin1StringView( SLOT( setPoseFrontWheels( POSE_SIGNATURE ) ) ) );

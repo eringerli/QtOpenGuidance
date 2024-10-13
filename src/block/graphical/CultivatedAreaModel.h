@@ -34,7 +34,7 @@ class CultivatedAreaModel : public BlockBase {
 
 public:
   explicit CultivatedAreaModel(
-    Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const int idHint, const bool systemBlock, const QString type );
+    Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const BlockBaseId idHint, const bool systemBlock, const QString type );
   ~CultivatedAreaModel();
 
   virtual void emitConfigSignals() override;
@@ -51,6 +51,8 @@ public Q_SLOTS:
 
   void saveCultivatedArea();
   void saveCultivatedAreaToFile( QFile& file );
+
+  virtual void enable( ACTION_SIGNATURE ) override;
 
 Q_SIGNALS:
   void layerChanged( Qt3DRender::QLayer* );
@@ -96,7 +98,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity*  rootEntity = nullptr;

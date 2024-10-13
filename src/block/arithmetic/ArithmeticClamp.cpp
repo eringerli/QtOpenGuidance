@@ -34,7 +34,7 @@ ArithmeticClamp::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ArithmeticClampFactory::createBlock( int idHint ) {
+ArithmeticClampFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ArithmeticClamp >( idHint );
 
   obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );

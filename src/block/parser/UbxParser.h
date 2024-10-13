@@ -54,7 +54,7 @@ class UbxParser : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit UbxParser( const int idHint, const bool systemBlock, const QString type );
+  explicit UbxParser( const BlockBaseId idHint, const bool systemBlock, const QString type );
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SIGNAL );
@@ -112,5 +112,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Parsers" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

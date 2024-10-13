@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QSerialPort>
 
-SerialPort::SerialPort( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+SerialPort::SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
   serialPort = new QSerialPort( this );
   connect( serialPort, &QIODevice::readyRead, this, &SerialPort::processPendingData );
 }
@@ -49,7 +49,7 @@ SerialPort::processPendingData() {
 }
 
 std::unique_ptr< BlockBase >
-SerialPortFactory::createBlock( int idHint ) {
+SerialPortFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SerialPort >( idHint );
 
   obj->addInputPort( QStringLiteral( "Port" ), obj.get(), QLatin1StringView( SLOT( setPort( QString ) ) ) );

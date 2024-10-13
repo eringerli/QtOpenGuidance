@@ -9,7 +9,7 @@ class ArithmeticMultiplication : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticMultiplication( const int idHint, const bool systemBlock, const QString type )
+  explicit ArithmeticMultiplication( const BlockBaseId idHint, const bool systemBlock, const QString type )
       : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
@@ -42,5 +42,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Arithmetic" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

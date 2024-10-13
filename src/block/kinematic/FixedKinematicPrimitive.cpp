@@ -38,7 +38,7 @@ FixedKinematicPrimitive::setPose( const Eigen::Vector3d&           position,
 }
 
 std::unique_ptr< BlockBase >
-FixedKinematicPrimitiveFactory::createBlock( int idHint ) {
+FixedKinematicPrimitiveFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FixedKinematicPrimitive >( idHint );
 
   obj->addInputPort( QStringLiteral( "Offset" ), obj.get(), QLatin1StringView( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );

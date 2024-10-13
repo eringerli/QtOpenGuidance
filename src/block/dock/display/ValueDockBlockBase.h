@@ -14,7 +14,7 @@ class ValueDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueDockBlockBase( QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+  explicit ValueDockBlockBase( QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
       : BlockBase( idHint, systemBlock, type ) {
     dock = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
   }

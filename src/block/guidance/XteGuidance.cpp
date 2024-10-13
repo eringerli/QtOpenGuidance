@@ -60,7 +60,7 @@ XteGuidance::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-XteGuidanceFactory::createBlock( int idHint ) {
+XteGuidanceFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< XteGuidance >( idHint );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

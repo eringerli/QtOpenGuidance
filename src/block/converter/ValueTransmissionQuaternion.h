@@ -16,7 +16,7 @@ class QCborStreamReader;
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionQuaternion( uint16_t cid, const int idHint, const bool systemBlock, const QString type );
+  explicit ValueTransmissionQuaternion( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setQuaternion( ORIENTATION_SIGNATURE_SLOT );
@@ -41,5 +41,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Value Converters" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

@@ -41,7 +41,7 @@ class PathPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type );
+  explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -50,6 +50,7 @@ public:
 
 public Q_SLOTS:
   void setVisible( const bool visible );
+  virtual void enable( ACTION_SIGNATURE ) override;
 
   void setPlan( const Plan& plan );
 
@@ -123,7 +124,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Graphical" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   Qt3DCore::QEntity* rootEntity = nullptr;

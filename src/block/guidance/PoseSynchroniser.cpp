@@ -24,7 +24,7 @@ PoseSynchroniser::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-PoseSynchroniserFactory::createBlock( int idHint ) {
+PoseSynchroniserFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< PoseSynchroniser >( idHint );
 
   obj->addInputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );

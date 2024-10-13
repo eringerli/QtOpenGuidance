@@ -11,7 +11,7 @@ class CommunicationPgn7ffe : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CommunicationPgn7ffe( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit CommunicationPgn7ffe( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 Q_SIGNALS:
   void dataReceived( const QByteArray& );
@@ -38,5 +38,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Legacy Converters" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

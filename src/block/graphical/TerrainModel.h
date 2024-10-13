@@ -43,7 +43,7 @@ class TerrainModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type );
+  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;

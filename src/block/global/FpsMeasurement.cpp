@@ -6,7 +6,7 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DLogic/QFrameAction>
 
-FpsMeasurement::FpsMeasurement( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type )
+FpsMeasurement::FpsMeasurement( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   fpsComponent = new Qt3DLogic::QFrameAction( rootEntity );
   rootEntity->addComponent( fpsComponent );
@@ -27,7 +27,7 @@ FpsMeasurement::frameActionTriggered( const float dt ) {
 }
 
 std::unique_ptr< BlockBase >
-FpsMeasurementFactory::createBlock( int idHint ) {
+FpsMeasurementFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FpsMeasurement >( idHint, rootEntity );
 
   obj->addOutputPort( QStringLiteral( "FPS" ), obj.get(), QLatin1StringView( SIGNAL( fpsChanged( NUMBER_SIGNATURE ) ) ) );

@@ -13,7 +13,7 @@
 #include <QCborValue>
 #include <iostream>
 
-ValueTransmissionImuData::ValueTransmissionImuData( uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+ValueTransmissionImuData::ValueTransmissionImuData( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
   reader = std::make_unique< QCborStreamReader >();
 }
@@ -57,7 +57,7 @@ ValueTransmissionImuData::dataReceive( const QByteArray& data ) {
 }
 
 std::unique_ptr< BlockBase >
-ValueTransmissionImuDataFactory::createBlock( int idHint ) {
+ValueTransmissionImuDataFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ValueTransmissionImuData >( idHint, 1000 );
 
   obj->addInputPort( QStringLiteral( "CBOR In" ), obj.get(), QLatin1StringView( SLOT( dataReceive( const QByteArray& ) ) ) );

@@ -50,7 +50,7 @@
 #include <functional>
 #include <utility>
 
-PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type )
+PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   baseEntity          = new Qt3DCore::QEntity( rootEntity );
   baseEntityTransform = new Qt3DCore::QTransform( baseEntity );
@@ -168,6 +168,13 @@ void
 PathPlannerModel::setVisible( const bool visible ) {
   this->visible = visible;
   baseEntity->setEnabled( visible );
+}
+
+void
+PathPlannerModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  setVisible( enable );
 }
 
 void
@@ -408,7 +415,7 @@ PathPlannerModel::setPose( const Eigen::Vector3d&           position,
 }
 
 std::unique_ptr< BlockBase >
-PathPlannerModelFactory::createBlock( int idHint ) {
+PathPlannerModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< PathPlannerModel >( idHint, rootEntity );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

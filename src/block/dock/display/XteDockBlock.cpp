@@ -13,7 +13,7 @@
 KDDockWidgets::QtWidgets::DockWidget* XteDockBlockFactory::firstDock = nullptr;
 
 XteDockBlock::XteDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new XteDock( mainWindow );
 }
@@ -102,7 +102,7 @@ XteDockBlock::setUnit( const QString& unit ) {
 }
 
 std::unique_ptr< BlockBase >
-XteDockBlockFactory::createBlock( int idHint ) {
+XteDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< XteDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

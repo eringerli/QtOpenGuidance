@@ -45,7 +45,7 @@ SectionControl::SectionControl( const QString&               uniqueName,
                                 MyMainWindow*                mainWindow,
                                 Qt3DCore::QEntity*           rootEntity,
                                 Qt3DRender::QFrameGraphNode* frameGraphParent,
-                                const int                    idHint,
+                                const BlockBaseId                    idHint,
                                 const bool                   systemBlock,
                                 const QString                type )
     : BlockBase( idHint, systemBlock, type ), frameGraphParent( frameGraphParent ) {
@@ -396,7 +396,7 @@ SectionControl::requestRenderCaptureTurnOffTexture() {
 }
 
 std::unique_ptr< BlockBase >
-SectionControlFactory::createBlock( int idHint ) {
+SectionControlFactory::createBlock( const BlockBaseId idHint ) {
   auto obj =
     createBaseBlock< SectionControl >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, rootEntity, frameGraphParent );
 

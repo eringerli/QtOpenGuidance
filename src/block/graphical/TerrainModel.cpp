@@ -78,7 +78,7 @@ using SurfaceMesh_3 = CGAL::Surface_mesh< Point_3 >;
 
 Q_DECLARE_METATYPE( std::shared_ptr< SurfaceMesh_3 > )
 
-TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+TerrainModel::TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), usePBR( usePBR ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );

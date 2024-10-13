@@ -38,7 +38,7 @@ VectorBlock::fromJSON( const QJsonObject& valuesObject ) {
 }
 
 std::unique_ptr< BlockBase >
-VectorBlockFactory::createBlock( int idHint ) {
+VectorBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< VectorBlock >( idHint );
 
   obj->addOutputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SIGNAL( vectorChanged( VECTOR_SIGNATURE ) ) ) );

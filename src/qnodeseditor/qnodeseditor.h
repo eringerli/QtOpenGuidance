@@ -51,8 +51,8 @@ public:
 Q_SIGNALS:
   void resetModels();
 
-  void deleteBlock( int blockId, const bool emitObjectsChanged = true );
-  void deleteBlocks( std::vector< int >& blocks );
+  void deleteBlock( BlockBaseId blockId, const bool emitObjectsChanged = true );
+  void deleteBlocks( std::vector< BlockBaseId >& blocks );
 
   void deleteConnection( const BlockConnectionDefinition& connection, const bool emitObjectsChanged = true );
   void deleteConnections( const std::vector< BlockConnectionDefinition >& connections );

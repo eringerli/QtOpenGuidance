@@ -145,7 +145,7 @@ NmeaParserGGA::parseData() {
 }
 
 std::unique_ptr< BlockBase >
-NmeaParserGGAFactory::createBlock( int idHint ) {
+NmeaParserGGAFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< NmeaParserGGA >( idHint );
 
   obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );

@@ -24,7 +24,7 @@ public:
   explicit Implement( const QString&                         uniqueName,
                       MyMainWindow*                          mainWindow,
                       KDDockWidgets::QtWidgets::DockWidget** firstDock,
-                      const int                              idHint,
+                      const BlockBaseId                      idHint,
                       const bool                             systemBlock,
                       const QString                          type );
 
@@ -73,7 +73,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Section Control" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*                         mainWindow = nullptr;

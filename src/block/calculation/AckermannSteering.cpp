@@ -73,7 +73,7 @@ AckermannSteering::setSteeringAngleRight( double steerAngle, const CalculationOp
 }
 
 std::unique_ptr< BlockBase >
-AckermannSteeringFactory::createBlock( int idHint ) {
+AckermannSteeringFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< AckermannSteering >( idHint );
 
   obj->addInputPort( QStringLiteral( "Length Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );

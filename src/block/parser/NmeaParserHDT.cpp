@@ -96,7 +96,7 @@ NmeaParserHDT::parseData() {
 }
 
 std::unique_ptr< BlockBase >
-NmeaParserHDTFactory::createBlock( int idHint ) {
+NmeaParserHDTFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< NmeaParserHDT >( idHint );
 
   obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );

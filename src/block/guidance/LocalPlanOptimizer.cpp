@@ -115,7 +115,7 @@ LocalPlanOptimizer::setPlan( const Plan& plan ) {
 }
 
 std::unique_ptr< BlockBase >
-LocalPlanOptimizerFactory::createBlock( int idHint ) {
+LocalPlanOptimizerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanOptimizer >( idHint, getNameOfFactory() + QString::number( idHint ) );
 
   auto* obj2 = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );

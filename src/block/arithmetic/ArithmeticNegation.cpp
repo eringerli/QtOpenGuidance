@@ -22,7 +22,7 @@ ArithmeticNegation::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ArithmeticNegationFactory::createBlock( int idHint ) {
+ArithmeticNegationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ArithmeticNegation >( idHint );
 
   obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );

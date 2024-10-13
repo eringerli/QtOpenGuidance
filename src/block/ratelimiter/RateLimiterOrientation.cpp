@@ -4,7 +4,7 @@
 #include "RateLimiterOrientation.h"
 
 std::unique_ptr< BlockBase >
-RateLimiterOrientationFactory::createBlock( int idHint ) {
+RateLimiterOrientationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< RateLimiterOrientation >( idHint );
 
   obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );

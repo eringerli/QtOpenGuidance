@@ -11,7 +11,7 @@
 //   Q_OBJECT
 
 // public:
-//   explicit DebugSink( const int idHint,const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+//   explicit DebugSink( const BlockBaseId idHint,const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 // public Q_SLOTS:
 //   void setPosition( QVector3D value );

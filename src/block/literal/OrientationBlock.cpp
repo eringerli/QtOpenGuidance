@@ -107,7 +107,7 @@ OrientationBlock::setPose( const Eigen::Vector3d&           position,
 }
 
 std::unique_ptr< BlockBase >
-OrientationBlockFactory::createBlock( int idHint ) {
+OrientationBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< OrientationBlock >( idHint );
 
   obj->addInputPort( QStringLiteral( "Averager Enabled" ), obj.get(), QLatin1StringView( SLOT( setAveragerEnabled( ACTION_SIGNATURE ) ) ) );

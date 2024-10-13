@@ -13,7 +13,7 @@ class NmeaParserRMC : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserRMC( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit NmeaParserRMC( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
@@ -41,5 +41,5 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "NMEA Parser for RMC sentences" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

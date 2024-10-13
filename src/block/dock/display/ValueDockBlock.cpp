@@ -26,7 +26,7 @@
 #include <QMenu>
 
 ValueDockBlock::ValueDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new ValueDock( mainWindow );
 }
@@ -114,7 +114,7 @@ ValueDockBlock::setValue( const double value, const CalculationOption::Options o
 }
 
 std::unique_ptr< BlockBase >
-ValueDockBlockFactory::createBlock( int idHint ) {
+ValueDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ValueDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

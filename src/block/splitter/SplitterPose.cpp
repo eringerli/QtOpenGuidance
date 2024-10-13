@@ -21,7 +21,7 @@ SplitterPose::setPose( const Eigen::Vector3d& position, const Eigen::Quaterniond
 }
 
 std::unique_ptr< BlockBase >
-SplitterPoseFactory::createBlock( int idHint ) {
+SplitterPoseFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SplitterPose >( idHint );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

@@ -18,7 +18,7 @@ class XteDockBlock : public ValueDockBlockBase {
 
 public:
   explicit XteDockBlock(
-    MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type );
+    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   ~XteDockBlock();
 
@@ -62,7 +62,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "XTE Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

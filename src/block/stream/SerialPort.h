@@ -13,7 +13,7 @@ class SerialPort : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SerialPort( const int idHint, const bool systemBlock, const QString type );
+  explicit SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type );
   ~SerialPort();
 
 signals:
@@ -47,5 +47,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Streams" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

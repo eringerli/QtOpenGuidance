@@ -19,7 +19,7 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+TrailerModel::TrailerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   // add an etry, so all coordinates are local
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
@@ -300,7 +300,7 @@ TrailerModel::setPosePivotPoint( const Eigen::Vector3d&           position,
 }
 
 std::unique_ptr< BlockBase >
-TrailerModelFactory::createBlock( int idHint ) {
+TrailerModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< TrailerModel >( idHint, rootEntity, usePBR );
 
   obj->addInputPort( QStringLiteral( "Track Width" ), obj.get(), QLatin1StringView( SLOT( setTrackwidth( NUMBER_SIGNATURE ) ) ) );

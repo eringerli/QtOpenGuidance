@@ -18,7 +18,7 @@ class VectorPlotDockBlock : public PlotDockBlockBase {
 
 public:
   explicit VectorPlotDockBlock(
-    MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
+    MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   RateLimiter rateLimiter;
 
@@ -44,7 +44,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "Vector Plot Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

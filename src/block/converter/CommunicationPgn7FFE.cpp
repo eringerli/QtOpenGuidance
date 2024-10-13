@@ -42,7 +42,7 @@ CommunicationPgn7ffe::setVelocity( double velocity, const CalculationOption::Opt
 }
 
 std::unique_ptr< BlockBase >
-CommunicationPgn7ffeFactory::createBlock( int idHint ) {
+CommunicationPgn7ffeFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< CommunicationPgn7ffe >( idHint );
 
   obj->addInputPort( QStringLiteral( "Steering Angle" ), obj.get(), QLatin1StringView( SLOT( setSteeringAngle( NUMBER_SIGNATURE ) ) ) );

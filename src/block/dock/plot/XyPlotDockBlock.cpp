@@ -17,7 +17,7 @@
 #include "helpers/anglesHelper.h"
 
 XyPlotDockBlock::XyPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString types )
+  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString types )
     : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, types ) {
   widget->getQCustomPlotWidget()->addGraph();
   widget->getQCustomPlotWidget()->graph( 0 )->setPen( QPen( QColor( 40, 110, 255 ) ) );
@@ -110,7 +110,7 @@ XyPlotDockBlock::rescale() {
 }
 
 std::unique_ptr< BlockBase >
-MpcPlotDockBlockFactory::createBlock( int idHint ) {
+MpcPlotDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< XyPlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

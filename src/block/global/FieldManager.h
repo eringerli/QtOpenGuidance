@@ -34,7 +34,7 @@ class FieldManager : public BlockBase {
 
 public:
   explicit FieldManager(
-    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const int idHint, const bool systemBlock, const QString type );
+    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   ~FieldManager();
 
@@ -135,7 +135,7 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Base Blocks" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   QWidget*                     mainWindow = nullptr;

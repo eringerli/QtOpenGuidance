@@ -43,7 +43,7 @@ using Aff_transformation_3 = CGAL::Aff_transformation_3< Epick >;
 GlobalPlanner::GlobalPlanner( const QString&               uniqueName,
                               MyMainWindow*                mainWindow,
                               GeographicConvertionWrapper* tmw,
-                              const int                    idHint,
+                              const BlockBaseId            idHint,
                               const bool                   systemBlock,
                               const QString                type )
     : BlockBase( idHint, systemBlock, type ), mainWindow( mainWindow ), tmw( tmw ) {
@@ -417,7 +417,7 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
 }
 
 std::unique_ptr< BlockBase >
-GlobalPlannerFactory::createBlock( int idHint ) {
+GlobalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< GlobalPlanner >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, tmw );
 
   auto* pathPlannerModel = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );

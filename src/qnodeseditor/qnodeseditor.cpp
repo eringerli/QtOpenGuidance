@@ -72,7 +72,7 @@ QNodesEditor::itemAt( QPointF pos ) {
 
 void
 QNodesEditor::deleteSelected() {
-  std::vector< int >                       blocks;
+  std::vector< BlockBaseId >               blocks;
   std::vector< BlockConnectionDefinition > connections;
 
   const auto& constRefOfList = scene->selectedItems();

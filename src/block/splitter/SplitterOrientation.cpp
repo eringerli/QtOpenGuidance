@@ -25,7 +25,7 @@ SplitterOrientation::setOrientation( const Eigen::Quaterniond& orientation, cons
 }
 
 std::unique_ptr< BlockBase >
-SplitterOrientationFactory::createBlock( int idHint ) {
+SplitterOrientationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SplitterOrientation >( idHint );
 
   obj->addInputPort( QStringLiteral( "Orientation" ), obj.get(), QLatin1StringView( SLOT( setOrientation( ORIENTATION_SIGNATURE ) ) ) );

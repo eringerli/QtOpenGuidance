@@ -16,7 +16,7 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit ValuePlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
+  explicit ValuePlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   RateLimiter rateLimiterValue0;
   RateLimiter rateLimiterValue1;
@@ -48,7 +48,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "Value Plot Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

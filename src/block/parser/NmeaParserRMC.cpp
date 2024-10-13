@@ -129,7 +129,7 @@ NmeaParserRMC::parseData() {
 }
 
 std::unique_ptr< BlockBase >
-NmeaParserRMCFactory::createBlock( int idHint ) {
+NmeaParserRMCFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< NmeaParserRMC >( idHint );
 
   obj->addInputPort( QStringLiteral( "Data" ), obj.get(), QLatin1StringView( SLOT( setData( const QByteArray& ) ) ) );

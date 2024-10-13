@@ -19,7 +19,7 @@
 Implement::Implement( const QString&                         uniqueName,
                       MyMainWindow*                          mainWindow,
                       KDDockWidgets::QtWidgets::DockWidget** firstDock,
-                      const int                              idHint,
+                      const BlockBaseId                      idHint,
                       const bool                             systemBlock,
                       const QString                          type )
     : BlockBase( idHint, systemBlock, type ), firstDock( firstDock ) {
@@ -118,7 +118,7 @@ Implement::setName( const QString& name ) {
 }
 
 std::unique_ptr< BlockBase >
-ImplementFactory::createBlock( int idHint ) {
+ImplementFactory::createBlock( BlockBaseId idHint ) {
   auto obj = createBaseBlock< Implement >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, &firstDock );
 
   obj->dock->setTitle( getNameOfFactory() );

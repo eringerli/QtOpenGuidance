@@ -99,7 +99,7 @@ TrailerKinematicPrimitive::setPoseInitialMpcPivot( const Eigen::Vector3d&       
 }
 
 std::unique_ptr< BlockBase >
-TrailerKinematicPrimitiveFactory::createBlock( int idHint ) {
+TrailerKinematicPrimitiveFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< TrailerKinematicPrimitive >( idHint );
 
   obj->addInputPort( QStringLiteral( "Offset In to Out" ), obj.get(), QLatin1StringView( SLOT( setOffset( VECTOR_SIGNATURE ) ) ) );

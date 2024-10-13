@@ -11,7 +11,7 @@
 #include <QCborStreamReader>
 #include <QCborValue>
 
-ValueTransmissionQuaternion::ValueTransmissionQuaternion( uint16_t cid, const int idHint, const bool systemBlock, const QString type )
+ValueTransmissionQuaternion::ValueTransmissionQuaternion( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
   reader = std::make_unique< QCborStreamReader >();
 }
@@ -45,7 +45,7 @@ ValueTransmissionQuaternion::dataReceive( const QByteArray& data ) {
 }
 
 std::unique_ptr< BlockBase >
-ValueTransmissionQuaternionFactory::createBlock( int idHint ) {
+ValueTransmissionQuaternionFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ValueTransmissionQuaternion >( idHint, 0 );
 
   obj->addInputPort( QStringLiteral( "CBOR In" ), obj.get(), QLatin1StringView( SLOT( dataReceive( const QByteArray& ) ) ) );

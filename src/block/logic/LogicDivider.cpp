@@ -29,7 +29,7 @@ LogicDivider::setValueB( double number, const CalculationOption::Options ) {
 }
 
 std::unique_ptr< BlockBase >
-LogicDividerFactory::createBlock( int idHint ) {
+LogicDividerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LogicDivider >( idHint );
 
   obj->addInputPort( QStringLiteral( "Switch" ), obj.get(), QLatin1StringView( SLOT( setSwitch( ACTION_SIGNATURE ) ) ) );

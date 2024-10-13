@@ -6,7 +6,7 @@
 #include "helpers/eigenHelper.h"
 
 GridModel::GridModel(
-  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const int idHint, const bool systemBlock, const QString type )
+  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   m_distanceMeasurementEntity    = new Qt3DCore::QEntity( rootEntity );
   m_distanceMeasurementTransform = new Qt3DCore::QTransform( m_distanceMeasurementEntity );
@@ -221,7 +221,7 @@ GridModel::currentIndexChanged( const int currentIndex ) {
 }
 
 std::unique_ptr< BlockBase >
-GridModelFactory::createBlock( int idHint ) {
+GridModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< GridModel >( idHint, rootEntity, m_cameraEntity );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

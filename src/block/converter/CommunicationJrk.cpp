@@ -28,7 +28,7 @@ CommunicationJrk::setSteerCountPerDegree( double countsPerDegree, const Calculat
 }
 
 std::unique_ptr< BlockBase >
-CommunicationJrkFactory::createBlock( int idHint ) {
+CommunicationJrkFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< CommunicationJrk >( idHint );
 
   obj->addInputPort( QStringLiteral( "Steerzero" ), obj.get(), QLatin1StringView( SLOT( setSteerZero( NUMBER_SIGNATURE ) ) ) );

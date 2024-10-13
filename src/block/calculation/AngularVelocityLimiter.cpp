@@ -32,7 +32,7 @@ AngularVelocityLimiter::setVelocity( double velocity, const CalculationOption::O
 }
 
 std::unique_ptr< BlockBase >
-AngularVelocityLimiterFactory::createBlock( int idHint ) {
+AngularVelocityLimiterFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< AngularVelocityLimiter >( idHint );
 
   obj->addInputPort(

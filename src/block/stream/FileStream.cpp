@@ -8,7 +8,7 @@
 #include <QTextStream>
 #include <QTimerEvent>
 
-FileStream::FileStream( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+FileStream::FileStream( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
   fileStream = new QTextStream();
 }
 
@@ -72,7 +72,7 @@ FileStream::timerEvent( QTimerEvent* event ) {
 }
 
 std::unique_ptr< BlockBase >
-FileStreamFactory::createBlock( int idHint ) {
+FileStreamFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FileStream >( idHint );
 
   obj->addInputPort( QStringLiteral( "File" ), obj.get(), QLatin1StringView( SLOT( setFilename( const QString& ) ) ) );

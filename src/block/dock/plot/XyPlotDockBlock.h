@@ -14,7 +14,7 @@ class XyPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit XyPlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString types );
+  explicit XyPlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString types );
 
 public Q_SLOTS:
   void setAngleCost( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
@@ -42,7 +42,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "Value Plot Dock" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   MyMainWindow*           mainWindow = nullptr;

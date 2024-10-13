@@ -50,7 +50,7 @@ CultivatedAreaModel::createEntities() {
 }
 
 CultivatedAreaModel::CultivatedAreaModel(
-  Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const int idHint, const bool systemBlock, const QString type )
+  Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ) {
   // plug into new/open/save toolbar
   newCultivatedAreaAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Cultivated Area" ) );
@@ -237,8 +237,15 @@ CultivatedAreaModel::saveCultivatedAreaToFile( QFile& file ) {
   qDebug() << "CultivatedAreaModel::saveCultivatedAreaToFile()";
 }
 
+void
+CultivatedAreaModel::enable( const bool enable ) {
+  BlockBase::enable( enable );
+
+  m_baseEntity->setEnabled( enable );
+}
+
 std::unique_ptr< BlockBase >
-CultivatedAreaModelFactory::createBlock( int idHint ) {
+CultivatedAreaModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< CultivatedAreaModel >( idHint, rootEntity, newOpenSaveToolbar );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

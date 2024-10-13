@@ -17,16 +17,16 @@
 class BlocksManager : public QObject {
   Q_OBJECT
 public:
-  explicit BlocksManager( FactoriesManager& factoriesManager, QObject* parent = nullptr );
+  explicit BlocksManager( QObject* parent = nullptr ) : QObject{ parent } {}
 
-  int createBlockFromFactory( const QString factoryName, int idHint = 0 );
-  int moveObjectToManager( std::unique_ptr< BlockBase >&& block );
+  BlockBaseId createBlockFromFactory( const QString factoryName, BlockBaseId idHint = 0 );
+  BlockBaseId moveObjectToManager( std::unique_ptr< BlockBase >&& block );
 
   void registerCallbackForType( const QString& type, std::function< void() > callback ) {
     _typeCallbacks.push_back( std::make_pair( type, callback ) );
   }
 
-  BlockBase* getBlock( const int id ) const {
+  BlockBase* getBlock( const BlockBaseId id ) const {
     if( _blocks.contains( id ) ) {
       return _blocks.at( id ).get();
     } else {
@@ -45,15 +45,19 @@ public:
   }
 
   void loadConfigFromFile( QFile& file );
-  void saveConfigToFile( const std::vector< int >& blocks, const std::vector< BlockConnectionDefinition >& connection, QFile& file );
+  void
+  saveConfigToFile( const std::vector< BlockBaseId >& blocks, const std::vector< BlockConnectionDefinition >& connection, QFile& file );
 
-  const std::map< int, std::unique_ptr< BlockBase > >& blocks() const { return _blocks; }
+  const std::map< BlockBaseId, std::unique_ptr< BlockBase > >& blocks() const { return _blocks; }
+
+  void disableConnectionOfBlock( const BlockBaseId blockId );
+  void enableConnectionOfBlock( const BlockBaseId blockId );
 
 public slots:
   void blockConnectedToDestroyed( QObject* obj );
 
-  void deleteBlock( int blockId, const bool emitObjectsChanged = true );
-  void deleteBlocks( std::vector< int >& blocks );
+  void deleteBlock( BlockBaseId blockId, const bool emitObjectsChanged = true );
+  void deleteBlocks( std::vector< BlockBaseId >& blocks );
 
   void deleteConnection( const BlockConnectionDefinition& connection, const bool emitObjectsChanged = true );
   void deleteConnections( const std::vector< BlockConnectionDefinition >& connections );
@@ -64,29 +68,28 @@ signals:
   void objectsChanged();
 
 private:
-  std::map< int, std::unique_ptr< BlockBase > >                       _blocks;
+  std::map< BlockBaseId, std::unique_ptr< BlockBase > >               _blocks;
   std::vector< std::pair< const QString&, std::function< void() > > > _typeCallbacks;
 
-  int               _nextSystemId = 0;
-  int               _nextUserId   = 1000;
-  FactoriesManager& factoriesManager;
+  BlockBaseId       _nextSystemId = 0;
+  BlockBaseId       _nextUserId   = 1000;
 
 private:
-  int getNextSystemId() {
+  BlockBaseId getNextSystemId() {
     while( _blocks.contains( ++_nextSystemId ) ) {
     }
 
     return _nextSystemId;
   }
 
-  int getNextUserId() {
+  BlockBaseId getNextUserId() {
     while( _blocks.contains( ++_nextUserId ) ) {
     }
 
     return _nextUserId;
   }
 
-  int setNewId( BlockBase& block );
+  BlockBaseId setNewId( BlockBase& block );
 
   void callTypeCallbacks( const QString& type );
 };

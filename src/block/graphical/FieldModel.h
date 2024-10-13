@@ -39,7 +39,7 @@ class FieldModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FieldModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const int idHint, const bool systemBlock, const QString type );
+  explicit FieldModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;

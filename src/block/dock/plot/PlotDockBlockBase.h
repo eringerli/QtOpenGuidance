@@ -18,7 +18,7 @@ class PlotDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PlotDockBlockBase( MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type );
+  explicit PlotDockBlockBase( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   virtual ~PlotDockBlockBase();
 

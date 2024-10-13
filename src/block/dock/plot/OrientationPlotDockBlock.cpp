@@ -19,7 +19,7 @@
 #include "helpers/anglesHelper.h"
 
 OrientationPlotDockBlock::OrientationPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
   {
     auto graph = widget->getQCustomPlotWidget()->addGraph();
@@ -89,7 +89,7 @@ OrientationPlotDockBlock::rescale() {
 }
 
 std::unique_ptr< BlockBase >
-OrientationPlotDockBlockFactory::createBlock( int idHint ) {
+OrientationPlotDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< OrientationPlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

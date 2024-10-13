@@ -26,7 +26,7 @@ NumberBlock::fromJSON( const QJsonObject& valuesObject ) {
 }
 
 std::unique_ptr< BlockBase >
-NumberBlockFactory::createBlock( int idHint ) {
+NumberBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< NumberBlock >( idHint );
 
   obj->addOutputPort( QStringLiteral( "Number" ), obj.get(), QLatin1StringView( SIGNAL( numberChanged( NUMBER_SIGNATURE ) ) ) );

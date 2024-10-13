@@ -19,7 +19,7 @@
 #include "helpers/anglesHelper.h"
 
 VectorPlotDockBlock::VectorPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
   {
     auto graph = widget->getQCustomPlotWidget()->addGraph();
@@ -76,7 +76,7 @@ VectorPlotDockBlock::rescale() {
 }
 
 std::unique_ptr< BlockBase >
-VectorPlotDockBlockFactory::createBlock( int idHint ) {
+VectorPlotDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< VectorPlotDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

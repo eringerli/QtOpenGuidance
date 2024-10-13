@@ -13,7 +13,7 @@ class UdpSocket : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit UdpSocket( const int idHint, const bool systemBlock, const QString type );
+  explicit UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   ~UdpSocket();
 
@@ -45,5 +45,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Streams" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

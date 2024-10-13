@@ -23,7 +23,7 @@ class ExtendedKalmanFilter : public BlockBase {
   using State = KinematicModel::State< T >;
 
 public:
-  explicit ExtendedKalmanFilter( const int idHint, const bool systemBlock, const QString type );
+  explicit ExtendedKalmanFilter( const BlockBaseId idHint, const bool systemBlock, const QString type );
 
 public Q_SLOTS:
   void setPosition( VECTOR_SIGNATURE_SLOT );
@@ -76,5 +76,5 @@ public:
 
   QString getCategoryOfFactory() const override { return QStringLiteral( "Filter" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 };

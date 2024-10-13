@@ -11,7 +11,7 @@
 #include "gui/dock/ThreeValuesDock.h"
 
 PositionDockBlock::PositionDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
   widget = new ThreeValuesDock( mainWindow );
 
@@ -122,7 +122,7 @@ PositionDockBlock::setWgs84( const Eigen::Vector3d& position, const CalculationO
 }
 
 std::unique_ptr< BlockBase >
-PositionDockBlockFactory::createBlock( int idHint ) {
+PositionDockBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< PositionDockBlock >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   obj->dock->setTitle( getNameOfFactory() );

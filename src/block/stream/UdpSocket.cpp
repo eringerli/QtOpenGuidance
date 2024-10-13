@@ -5,7 +5,7 @@
 
 #include <QtNetwork>
 
-UdpSocket::UdpSocket( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+UdpSocket::UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
   udpSocket = new QUdpSocket( this );
   connect( udpSocket, &QIODevice::readyRead, this, &UdpSocket::processPendingDatagrams );
 }
@@ -39,7 +39,7 @@ UdpSocket::processPendingDatagrams() {
 }
 
 std::unique_ptr< BlockBase >
-UdpSocketFactory::createBlock( int idHint ) {
+UdpSocketFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< UdpSocket >( idHint );
 
   obj->addInputPort( QStringLiteral( "Port" ), obj.get(), QLatin1StringView( SLOT( setPort( NUMBER_SIGNATURE ) ) ) );

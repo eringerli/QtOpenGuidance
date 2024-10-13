@@ -28,7 +28,7 @@ ComparisonEqualTo::operation() {
 }
 
 std::unique_ptr< BlockBase >
-ComparisonEqualToFactory::createBlock( int idHint ) {
+ComparisonEqualToFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ComparisonEqualTo >( idHint );
   // obj->addPort\( QStringLiteral\( "(.*)" \), QLatin1StringView\(\), false, QNEPort::NoBullet \);
   obj->addInputPort( QStringLiteral( "A" ), obj.get(), QLatin1StringView( SLOT( setValueA( NUMBER_SIGNATURE ) ) ) );

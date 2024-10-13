@@ -22,7 +22,7 @@ SplitterImu::setImu( const double dT, const Eigen::Vector3d& acc, const Eigen::V
 }
 
 std::unique_ptr< BlockBase >
-SplitterImuFactory::createBlock( int idHint ) {
+SplitterImuFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SplitterImu >( idHint );
 
   obj->addInputPort( QStringLiteral( "Imu" ), obj.get(), QLatin1StringView( SLOT( setImu( IMU_SIGNATURE ) ) ) );

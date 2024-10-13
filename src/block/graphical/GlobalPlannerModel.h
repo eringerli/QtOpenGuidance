@@ -39,7 +39,7 @@ class GlobalPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const int idHint, const bool systemBlock, const QString type );
+  explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;

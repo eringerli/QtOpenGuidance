@@ -4,7 +4,7 @@
 #include "RateLimiterPose.h"
 
 std::unique_ptr< BlockBase >
-RateLimiterPoseFactory::createBlock( int idHint ) {
+RateLimiterPoseFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< RateLimiterPose >( idHint );
 
   obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );

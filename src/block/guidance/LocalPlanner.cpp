@@ -30,7 +30,7 @@
 #include <dubins/dubins.h>
 
 LocalPlanner::LocalPlanner(
-  MyMainWindow* mainWindow, const QString& uniqueName, const int idHint, const bool systemBlock, const QString type )
+  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   widget = new GuidanceTurningToolbar( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
@@ -405,7 +405,7 @@ LocalPlanner::calculateTurning( bool changeExistingTurn ) {
 }
 
 std::unique_ptr< BlockBase >
-LocalPlannerFactory::createBlock( int idHint ) {
+LocalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanner >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
   auto* obj2 = new PathPlannerModel( rootEntity, 0, false, "PathPlannerModel" );

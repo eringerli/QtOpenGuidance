@@ -37,7 +37,7 @@ SchmittTriggerBlock::setValueUpperThreshold( const double number, const Calculat
 }
 
 std::unique_ptr< BlockBase >
-SchmittTriggerBlockFactory::createBlock( int idHint ) {
+SchmittTriggerBlockFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SchmittTriggerBlock >( idHint );
 
   obj->addInputPort( QStringLiteral( "Value" ), obj.get(), QLatin1StringView( SLOT( setValue( NUMBER_SIGNATURE ) ) ) );

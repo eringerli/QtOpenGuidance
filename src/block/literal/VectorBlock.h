@@ -16,7 +16,7 @@ class VectorBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit VectorBlock( const int idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit VectorBlock( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
 
   void emitConfigSignals() override;
 
@@ -44,7 +44,7 @@ public:
 
   QString getPrettyNameOfFactory() const override { return QStringLiteral( "3D Vector" ); }
 
-  virtual std::unique_ptr< BlockBase > createBlock( int idHint = 0 ) override;
+  virtual std::unique_ptr< BlockBase > createBlock( const BlockBaseId idHint = 0 ) override;
 
 private:
   VectorBlockModel* model = nullptr;

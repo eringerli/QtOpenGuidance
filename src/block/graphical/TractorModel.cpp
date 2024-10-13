@@ -20,7 +20,7 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
@@ -350,7 +350,7 @@ TractorModel::setSteeringAngleRight( double steerAngle, const CalculationOption:
 }
 
 std::unique_ptr< BlockBase >
-TractorModelFactory::createBlock( int idHint ) {
+TractorModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< TractorModel >( idHint, rootEntity, usePBR );
 
   obj->addInputPort( QStringLiteral( "Length Wheelbase" ), obj.get(), QLatin1StringView( SLOT( setWheelbase( NUMBER_SIGNATURE ) ) ) );

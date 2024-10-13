@@ -12,7 +12,7 @@
 
 #include "kalman/ExtendedKalmanFilter.hpp"
 
-ExtendedKalmanFilter::ExtendedKalmanFilter( const int idHint, const bool systemBlock, const QString type )
+ExtendedKalmanFilter::ExtendedKalmanFilter( const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   x.setZero();
   ekf.init( x );
@@ -92,7 +92,7 @@ ExtendedKalmanFilter::emitConfigSignals() {
 }
 
 std::unique_ptr< BlockBase >
-ExtendedKalmanFilterFactory::createBlock( int idHint ) {
+ExtendedKalmanFilterFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< ExtendedKalmanFilter >( idHint );
 
   obj->addInputPort( QStringLiteral( "Position" ), obj.get(), QLatin1StringView( SLOT( setPosition( VECTOR_SIGNATURE ) ) ) );

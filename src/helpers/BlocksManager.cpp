@@ -17,8 +17,8 @@
 BlocksManager::BlocksManager( FactoriesManager& factoriesManager, QObject* parent )
     : factoriesManager( factoriesManager ), QObject{ parent } {}
 
-int
-BlocksManager::createBlockFromFactory( const QString factoryName, int idHint ) {
+BlockBaseId
+BlocksManager::createBlockFromFactory( const QString factoryName, BlockBaseId idHint ) {
   auto* factory = factoriesManager.getFactoryByName( factoryName );
 
   if( factory ) {
@@ -28,15 +28,15 @@ BlocksManager::createBlockFromFactory( const QString factoryName, int idHint ) {
   }
 }
 
-int
+BlockBaseId
 BlocksManager::moveObjectToManager( std::unique_ptr< BlockBase >&& block ) {
   const bool idExistentOrZero = ( block->id() == 0 ) || ( _blocks.contains( block->id() ) );
 
   //  qDebug() << "BlocksManager::moveObjectToManager" << ( block->id() == 0 ) << ( _blocks.contains( block->id() ) );
 
-  int newId = block->id();
+  BlockBaseId newId = block->id();
   if( idExistentOrZero ) {
-    int oldId = newId;
+    BlockBaseId oldId = newId;
     newId     = setNewId( *block );
     //    qDebug() << "oldId << newId" << block->name() << oldId << newId;
   }
@@ -63,18 +63,18 @@ BlocksManager::loadConfigFromFile( QFile& file ) {
 
   // as the new object (can) get new id, here is a st::map to hold the conversions
   // first int: id in file, second int: id in the block list
-  std::map< int, int > mapIdFileToBlockVector;
+  std::map< BlockBaseId, BlockBaseId > mapIdFileToBlockVector;
 
   if( json.contains( QStringLiteral( "blocks" ) ) && json[QStringLiteral( "blocks" )].isArray() ) {
     QJsonArray blocksArray = json[QStringLiteral( "blocks" )].toArray();
 
     for( const auto& blockIndex : std::as_const( blocksArray ) ) {
       QJsonObject blockObject = blockIndex.toObject();
-      int         id          = blockObject[QStringLiteral( "id" )].toInt( 0 );
+      BlockBaseId id          = blockObject[QStringLiteral( "id" )].toInt( 0 );
 
       // search the block and set the values
       if( id != 0 ) {
-        if( id < int( BlockBase::IdRange::UserIdStart ) ) {
+        if( id < BlockBaseId( BlockBase::IdRange::UserIdStart ) ) {
           // system id -> don't create new blocks
           BlockBase* block = nullptr;
           //          qDebug() << "SystemBlock" << blockObject[QStringLiteral( "type" )].toString();
@@ -116,8 +116,8 @@ BlocksManager::loadConfigFromFile( QFile& file ) {
 
       if( !connectionsObject[QStringLiteral( "idFrom" )].isUndefined() && !connectionsObject[QStringLiteral( "idTo" )].isUndefined() &&
           !connectionsObject[QStringLiteral( "portFrom" )].isUndefined() && !connectionsObject[QStringLiteral( "portTo" )].isUndefined() ) {
-        int idFrom = mapIdFileToBlockVector[connectionsObject[QStringLiteral( "idFrom" )].toInt()];
-        int idTo   = mapIdFileToBlockVector[connectionsObject[QStringLiteral( "idTo" )].toInt()];
+        BlockBaseId idFrom = mapIdFileToBlockVector[connectionsObject[QStringLiteral( "idFrom" )].toInt()];
+        BlockBaseId idTo   = mapIdFileToBlockVector[connectionsObject[QStringLiteral( "idTo" )].toInt()];
 
         QString portFromName = connectionsObject[QStringLiteral( "portFrom" )].toString();
         QString portToName   = connectionsObject[QStringLiteral( "portTo" )].toString();
@@ -147,7 +147,7 @@ BlocksManager::loadConfigFromFile( QFile& file ) {
 }
 
 void
-BlocksManager::saveConfigToFile( const std::vector< int >&                       blocksConst,
+BlocksManager::saveConfigToFile( const std::vector< BlockBaseId >&               blocksConst,
                                  const std::vector< BlockConnectionDefinition >& connectionsConst,
                                  QFile&                                          file ) {
   QJsonObject jsonObject;
@@ -205,7 +205,7 @@ BlocksManager::blockConnectedToDestroyed( QObject* obj ) {
 }
 
 void
-BlocksManager::deleteBlock( int blockId, const bool emitObjectsChanged ) {
+BlocksManager::deleteBlock( BlockBaseId blockId, const bool emitObjectsChanged ) {
   for( const auto& block : _blocks ) {
     for( auto& connection : block.second->connections() ) {
       if( ( connection.portFrom->idOfBlock == blockId ) || ( connection.portTo->idOfBlock == blockId ) ) {
@@ -260,7 +260,7 @@ BlocksManager::createConnection( const BlockConnectionDefinition& connection, co
 }
 
 void
-BlocksManager::deleteBlocks( std::vector< int >& blocks ) {
+BlocksManager::deleteBlocks( std::vector< BlockBaseId >& blocks ) {
   for( const auto& block : blocks ) {
     deleteBlock( block, false );
   }
@@ -277,7 +277,7 @@ BlocksManager::deleteConnections( const std::vector< BlockConnectionDefinition >
   Q_EMIT objectsChanged();
 }
 
-int
+BlockBaseId
 BlocksManager::setNewId( BlockBase& block ) {
   if( block.systemBlock ) {
     block.setId( getNextSystemId() );

@@ -6,7 +6,7 @@
 #include <iostream>
 
 std::unique_ptr< BlockBase >
-RateLimiterVectorFactory::createBlock( int idHint ) {
+RateLimiterVectorFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< RateLimiterVector >( idHint );
 
   obj->addInputPort( QStringLiteral( "Rate" ), obj.get(), QLatin1StringView( SLOT( setRate( NUMBER_SIGNATURE ) ) ) );

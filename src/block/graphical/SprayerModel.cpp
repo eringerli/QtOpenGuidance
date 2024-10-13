@@ -26,7 +26,7 @@
 
 #include "helpers/eigenHelper.h"
 
-SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const int idHint, const bool systemBlock, const QString type )
+SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
     : BlockBase( idHint, systemBlock, type ) {
   // add an entry, so all coordinates are local
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
@@ -324,7 +324,7 @@ SprayerModel::updateProprotions() {
 }
 
 std::unique_ptr< BlockBase >
-SprayerModelFactory::createBlock( int idHint ) {
+SprayerModelFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SprayerModel >( idHint, rootEntity, usePBR );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );
