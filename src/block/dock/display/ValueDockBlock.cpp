@@ -25,9 +25,13 @@
 
 #include <QMenu>
 
-ValueDockBlock::ValueDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
+ValueDockBlock::ValueDockBlock( MyMainWindow*              mainWindow,
+                                const QString&             uniqueName,
+                                const BlockBaseId          idHint,
+                                const bool                 systemBlock,
+                                const QString              type,
+                                const BlockBase::TypeColor typeColor )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type, typeColor ) {
   widget = new ValueDock( mainWindow );
 }
 

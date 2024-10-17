@@ -43,7 +43,12 @@ class TerrainModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TerrainModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit TerrainModel( Qt3DCore::QEntity*         rootEntity,
+                         bool                       usePBR,
+                         const BlockBaseId          idHint,
+                         const bool                 systemBlock,
+                         const QString              type,
+                         const BlockBase::TypeColor typeColor );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -51,7 +56,7 @@ public:
   void refreshColors();
 
 public Q_SLOTS:
-  void setVisible( const bool );
+  void         setVisible( const bool );
   virtual void enable( ACTION_SIGNATURE ) override;
 
   void setSurface( std::shared_ptr< SurfaceMesh_3 > );

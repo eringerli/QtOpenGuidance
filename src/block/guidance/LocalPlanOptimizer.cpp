@@ -119,8 +119,8 @@ std::unique_ptr< BlockBase >
 LocalPlanOptimizerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanOptimizer >( idHint, getNameOfFactory() + QString::number( idHint ) );
 
-  auto pathPlannerModelId =
-    blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan Optimized" ) );
+  auto pathPlannerModelId = blocksManager.moveObjectToManager(
+    std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan Optimized", BlockBase::TypeColor::Converter ) );
 
   auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
 

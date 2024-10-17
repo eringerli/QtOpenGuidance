@@ -10,9 +10,13 @@
 #include "gui/MyMainWindow.h"
 #include "gui/dock/ThreeValuesDock.h"
 
-OrientationDockBlock::OrientationDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
+OrientationDockBlock::OrientationDockBlock( MyMainWindow*              mainWindow,
+                                            const QString&             uniqueName,
+                                            const BlockBaseId          idHint,
+                                            const bool                 systemBlock,
+                                            const QString              type,
+                                            const BlockBase::TypeColor typeColor )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type, typeColor ) {
   widget = new ThreeValuesDock( mainWindow );
 
   widget->setDescriptions( QStringLiteral( "Y" ), QStringLiteral( "P" ), QStringLiteral( "R" ) );

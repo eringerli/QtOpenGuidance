@@ -14,7 +14,8 @@ class FixedKinematic : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FixedKinematic( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit FixedKinematic( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setOffsetHookToPivot( VECTOR_SIGNATURE_SLOT );
@@ -28,15 +29,15 @@ Q_SIGNALS:
   void poseTowPointChanged( POSE_SIGNATURE_SIGNAL );
 
 private:
-  FixedKinematicPrimitive hookToPivot = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
-  FixedKinematicPrimitive pivotToTow  = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
+  FixedKinematicPrimitive hookToPivot = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive", BlockBase::TypeColor::System );
+  FixedKinematicPrimitive pivotToTow  = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive", BlockBase::TypeColor::System );
 };
 
 class FixedKinematicFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FixedKinematicFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  FixedKinematicFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Fixed Kinematic" ); }
 

@@ -35,8 +35,12 @@ class GridModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GridModel(
-    Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit GridModel( Qt3DCore::QEntity*         rootEntity,
+                      Qt3DRender::QCamera*       cameraEntity,
+                      const BlockBaseId          idHint,
+                      const bool                 systemBlock,
+                      const QString              type,
+                      const BlockBase::TypeColor typeColor );
 
   ~GridModel();
 
@@ -90,7 +94,7 @@ class GridModelFactory : public BlockFactory {
 public:
   GridModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
       : BlockFactory( thread, true ), rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Grid Model" ); }

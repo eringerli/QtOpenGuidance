@@ -12,8 +12,11 @@
 
 #include "kalman/ExtendedKalmanFilter.hpp"
 
-ExtendedKalmanFilter::ExtendedKalmanFilter( const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+ExtendedKalmanFilter::ExtendedKalmanFilter( const BlockBaseId          idHint,
+                                            const bool                 systemBlock,
+                                            const QString              type,
+                                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   x.setZero();
   ekf.init( x );
   elapsedTimer.start();

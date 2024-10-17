@@ -17,8 +17,11 @@ class TrailerKinematicPrimitive : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TrailerKinematicPrimitive( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit TrailerKinematicPrimitive( const BlockBaseId          idHint,
+                                      const bool                 systemBlock,
+                                      const QString              type,
+                                      const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setOffset( VECTOR_SIGNATURE_SLOT );
@@ -43,14 +46,14 @@ public:
   Eigen::Vector3d    positionMpcInitialPivot    = Eigen::Vector3d( 0, 0, 0 );
   Eigen::Quaterniond orientationMpcInitialPivot = Eigen::Quaterniond( 0, 0, 0, 0 );
 
-  FixedKinematicPrimitive fixedKinematic = FixedKinematicPrimitive( 0, false, "" );
+  FixedKinematicPrimitive fixedKinematic = FixedKinematicPrimitive( 0, false, "", BlockBase::TypeColor::System );
 };
 
 class TrailerKinematicPrimitiveFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  TrailerKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  TrailerKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Trailer Kinematic Primitive" ); }
 

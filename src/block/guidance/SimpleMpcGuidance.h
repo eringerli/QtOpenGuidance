@@ -33,7 +33,8 @@ class SimpleMpcGuidance : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SimpleMpcGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit SimpleMpcGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setWheelbase( NUMBER_SIGNATURE_SLOT );
@@ -90,7 +91,7 @@ private:
   std::shared_ptr< std::vector< double > >          recordXteForPointsTo = nullptr;
   std::shared_ptr< std::vector< Eigen::Vector3d > > recordPointsTo       = nullptr;
 
-  FixedKinematicPrimitive antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
+  FixedKinematicPrimitive antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive", BlockBase::TypeColor::System );
 
   double runMpc( const double           dT,
                  const double           steeringAngleToCalculateWithRadians,
@@ -121,7 +122,7 @@ public:
   SimpleMpcGuidanceFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Simple Model Predictive Control" ); }

@@ -26,8 +26,13 @@
 
 #include "helpers/eigenHelper.h"
 
-SprayerModel::SprayerModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+SprayerModel::SprayerModel( Qt3DCore::QEntity*         rootEntity,
+                            bool                       usePBR,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   // add an entry, so all coordinates are local
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );

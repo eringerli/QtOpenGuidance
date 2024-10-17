@@ -10,7 +10,8 @@ class ArithmeticClamp : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticClamp( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticClamp( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -36,7 +37,7 @@ class ArithmeticClampFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticClampFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticClampFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticClamp" ); }
 

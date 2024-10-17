@@ -18,9 +18,13 @@
 
 #include "helpers/anglesHelper.h"
 
-OrientationPlotDockBlock::OrientationPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
+OrientationPlotDockBlock::OrientationPlotDockBlock( MyMainWindow*              mainWindow,
+                                                    QString                    uniqueName,
+                                                    const BlockBaseId          idHint,
+                                                    const bool                 systemBlock,
+                                                    const QString              type,
+                                                    const BlockBase::TypeColor typeColor )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type, typeColor ) {
   {
     auto graph = widget->getQCustomPlotWidget()->addGraph();
 

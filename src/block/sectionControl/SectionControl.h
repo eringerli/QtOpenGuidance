@@ -27,9 +27,10 @@ public:
                            MyMainWindow*                mainWindow,
                            Qt3DCore::QEntity*           rootEntity,
                            Qt3DRender::QFrameGraphNode* frameGraphParent,
-                           const BlockBaseId                    idHint,
+                           const BlockBaseId            idHint,
                            const bool                   systemBlock,
-                           const QString                type );
+                           const QString                type,
+                           const BlockBase::TypeColor   typeColor );
   ~SectionControl();
 
 public Q_SLOTS:
@@ -95,7 +96,7 @@ public:
       , menu( menu )
       , rootEntity( rootEntity )
       , frameGraphParent( frameGraphParent ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Section Control" ); }

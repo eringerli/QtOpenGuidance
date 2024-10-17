@@ -8,8 +8,9 @@
 #include <QJsonObject>
 #include <QTimerEvent>
 
-ValueTransmissionBase::ValueTransmissionBase( const uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ), cid( cid ) {
+ValueTransmissionBase::ValueTransmissionBase(
+  const uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), cid( cid ) {
   timeoutTimer = std::make_unique< QBasicTimer >();
   repeatTimer  = std::make_unique< QBasicTimer >();
 }

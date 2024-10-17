@@ -30,8 +30,9 @@ class LocalPlanOptimizer : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit LocalPlanOptimizer( const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit LocalPlanOptimizer(
+    const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setPoseTractor( POSE_SIGNATURE_SLOT );
@@ -59,7 +60,8 @@ private:
 
   Plan optimizedPlan;
 
-  FixedKinematicPrimitive tractorToTrailerHalf = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
+  FixedKinematicPrimitive tractorToTrailerHalf =
+    FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive", BlockBase::TypeColor::System );
 };
 
 class LocalPlanOptimizerFactory : public BlockFactory {
@@ -69,7 +71,7 @@ public:
   LocalPlanOptimizerFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Local Plan Optimizer" ); }

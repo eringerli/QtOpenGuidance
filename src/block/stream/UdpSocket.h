@@ -13,7 +13,7 @@ class UdpSocket : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
 
   ~UdpSocket();
 
@@ -39,7 +39,7 @@ class UdpSocketFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  UdpSocketFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  UdpSocketFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "UDP Socket" ); }
 

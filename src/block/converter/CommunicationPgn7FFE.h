@@ -11,7 +11,11 @@ class CommunicationPgn7ffe : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CommunicationPgn7ffe( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit CommunicationPgn7ffe( const BlockBaseId          idHint,
+                                 const bool                 systemBlock,
+                                 const QString              type,
+                                 const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 Q_SIGNALS:
   void dataReceived( const QByteArray& );
@@ -32,7 +36,7 @@ class CommunicationPgn7ffeFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  CommunicationPgn7ffeFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
+  CommunicationPgn7ffeFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Converter; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Communication PGN 7FFE" ); }
 

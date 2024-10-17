@@ -23,7 +23,10 @@ class ExtendedKalmanFilter : public BlockBase {
   using State = KinematicModel::State< T >;
 
 public:
-  explicit ExtendedKalmanFilter( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ExtendedKalmanFilter( const BlockBaseId          idHint,
+                                 const bool                 systemBlock,
+                                 const QString              type,
+                                 const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setPosition( VECTOR_SIGNATURE_SLOT );
@@ -68,7 +71,7 @@ class ExtendedKalmanFilterFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ExtendedKalmanFilterFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ExtendedKalmanFilter" ); }
 

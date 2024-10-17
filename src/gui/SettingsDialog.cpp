@@ -863,19 +863,6 @@ SettingsDialog::resetAllModels() {
 
 void
 SettingsDialog::resetBlockViewScene() {
-  for( const auto& block : blocksManager.blocks() ) {
-    bool id0 = false;
-    for( const auto& port : block.second->ports() ) {
-      if( port.idOfBlock == 0 ) {
-        qDebug() << "id0" << block.second->id() << block.second->name() << port.idOfBlock << port.name;
-        id0 |= true;
-      }
-    }
-    //    if( id0 ) {
-    //      qDebug() << "id0" << block.second->id() << block.second->name();
-    //    }
-  }
-
   getSceneOfConfigGraphicsView()->clear();
 
   for( const auto& block : blocksManager.blocks() ) {
@@ -1310,7 +1297,8 @@ SettingsDialog::on_rbMaterialPhong_clicked() {
   settings.sync();
 }
 
-void SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
+void
+SettingsDialog::on_cbPathPlanner_currentIndexChanged( int index ) {
   QModelIndex idx  = ui->cbPathPlanner->model()->index( index, 1 );
   QVariant    data = ui->cbPathPlanner->model()->data( idx );
 

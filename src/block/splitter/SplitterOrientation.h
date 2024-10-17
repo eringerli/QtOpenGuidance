@@ -14,7 +14,8 @@ class SplitterOrientation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterOrientation( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit SplitterOrientation( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -32,7 +33,7 @@ class SplitterOrientationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  SplitterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "SplitterOrientation" ); }
 

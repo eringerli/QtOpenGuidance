@@ -13,7 +13,8 @@ class PoseSynchroniser : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PoseSynchroniser( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit PoseSynchroniser( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setPosition( VECTOR_SIGNATURE_SLOT );
@@ -35,7 +36,7 @@ class PoseSynchroniserFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  PoseSynchroniserFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  PoseSynchroniserFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Pose Synchroniser" ); }
 

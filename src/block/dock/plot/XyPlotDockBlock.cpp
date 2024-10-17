@@ -16,9 +16,13 @@
 
 #include "helpers/anglesHelper.h"
 
-XyPlotDockBlock::XyPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString types )
-    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, types ) {
+XyPlotDockBlock::XyPlotDockBlock( MyMainWindow*              mainWindow,
+                                  QString                    uniqueName,
+                                  const BlockBaseId          idHint,
+                                  const bool                 systemBlock,
+                                  const QString              types,
+                                  const BlockBase::TypeColor typeColor )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, types, typeColor ) {
   widget->getQCustomPlotWidget()->addGraph();
   widget->getQCustomPlotWidget()->graph( 0 )->setPen( QPen( QColor( 40, 110, 255 ) ) );
   widget->getQCustomPlotWidget()->graph( 0 )->setLineStyle( QCPGraph::LineStyle::lsLine /*lsImpulse*/ );

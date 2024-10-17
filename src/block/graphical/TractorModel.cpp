@@ -20,8 +20,13 @@
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 #include <Qt3DExtras/QMetalRoughMaterial>
 
-TractorModel::TractorModel( Qt3DCore::QEntity* rootEntity, bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+TractorModel::TractorModel( Qt3DCore::QEntity*         rootEntity,
+                            bool                       usePBR,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   m_rootEntity          = new Qt3DCore::QEntity( rootEntity );
   m_rootEntityTransform = new Qt3DCore::QTransform( m_rootEntity );
   m_rootEntity->addComponent( m_rootEntityTransform );

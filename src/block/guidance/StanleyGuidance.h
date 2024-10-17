@@ -21,7 +21,8 @@ class StanleyGuidance : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit StanleyGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit StanleyGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setSteeringAngle( NUMBER_SIGNATURE_SLOT );
@@ -91,7 +92,7 @@ class StanleyGuidanceFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  StanleyGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  StanleyGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Stanley Path Follower" ); }
 

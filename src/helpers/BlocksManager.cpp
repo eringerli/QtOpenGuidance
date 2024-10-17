@@ -34,7 +34,7 @@ BlocksManager::moveObjectToManager( std::unique_ptr< BlockBase >&& block ) {
   BlockBaseId newId = block->id();
   if( idExistentOrZero ) {
     BlockBaseId oldId = newId;
-    newId     = setNewId( *block );
+    newId             = setNewId( *block );
     //    qDebug() << "oldId << newId" << block->name() << oldId << newId;
   }
 
@@ -156,13 +156,6 @@ BlocksManager::saveConfigToFile( const std::vector< BlockBaseId >&              
   auto connections = connectionsConst;
 
   std::sort( blocks.begin(), blocks.end() );
-
-  for( const auto& connection : connections ) {
-    if( connection.idFrom == 0 || connection.idTo == 0 ) {
-      qDebug() << connection.idFrom << connection.idTo << connection.portFromName << connection.portToName;
-    }
-  }
-
   std::sort( connections.begin(), connections.end() );
 
   for( const auto blockId : blocks ) {
@@ -194,15 +187,15 @@ BlocksManager::saveConfigToFile( const std::vector< BlockBaseId >&              
 }
 
 void
-BlocksManager::blockConnectedToDestroyed( QObject* obj ) {
-  auto* block = qobject_cast< BlockBase* >( obj );
+BlocksManager::blockConnectedToDestroyed( const QObject* obj ) {
+  const auto* block = qobject_cast< const BlockBase* >( obj );
   if( block != nullptr ) {
     deleteBlock( block->id() );
   }
 }
 
 void
-BlocksManager::deleteBlock( BlockBaseId blockId, const bool emitObjectsChanged ) {
+BlocksManager::deleteBlock( const BlockBaseId blockId, const bool emitObjectsChanged ) {
   for( const auto& block : _blocks ) {
     for( auto& connection : block.second->connections() ) {
       if( ( connection.portFrom->idOfBlock == blockId ) || ( connection.portTo->idOfBlock == blockId ) ) {
@@ -257,7 +250,7 @@ BlocksManager::createConnection( const BlockConnectionDefinition& connection, co
 }
 
 void
-BlocksManager::deleteBlocks( std::vector< BlockBaseId >& blocks ) {
+BlocksManager::deleteBlocks( const std::vector< BlockBaseId >& blocks ) {
   for( const auto& block : blocks ) {
     deleteBlock( block, false );
   }

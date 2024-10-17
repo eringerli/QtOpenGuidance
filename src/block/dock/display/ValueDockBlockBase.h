@@ -14,8 +14,9 @@ class ValueDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ValueDockBlockBase( QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {
+  explicit ValueDockBlockBase(
+    QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {
     dock = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
   }
 
@@ -40,6 +41,7 @@ public:
   virtual void setUnit( const QString& ) = 0;
 
 public Q_SLOTS:
+  virtual void enable( const bool enable ) override;
 
 public:
   KDDockWidgets::QtWidgets::DockWidget* dock = nullptr;

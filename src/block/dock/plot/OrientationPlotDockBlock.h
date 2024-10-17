@@ -17,8 +17,12 @@ class OrientationPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit OrientationPlotDockBlock(
-    MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit OrientationPlotDockBlock( MyMainWindow*              mainWindow,
+                                     QString                    uniqueName,
+                                     const BlockBaseId          idHint,
+                                     const bool                 systemBlock,
+                                     const QString              type,
+                                     const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
@@ -37,7 +41,7 @@ class OrientationPlotDockBlockFactory : public BlockFactory {
 public:
   OrientationPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::Dock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "OrientationPlotDockBlock" ); }

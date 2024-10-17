@@ -20,8 +20,12 @@ class OrientationDockBlock : public ValueDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit OrientationDockBlock(
-    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit OrientationDockBlock( MyMainWindow*              mainWindow,
+                                 const QString&             uniqueName,
+                                 const BlockBaseId          idHint,
+                                 const bool                 systemBlock,
+                                 const QString              type,
+                                 const BlockBase::TypeColor typeColor );
 
   ~OrientationDockBlock();
 
@@ -58,7 +62,7 @@ class OrientationDockBlockFactory : public BlockFactory {
 public:
   OrientationDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::Dock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "OrientationDockBlock" ); }

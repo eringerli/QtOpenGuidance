@@ -18,8 +18,12 @@ class SliderDockBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SliderDockBlock(
-    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit SliderDockBlock( MyMainWindow*              mainWindow,
+                            const QString&             uniqueName,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor );
 
   ~SliderDockBlock();
 
@@ -29,11 +33,13 @@ public:
   virtual void fromJSON( const QJsonObject& ) override;
 
 public Q_SLOTS:
-  void setName( const QString& name ) override;
+  virtual void setName( const QString& name ) override;
 
   void setValue( const double );
 
   void valueChangedProxy( double );
+
+  virtual void enable( const bool enable ) override;
 
 Q_SIGNALS:
   void valueChanged( NUMBER_SIGNATURE_SIGNAL );
@@ -50,7 +56,7 @@ class SliderDockBlockFactory : public BlockFactory {
 public:
   SliderDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::InputDock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "SliderDockBlock" ); }

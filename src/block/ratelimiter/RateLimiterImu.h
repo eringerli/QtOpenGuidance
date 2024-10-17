@@ -15,7 +15,8 @@ class RateLimiterImu : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit RateLimiterImu( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit RateLimiterImu( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 public Q_SLOTS:
   void setRate( NUMBER_SIGNATURE_SLOT );
   void setImu( IMU_SIGNATURE_SLOT );
@@ -32,7 +33,7 @@ class RateLimiterImuFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  RateLimiterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  RateLimiterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "RateLimiterImu" ); }
 

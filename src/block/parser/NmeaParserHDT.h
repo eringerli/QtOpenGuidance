@@ -12,7 +12,8 @@ class NmeaParserHDT : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserHDT( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit NmeaParserHDT( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 Q_SIGNALS:
   void orientationChanged( ORIENTATION_SIGNATURE_SIGNAL );
@@ -32,7 +33,7 @@ class NmeaParserHDTFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  NmeaParserHDTFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "NMEA Parser HDT" ); }
 

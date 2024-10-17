@@ -7,7 +7,8 @@
 #include <QObject>
 #include <QSerialPort>
 
-SerialPort::SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+SerialPort::SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   serialPort = new QSerialPort( this );
   connect( serialPort, &QIODevice::readyRead, this, &SerialPort::processPendingData );
 }

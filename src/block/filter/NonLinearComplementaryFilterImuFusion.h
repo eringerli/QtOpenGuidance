@@ -21,7 +21,10 @@ class NonLinearComplementaryFilterImuFusion : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NonLinearComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit NonLinearComplementaryFilterImuFusion( const BlockBaseId          idHint,
+                                                  const bool                 systemBlock,
+                                                  const QString              type,
+                                                  const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setImuData( IMU_SIGNATURE_SLOT );
@@ -57,7 +60,9 @@ class NonLinearComplementaryFilterImuFusionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NonLinearComplementaryFilterImuFusionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  NonLinearComplementaryFilterImuFusionFactory( QThread* thread ) : BlockFactory( thread, false ) {
+    typeColor = BlockBase::TypeColor::Arithmetic;
+  }
 
   QString getNameOfFactory() const override { return QStringLiteral( "NLCF for IMU Fusion" ); }
 

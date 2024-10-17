@@ -41,9 +41,13 @@
 // #include <CGAL/boost/graph/graph_traits_Constrained_triangulation_plus_2.h>
 // #include <CGAL/boost/graph/graph_traits_Constrained_Delaunay_triangulation_2.h>
 
-PoseSimulation::PoseSimulation(
-  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ), mainWindow( mainWindow ), tmw( tmw ) {
+PoseSimulation::PoseSimulation( QWidget*                     mainWindow,
+                                GeographicConvertionWrapper* tmw,
+                                const BlockBaseId            idHint,
+                                const bool                   systemBlock,
+                                const QString                type,
+                                const BlockBase::TypeColor   typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), mainWindow( mainWindow ), tmw( tmw ) {
   state.setZero();
 
   setSimulation( false );
@@ -602,7 +606,7 @@ std::unique_ptr< BlockBase >
 PoseSimulationFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< PoseSimulation >( idHint, mainWindow, geographicConvertionWrapper );
 
-  auto* terrainModel = new TerrainModel( rootEntity, usePBR, 0, true, "TerrainModel" );
+  auto* terrainModel = new TerrainModel( rootEntity, usePBR, 0, true, "TerrainModel", BlockBase::TypeColor::System );
   obj->addAdditionalObject( terrainModel );
 
   QObject::connect( obj.get(), &PoseSimulation::surfaceChanged, terrainModel, &TerrainModel::setSurface );

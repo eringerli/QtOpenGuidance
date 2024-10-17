@@ -20,8 +20,12 @@ class CameraController : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CameraController(
-    Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit CameraController( Qt3DCore::QEntity*         rootEntity,
+                             Qt3DRender::QCamera*       cameraEntity,
+                             const BlockBaseId          idHint,
+                             const bool                 systemBlock,
+                             const QString              type,
+                             const BlockBase::TypeColor typeColor );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -91,7 +95,7 @@ class CameraControllerFactory : public BlockFactory {
 public:
   CameraControllerFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity )
       : BlockFactory( thread, true ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Camera Controller" ); }

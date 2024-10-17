@@ -15,8 +15,11 @@ class RateLimiterOrientation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit RateLimiterOrientation( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit RateLimiterOrientation( const BlockBaseId          idHint,
+                                   const bool                 systemBlock,
+                                   const QString              type,
+                                   const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 public Q_SLOTS:
   void setRate( NUMBER_SIGNATURE_SLOT );
   void setOrientation( ORIENTATION_SIGNATURE_SLOT );
@@ -33,7 +36,7 @@ class RateLimiterOrientationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  RateLimiterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  RateLimiterOrientationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "RateLimiterOrientation" ); }
 

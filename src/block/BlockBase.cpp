@@ -141,7 +141,7 @@ BlockBase::addPort( const QString& name, QObject* obj, QLatin1StringView signatu
 
 size_t
 BlockBase::connectPortToPort( const QString& portFromName, const BlockBase* blockTo, const QString& portToName ) {
-  size_t count = 0;
+  size_t      count = 0;
   BlockBaseId from = 0, to = 0;
   for( auto& portFrom : getOutputPorts( portFromName ) ) {
     from++;

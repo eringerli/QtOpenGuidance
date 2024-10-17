@@ -54,8 +54,12 @@ class PoseSimulation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PoseSimulation(
-    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit PoseSimulation( QWidget*                     mainWindow,
+                           GeographicConvertionWrapper* tmw,
+                           const BlockBaseId            idHint,
+                           const bool                   systemBlock,
+                           const QString                type,
+                           const BlockBase::TypeColor   typeColor );
 
 public Q_SLOTS:
   void setInterval( const int interval );
@@ -178,12 +182,12 @@ private:
 
   Eigen::Quaterniond m_orientation = Eigen::Quaterniond( 0, 0, 0, 0 );
 
-  double                       x                = 0;
-  double                       y                = 0;
-  double                       height           = 0;
-  double                       lastHeading      = 0;
-  GeographicConvertionWrapper* tmw              = nullptr;
-  FixedKinematicPrimitive      antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive" );
+  double                       x           = 0;
+  double                       y           = 0;
+  double                       height      = 0;
+  double                       lastHeading = 0;
+  GeographicConvertionWrapper* tmw         = nullptr;
+  FixedKinematicPrimitive antennaKinematic = FixedKinematicPrimitive( 0, false, "FixedKinematicPrimitive", BlockBase::TypeColor::System );
 
   std::unique_ptr< VehicleDynamics::VehicleNonLinear3DOF > vehicleDynamics;
   std::unique_ptr< VehicleDynamics::TireLinear >           frontLeftTire;
@@ -228,7 +232,7 @@ public:
       , geographicConvertionWrapper( geographicConvertionWrapper )
       , rootEntity( rootEntity )
       , usePBR( usePBR ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Pose Simulation" ); }

@@ -15,7 +15,8 @@ class RateLimiterPose : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit RateLimiterPose( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit RateLimiterPose( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 public Q_SLOTS:
   void setRate( NUMBER_SIGNATURE_SLOT );
   void setPose( POSE_SIGNATURE_SLOT );
@@ -32,7 +33,7 @@ class RateLimiterPoseFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  RateLimiterPoseFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  RateLimiterPoseFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "RateLimiterPose" ); }
 

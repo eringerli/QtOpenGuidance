@@ -5,7 +5,8 @@
 
 #include <QtNetwork>
 
-UdpSocket::UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {
+UdpSocket::UdpSocket( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   udpSocket = new QUdpSocket( this );
   connect( udpSocket, &QIODevice::readyRead, this, &UdpSocket::processPendingDatagrams );
 }

@@ -21,8 +21,9 @@ Implement::Implement( const QString&                         uniqueName,
                       KDDockWidgets::QtWidgets::DockWidget** firstDock,
                       const BlockBaseId                      idHint,
                       const bool                             systemBlock,
-                      const QString                          type )
-    : BlockBase( idHint, systemBlock, type ), firstDock( firstDock ) {
+                      const QString                          type,
+                      const BlockBase::TypeColor             typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), firstDock( firstDock ) {
   widget = new ImplementToolbar( this, mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 

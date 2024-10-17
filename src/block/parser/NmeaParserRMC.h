@@ -13,7 +13,8 @@ class NmeaParserRMC : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserRMC( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit NmeaParserRMC( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
@@ -33,7 +34,7 @@ class NmeaParserRMCFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserRMCFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  NmeaParserRMCFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "NMEA Parser RMC" ); }
 

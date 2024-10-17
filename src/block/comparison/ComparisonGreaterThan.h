@@ -11,7 +11,11 @@ class ComparisonGreaterThan : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComparisonGreaterThan( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ComparisonGreaterThan( const BlockBaseId          idHint,
+                                  const bool                 systemBlock,
+                                  const QString              type,
+                                  const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -35,7 +39,7 @@ class ComparisonGreaterThanFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComparisonGreaterThanFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ComparisonGreaterThanFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ComparisonGreaterThan" ); }
 

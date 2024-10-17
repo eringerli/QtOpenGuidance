@@ -9,7 +9,8 @@ class ArithmeticAddition : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticAddition( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticAddition( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -33,7 +34,7 @@ class ArithmeticAdditionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticAdditionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticAddition" ); }
 

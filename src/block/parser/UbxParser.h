@@ -54,7 +54,7 @@ class UbxParser : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit UbxParser( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit UbxParser( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SIGNAL );
@@ -106,7 +106,7 @@ class UbxParserFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  UbxParserFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  UbxParserFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "UBX Parser" ); }
 

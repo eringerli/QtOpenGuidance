@@ -18,7 +18,12 @@ class PlotDockBlockBase : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PlotDockBlockBase( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit PlotDockBlockBase( MyMainWindow*              mainWindow,
+                              QString                    uniqueName,
+                              const BlockBaseId          idHint,
+                              const bool                 systemBlock,
+                              const QString              type,
+                              const BlockBase::TypeColor typeColor );
 
   virtual ~PlotDockBlockBase();
 
@@ -44,6 +49,8 @@ public Q_SLOTS:
   void setName( const QString& name ) override;
 
   void qCustomPlotWidgetMouseDoubleClick( QMouseEvent* );
+
+  virtual void enable( const bool enable ) override;
 
 private:
   void setNameHelper();

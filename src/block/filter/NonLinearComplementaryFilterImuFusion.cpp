@@ -29,8 +29,11 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-NonLinearComplementaryFilterImuFusion::NonLinearComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+NonLinearComplementaryFilterImuFusion::NonLinearComplementaryFilterImuFusion( const BlockBaseId          idHint,
+                                                                              const bool                 systemBlock,
+                                                                              const QString              type,
+                                                                              const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   est = std::make_unique< stateestimation::AttitudeEstimator >();
 
   try {

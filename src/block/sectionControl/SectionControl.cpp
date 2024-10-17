@@ -45,10 +45,11 @@ SectionControl::SectionControl( const QString&               uniqueName,
                                 MyMainWindow*                mainWindow,
                                 Qt3DCore::QEntity*           rootEntity,
                                 Qt3DRender::QFrameGraphNode* frameGraphParent,
-                                const BlockBaseId                    idHint,
+                                const BlockBaseId            idHint,
                                 const bool                   systemBlock,
-                                const QString                type )
-    : BlockBase( idHint, systemBlock, type ), frameGraphParent( frameGraphParent ) {
+                                const QString                type,
+                                const BlockBase::TypeColor   typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), frameGraphParent( frameGraphParent ) {
   auto* widget = new QWidget( mainWindow );
 
   auto* layout = new QVBoxLayout;

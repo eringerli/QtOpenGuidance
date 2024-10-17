@@ -20,9 +20,13 @@
 
 KDDockWidgets::QtWidgets::DockWidget* ActionDockBlockFactory::firstActionDock = nullptr;
 
-ActionDockBlock::ActionDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+ActionDockBlock::ActionDockBlock( MyMainWindow*              mainWindow,
+                                  const QString&             uniqueName,
+                                  const BlockBaseId          idHint,
+                                  const bool                 systemBlock,
+                                  const QString              type,
+                                  const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   widget = new ActionDock( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
@@ -53,6 +57,16 @@ ActionDockBlock::setCheckable( const bool checkable ) {
 void
 ActionDockBlock::setTheme( const QString& theme ) {
   widget->setTheme( theme );
+}
+
+void
+ActionDockBlock::enable( const bool enable ) {
+  if( enable ) {
+    dock->show();
+  } else {
+    dock->close();
+  }
+  BlockBase::enable( enable );
 }
 
 std::unique_ptr< BlockBase >

@@ -16,8 +16,12 @@ class TransverseMercatorConverter : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ), tmw( tmw ) {}
+  explicit TransverseMercatorConverter( GeographicConvertionWrapper* tmw,
+                                        const BlockBaseId            idHint,
+                                        const bool                   systemBlock,
+                                        const QString                type,
+                                        const BlockBase::TypeColor   typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ), tmw( tmw ) {}
 
 public Q_SLOTS:
   void setWGS84Position( VECTOR_SIGNATURE_SLOT );
@@ -37,7 +41,7 @@ class TransverseMercatorConverterFactory : public BlockFactory {
 
 public:
   TransverseMercatorConverterFactory( QThread* thread, GeographicConvertionWrapper* tmw ) : BlockFactory( thread, false ), tmw( tmw ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Transverse Mercator" ); }

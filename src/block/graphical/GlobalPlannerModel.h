@@ -39,7 +39,11 @@ class GlobalPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit GlobalPlannerModel( Qt3DCore::QEntity*         rootEntity,
+                               const BlockBaseId          idHint,
+                               const bool                 systemBlock,
+                               const QString              type,
+                               const BlockBase::TypeColor typeColor );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -47,7 +51,7 @@ public:
   void refreshColors();
 
 public Q_SLOTS:
-  void setVisible( const bool visible );
+  void         setVisible( const bool visible );
   virtual void enable( ACTION_SIGNATURE ) override;
 
   void setSizeOfPoint( const float sizeOfPoint );

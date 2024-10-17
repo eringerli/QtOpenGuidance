@@ -16,7 +16,12 @@ class TractorModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TractorModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit TractorModel( Qt3DCore::QEntity*         rootEntity,
+                         const bool                 usePBR,
+                         const BlockBaseId          idHint,
+                         const bool                 systemBlock,
+                         const QString              type,
+                         const BlockBase::TypeColor typeColor );
   ~TractorModel();
 
 public Q_SLOTS:
@@ -82,7 +87,7 @@ class TractorModelFactory : public BlockFactory {
 public:
   TractorModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, const bool usePBR )
       : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Tractor Model" ); }

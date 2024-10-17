@@ -21,9 +21,13 @@
 
 KDDockWidgets::QtWidgets::DockWidget* SliderDockBlockFactory::firstSliderValueDock = nullptr;
 
-SliderDockBlock::SliderDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+SliderDockBlock::SliderDockBlock( MyMainWindow*              mainWindow,
+                                  const QString&             uniqueName,
+                                  const BlockBaseId          idHint,
+                                  const bool                 systemBlock,
+                                  const QString              type,
+                                  const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   widget = new SliderDock( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
@@ -111,6 +115,16 @@ SliderDockBlock::setValue( double value ) {
 void
 SliderDockBlock::valueChangedProxy( double value ) {
   Q_EMIT valueChanged( value, CalculationOption::Option::None );
+}
+
+void
+SliderDockBlock::enable( const bool enable ) {
+  if( enable ) {
+    dock->show();
+  } else {
+    dock->close();
+  }
+  BlockBase::enable( enable );
 }
 
 std::unique_ptr< BlockBase >

@@ -18,9 +18,13 @@
 
 #include "helpers/anglesHelper.h"
 
-VectorPlotDockBlock::VectorPlotDockBlock(
-  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type ) {
+VectorPlotDockBlock::VectorPlotDockBlock( MyMainWindow*              mainWindow,
+                                          QString                    uniqueName,
+                                          const BlockBaseId          idHint,
+                                          const bool                 systemBlock,
+                                          const QString              type,
+                                          const BlockBase::TypeColor typeColor )
+    : PlotDockBlockBase( mainWindow, uniqueName, idHint, systemBlock, type, typeColor ) {
   {
     auto graph = widget->getQCustomPlotWidget()->addGraph();
     graph->setPen( QPen( QColor( 40, 110, 255 ) ) );

@@ -14,7 +14,8 @@
 class ValueTransmissionState : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionState( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ValueTransmissionState(
+    uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setState( ACTION_SIGNATURE_SLOT );
@@ -33,7 +34,7 @@ class ValueTransmissionStateFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionStateFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
+  ValueTransmissionStateFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Converter; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit State" ); }
 

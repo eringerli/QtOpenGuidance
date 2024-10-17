@@ -17,16 +17,22 @@ class ActionDockBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ActionDockBlock(
-    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ActionDockBlock( MyMainWindow*              mainWindow,
+                            const QString&             uniqueName,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor );
   ~ActionDockBlock();
 
 public Q_SLOTS:
-  void setName( const QString& name ) override;
+  virtual void setName( const QString& name ) override;
 
   void setCheckable( const bool checkable );
 
   void setTheme( const QString& theme );
+
+  virtual void enable( const bool enable ) override;
 
 Q_SIGNALS:
   void action( ACTION_SIGNATURE_SIGNAL );
@@ -42,7 +48,7 @@ class ActionDockBlockFactory : public BlockFactory {
 public:
   ActionDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::InputDock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Action Dock Block" ); }

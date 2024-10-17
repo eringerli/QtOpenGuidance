@@ -16,7 +16,8 @@ class VectorBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit VectorBlock( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit VectorBlock( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -35,7 +36,7 @@ class VectorBlockFactory : public BlockFactory {
 
 public:
   VectorBlockFactory( QThread* thread, VectorBlockModel* model ) : BlockFactory( thread, false ), model( model ) {
-    typeColor = TypeColor::Value;
+    typeColor = BlockBase::TypeColor::Value;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Vector3D" ); }

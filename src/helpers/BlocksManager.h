@@ -58,10 +58,10 @@ public:
   void enableConnectionOfBlock( const BlockBaseId blockId );
 
 public slots:
-  void blockConnectedToDestroyed( QObject* obj );
+  void blockConnectedToDestroyed( const QObject* obj );
 
-  void deleteBlock( BlockBaseId blockId, const bool emitObjectsChanged = true );
-  void deleteBlocks( std::vector< BlockBaseId >& blocks );
+  void deleteBlock( const BlockBaseId blockId, const bool emitObjectsChanged = true );
+  void deleteBlocks( const std::vector< BlockBaseId >& blocks );
 
   void deleteConnection( const BlockConnectionDefinition& connection, const bool emitObjectsChanged = true );
   void deleteConnections( const std::vector< BlockConnectionDefinition >& connections );
@@ -75,8 +75,8 @@ private:
   std::map< BlockBaseId, std::unique_ptr< BlockBase > >               _blocks;
   std::vector< std::pair< const QString&, std::function< void() > > > _typeCallbacks;
 
-  BlockBaseId       _nextSystemId = 0;
-  BlockBaseId       _nextUserId   = 1000;
+  BlockBaseId _nextSystemId = 0;
+  BlockBaseId _nextUserId   = 1000;
   // FactoriesManager& factoriesManager;
 
 private:

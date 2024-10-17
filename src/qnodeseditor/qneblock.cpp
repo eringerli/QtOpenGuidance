@@ -60,9 +60,40 @@ QNEBlock::QNEBlock( BlockBase* block, QGraphicsItem* parent ) : QGraphicsPathIte
   setPen( QPen( Qt::darkGreen ) );
 
   if( block->systemBlock ) {
-    setBrush( Qt::lightGray );
+    setBrush( SystemBlockColor );
   } else {
-    setBrush( QColor( "palegreen" ) );
+    switch( block->typeColor ) {
+      case BlockBase::TypeColor::Model:
+        setBrush( ModelColor );
+        break;
+      case BlockBase::TypeColor::Dock:
+        setBrush( DockColor );
+        break;
+      case BlockBase::TypeColor::InputDock:
+        setBrush( InputDockColor );
+        break;
+      case BlockBase::TypeColor::Parser:
+        setBrush( ParserColor );
+        break;
+      case BlockBase::TypeColor::Value:
+        setBrush( ValueColor );
+        break;
+      case BlockBase::TypeColor::InputOutput:
+        setBrush( InputOutputColor );
+        break;
+      case BlockBase::TypeColor::Converter:
+        setBrush( ConverterColor );
+        break;
+      case BlockBase::TypeColor::Arithmetic:
+        setBrush( ArithmeticColor );
+        break;
+      case BlockBase::TypeColor::System:
+        setBrush( SystemBlockColor );
+        break;
+
+      default:
+        setBrush( DefaultColor );
+    }
   }
 
   setX( block->positionX );
@@ -115,7 +146,7 @@ QNEBlock::depictConnections() {
             qDebug() << "portTo != nullptr";
           }
         } else {
-          qDebug() << "blockTo != nullptr" << connection.portTo->idOfBlock;
+          qDebug() << "blockTo != nullptr";
         }
       } else {
         qDebug() << "portFrom != nullptr";
@@ -310,11 +341,13 @@ QNEBlock::mouseReleaseEvent( QGraphicsSceneMouseEvent* event ) {
   QGraphicsItem::mouseReleaseEvent( event );
 }
 
-const QColor QNEBlock::modelColor       = QColor( QStringLiteral( "moccasin" ) );
-const QColor QNEBlock::dockColor        = QColor( QStringLiteral( "DarkSalmon" ) );
-const QColor QNEBlock::inputDockColor   = QColor( QStringLiteral( "lightsalmon" ) );
-const QColor QNEBlock::parserColor      = QColor( QStringLiteral( "mediumaquamarine" ) );
-const QColor QNEBlock::valueColor       = QColor( QStringLiteral( "gold" ) );
-const QColor QNEBlock::inputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
-const QColor QNEBlock::converterColor   = QColor( QStringLiteral( "lightblue" ) );
-const QColor QNEBlock::arithmeticColor  = QColor( QStringLiteral( "DarkKhaki" ) );
+const QColor QNEBlock::SystemBlockColor = QColor( Qt::lightGray );
+const QColor QNEBlock::ModelColor       = QColor( QStringLiteral( "moccasin" ) );
+const QColor QNEBlock::DockColor        = QColor( QStringLiteral( "DarkSalmon" ) );
+const QColor QNEBlock::InputDockColor   = QColor( QStringLiteral( "lightsalmon" ) );
+const QColor QNEBlock::ParserColor      = QColor( QStringLiteral( "mediumaquamarine" ) );
+const QColor QNEBlock::ValueColor       = QColor( QStringLiteral( "gold" ) );
+const QColor QNEBlock::InputOutputColor = QColor( QStringLiteral( "cornflowerblue" ) );
+const QColor QNEBlock::ConverterColor   = QColor( QStringLiteral( "lightblue" ) );
+const QColor QNEBlock::ArithmeticColor  = QColor( QStringLiteral( "DarkKhaki" ) );
+const QColor QNEBlock::DefaultColor     = QColor( QStringLiteral( "DarkKhaki" ) );

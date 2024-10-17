@@ -20,7 +20,12 @@ class SprayerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SprayerModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit SprayerModel( Qt3DCore::QEntity*         rootEntity,
+                         const bool                 usePBR,
+                         const BlockBaseId          idHint,
+                         const bool                 systemBlock,
+                         const QString              type,
+                         const BlockBase::TypeColor typeColor );
   ~SprayerModel();
 
 public Q_SLOTS:
@@ -64,7 +69,7 @@ class SprayerModelFactory : public BlockFactory {
 public:
   SprayerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, bool usePBR )
       : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Sprayer Model" ); }

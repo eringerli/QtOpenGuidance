@@ -13,7 +13,8 @@ class NmeaParserGGA : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit NmeaParserGGA( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit NmeaParserGGA( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 Q_SIGNALS:
   void globalPositionChanged( VECTOR_SIGNATURE_SLOT );
@@ -36,7 +37,7 @@ class NmeaParserGGAFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  NmeaParserGGAFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "NMEA Parser GGA/GNS" ); }
 

@@ -13,7 +13,7 @@ class SerialPort : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit SerialPort( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
   ~SerialPort();
 
 signals:
@@ -41,7 +41,7 @@ class SerialPortFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SerialPortFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  SerialPortFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Serial Port" ); }
 

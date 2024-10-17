@@ -30,3 +30,13 @@ ValueDockBlockBase::fromJSON( const QJsonObject& valuesObject ) {
   setUnit( valuesObject[QStringLiteral( "Unit" )].toString( QString() ) );
   setUnitVisible( valuesObject[QStringLiteral( "UnitVisible" )].toBool( false ) );
 }
+
+void
+ValueDockBlockBase::enable( const bool enable ) {
+  if( enable ) {
+    dock->show();
+  } else {
+    dock->close();
+  }
+  BlockBase::enable( enable );
+}

@@ -11,8 +11,11 @@ class ComparisonLessOrEqualTo : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComparisonLessOrEqualTo( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit ComparisonLessOrEqualTo( const BlockBaseId          idHint,
+                                    const bool                 systemBlock,
+                                    const QString              type,
+                                    const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -36,7 +39,7 @@ class ComparisonLessOrEqualToFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComparisonLessOrEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ComparisonLessOrEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ComparisonLessOrEqualTo" ); }
 

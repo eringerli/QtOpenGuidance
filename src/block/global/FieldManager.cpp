@@ -26,9 +26,13 @@
 
 #include "helpers/GeoJsonHelper.h"
 
-FieldManager::FieldManager(
-  QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ), tmw( tmw ) {
+FieldManager::FieldManager( QWidget*                     mainWindow,
+                            GeographicConvertionWrapper* tmw,
+                            const BlockBaseId            idHint,
+                            const bool                   systemBlock,
+                            const QString                type,
+                            const BlockBase::TypeColor   typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), tmw( tmw ) {
   ThreadWeaver::setDebugLevel( true, 0 );
 
   openSaveHelper = new OpenSaveHelper( "Open Field", "GeoJSON Files (*.geojson)", mainWindow );
@@ -337,7 +341,7 @@ std::unique_ptr< BlockBase >
 FieldManagerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< FieldManager >( idHint, mainWindow, tmw );
 
-  auto fieldModel = new FieldModel( rootEntity, usePBR, 0, true, "FieldModel" );
+  auto fieldModel = new FieldModel( rootEntity, usePBR, 0, true, "FieldModel", BlockBase::TypeColor::System );
   obj->addAdditionalObject( fieldModel );
 
   obj->addInputPort( QStringLiteral( "Pose" ), obj.get(), QLatin1StringView( SLOT( setPose( POSE_SIGNATURE ) ) ) );

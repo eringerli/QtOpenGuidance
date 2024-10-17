@@ -30,9 +30,13 @@
 
 #include <dubins/dubins.h>
 
-LocalPlanner::LocalPlanner(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+LocalPlanner::LocalPlanner( MyMainWindow*              mainWindow,
+                            const QString&             uniqueName,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   widget = new GuidanceTurningToolbar( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
@@ -409,7 +413,8 @@ std::unique_ptr< BlockBase >
 LocalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< LocalPlanner >( idHint, mainWindow, getNameOfFactory() + QString::number( idHint ) );
 
-  auto pathPlannerModelId = blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan" ) );
+  auto pathPlannerModelId = blocksManager.moveObjectToManager(
+    std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Local Plan", BlockBase::TypeColor::Converter ) );
 
   auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
 

@@ -16,7 +16,8 @@ class QCborStreamReader;
 class ValueTransmissionQuaternion : public ValueTransmissionBase {
   Q_OBJECT
 public:
-  explicit ValueTransmissionQuaternion( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ValueTransmissionQuaternion(
+    uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setQuaternion( ORIENTATION_SIGNATURE_SLOT );
@@ -35,7 +36,7 @@ class ValueTransmissionQuaternionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
+  ValueTransmissionQuaternionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Converter; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Value Transmit Quaternion" ); }
 

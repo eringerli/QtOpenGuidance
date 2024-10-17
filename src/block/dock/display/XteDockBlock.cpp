@@ -12,9 +12,13 @@
 
 KDDockWidgets::QtWidgets::DockWidget* XteDockBlockFactory::firstDock = nullptr;
 
-XteDockBlock::XteDockBlock(
-  MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type ) {
+XteDockBlock::XteDockBlock( MyMainWindow*              mainWindow,
+                            const QString&             uniqueName,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              type,
+                            const BlockBase::TypeColor typeColor )
+    : ValueDockBlockBase( uniqueName, idHint, systemBlock, type, typeColor ) {
   widget = new XteDock( mainWindow );
 }
 

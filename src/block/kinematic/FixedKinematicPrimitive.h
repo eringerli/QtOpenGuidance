@@ -13,8 +13,11 @@ class FixedKinematicPrimitive : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FixedKinematicPrimitive( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit FixedKinematicPrimitive( const BlockBaseId          idHint,
+                                    const bool                 systemBlock,
+                                    const QString              type,
+                                    const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setOffset( VECTOR_SIGNATURE_SLOT );
@@ -37,7 +40,7 @@ class FixedKinematicPrimitiveFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  FixedKinematicPrimitiveFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Fixed Kinematic Primitive" ); }
 

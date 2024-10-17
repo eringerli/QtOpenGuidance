@@ -16,7 +16,8 @@ class OrientationBlock : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit OrientationBlock( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit OrientationBlock( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -51,7 +52,7 @@ class OrientationBlockFactory : public BlockFactory {
 
 public:
   OrientationBlockFactory( QThread* thread, OrientationBlockModel* model ) : BlockFactory( thread, false ), model( model ) {
-    typeColor = TypeColor::Value;
+    typeColor = BlockBase::TypeColor::Value;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Orientation" ); }

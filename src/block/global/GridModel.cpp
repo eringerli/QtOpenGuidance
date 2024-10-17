@@ -5,9 +5,13 @@
 
 #include "helpers/eigenHelper.h"
 
-GridModel::GridModel(
-  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+GridModel::GridModel( Qt3DCore::QEntity*         rootEntity,
+                      Qt3DRender::QCamera*       cameraEntity,
+                      const BlockBaseId          idHint,
+                      const bool                 systemBlock,
+                      const QString              type,
+                      const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   m_distanceMeasurementEntity    = new Qt3DCore::QEntity( rootEntity );
   m_distanceMeasurementTransform = new Qt3DCore::QTransform( m_distanceMeasurementEntity );
   m_distanceMeasurementEntity->addComponent( m_distanceMeasurementTransform );

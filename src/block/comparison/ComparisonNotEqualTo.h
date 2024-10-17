@@ -13,7 +13,11 @@ class ComparisonNotEqualTo : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComparisonNotEqualTo( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ComparisonNotEqualTo( const BlockBaseId          idHint,
+                                 const bool                 systemBlock,
+                                 const QString              type,
+                                 const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -37,7 +41,7 @@ class ComparisonNotEqualToFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComparisonNotEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ComparisonNotEqualToFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ComparisonNotEqualTo" ); }
 

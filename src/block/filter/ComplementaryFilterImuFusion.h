@@ -17,7 +17,10 @@ class ComplementaryFilterImuFusion : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ComplementaryFilterImuFusion( const BlockBaseId          idHint,
+                                         const bool                 systemBlock,
+                                         const QString              type,
+                                         const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setImuData( IMU_SIGNATURE_SLOT );
@@ -55,7 +58,7 @@ class ComplementaryFilterImuFusionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ComplementaryFilterImuFusionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ComplementaryFilterImuFusionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "CF for IMU Fusion" ); }
 

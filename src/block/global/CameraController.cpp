@@ -16,9 +16,13 @@
 #include <QStandardPaths>
 #include <QWheelEvent>
 
-CameraController::CameraController(
-  Qt3DCore::QEntity* rootEntity, Qt3DRender::QCamera* cameraEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
+CameraController::CameraController( Qt3DCore::QEntity*         rootEntity,
+                                    Qt3DRender::QCamera*       cameraEntity,
+                                    const BlockBaseId          idHint,
+                                    const bool                 systemBlock,
+                                    const QString              type,
+                                    const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), m_rootEntity( rootEntity ), m_cameraEntity( cameraEntity ) {
   m_cameraEntity->setPosition( m_offset );
   m_cameraEntity->setViewCenter( QVector3D( 0, 0, 0 ) );
   m_cameraEntity->setUpVector( QVector3D( 0, 0, 1 ) );

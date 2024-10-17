@@ -9,7 +9,11 @@ class ArithmeticSubtraction : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticSubtraction( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticSubtraction( const BlockBaseId          idHint,
+                                  const bool                 systemBlock,
+                                  const QString              type,
+                                  const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -33,7 +37,7 @@ class ArithmeticSubtractionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticSubtractionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticSubtractionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticSubtraction" ); }
 

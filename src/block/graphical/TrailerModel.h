@@ -17,7 +17,12 @@ class TrailerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit TrailerModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit TrailerModel( Qt3DCore::QEntity*         rootEntity,
+                         const bool                 usePBR,
+                         const BlockBaseId          idHint,
+                         const bool                 systemBlock,
+                         const QString              type,
+                         const BlockBase::TypeColor typeColor );
   ~TrailerModel();
 
 public Q_SLOTS:
@@ -77,7 +82,7 @@ class TrailerModelFactory : public BlockFactory {
 public:
   TrailerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, const bool usePBR )
       : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Trailer Model" ); }

@@ -9,7 +9,8 @@ class ArithmeticAbsolute : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticAbsolute( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticAbsolute( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -31,7 +32,7 @@ class ArithmeticAbsoluteFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticAbsoluteFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticAbsoluteFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticAbsolute" ); }
 

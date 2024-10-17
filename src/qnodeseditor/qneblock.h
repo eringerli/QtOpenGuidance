@@ -76,12 +76,14 @@ protected:
   static constexpr qreal cornerRadius     = 5;
   static constexpr qreal gradientHeight   = 10;
 
-  static const QColor modelColor;
-  static const QColor dockColor;
-  static const QColor inputDockColor;
-  static const QColor parserColor;
-  static const QColor valueColor;
-  static const QColor inputOutputColor;
-  static const QColor converterColor;
-  static const QColor arithmeticColor;
+  static const QColor SystemBlockColor;
+  static const QColor ModelColor;
+  static const QColor DockColor;
+  static const QColor InputDockColor;
+  static const QColor ParserColor;
+  static const QColor ValueColor;
+  static const QColor InputOutputColor;
+  static const QColor ConverterColor;
+  static const QColor ArithmeticColor;
+  static const QColor DefaultColor;
 };

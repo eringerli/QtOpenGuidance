@@ -273,8 +273,8 @@ private:
   void emitNoiseStandartDeviations();
 
 private:
-  QMainWindow*            mainWindow       = nullptr;
-  Qt3DExtras::Qt3DWindow* qt3dWindow       = nullptr;
+  QMainWindow*            mainWindow = nullptr;
+  Qt3DExtras::Qt3DWindow* qt3dWindow = nullptr;
 
 private:
   Ui::SettingsDialog* ui = nullptr;

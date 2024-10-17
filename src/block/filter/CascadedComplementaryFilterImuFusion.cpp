@@ -21,8 +21,11 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+CascadedComplementaryFilterImuFusion::CascadedComplementaryFilterImuFusion( const BlockBaseId          idHint,
+                                                                            const bool                 systemBlock,
+                                                                            const QString              type,
+                                                                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   elapsedTimer.start();
 }
 

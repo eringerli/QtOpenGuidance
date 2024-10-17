@@ -19,8 +19,11 @@ sec( const T& z ) {
   return T( 1 ) / std::cos( z );
 }
 
-ComplementaryFilterImuFusion::ComplementaryFilterImuFusion( const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+ComplementaryFilterImuFusion::ComplementaryFilterImuFusion( const BlockBaseId          idHint,
+                                                            const bool                 systemBlock,
+                                                            const QString              type,
+                                                            const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   est = std::make_unique< imu_tools::ComplementaryFilter >();
 }
 

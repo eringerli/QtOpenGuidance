@@ -26,7 +26,8 @@ public:
                       KDDockWidgets::QtWidgets::DockWidget** firstDock,
                       const BlockBaseId                      idHint,
                       const bool                             systemBlock,
-                      const QString                          type );
+                      const QString                          type,
+                      const BlockBase::TypeColor             typeColor );
 
   ~Implement() override;
 
@@ -66,7 +67,7 @@ class ImplementFactory : public BlockFactory {
 public:
   ImplementFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, ImplementBlockModel* model )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), model( model ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Implement" ); }

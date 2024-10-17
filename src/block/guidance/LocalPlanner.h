@@ -29,8 +29,12 @@ class LocalPlanner : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit LocalPlanner(
-    MyMainWindow* mainWindow, const QString& uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit LocalPlanner( MyMainWindow*              mainWindow,
+                         const QString&             uniqueName,
+                         const BlockBaseId          idHint,
+                         const bool                 systemBlock,
+                         const QString              type,
+                         const BlockBase::TypeColor typeColor );
 
   ~LocalPlanner();
 
@@ -102,7 +106,7 @@ public:
   LocalPlannerFactory(
     QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu, Qt3DCore::QEntity* rootEntity )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ), rootEntity( rootEntity ) {
-    typeColor = TypeColor::Arithmetic;
+    typeColor = BlockBase::TypeColor::Arithmetic;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Local Planner" ); }

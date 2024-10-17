@@ -9,7 +9,8 @@ class ArithmeticNegation : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticNegation( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticNegation( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -31,7 +32,7 @@ class ArithmeticNegationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticNegationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticNegationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticNegation" ); }
 

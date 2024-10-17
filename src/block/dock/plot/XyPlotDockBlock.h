@@ -14,7 +14,12 @@ class XyPlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit XyPlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString types );
+  explicit XyPlotDockBlock( MyMainWindow*              mainWindow,
+                            QString                    uniqueName,
+                            const BlockBaseId          idHint,
+                            const bool                 systemBlock,
+                            const QString              types,
+                            const BlockBase::TypeColor typeColor );
 
 public Q_SLOTS:
   void setAngleCost( std::shared_ptr< std::vector< double > >, std::shared_ptr< std::vector< double > > );
@@ -33,7 +38,7 @@ class MpcPlotDockBlockFactory : public BlockFactory {
 public:
   MpcPlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::Dock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "MpcPlotDockBlock" ); }

@@ -9,8 +9,11 @@ class ArithmeticMultiplication : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticMultiplication( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticMultiplication( const BlockBaseId          idHint,
+                                     const bool                 systemBlock,
+                                     const QString              type,
+                                     const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -34,7 +37,7 @@ class ArithmeticMultiplicationFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticMultiplicationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticMultiplicationFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticMultiplication" ); }
 

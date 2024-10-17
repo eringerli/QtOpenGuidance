@@ -16,7 +16,12 @@ class ValuePlotDockBlock : public PlotDockBlockBase {
   Q_OBJECT
 
 public:
-  explicit ValuePlotDockBlock( MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit ValuePlotDockBlock( MyMainWindow*              mainWindow,
+                               QString                    uniqueName,
+                               const BlockBaseId          idHint,
+                               const bool                 systemBlock,
+                               const QString              type,
+                               const BlockBase::TypeColor typeColor );
 
   RateLimiter rateLimiterValue0;
   RateLimiter rateLimiterValue1;
@@ -39,7 +44,7 @@ class ValuePlotDockBlockFactory : public BlockFactory {
 public:
   ValuePlotDockBlockFactory( QThread* thread, MyMainWindow* mainWindow, KDDockWidgets::Location location, QMenu* menu )
       : BlockFactory( thread, false ), mainWindow( mainWindow ), location( location ), menu( menu ) {
-    typeColor = TypeColor::Dock;
+    typeColor = BlockBase::TypeColor::Dock;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ValuePlotDockBlock" ); }

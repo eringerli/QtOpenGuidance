@@ -17,7 +17,7 @@ class FileStream : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FileStream( const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit FileStream( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor );
 
   ~FileStream() override;
 
@@ -49,7 +49,7 @@ class FileStreamFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  FileStreamFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::InputOutput; }
+  FileStreamFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::InputOutput; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "File Stream" ); }
 

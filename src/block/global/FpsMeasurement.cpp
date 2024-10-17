@@ -6,8 +6,12 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DLogic/QFrameAction>
 
-FpsMeasurement::FpsMeasurement( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+FpsMeasurement::FpsMeasurement( Qt3DCore::QEntity*         rootEntity,
+                                const BlockBaseId          idHint,
+                                const bool                 systemBlock,
+                                const QString              type,
+                                const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   fpsComponent = new Qt3DLogic::QFrameAction( rootEntity );
   rootEntity->addComponent( fpsComponent );
   QObject::connect( fpsComponent, &Qt3DLogic::QFrameAction::triggered, this, &FpsMeasurement::frameActionTriggered );

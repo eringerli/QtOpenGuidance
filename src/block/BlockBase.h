@@ -108,9 +108,9 @@ struct BlockConnectionDefinition {
   }
 
   BlockBaseId idFrom       = 0;
-  QString portFromName = QString( "" );
+  QString     portFromName = QString( "" );
   BlockBaseId idTo         = 0;
-  QString portToName   = QString( "" );
+  QString     portToName   = QString( "" );
 };
 
 class BlockPort {
@@ -158,9 +158,7 @@ public:
 
   inline void disconnect() { QObject::disconnect( connection ); }
 
-  void disable() {
-    disconnect();
-  }
+  void disable() { disconnect(); }
 
   void enable() {
     if( !connection ) {
@@ -187,11 +185,14 @@ public:
   using PortsVectorType = std::vector< BlockPort >;
 
   enum class IdRange : BlockBaseId { NoId = 0, SystemIdStart = 1, UserIdStart = 1000 };
+  enum class TypeColor { Model, Dock, InputDock, Parser, Value, InputOutput, Converter, Arithmetic, System };
 
-  explicit BlockBase( const BlockBaseId idHint, const bool systemBlock, const QString type )
-      : _id( idHint ), systemBlock( systemBlock ), type( type ), _name( type ) {
-    addInputPort(
-      "Enable", this, QLatin1StringView( SLOT( enable( ACTION_SIGNATURE ) ) ), BlockPort::Flag::Visible | BlockPort::Flag::SquareBullet );
+  explicit BlockBase( const BlockBaseId idHint, const bool systemBlock, const QString type, const TypeColor typeColor )
+      : _id( idHint ), systemBlock( systemBlock ), type( type ), _name( type ), typeColor( typeColor ) {
+    if( typeColor != BlockBase::TypeColor::Value ) {
+      addInputPort(
+        "Enable", this, QLatin1StringView( SLOT( enable( ACTION_SIGNATURE ) ) ), BlockPort::Flag::Visible | BlockPort::Flag::SquareBullet );
+    }
   }
 
   virtual ~BlockBase() {
@@ -241,8 +242,9 @@ signals:
   void nameChanged( const QString& );
 
 public:
-  const bool    systemBlock = false;
-  const QString type;
+  const bool      systemBlock = false;
+  const QString   type;
+  const TypeColor typeColor;
 
   const std::vector< QObject* >&        additionalObjects() const { return _additionalObjects; }
   const std::vector< BlockPort >&       ports() const { return _ports; }
@@ -262,7 +264,7 @@ public:
 
 private:
   BlockBaseId _id = static_cast< std::underlying_type_t< IdRange > >( IdRange::NoId );
-  QString  _name;
+  QString     _name;
 
   uint8_t _portPosition = 0;
 
@@ -275,8 +277,6 @@ class BlockFactory : public QObject {
   Q_OBJECT
 
 public:
-  enum class TypeColor { Model, Dock, InputDock, Parser, Value, InputOutput, Converter, Arithmetic };
-
   explicit BlockFactory( QThread* thread, bool systemBlock ) : thread( thread ), systemBlock( systemBlock ) {}
   virtual ~BlockFactory() {}
 
@@ -290,13 +290,13 @@ public:
 
   template< class BlockClass, class... Args >
   [[nodiscard]] std::unique_ptr< BlockClass > createBaseBlock( BlockBaseId idHint, Args... args ) {
-    return std::make_unique< BlockClass >( args..., idHint, systemBlock, getNameOfFactory() );
+    return std::make_unique< BlockClass >( args..., idHint, systemBlock, getNameOfFactory(), typeColor );
   }
 
   void moveToFactoryThread( QObject* obj ) { obj->moveToThread( thread ); }
 
 public:
-  QThread*  thread      = nullptr;
-  bool      systemBlock = false;
-  TypeColor typeColor   = TypeColor::Arithmetic;
+  QThread*             thread      = nullptr;
+  bool                 systemBlock = false;
+  BlockBase::TypeColor typeColor   = BlockBase::TypeColor::Arithmetic;
 };

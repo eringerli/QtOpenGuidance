@@ -42,9 +42,10 @@ public:
   explicit GlobalPlanner( const QString&               uniqueName,
                           MyMainWindow*                mainWindow,
                           GeographicConvertionWrapper* tmw,
-                          const BlockBaseId                    idHint,
+                          const BlockBaseId            idHint,
                           const bool                   systemBlock,
-                          const QString                type );
+                          const QString                type,
+                          const BlockBase::TypeColor   typeColor );
 
   ~GlobalPlanner();
 

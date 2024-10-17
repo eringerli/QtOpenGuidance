@@ -13,8 +13,9 @@
 #include <QCborValue>
 #include <iostream>
 
-ValueTransmissionImuData::ValueTransmissionImuData( uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : ValueTransmissionBase( cid, idHint, systemBlock, type ) {
+ValueTransmissionImuData::ValueTransmissionImuData(
+  uint16_t cid, const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+    : ValueTransmissionBase( cid, idHint, systemBlock, type, typeColor ) {
   reader = std::make_unique< QCborStreamReader >();
 }
 

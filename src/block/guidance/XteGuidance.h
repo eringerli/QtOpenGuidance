@@ -19,7 +19,8 @@ class XteGuidance : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit XteGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit XteGuidance( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 public Q_SLOTS:
   void setPose( POSE_SIGNATURE_SLOT );
@@ -44,7 +45,7 @@ class XteGuidanceFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  XteGuidanceFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Cross Track Error" ); }
 

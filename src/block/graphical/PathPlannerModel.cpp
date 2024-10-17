@@ -50,8 +50,12 @@
 #include <functional>
 #include <utility>
 
-PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+PathPlannerModel::PathPlannerModel( Qt3DCore::QEntity*         rootEntity,
+                                    const BlockBaseId          idHint,
+                                    const bool                 systemBlock,
+                                    const QString              type,
+                                    const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   baseEntity          = new Qt3DCore::QEntity( rootEntity );
   baseEntityTransform = new Qt3DCore::QTransform( baseEntity );
   baseEntityTransform->setTranslation( QVector3D( 0, 0, 0 ) );

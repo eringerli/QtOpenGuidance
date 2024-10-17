@@ -46,8 +46,9 @@ GlobalPlanner::GlobalPlanner( const QString&               uniqueName,
                               GeographicConvertionWrapper* tmw,
                               const BlockBaseId            idHint,
                               const bool                   systemBlock,
-                              const QString                type )
-    : BlockBase( idHint, systemBlock, type ), mainWindow( mainWindow ), tmw( tmw ) {
+                              const QString                type,
+                              const BlockBase::TypeColor   typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), mainWindow( mainWindow ), tmw( tmw ) {
   widget = new GlobalPlannerToolbar( mainWindow );
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
 
@@ -414,15 +415,15 @@ GlobalPlannerFactory::GlobalPlannerFactory( QThread*                     thread,
   qRegisterMetaType< const Plan& >();
   qRegisterMetaType< const PlanGlobal& >();
 
-  typeColor = TypeColor::Arithmetic;
+  typeColor = BlockBase::TypeColor::Arithmetic;
 }
 
 std::unique_ptr< BlockBase >
 GlobalPlannerFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< GlobalPlanner >( idHint, getNameOfFactory() + QString::number( idHint ), mainWindow, tmw );
 
-  auto pathPlannerModelId =
-    blocksManager.moveObjectToManager( std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Global Plan" ) );
+  auto pathPlannerModelId = blocksManager.moveObjectToManager(
+    std::make_unique< PathPlannerModel >( rootEntity, 0, false, "Global Plan", BlockBase::TypeColor::Model ) );
 
   auto* pathPlannerModel = static_cast< PathPlannerModel* >( blocksManager.getBlock( pathPlannerModelId ) );
   obj->addAdditionalObject( pathPlannerModel );
@@ -437,7 +438,7 @@ GlobalPlannerFactory::createBlock( const BlockBaseId idHint ) {
 
   mainWindow->addDockWidget( obj->dock, location );
 
-  auto* globalPlannerModel = new GlobalPlannerModel( rootEntity, 0, true, "GlobalPlannerModel" );
+  auto* globalPlannerModel = new GlobalPlannerModel( rootEntity, 0, true, "GlobalPlannerModel", BlockBase::TypeColor::System );
   obj->addAdditionalObject( globalPlannerModel );
 
   QObject::connect( obj.get(), &GlobalPlanner::planPolylineChanged, globalPlannerModel, &GlobalPlannerModel::showPlanPolyline );

@@ -33,8 +33,12 @@ class CultivatedAreaModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CultivatedAreaModel(
-    Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit CultivatedAreaModel( Qt3DCore::QEntity*         rootEntity,
+                                NewOpenSaveToolbar*        newOpenSaveToolbar,
+                                const BlockBaseId          idHint,
+                                const bool                 systemBlock,
+                                const QString              type,
+                                const BlockBase::TypeColor typeColor );
   ~CultivatedAreaModel();
 
   virtual void emitConfigSignals() override;
@@ -91,7 +95,7 @@ class CultivatedAreaModelFactory : public BlockFactory {
 public:
   CultivatedAreaModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity, bool usePBR, NewOpenSaveToolbar* newOpenSaveToolbar )
       : BlockFactory( thread, false ), rootEntity( rootEntity ), usePBR( usePBR ), newOpenSaveToolbar( newOpenSaveToolbar ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Cultivated Area Model" ); }

@@ -14,7 +14,8 @@ class SplitterVector : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterVector( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit SplitterVector( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -31,7 +32,7 @@ class SplitterVectorFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterVectorFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  SplitterVectorFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "SplitterVector" ); }
 

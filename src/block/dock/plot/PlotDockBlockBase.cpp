@@ -11,9 +11,13 @@
 
 KDDockWidgets::QtWidgets::DockWidget* PlotDockBlockBase::firstPlotDock = nullptr;
 
-PlotDockBlockBase::PlotDockBlockBase(
-  MyMainWindow* mainWindow, QString uniqueName, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+PlotDockBlockBase::PlotDockBlockBase( MyMainWindow*              mainWindow,
+                                      QString                    uniqueName,
+                                      const BlockBaseId          idHint,
+                                      const bool                 systemBlock,
+                                      const QString              type,
+                                      const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   dock   = new KDDockWidgets::QtWidgets::DockWidget( uniqueName );
   widget = new PlotDock( mainWindow );
 }
@@ -130,4 +134,14 @@ void
 PlotDockBlockBase::setNameHelper() {
   dock->setTitle( name() + ( autoScrollEnabled ? QString() : QStringLiteral( " (m" ) ) );
   dock->toggleAction()->setText( QStringLiteral( "Plot: " ) + name() );
+}
+
+void
+PlotDockBlockBase::enable( const bool enable ) {
+  if( enable ) {
+    dock->show();
+  } else {
+    dock->close();
+  }
+  BlockBase::enable( enable );
 }

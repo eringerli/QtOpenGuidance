@@ -49,9 +49,13 @@ CultivatedAreaModel::createEntities() {
   m_baseEntity->addComponent( m_layer );
 }
 
-CultivatedAreaModel::CultivatedAreaModel(
-  Qt3DCore::QEntity* rootEntity, NewOpenSaveToolbar* newOpenSaveToolbar, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ), m_rootEntity( rootEntity ) {
+CultivatedAreaModel::CultivatedAreaModel( Qt3DCore::QEntity*         rootEntity,
+                                          NewOpenSaveToolbar*        newOpenSaveToolbar,
+                                          const BlockBaseId          idHint,
+                                          const bool                 systemBlock,
+                                          const QString              type,
+                                          const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ), m_rootEntity( rootEntity ) {
   // plug into new/open/save toolbar
   newCultivatedAreaAction = newOpenSaveToolbar->newMenu->addAction( QStringLiteral( "New Cultivated Area" ) );
   QObject::connect( newCultivatedAreaAction, &QAction::triggered, this, &CultivatedAreaModel::newCultivatedArea );

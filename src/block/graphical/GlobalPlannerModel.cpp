@@ -48,8 +48,12 @@
 #include <functional>
 #include <utility>
 
-GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+GlobalPlannerModel::GlobalPlannerModel( Qt3DCore::QEntity*         rootEntity,
+                                        const BlockBaseId          idHint,
+                                        const bool                 systemBlock,
+                                        const QString              type,
+                                        const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseEntity->addComponent( baseTransform );

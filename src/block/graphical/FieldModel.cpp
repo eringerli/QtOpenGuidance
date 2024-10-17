@@ -51,8 +51,13 @@
 #include <functional>
 #include <utility>
 
-FieldModel::FieldModel( Qt3DCore::QEntity* rootEntity, const bool usePBR, const BlockBaseId idHint, const bool systemBlock, const QString type )
-    : BlockBase( idHint, systemBlock, type ) {
+FieldModel::FieldModel( Qt3DCore::QEntity*         rootEntity,
+                        const bool                 usePBR,
+                        const BlockBaseId          idHint,
+                        const bool                 systemBlock,
+                        const QString              type,
+                        const BlockBase::TypeColor typeColor )
+    : BlockBase( idHint, systemBlock, type, typeColor ) {
   baseEntity    = new Qt3DCore::QEntity( rootEntity );
   baseTransform = new Qt3DCore::QTransform( baseEntity );
   baseTransform->setTranslation( QVector3D( 0, 0, 0 ) );

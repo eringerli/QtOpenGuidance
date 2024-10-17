@@ -14,7 +14,8 @@ class SplitterImu : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterImu( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit SplitterImu( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -32,7 +33,7 @@ class SplitterImuFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  SplitterImuFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "SplitterImu" ); }
 

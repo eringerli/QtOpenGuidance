@@ -33,8 +33,12 @@ class FieldManager : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit FieldManager(
-    QWidget* mainWindow, GeographicConvertionWrapper* tmw, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit FieldManager( QWidget*                     mainWindow,
+                         GeographicConvertionWrapper* tmw,
+                         const BlockBaseId            idHint,
+                         const bool                   systemBlock,
+                         const QString                type,
+                         const BlockBase::TypeColor   typeColor );
 
   ~FieldManager();
 
@@ -128,7 +132,7 @@ public:
   FieldManagerFactory(
     QThread* thread, QWidget* mainWindow, Qt3DCore::QEntity* rootEntity, const bool usePBR, GeographicConvertionWrapper* tmw )
       : BlockFactory( thread, true ), mainWindow( mainWindow ), rootEntity( rootEntity ), usePBR( usePBR ), tmw( tmw ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Field Manager" ); }

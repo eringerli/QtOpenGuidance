@@ -41,7 +41,11 @@ class PathPlannerModel : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit PathPlannerModel( Qt3DCore::QEntity* rootEntity, const BlockBaseId idHint, const bool systemBlock, const QString type );
+  explicit PathPlannerModel( Qt3DCore::QEntity*         rootEntity,
+                             const BlockBaseId          idHint,
+                             const bool                 systemBlock,
+                             const QString              type,
+                             const BlockBase::TypeColor typeColor );
 
   void toJSON( QJsonObject& json ) const override;
   void fromJSON( const QJsonObject& ) override;
@@ -49,7 +53,7 @@ public:
   void refreshColors();
 
 public Q_SLOTS:
-  void setVisible( const bool visible );
+  void         setVisible( const bool visible );
   virtual void enable( ACTION_SIGNATURE ) override;
 
   void setPlan( const Plan& plan );
@@ -117,7 +121,7 @@ class PathPlannerModelFactory : public BlockFactory {
 
 public:
   PathPlannerModelFactory( QThread* thread, Qt3DCore::QEntity* rootEntity ) : BlockFactory( thread, false ), rootEntity( rootEntity ) {
-    typeColor = TypeColor::Model;
+    typeColor = BlockBase::TypeColor::Model;
   }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Path Planner Model" ); }

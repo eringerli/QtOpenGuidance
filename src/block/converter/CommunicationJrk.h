@@ -11,7 +11,8 @@ class CommunicationJrk : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit CommunicationJrk( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit CommunicationJrk( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
 Q_SIGNALS:
   void dataReceived( const QByteArray& );
@@ -32,7 +33,7 @@ class CommunicationJrkFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  CommunicationJrkFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Converter; }
+  CommunicationJrkFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Converter; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "Communication JRK" ); }
 

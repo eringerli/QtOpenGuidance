@@ -95,6 +95,14 @@ SimpleMpcGuidance::calculateWeightFactor( const double index, const double size 
     }
   }
 
+  // if( index < ( size / 10. * 2. ) ) {
+  //   return 1. * weight;
+  // } else if( index < ( size / 10. * 6. ) ) {
+  //   return 0.5 * weight;
+  // } else {
+  //   return .25 * weight;
+  // }
+
   return weight;
 }
 
@@ -322,29 +330,30 @@ SimpleMpcGuidance::setPose( const Eigen::Vector3d&           positionPose,
 
     Q_EMIT dockValuesChanged( steeringAngles, xtesCostFunctionResults );
 
-    QVector< QVector3D > points;
-    QVector< QVector3D > points2;
-    points.reserve( recordPointsTo->size() * 2 );
-    points2.reserve( recordPointsTo->size() );
-    QVector3D leftLowerPoint( -0.1f, -0.2f, 0. );
-    QVector3D rightLowerPoint( 0.1f, -0.2f, 0. );
-    for( const auto& point : *recordPointsTo ) {
-      points2.push_back( toQVector3D( point ) );
-      points2.push_back( toQVector3D( point ) + leftLowerPoint );
-      points2.push_back( toQVector3D( point ) + rightLowerPoint );
-    }
-    double t = 0;
-    for( int i = 0; i < recordPointsTo->size(); ++i ) {
-      points.push_back( toQVector3D( recordPointsTo->at( i ) ) );
-      points.push_back( toQVector3D( recordPointsTo->at( i ) ) -
-                        QVector3D( 0, recordXteForPointsTo->at( i ) * calculateWeightFactor( i, recordXteForPointsTo->size() ), 0 ) );
-      t += dT;
-      if( dT > window ) {
-        t = 0;
+    {
+      QVector< QVector3D > points;
+      QVector< QVector3D > points2;
+      points.reserve( recordPointsTo->size() * 2 );
+      points2.reserve( recordPointsTo->size() );
+      QVector3D leftLowerPoint( -0.1f, -0.2f, 0. );
+      QVector3D rightLowerPoint( 0.1f, -0.2f, 0. );
+      for( const auto& point : *recordPointsTo ) {
+        points2.push_back( toQVector3D( point ) );
+        points2.push_back( toQVector3D( point ) + leftLowerPoint );
+        points2.push_back( toQVector3D( point ) + rightLowerPoint );
       }
+      double t = 0;
+      for( int i = 0; i < recordPointsTo->size(); ++i ) {
+        points.push_back( toQVector3D( recordPointsTo->at( i ) ) );
+        points.push_back( toQVector3D( recordPointsTo->at( i ) ) - QVector3D( 0, recordXteForPointsTo->at( i ), 0 ) );
+        t += dT;
+        if( dT > window ) {
+          t = 0;
+        }
+      }
+      Q_EMIT bufferChanged( points );
+      Q_EMIT buffer2Changed( points2 );
     }
-    Q_EMIT bufferChanged( points );
-    Q_EMIT buffer2Changed( points2 );
 
     double processingTime = double( timer.nsecsElapsed() ) / 1.e6;
     //    qDebug() << "Cycle Time SimpleMpcGuidance [ms]:" << Qt::fixed << qSetRealNumberPrecision( 4 ) << qSetFieldWidth( 7 ) <<
@@ -398,7 +407,7 @@ SimpleMpcGuidanceFactory::createBlock( const BlockBaseId idHint ) {
   auto obj = createBaseBlock< SimpleMpcGuidance >( idHint );
 
   auto obj2Id = blocksManager.moveObjectToManager( std::make_unique< XyPlotDockBlock >(
-    mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock" ) );
+    mainWindow, getNameOfFactory() + QString::number( obj->id() + 10000 ), 0, false, "XyPlotDockBlock", BlockBase::TypeColor::Dock ) );
 
   auto* obj2 = static_cast< XyPlotDockBlock* >( blocksManager.getBlock( obj2Id ) );
 

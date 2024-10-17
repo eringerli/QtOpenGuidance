@@ -9,7 +9,8 @@ class ArithmeticDivision : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit ArithmeticDivision( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit ArithmeticDivision( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -33,7 +34,7 @@ class ArithmeticDivisionFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  ArithmeticDivisionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Arithmetic; }
+  ArithmeticDivisionFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Arithmetic; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "ArithmeticDivision" ); }
 

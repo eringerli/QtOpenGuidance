@@ -14,7 +14,8 @@ class SplitterPose : public BlockBase {
   Q_OBJECT
 
 public:
-  explicit SplitterPose( const BlockBaseId idHint, const bool systemBlock, const QString type ) : BlockBase( idHint, systemBlock, type ) {}
+  explicit SplitterPose( const BlockBaseId idHint, const bool systemBlock, const QString type, const BlockBase::TypeColor typeColor )
+      : BlockBase( idHint, systemBlock, type, typeColor ) {}
 
   void emitConfigSignals() override;
 
@@ -30,7 +31,7 @@ class SplitterPoseFactory : public BlockFactory {
   Q_OBJECT
 
 public:
-  SplitterPoseFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = TypeColor::Parser; }
+  SplitterPoseFactory( QThread* thread ) : BlockFactory( thread, false ) { typeColor = BlockBase::TypeColor::Parser; }
 
   QString getNameOfFactory() const override { return QStringLiteral( "SplitterPose" ); }
 
